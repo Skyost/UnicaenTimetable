@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">Emploi du temps Unicaen</string>
+
+    <string name="about_title">À propos</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.0.0 et iCal4j v2.0.0-beta1.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.</string>
+    <string name="about_share_share">Partager avec…</string>
+    <string name="about_share_title">Emploi du temps Unicaen</string>
+    <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
+
+    <string name="dialog_login_title">Connexion</string>
+    <string name="dialog_login_username">Nom d\'utilisateur</string>
+    <string name="dialog_login_password">Mot de passe</string>
+    <string name="dialog_login_button_positive">Connexion</string>
+    <string name="dialog_login_button_cancel">Annuler</string>
+
+    <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
+    <string name="intro_slide_1_description">Cette application permet aux étudiants de l\'Université de Caen Normandie d\'avoir leur emploi du temps directement sur leur smartphone.</string>
+    <string name="intro_slide_2_title">Permission d\'utiliser Internet ?</string>
+    <string name="intro_slide_2_description">Nous avons besoin d\'internet pour télécharger votre emploi du temps !</string>
+    <string name="intro_slide_3_title">Nous devons maintenant accéder à votre compte Unicaen…</string>
+    <string name="intro_slide_3_description">Pas d\'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen.</string>
+    <string name="intro_slide_4_title">Tout est prêt !</string>
+    <string name="intro_slide_4_description">Vous êtes fin prêt. Appuyez sur le bouton ci-dessous pour commencer.</string>
+
+    <string name="intro_dialog_wait">Veuillez patienter…</string>
+    <string name="intro_toast_error_permission">Nous avons besoin de la permission Internet !</string>
+    <string name="intro_toast_error_network">Erreur réseau.</string>
+    <string name="intro_toast_error_credentials">Nom d\'utilisateur ou mot de passe invalide.</string>
+
+    <string name="main_default_title">Bonjour !</string>
+    <string name="main_default_description">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.</string>
+
+    <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
+    <string name="main_snackbar_success">Succès !</string>
+    <string name="main_snackbar_error_network">Erreur réseau.</string>
+    <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>
+
+    <string name="main_nav_open">Ouvrir la navigation</string>
+    <string name="main_nav_close">Fermer la navigation</string>
+
+    <string name="main_nav_header">Emploi du temps</string>
+
+    <string name="main_nav_home_home">Accueil</string>
+
+    <string name="main_nav_timetable">Emploi du temps</string>
+    <string name="main_nav_timetable_monday">Lundi</string>
+    <string name="main_nav_timetable_tuesday">Mardi</string>
+    <string name="main_nav_timetable_wednesday">Mercredi</string>
+    <string name="main_nav_timetable_thursday">Jeudi</string>
+    <string name="main_nav_timetable_friday">Vendredi</string>
+
+    <string name="main_nav_others">Autres</string>
+    <string name="main_nav_others_settings">Paramètres</string>
+    <string name="main_nav_others_about">À propos</string>
+
+    <string name="preferences_account">Compte</string>
+    <string name="preferences_account_account">Changer de compte</string>
+
+    <string name="preferences_server">Serveur</string>
+    <string name="preferences_server_server">Serveur Zimbra</string>
+    <string name="preferences_server_calendar">Calendrier</string>
+
+    <string name="settings_default" formatting="false">Défaut : %s</string>
+    <string name="settings_account" formatting="false">Compte Unicaen : %s</string>
+
+</resources>
