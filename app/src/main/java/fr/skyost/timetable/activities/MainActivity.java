@@ -97,18 +97,24 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	@Override
 	protected final void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		if(resultCode != Activity.RESULT_OK) {
-			return;
-		}
+		final String username = new ObscuredSharedPreferences(this, getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE)).getString(AuthenticationTask.PREFERENCES_USERNAME, "xxxxxxxx");
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
-			final String username = new ObscuredSharedPreferences(this, getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE)).getString(AuthenticationTask.PREFERENCES_USERNAME, "xxxxxxxx");
+			if(resultCode != Activity.RESULT_OK) {
+				return;
+			}
 			((TextView)((NavigationView)this.findViewById(R.id.main_nav_view)).getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
 			refreshTimetable();
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
-			if(data.getBooleanExtra(IntroActivity.INTENT_ACCOUNT_CHANGED, true)) {
+			if(SettingsActivity.accountChanged) {
 				refreshTimetable();
+				final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
+				if(navigationView == null) {
+					break;
+				}
+				((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
+				SettingsActivity.accountChanged = false;
 			}
 			break;
 		}
@@ -165,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	@Override
 	public final void onCalendarResult(final int result, final Timetable timetable, final Exception exception) {
+		if(exception != null) {
+			exception.printStackTrace();
+		}
 		setTimetable(timetable);
 		switch(result) {
 		case AuthenticationTask.SUCCESS:

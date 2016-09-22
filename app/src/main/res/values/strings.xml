@@ -17,7 +17,7 @@
     <string name="intro_slide_1_title">Your timetable on your smartphone !</string>
     <string name="intro_slide_2_description">We need to an internet access to download your timable !</string>
     <string name="intro_slide_2_title">Can we use Internet ?</string>
-    <string name="intro_slide_3_description">Don\'t worry ! Your credentials will not be send to any tier and will be used only to download your timetable from the Unicaen servers.</string>
+    <string name="intro_slide_3_description">Don\'t worry ! Your credentials will not be send to any third party and will be used only to download your timetable from the Unicaen servers.</string>
     <string name="intro_slide_3_title">We need to access to your Unicaen account…</string>
     <string name="intro_slide_4_description">You are ready. Touch the button below to begin.</string>
     <string name="intro_slide_4_title">Everything is completed !</string>

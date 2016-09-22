@@ -3,6 +3,8 @@ package fr.skyost.timetable;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Summary;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -35,7 +37,10 @@ public class Timetable implements Serializable {
 			start.setTime(event.getStartDate().getDate());
 			final Calendar end = Calendar.getInstance();
 			end.setTime(event.getEndDate().getDate());
-			lessons.add(new Lesson(event.getSummary().getValue(), event.getLocation().getValue(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
+
+			final Summary summary = event.getSummary();
+			final Description description = event.getDescription();
+			lessons.add(new Lesson(summary == null ? "" : summary.getValue(), description == null ? "" : description.getValue(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
 		}
 	}
 
@@ -67,7 +72,7 @@ public class Timetable implements Serializable {
 
 		private final int id;
 		private final String name;
-		private final String location;
+		private final String description;
 		private final Day day;
 		private final Calendar start;
 		private final Calendar end;
@@ -76,13 +81,13 @@ public class Timetable implements Serializable {
 		 * Creates a lesson.
 		 *
 		 * @param name The name of this lesson.
-		 * @param location The location of this lesson.
+		 * @param description The description of this lesson.
 		 * @param day The day of this lesson.
 		 * @param start The start time of this lesson.
 		 * @param end The end time of this lesson.
 		 */
 
-		public Lesson(final String name, final String location, final Day day, final Calendar start, final Calendar end) {
+		public Lesson(final String name, final String description, final Day day, final Calendar start, final Calendar end) {
 			final Random random = new Random();
 			int id;
 			do {
@@ -93,7 +98,7 @@ public class Timetable implements Serializable {
 			this.id = id;
 
 			this.name = name;
-			this.location = location;
+			this.description = description;
 			this.day = day;
 			this.start = start;
 			this.end = end;
@@ -125,8 +130,8 @@ public class Timetable implements Serializable {
 		 * @return The location of this lesson.
 		 */
 
-		public final String getLocation() {
-			return location;
+		public final String getDescription() {
+			return description;
 		}
 
 		/**

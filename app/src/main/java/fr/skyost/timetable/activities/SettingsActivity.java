@@ -10,13 +10,11 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.tasks.AuthenticationTask;
@@ -29,7 +27,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 	private static final int INTRO_ACTIVITY_RESULT = 100;
 
-	private boolean accountChanged = false;
+	protected static boolean accountChanged = false;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -59,6 +57,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
 			accountChanged = data.getBooleanExtra(IntroActivity.INTENT_ACCOUNT_CHANGED, true);
+			onBackPressed();
 			break;
 		}
 	}
@@ -67,10 +66,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	public final void onBackPressed() {
 		super.onBackPressed();
 
-		final Intent intent = new Intent();
-		intent.putExtra(IntroActivity.INTENT_ACCOUNT_CHANGED, accountChanged);
-
-		this.setResult(Activity.RESULT_OK, intent);
+		this.setResult(Activity.RESULT_OK);
 		this.finish();
 	}
 
@@ -112,11 +108,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			final Resources resources = preference.getContext().getResources();
 			final String string = value.toString();
 			switch(preference.getKey().toLowerCase()) {
-			case "server":
+			case MainActivity.PREFERENCES_SERVER:
 				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_server) : string);
 				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_server)));
 				break;
-			case "calendar":
+			case MainActivity.PREFERENCES_CALENDAR:
 				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_calendar) : string);
 				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendar)));
 				break;
@@ -157,7 +153,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		public final boolean onOptionsItemSelected(final MenuItem item) {
 			switch(item.getItemId()) {
 			case android.R.id.home:
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
+				this.startActivity(new Intent(this.getActivity(), SettingsActivity.class));
 				return true;
 			}
 			return super.onOptionsItemSelected(item);
@@ -186,10 +182,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 				@Override
 				public final boolean onPreferenceClick(final Preference preference) {
-					final Intent intent = new Intent(AccountPreferenceFragment.this.getActivity(), IntroActivity.class);
+					final Activity activity = AccountPreferenceFragment.this.getActivity();
+					final Intent intent = new Intent(activity, IntroActivity.class);
 					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_PERMISSION_INTERNET);
 					intent.putExtra(IntroActivity.INTENT_ALLOW_BACKWARD, false);
-					AccountPreferenceFragment.this.startActivity(intent);
+					activity.startActivityForResult(intent, INTRO_ACTIVITY_RESULT);
 					return true;
 				}
 			});
@@ -199,7 +196,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		public final boolean onOptionsItemSelected(final MenuItem item) {
 			switch(item.getItemId()) {
 			case android.R.id.home:
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
+				this.startActivity(new Intent(this.getActivity(), SettingsActivity.class));
 				return true;
 			}
 			return super.onOptionsItemSelected(item);

@@ -91,7 +91,7 @@ public class DayFragment extends Fragment {
 					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
 						continue;
 					}
-					events.add(new WeekViewEvent(lesson.getId(), lesson.getName(), lesson.getLocation(), start, lesson.getEnd()));
+					events.add(new WeekViewEvent(lesson.getId(), lesson.getName(), lesson.getDescription(), start, lesson.getEnd()));
 				}
 
 				return events;

@@ -154,13 +154,16 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			dialog.dismiss();
 			dialog = null;
 		}
+		if(exception != null) {
+			exception.printStackTrace();
+		}
 		switch(result) {
 		case AuthenticationTask.SUCCESS:
 			this.setNextPageSwipeLock(true);
 			this.getPager().setCurrentItem(SLIDE_DONE);
 			break;
 		case AuthenticationTask.UNAUTHORIZED:
-			if(Utils.hasPermission(this, Manifest.permission.INTERNET)) {
+			if(!Utils.hasPermission(this, Manifest.permission.INTERNET)) {
 				Toast.makeText(this, R.string.intro_toast_error_permission, Toast.LENGTH_LONG).show();
 				this.setNextPageSwipeLock(false);
 				this.getPager().setCurrentItem(SLIDE_PRESENTATION);
