@@ -12,6 +12,7 @@
     <string name="dialog_login_password">Password</string>
     <string name="dialog_login_button_positive">Log in</string>
     <string name="dialog_login_button_cancel">Cancel</string>
+    <string name="dialog_event_button_positive" translatable="false">OK</string>
 
     <string name="intro_slide_1_description">This application allows the students of the University of Caen Normandie to check their timetable directly on their smartphone.</string>
     <string name="intro_slide_1_title">Your timetable on your smartphone !</string>
@@ -28,18 +29,22 @@
     <string name="intro_toast_error_credentials">Invalid username or password.</string>
 
     <string name="main_default_title">Hello !</string>
-    <string name="main_default_description">And welcome to your timetable !\n\nPlease tap on the top button to check your timetable or to configure the application.\n\nPress the bottom button to refresh your timetable.</string>
+    <string name="main_default_description" formatted="false">And welcome to your timetable !\n\nPlease tap on the top button to check your timetable or to configure the application.\n\nPress the bottom button to refresh your timetable.\n\nUpdated your timetable for the last time : %s.</string>
+    <string name="main_default_description_never">Never</string>
+    <string name="main_default_description_updaterequired"> (update required)</string>
 
     <string name="main_snackbar_downloading">Downloading your timetable…</string>
     <string name="main_snackbar_success">Success !</string>
     <string name="main_snackbar_error_network">Network error.</string>
     <string name="main_snackbar_error_credentials">Bad username or password. Redirecting you to the login screen…</string>
+    <string name="main_snackbar_error_loadfromdisk">Unable to load your timetable from the disk !</string>
+    <string name="main_snackbar_error_saveondisk">Unable to save your timetable on the disk !</string>
 
     <string name="main_nav_open">Open navigation drawer</string>
     <string name="main_nav_close">Close navigation drawer</string>
 
     <string name="main_nav_header">Timetable</string>
-    <string name="main_nav_email" translatable="false">%s@etu.unicaen.fr</string>
+    <string name="main_nav_email" translatable="false" formatted="false">%s@etu.unicaen.fr</string>
 
     <string name="main_nav_home_home">Home</string>
 
@@ -61,8 +66,8 @@
     <string name="preferences_server_calendar">Calendar</string>
     <string name="preferences_server_server">Zimbra server</string>
 
-    <string name="settings_default">Default : %s</string>
-    <string name="settings_account">Unicaen account : %s</string>
+    <string name="settings_default" formatted="false">Default : %s</string>
+    <string name="settings_account" formatted="false">Unicaen account : %s</string>
 
     <string name="settings_default_calendar" translatable="false">Emploi%20du%20temps</string>
     <string name="settings_default_server" translatable="false">https://webmail.unicaen.fr</string>

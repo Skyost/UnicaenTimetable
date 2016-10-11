@@ -1,22 +1,38 @@
 package fr.skyost.timetable;
 
+import android.content.Context;
+import android.graphics.Color;
+
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Summary;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
+
+import fr.skyost.timetable.utils.Utils;
 
 /**
  * A class which represents a timetable.
  */
 
 public class Timetable implements Serializable {
+
+	public static final String TIMETABLE_FILE = "current_timetable";
 
 	private final Set<Integer> usedIds = new HashSet<Integer>();
 
@@ -62,6 +78,68 @@ public class Timetable implements Serializable {
 
 	public final net.fortuna.ical4j.model.Calendar getCalendar() {
 		return calendar;
+	}
+
+	/**
+	 * Loads a timetable from the disk.
+	 *
+	 * @param context A context (the timetable will be loaded from the application working directory).
+	 *
+	 * @throws IOException If an exception occurrs.
+	 */
+
+	public static final Timetable loadFromDisk(final Context context) throws IOException, ParserException {
+		final FileInputStream input = context.openFileInput(TIMETABLE_FILE);
+		final net.fortuna.ical4j.model.Calendar calendar = new CalendarBuilder().build(input);
+
+		input.close();
+		return new Timetable(calendar);
+	}
+
+	/**
+	 * Saves this timetable on the disk.
+	 *
+	 * @param context A context (the timetable will be saved in the application working directory).
+	 *
+	 * @throws IOException If an exception occurrs.
+	 */
+
+	public final void saveOnDisk(final Context context) throws IOException {
+		final FileOutputStream output = context.openFileOutput(TIMETABLE_FILE, Context.MODE_PRIVATE);
+		output.write(calendar.toString().getBytes(Utils.UTF_8));
+		output.close();
+	}
+
+	/**
+	 * Gets the min date of this timetable.
+	 *
+	 * @return The minimal date of this timetable.
+	 */
+
+	public static final DateTime getMinStartDate() {
+		return DateTime.now()
+				.withHourOfDay(0)
+				.withMinuteOfHour(0)
+				.withSecondOfMinute(0)
+				.withSecondOfMinute(0)
+				.withDayOfWeek(DateTimeConstants.MONDAY)
+				.minusWeeks(1);
+	}
+
+	/**
+	 * Gets the max date of this timetable.
+	 *
+	 * @return The max date of this timetable.
+	 */
+
+	public static final DateTime getMaxStartDate() {
+		return DateTime.now()
+				.withHourOfDay(0)
+				.withMinuteOfHour(0)
+				.withSecondOfMinute(0)
+				.withSecondOfMinute(0)
+				.withDayOfWeek(DateTimeConstants.MONDAY)
+				.plusWeeks(2);
 	}
 
 	/**

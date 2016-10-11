@@ -4,20 +4,19 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.utils.ObscuredSharedPreferences;
+import fr.skyost.timetable.utils.Utils;
 
 public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 
@@ -37,7 +36,7 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 	@Override
 	protected final Response doInBackground(final Void... params) {
 		try {
-			if(ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+			if(!Utils.hasPermission(activity, Manifest.permission.INTERNET)) {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 
@@ -45,12 +44,16 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 			final String username = preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
 
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")).getBytes(StandardCharsets.UTF_8), Base64.DEFAULT)));
+			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")).getBytes(Utils.UTF_8), Base64.DEFAULT)));
 			final int response = urlConnection.getResponseCode();
 			if(response == 404 || response == 401) { // 404 if username is incorrect, 401 if password is incorrect.
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
-			final Calendar calendar = new CalendarBuilder().build(urlConnection.getInputStream());
+
+			final InputStream input = urlConnection.getInputStream();
+			final Calendar calendar = new CalendarBuilder().build(input);
+			input.close();
+
 			return new Response(AuthenticationTask.SUCCESS, new Timetable(calendar), null);
 		}
 		catch(final Exception ex) {

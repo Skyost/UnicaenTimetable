@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.Timetable.Day;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_SHOW_INTRO = "show-intro";
 	public static final String PREFERENCES_SERVER = "server";
 	public static final String PREFERENCES_CALENDAR = "calendar";
+	public static final String PREFERENCES_LAST_UPDATE = "last-update";
 
 	public static final String INTENT_TIMETABLE = "timetable";
 	public static final String INTENT_SELECTED = "selected";
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			currentMenuSelected = savedInstanceState.getInt(INTENT_SELECTED, -1);
 		}
 		if(!showIntro && timetable == null) {
-			refreshTimetable();
+			loadTimetableFromDisk();
 		}
 
 		final Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
@@ -175,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			exception.printStackTrace();
 		}
 		setTimetable(timetable);
+		if(timetable != null) {
+			saveTimetableOnDisk();
+		}
 		switch(result) {
 		case AuthenticationTask.SUCCESS:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_success, Snackbar.LENGTH_SHORT).show();
@@ -245,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			transaction.replace(R.id.main_fragment_container_layout, currentMenuSelected == -1 ? new DefaultFragment() : DayFragment.newInstance(day), String.valueOf(currentMenuSelected));
 			transaction.commitAllowingStateLoss();
 		}
+
 	}
 
 	/**
@@ -277,6 +284,45 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		}
 		this.timetable = timetable;
 		showFragment(currentMenuSelected);
+	}
+
+	/**
+	 * Loads the timetable from the disk.
+	 */
+
+	public final void loadTimetableFromDisk() {
+		try {
+			final Timetable timetable = Timetable.loadFromDisk(this);
+			setTimetable(timetable);
+		}
+		catch(final FileNotFoundException ex) {
+			refreshTimetable();
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_loadfromdisk, Snackbar.LENGTH_SHORT).show();
+		}
+	}
+
+	/**
+	 * Saves the timetable on the disk.
+	 */
+
+	public final void saveTimetableOnDisk() {
+		if(timetable == null) {
+			return;
+		}
+		try {
+			timetable.saveOnDisk(this);
+
+			final long updateTime = System.currentTimeMillis();
+			final SharedPreferences preferences = this.getSharedPreferences(PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			preferences.edit().putLong(PREFERENCES_LAST_UPDATE, updateTime).apply();
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_saveondisk, Snackbar.LENGTH_SHORT).show();
+		}
 	}
 
 }

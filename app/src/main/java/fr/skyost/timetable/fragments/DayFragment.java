@@ -1,8 +1,12 @@
 package fr.skyost.timetable.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
@@ -63,7 +68,7 @@ public class DayFragment extends Fragment {
 		final Calendar calendar = Calendar.getInstance();
 		final int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
 		if(currentDay == Calendar.SATURDAY || currentDay == Calendar.SUNDAY) {
-			final long aWeek = 1000L * 60L * 60L * 24L * 7L;
+			final long aWeek = TimeUnit.DAYS.toMillis(7);
 			calendar.setTimeInMillis(calendar.getTimeInMillis() + aWeek);
 		}
 		calendar.set(Calendar.DAY_OF_WEEK, day.getValue());
@@ -71,7 +76,9 @@ public class DayFragment extends Fragment {
 		weekView.setMinDate(calendar);
 		weekView.setMaxDate(calendar);
 		weekView.goToDate(calendar);
+		weekView.setEventTextSize(20);
 		weekView.setHorizontalFlingEnabled(false);
+		weekView.goToHour(7d);
 		weekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
 
 			@Override
@@ -91,11 +98,31 @@ public class DayFragment extends Fragment {
 					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
 						continue;
 					}
-					events.add(new WeekViewEvent(lesson.getId(), lesson.getName(), lesson.getDescription(), start, lesson.getEnd()));
+					final Calendar end = lesson.getEnd();
+					final String description = Utils.addZeroIfNeeded(start.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(start.get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(end.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(end.get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription();
+					events.add(new WeekViewEvent(lesson.getId(), lesson.getName(), description, start, end));
 				}
 
 				return events;
 			}
+		});
+		weekView.setOnEventClickListener(new WeekView.EventClickListener() {
+
+			@Override
+			public final void onEventClick(final WeekViewEvent event, final RectF eventRect) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(DayFragment.this.getActivity());
+				builder.setMessage(event.getName() + "\n" + event.getLocation());
+				builder.setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
+
+					@Override
+					public final void onClick(final DialogInterface dialog, final int which) {
+						dialog.dismiss();
+					}
+
+				});
+				builder.create().show();
+			}
+
 		});
 		return view;
 	}

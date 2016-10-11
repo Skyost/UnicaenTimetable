@@ -28,12 +28,16 @@
     <string name="intro_toast_error_credentials">Nom d\'utilisateur ou mot de passe invalide.</string>
 
     <string name="main_default_title">Bonjour !</string>
-    <string name="main_default_description">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.</string>
+    <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %s.</string>
+    <string name="main_default_description_never">Jamais</string>
+    <string name="main_default_description_updaterequired">(mise à jour requise)</string>
 
     <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
     <string name="main_snackbar_success">Succès !</string>
     <string name="main_snackbar_error_network">Erreur réseau.</string>
     <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>
+    <string name="main_snackbar_error_loadfromdisk">Impossible de charger votre emploi du temps depuis le disque !</string>
+    <string name="main_snackbar_error_saveondisk">Impossible d\'enregistrer votre emploi du temps !</string>
 
     <string name="main_nav_open">Ouvrir la navigation</string>
     <string name="main_nav_close">Fermer la navigation</string>
@@ -60,7 +64,7 @@
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
 
-    <string name="settings_default" formatting="false">Défaut : %s</string>
-    <string name="settings_account" formatting="false">Compte Unicaen : %s</string>
+    <string name="settings_default" formatted="false">Défaut : %s</string>
+    <string name="settings_account" formatted="false">Compte Unicaen : %s</string>
 
 </resources>

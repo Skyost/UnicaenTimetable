@@ -6,6 +6,8 @@ import android.support.v4.content.ContextCompat;
 
 public class Utils {
 
+	public static final String UTF_8 = "UTF-8";
+
 	/**
 	 * Adds a leading zero to an int if needed.
 	 *

@@ -8,11 +8,15 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Base64;
 
+import org.joda.time.DateTime;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
+import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 import fr.skyost.timetable.utils.Utils;
@@ -51,7 +55,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 			final String username = preferences.getString(PREFERENCES_USERNAME, "");
 
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(PREFERENCES_PASSWORD, "")).getBytes(StandardCharsets.UTF_8), Base64.DEFAULT)));
+			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(PREFERENCES_PASSWORD, "")).getBytes(Utils.UTF_8), Base64.DEFAULT)));
 			final int response = urlConnection.getResponseCode();
 			if(response == 404 || response == 401) { // 404 if username is incorrect, 401 if password is incorrect.
 				return new Response(UNAUTHORIZED, null);
@@ -72,7 +76,11 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	public static final String getCalendarAddress(final Context context, final String account) {
 		final Resources resources = context.getResources();
 		final SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
-		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "@etu.unicaen.fr/" + preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendar));
+
+		final String minDate = Timetable.getMinStartDate().toString("MM/dd/YYYY");
+		final String maxDate = Timetable.getMaxStartDate().toString("MM/dd/YYYY");
+
+		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendar) + "?fmt=ics&start=" + minDate + "&end=" + maxDate);
 	}
 
 	public static class Response {
