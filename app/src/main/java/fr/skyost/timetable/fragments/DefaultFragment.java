@@ -90,7 +90,6 @@ public class DefaultFragment extends Fragment {
 			final String colorText = entry.getKey();
 			spannable.setSpan(new ForegroundColorSpan(entry.getValue()), text.indexOf(colorText), text.indexOf(colorText) + colorText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
-		System.out.println(spannable);
 		return spannable;
 	}
 

@@ -2,7 +2,12 @@ package fr.skyost.timetable.utils;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Utils {
 
@@ -36,6 +41,51 @@ public class Utils {
 
 	public static final boolean hasPermission(final Activity activity, final String permission) {
 		return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	/**
+	 * Split a String in separate parts.
+	 *
+	 * @param text The text.
+	 * @param size The parts number.
+	 *
+	 * @return An array which contains the String.
+	 */
+
+	public static final String[] splitEqually(final String text, int size) {
+		final List<String> result = new ArrayList<String>();
+		int start = 0;
+		int end = text.length() / size;
+		for(int i = 0; i != size; i++) {
+			final StringBuilder builder = new StringBuilder();
+			int j;
+			for(j = start; j != end; j++) {
+				if(j >= text.length()) {
+					break;
+				}
+				builder.append(String.valueOf(text.charAt(j)));
+			}
+			result.add(builder.toString());
+			start = j;
+			end += end;
+		}
+		return result.toArray(new String[result.size()]);
+	}
+
+	/**
+	 * Creates a random color with seeds.
+	 *
+	 * @param alpha The opacity.
+	 * @param seeds The seeds.
+	 *
+	 * @return The random color.
+	 */
+
+	public static final int randomColor(final int alpha, final String... seeds) {
+		if(seeds.length < 3) {
+			return Color.WHITE;
+		}
+		return Color.argb(alpha, new Random(seeds[0].hashCode()).nextInt(256), new Random(seeds[1].hashCode()).nextInt(256), new Random(seeds[2].hashCode()).nextInt(256));
 	}
 
 }

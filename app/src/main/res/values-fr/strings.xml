@@ -2,13 +2,13 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.0.0, Android-Rate v1.0.1 et iCal4j v2.0.0-beta1.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'établissement en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.0.0, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2 et iCal4j v2.0.0-beta1.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'établissement en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
 
     <string name="dialog_login_title">Connexion</string>
-    <string name="dialog_login_username">Nom d\'utilisateur</string>
+    <string name="dialog_login_username">Identifiant</string>
     <string name="dialog_login_password">Mot de passe</string>
     <string name="dialog_login_button_positive">Connexion</string>
     <string name="dialog_login_button_cancel">Annuler</string>
@@ -63,6 +63,8 @@
     <string name="preferences_server">Serveur</string>
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
+
+    <string name="preferences_application_onecolorpercourse">Une couleur par cours</string>
 
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>

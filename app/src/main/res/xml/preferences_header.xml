@@ -12,4 +12,9 @@
         android:title="@string/preferences_account"
         android:icon="@drawable/preferences_account_drawable" />
 
+    <header
+        android:fragment="fr.skyost.timetable.activities.SettingsActivity$AppPreferenceFragment"
+        android:title="@string/preferences_application"
+        android:icon="@drawable/preferences_application_drawable" />
+
 </preference-headers>

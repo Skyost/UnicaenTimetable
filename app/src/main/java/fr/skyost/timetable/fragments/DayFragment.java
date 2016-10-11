@@ -2,9 +2,10 @@ package fr.skyost.timetable.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
@@ -33,6 +34,8 @@ import fr.skyost.timetable.utils.Utils;
 
 public class DayFragment extends Fragment {
 
+	private static final double DEFAULT_HOUR = 7d;
+
 	private Day day;
 
 	@Override
@@ -47,6 +50,8 @@ public class DayFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
+
+		final boolean withColors = DayFragment.this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false);
 
 		/* https://github.com/Quivr/Android-Week-View */
 		final WeekView weekView = (WeekView)view.findViewById(R.id.main_day_weekview_day);
@@ -78,7 +83,7 @@ public class DayFragment extends Fragment {
 		weekView.goToDate(calendar);
 		weekView.setEventTextSize(20);
 		weekView.setHorizontalFlingEnabled(false);
-		weekView.goToHour(7d);
+		weekView.goToHour(DEFAULT_HOUR);
 		weekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
 
 			@Override
@@ -98,9 +103,16 @@ public class DayFragment extends Fragment {
 					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
 						continue;
 					}
+					final String name = lesson.getName();
 					final Calendar end = lesson.getEnd();
 					final String description = Utils.addZeroIfNeeded(start.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(start.get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(end.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(end.get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription();
-					events.add(new WeekViewEvent(lesson.getId(), lesson.getName(), description, start, end));
+
+					final WeekViewEvent event = new WeekViewEvent(lesson.getId(), lesson.getName(), description, start, end);
+					if(withColors) {
+						event.setColor(Utils.randomColor(150, Utils.splitEqually(name, 3)));
+					}
+
+					events.add(event);
 				}
 
 				return events;

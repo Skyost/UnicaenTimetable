@@ -8,8 +8,8 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 4
-        versionName "v0.2.1"
+        versionCode 5
+        versionName "v0.2.2"
     }
     buildTypes {
         release {
@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.github.hotchemi:android-rate:1.0.1'
     compile 'joda-time:joda-time:2.9.4'
+    compile 'com.github.quivr:android-week-view:2.0.2'
 }

@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
@@ -93,12 +94,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	@Override
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public final void onBuildHeaders(final List<Header> target) {
-		this.loadHeadersFromResource(R.xml.preferences_server_header, target);
+		this.loadHeadersFromResource(R.xml.preferences_header, target);
 	}
 
 	@Override
 	protected final boolean isValidFragment(final String fragmentName) {
-		return PreferenceFragment.class.getName().equals(fragmentName) || ServerPreferenceFragment.class.getName().equals(fragmentName) || AccountPreferenceFragment.class.getName().equals(fragmentName);
+		return PreferenceFragment.class.getName().equals(fragmentName) || ServerPreferenceFragment.class.getName().equals(fragmentName) || AccountPreferenceFragment.class.getName().equals(fragmentName) || AppPreferenceFragment.class.getName().equals(fragmentName);
 	}
 
 	private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
@@ -137,12 +138,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	public static class ServerPreferenceFragment extends PreferenceFragment {
 
 		@Override
-		public void onCreate(Bundle savedInstanceState) {
+		public final void onCreate(final Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
 			setDefaultPreferencesFile(this);
 
-			this.addPreferencesFromResource(R.xml.preferences_server_server);
+			this.addPreferencesFromResource(R.xml.preferences_server);
 			this.setHasOptionsMenu(true);
 
 			bindPreferenceSummaryToValue(findPreference(MainActivity.PREFERENCES_SERVER));
@@ -170,7 +171,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			setDefaultPreferencesFile(this);
 
-			this.addPreferencesFromResource(R.xml.preferences_account_account);
+			this.addPreferencesFromResource(R.xml.preferences_account);
 			this.setHasOptionsMenu(true);
 
 			final Activity activity = this.getActivity();
@@ -190,6 +191,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 					return true;
 				}
 			});
+		}
+
+		@Override
+		public final boolean onOptionsItemSelected(final MenuItem item) {
+			switch(item.getItemId()) {
+			case android.R.id.home:
+				this.startActivity(new Intent(this.getActivity(), SettingsActivity.class));
+				return true;
+			}
+			return super.onOptionsItemSelected(item);
+		}
+
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public static class AppPreferenceFragment extends PreferenceFragment {
+
+		@Override
+		public final void onCreate(final Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+
+			setDefaultPreferencesFile(this);
+
+			this.addPreferencesFromResource(R.xml.preferences_application);
+			this.setHasOptionsMenu(true);
+
+			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			((CheckBoxPreference)findPreference(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false));
 		}
 
 		@Override
