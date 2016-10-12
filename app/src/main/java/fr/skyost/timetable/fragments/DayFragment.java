@@ -1,17 +1,21 @@
 package fr.skyost.timetable.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.provider.AlarmClock;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
@@ -33,6 +37,8 @@ import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.utils.Utils;
 
 public class DayFragment extends Fragment {
+
+	private static final int ALARM_SET_REQUEST_CODE = 100;
 
 	private static final double DEFAULT_HOUR = 7d;
 
@@ -81,7 +87,6 @@ public class DayFragment extends Fragment {
 		weekView.setMinDate(calendar);
 		weekView.setMaxDate(calendar);
 		weekView.goToDate(calendar);
-		weekView.setEventTextSize(20);
 		weekView.setHorizontalFlingEnabled(false);
 		weekView.goToHour(DEFAULT_HOUR);
 		weekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
@@ -123,8 +128,23 @@ public class DayFragment extends Fragment {
 			@Override
 			public final void onEventClick(final WeekViewEvent event, final RectF eventRect) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(DayFragment.this.getActivity());
-				builder.setMessage(event.getName() + "\n" + event.getLocation());
-				builder.setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
+				final String name = event.getName();
+				builder.setMessage(name + "\n" + event.getLocation());
+				builder.setNeutralButton(R.string.dialog_event_button_neutral, new DialogInterface.OnClickListener() {
+
+					@Override
+					public final void onClick(final DialogInterface dialog, final int which) {
+						final Calendar start = event.getStartTime();
+
+						final Intent intent = DayFragment.this.getActivity().getIntent();
+						intent.putExtra(AlarmClock.EXTRA_MESSAGE, name);
+						intent.putExtra(AlarmClock.EXTRA_HOUR, start.get(Calendar.HOUR_OF_DAY));
+						intent.putExtra(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
+
+						DayFragment.this.requestPermissions(new String[]{Manifest.permission.SET_ALARM}, ALARM_SET_REQUEST_CODE);
+					}
+
+				}).setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
 
 					@Override
 					public final void onClick(final DialogInterface dialog, final int which) {
@@ -147,6 +167,25 @@ public class DayFragment extends Fragment {
 	@Override
 	public final void onDetach() {
 		super.onDetach();
+	}
+
+	@Override
+	public final void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+		switch(requestCode) {
+		case ALARM_SET_REQUEST_CODE:
+			if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				final Intent activityIntent = DayFragment.this.getActivity().getIntent();
+
+				final Intent alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
+				alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, activityIntent.getStringExtra(AlarmClock.EXTRA_MESSAGE));
+				alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, activityIntent.getIntExtra(AlarmClock.EXTRA_HOUR, 0));
+				alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, activityIntent.getIntExtra(AlarmClock.EXTRA_MINUTES, 0));
+				this.startActivity(alarmIntent);
+				break;
+			}
+			Toast.makeText(this.getActivity(), R.string.main_toast_nopermission, Toast.LENGTH_LONG).show();
+			break;
+		}
 	}
 
 	/**

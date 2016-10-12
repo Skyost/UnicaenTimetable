@@ -19,7 +19,7 @@
         app:headerRowPadding="12dp"
         app:hourHeight="60dp"
         app:noOfVisibleDays="1"
-        app:textSize="12sp"
+        app:eventTextSize="14sp"
         app:todayBackgroundColor="#1848adff"/>
 
 </FrameLayout>

@@ -12,6 +12,7 @@
     <string name="dialog_login_password">Mot de passe</string>
     <string name="dialog_login_button_positive">Connexion</string>
     <string name="dialog_login_button_cancel">Annuler</string>
+    <string name="dialog_event_button_neutral">Créer une alarme…</string>
 
     <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
     <string name="intro_slide_1_description">Cette application permet aux étudiants de l\'Université de Caen Normandie d\'avoir leur emploi du temps directement sur leur smartphone.</string>
@@ -38,6 +39,8 @@
     <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_loadfromdisk">Impossible de charger votre emploi du temps depuis le disque !</string>
     <string name="main_snackbar_error_saveondisk">Impossible d\'enregistrer votre emploi du temps !</string>
+
+    <string name="main_toast_nopermission">Nous n\'avons pas la permission de créer une alarme !</string>
 
     <string name="main_nav_open">Ouvrir la navigation</string>
     <string name="main_nav_close">Fermer la navigation</string>
