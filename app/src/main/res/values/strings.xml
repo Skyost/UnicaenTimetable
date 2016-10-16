@@ -36,6 +36,7 @@
 
     <string name="main_snackbar_downloading">Downloading your timetable…</string>
     <string name="main_snackbar_success">Success !</string>
+    <string name="main_snackbar_pinchtozoom">Don\'t forget that you can pinch to zoom to see more informations !</string>
     <string name="main_snackbar_error_network">Network error.</string>
     <string name="main_snackbar_error_credentials">Bad username or password. Redirecting you to the login screen…</string>
     <string name="main_snackbar_error_loadfromdisk">Unable to load your timetable from the disk !</string>

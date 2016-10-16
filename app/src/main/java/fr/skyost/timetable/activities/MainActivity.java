@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_CALENDAR = "calendar";
 	public static final String PREFERENCES_LAST_UPDATE = "last-update";
 	public static final String PREFERENCES_ONE_COLOR_PER_COURSE = "one-color-per-course";
+	public static final String PREFERENCES_SHOW_PINCHTOZOOM_TIP = "show-pinchtozoom-tip";
 
 	public static final String INTENT_TIMETABLE = "timetable";
 	public static final String INTENT_SELECTED = "selected";

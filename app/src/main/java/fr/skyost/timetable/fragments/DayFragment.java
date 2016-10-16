@@ -1,14 +1,17 @@
 package fr.skyost.timetable.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
@@ -56,8 +59,9 @@ public class DayFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
+		final Activity activity = DayFragment.this.getActivity();
 
-		final boolean withColors = DayFragment.this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false);
+		final boolean withColors = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false);
 
 		/* https://github.com/Quivr/Android-Week-View */
 		final WeekView weekView = (WeekView)view.findViewById(R.id.main_day_weekview_day);
@@ -66,7 +70,7 @@ public class DayFragment extends Fragment {
 			@Override
 			public final String interpretDate(final Calendar calendar) {
 				final Date date = calendar.getTime();
-				return new SimpleDateFormat("E").format(date) + " " + DateFormat.getDateFormat(DayFragment.this.getActivity()).format(date);
+				return new SimpleDateFormat("E").format(date) + " " + DateFormat.getDateFormat(activity).format(date);
 			}
 
 			@Override
@@ -98,7 +102,7 @@ public class DayFragment extends Fragment {
 					return events;
 				}
 
-				final Timetable timetable = ((MainActivity)DayFragment.this.getActivity()).getTimetable();
+				final Timetable timetable = ((MainActivity)activity).getTimetable();
 				if(timetable == null) {
 					return events;
 				}
@@ -127,7 +131,7 @@ public class DayFragment extends Fragment {
 
 			@Override
 			public final void onEventClick(final WeekViewEvent event, final RectF eventRect) {
-				final AlertDialog.Builder builder = new AlertDialog.Builder(DayFragment.this.getActivity());
+				final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 				final String name = event.getName();
 				builder.setMessage(name + "\n" + event.getLocation());
 				builder.setNeutralButton(R.string.dialog_event_button_neutral, new DialogInterface.OnClickListener() {
@@ -136,7 +140,7 @@ public class DayFragment extends Fragment {
 					public final void onClick(final DialogInterface dialog, final int which) {
 						final Calendar start = event.getStartTime();
 
-						final Intent intent = DayFragment.this.getActivity().getIntent();
+						final Intent intent = activity.getIntent();
 						intent.putExtra(AlarmClock.EXTRA_MESSAGE, name);
 						intent.putExtra(AlarmClock.EXTRA_HOUR, start.get(Calendar.HOUR_OF_DAY));
 						intent.putExtra(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
@@ -156,6 +160,12 @@ public class DayFragment extends Fragment {
 			}
 
 		});
+
+		final SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		if(preferences.getBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, true)) {
+			Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_pinchtozoom, Snackbar.LENGTH_LONG).show();
+			preferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, false).apply();
+		}
 		return view;
 	}
 
@@ -180,6 +190,11 @@ public class DayFragment extends Fragment {
 				alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, activityIntent.getStringExtra(AlarmClock.EXTRA_MESSAGE));
 				alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, activityIntent.getIntExtra(AlarmClock.EXTRA_HOUR, 0));
 				alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, activityIntent.getIntExtra(AlarmClock.EXTRA_MINUTES, 0));
+
+				activityIntent.removeExtra(AlarmClock.EXTRA_MESSAGE);
+				activityIntent.removeExtra(AlarmClock.EXTRA_HOUR);
+				activityIntent.removeExtra(AlarmClock.EXTRA_MINUTES);
+
 				this.startActivity(alarmIntent);
 				break;
 			}

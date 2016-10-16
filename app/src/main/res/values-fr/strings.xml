@@ -34,6 +34,7 @@
     <string name="main_default_description_updaterequired">(mise à jour requise)</string>
 
     <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
+    <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer pour voir plus d\'informations !</string>
     <string name="main_snackbar_success">Succès !</string>
     <string name="main_snackbar_error_network">Erreur réseau.</string>
     <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>
