@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Locale;
@@ -127,12 +128,35 @@ public class Timetable implements Serializable {
 	}
 
 	/**
+	 * Gets the start date of this timetable.
+	 *
+	 * @return The start date of this timetable.
+	 */
+
+	public final long getStartDate() {
+		long start = -1L;
+
+		final Calendar now = Calendar.getInstance();
+		for(final CalendarComponent component : calendar.getComponents(Component.VEVENT)) {
+			final VEvent event = (VEvent)component;
+			now.setTime(event.getStartDate().getDate());
+
+			final long millis = now.getTimeInMillis();
+			if(start < 0 || millis < start) {
+				start = millis;
+			}
+		}
+
+		return start;
+	}
+
+	/**
 	 * Gets the max date of this timetable.
 	 *
 	 * @return The max date of this timetable.
 	 */
 
-	public static final DateTime getMaxStartDate() {
+	public static final DateTime getMaxEndDate() {
 		return DateTime.now()
 				.withHourOfDay(0)
 				.withMinuteOfHour(0)
@@ -140,6 +164,29 @@ public class Timetable implements Serializable {
 				.withSecondOfMinute(0)
 				.withDayOfWeek(DateTimeConstants.MONDAY)
 				.plusWeeks(2);
+	}
+
+	/**
+	 * Gets the end date of this timetable.
+	 *
+	 * @return The end date of this timetable.
+	 */
+
+	public final long getEndDate() {
+		long end = -1L;
+
+		final Calendar now = Calendar.getInstance();
+		for(final CalendarComponent component : calendar.getComponents(Component.VEVENT)) {
+			final VEvent event = (VEvent)component;
+			now.setTime(event.getEndDate().getDate());
+
+			final long millis = now.getTimeInMillis();
+			if(end < 0 || millis > end) {
+				end = millis;
+			}
+		}
+
+		return end;
 	}
 
 	/**

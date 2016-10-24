@@ -78,7 +78,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		final SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
 
 		final String minDate = Timetable.getMinStartDate().toString("MM/dd/YYYY");
-		final String maxDate = Timetable.getMaxStartDate().toString("MM/dd/YYYY");
+		final String maxDate = Timetable.getMaxEndDate().toString("MM/dd/YYYY");
 
 		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendar) + "?fmt=ics&start=" + minDate + "&end=" + maxDate);
 	}

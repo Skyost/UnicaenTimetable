@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 
+import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import hotchemi.android.rate.AppRate;
 
@@ -31,7 +32,7 @@ public class DefaultFragment extends Fragment {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		final Activity activity = this.getActivity();
+		final MainActivity activity = (MainActivity)this.getActivity();
 		AppRate.with(activity).setInstallDays(3).showRateDialogIfMeetsConditions(activity);
 
 		final View view = inflater.inflate(R.layout.fragment_main_default, container, false);
@@ -46,7 +47,8 @@ public class DefaultFragment extends Fragment {
 		final Resources resources = this.getResources();
 		final HashMap<String, Integer> colors = new HashMap<String, Integer>();
 
-		if(updateTime == -1L) {
+		final Timetable timetable = activity.getTimetable();
+		if(updateTime == -1L || timetable == null) {
 			final String never = resources.getString(R.string.main_default_description_never);
 			description.setText(resources.getString(R.string.main_default_description, never));
 			colors.put(never, ContextCompat.getColor(activity, R.color.colorUpdateRequired));
@@ -55,11 +57,11 @@ public class DefaultFragment extends Fragment {
 			return view;
 		}
 
-		final Calendar current = Calendar.getInstance();
-		current.setTimeInMillis(updateTime);
+		final Calendar updateCalendar = Calendar.getInstance();
+		updateCalendar.setTimeInMillis(updateTime);
 
-		final String date = DateFormat.getDateTimeInstance().format(current.getTime());
-		if(Calendar.getInstance().getTimeInMillis() - updateTime > TimeUnit.DAYS.toMillis(7)) {
+		final String date = DateFormat.getDateTimeInstance().format(updateCalendar.getTime());
+		if(Calendar.getInstance().getTimeInMillis() > timetable.getEndDate()) {
 			final String text = date + " " + resources.getString(R.string.main_default_description_updaterequired);
 			description.setText(resources.getString(R.string.main_default_description, text));
 
