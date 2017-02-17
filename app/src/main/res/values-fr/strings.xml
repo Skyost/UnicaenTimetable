@@ -2,7 +2,7 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.0.0, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2 et iCal4j v2.0.0-beta1.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'établissement en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.1.0, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2 et iCal4j v2.0.0.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'établissement en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -31,10 +31,10 @@
     <string name="main_default_title">Bonjour !</string>
     <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %s.</string>
     <string name="main_default_description_never">Jamais</string>
-    <string name="main_default_description_updaterequired">(mise à jour requise)</string>
+    <string name="main_default_description_updaterequired">(une mise à jour est requise ou vous êtes en vacances)</string>
 
     <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
-    <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer pour voir plus d\'informations !</string>
+    <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
     <string name="main_snackbar_success">Succès !</string>
     <string name="main_snackbar_error_network">Erreur réseau.</string>
     <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>

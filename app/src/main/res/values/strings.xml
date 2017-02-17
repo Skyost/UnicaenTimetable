@@ -2,7 +2,7 @@
     <string name="app_name">Unicaen Timetable</string>
 
     <string name="about_title">About</string>
-    <string name="about_description">\nThis software has been created by Skyost by using some libraries : AppIntro v4.0.0, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2 and iCal4j v2.0.0-beta1. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
+    <string name="about_description">\nThis software has been created by Skyost by using some libraries : AppIntro v4.1.0, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2 and iCal4j v2.0.0. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
     <string name="about_share_share">Share with…</string>
     <string name="about_share_title">Unicaen Timetable</string>
     <string name="about_share_description">Check your timetable on your smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -32,11 +32,11 @@
     <string name="main_default_title">Hello !</string>
     <string name="main_default_description" formatted="false">And welcome to your timetable !\n\nPlease tap on the top button to check your timetable or to configure the application.\n\nPress the bottom button to refresh your timetable.\n\nUpdated your timetable for the last time : %s.</string>
     <string name="main_default_description_never">Never</string>
-    <string name="main_default_description_updaterequired"> (update required)</string>
+    <string name="main_default_description_updaterequired">(an update is required or you are in holidays)</string>
 
     <string name="main_snackbar_downloading">Downloading your timetable…</string>
     <string name="main_snackbar_success">Success !</string>
-    <string name="main_snackbar_pinchtozoom">Don\'t forget that you can pinch to zoom to see more informations !</string>
+    <string name="main_snackbar_pinchtozoom">Don\'t forget that you can pinch to zoom or tap on a lesson to see more informations !</string>
     <string name="main_snackbar_error_network">Network error.</string>
     <string name="main_snackbar_error_credentials">Bad username or password. Redirecting you to the login screen…</string>
     <string name="main_snackbar_error_loadfromdisk">Unable to load your timetable from the disk !</string>
