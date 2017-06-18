@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Base64;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -44,7 +43,7 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 			final String username = preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
 
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")).getBytes(Utils.UTF_8), Base64.DEFAULT)));
+			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(username, preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")));
 			final int response = urlConnection.getResponseCode();
 			if(response == 404 || response == 401) { // 404 if username is incorrect, 401 if password is incorrect.
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);

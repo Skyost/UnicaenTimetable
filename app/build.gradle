@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 8
-        versionName "v0.2.5"
+        versionCode 9
+        versionName "v0.2.6"
     }
     buildTypes {
         release {
@@ -29,6 +29,6 @@ dependencies {
     //compile 'org.mnode.ical4j:ical4j:2.0.0'
     compile 'com.github.paolorotolo:appintro:4.1.0'
     compile 'com.github.hotchemi:android-rate:1.0.1'
-    compile 'joda-time:joda-time:2.9.7'
+    compile 'joda-time:joda-time:2.9.9'
     compile 'com.github.quivr:android-week-view:2.0.2'
 }

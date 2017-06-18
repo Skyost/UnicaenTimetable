@@ -8,12 +8,9 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Base64;
 
-import org.joda.time.DateTime;
-
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
@@ -55,7 +52,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 			final String username = preferences.getString(PREFERENCES_USERNAME, "");
 
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", "Basic " + new String(Base64.encode((username + ":" + preferences.getString(PREFERENCES_PASSWORD, "")).getBytes(Utils.UTF_8), Base64.DEFAULT)));
+			urlConnection.setRequestProperty("Authorization", getAuthenticationData(username, preferences.getString(PREFERENCES_PASSWORD, "")));
 			final int response = urlConnection.getResponseCode();
 			if(response == 404 || response == 401) { // 404 if username is incorrect, 401 if password is incorrect.
 				return new Response(UNAUTHORIZED, null);
@@ -81,6 +78,10 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		final String maxDate = Timetable.getMaxEndDate().toString("MM/dd/YYYY");
 
 		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendar) + "?fmt=ics&start=" + minDate + "&end=" + maxDate);
+	}
+
+	public static final String getAuthenticationData(final String username, final String password) throws UnsupportedEncodingException {
+		return "Basic " + new String(Base64.encode((username + "@etu.unicaen.fr:" + password).getBytes(Utils.UTF_8), Base64.DEFAULT));
 	}
 
 	public static class Response {
