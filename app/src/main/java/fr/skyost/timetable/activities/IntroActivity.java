@@ -162,6 +162,27 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			this.setNextPageSwipeLock(true);
 			this.getPager().setCurrentItem(SLIDE_DONE);
 			break;
+		case AuthenticationTask.NOT_FOUND:
+			if(!Utils.hasPermission(this, Manifest.permission.INTERNET)) {
+				Toast.makeText(this, R.string.intro_toast_error_permission, Toast.LENGTH_LONG).show();
+				this.setNextPageSwipeLock(false);
+				this.getPager().setCurrentItem(SLIDE_PRESENTATION);
+				break;
+			}
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.dialog_error_notfound_title);
+			builder.setMessage(R.string.dialog_error_notfound_message_1);
+			builder.setCancelable(false);
+			builder.setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
+
+				@Override
+				public final void onClick(final DialogInterface dialog, final int id) {
+					showLoginDialog();
+				}
+
+			});
+			builder.create().show();
+			break;
 		case AuthenticationTask.UNAUTHORIZED:
 			if(!Utils.hasPermission(this, Manifest.permission.INTERNET)) {
 				Toast.makeText(this, R.string.intro_toast_error_permission, Toast.LENGTH_LONG).show();

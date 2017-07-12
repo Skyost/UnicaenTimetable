@@ -1,9 +1,11 @@
 package fr.skyost.timetable.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -190,6 +192,13 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		case AuthenticationTask.SUCCESS:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_success, Snackbar.LENGTH_SHORT).show();
 			showFragment(currentMenuSelected);
+			break;
+		case AuthenticationTask.NOT_FOUND:
+			final Resources resources = this.getResources();
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.dialog_error_notfound_title);
+			builder.setMessage(resources.getString(R.string.dialog_error_notfound_message_1) + "\n" + resources.getString(R.string.dialog_error_notfound_message_2));
+			builder.create().show();
 			break;
 		case AuthenticationTask.UNAUTHORIZED:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_credentials, Snackbar.LENGTH_SHORT).setCallback(new Snackbar.Callback() {

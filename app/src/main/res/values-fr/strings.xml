@@ -13,6 +13,9 @@
     <string name="dialog_login_button_positive">Connexion</string>
     <string name="dialog_login_button_cancel">Annuler</string>
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
+    <string name="dialog_error_notfound_title">Calendrier non trouvé !</string>
+    <string name="dialog_error_notfound_message_1">Si vous êtes en vacances, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSi vous n\'êtes pas en vacances, alors le nom d\'utilisateur que vous avez entré est incorrect.</string>
+    <string name="dialog_error_notfound_message_2">Vous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.</string>
 
     <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
     <string name="intro_slide_1_description">Cette application permet aux étudiants de l\'Université de Caen Normandie d\'avoir leur emploi du temps directement sur leur smartphone.</string>
@@ -37,7 +40,7 @@
     <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
     <string name="main_snackbar_success">Succès !</string>
     <string name="main_snackbar_error_network">Erreur réseau.</string>
-    <string name="main_snackbar_error_credentials">Mauvais nom d\'utilisateur ou mot de passe. Redirection vers l\'écran de connexion…</string>
+    <string name="main_snackbar_error_credentials">Mauvais mot de passe. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_loadfromdisk">Impossible de charger votre emploi du temps depuis le disque !</string>
     <string name="main_snackbar_error_saveondisk">Impossible d\'enregistrer votre emploi du temps !</string>
 

@@ -21,8 +21,9 @@ import fr.skyost.timetable.utils.Utils;
 public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask.Response> {
 
 	public static final int SUCCESS = 100;
-	public static final int UNAUTHORIZED = 200;
-	public static final int ERROR = 300;
+	public static final int NOT_FOUND = 200;
+	public static final int UNAUTHORIZED = 300;
+	public static final int ERROR = 400;
 
 	public static final String PREFERENCES_FILE = "authentication";
 	public static final String PREFERENCES_USERNAME = "data-0";
@@ -54,7 +55,10 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(getCalendarAddress(activity, username)).openConnection();
 			urlConnection.setRequestProperty("Authorization", getAuthenticationData(username, preferences.getString(PREFERENCES_PASSWORD, "")));
 			final int response = urlConnection.getResponseCode();
-			if(response == 404 || response == 401) { // 404 if username is incorrect, 401 if password is incorrect.
+			if(response == 404) {
+				return new Response(NOT_FOUND, null);
+			}
+			if(response == 401) {
 				return new Response(UNAUTHORIZED, null);
 			}
 			urlConnection.getInputStream();
@@ -81,7 +85,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	}
 
 	public static final String getAuthenticationData(final String username, final String password) throws UnsupportedEncodingException {
-		return "Basic " + new String(Base64.encode((username + "@etu.unicaen.fr:" + password).getBytes(Utils.UTF_8), Base64.DEFAULT));
+		return "Basic " + new String(Base64.encode((username + ":" + password).getBytes(Utils.UTF_8), Base64.DEFAULT));
 	}
 
 	public static class Response {

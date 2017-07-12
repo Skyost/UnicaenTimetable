@@ -14,6 +14,10 @@
     <string name="dialog_login_button_cancel">Cancel</string>
     <string name="dialog_event_button_neutral">Create alarm…</string>
     <string name="dialog_event_button_positive" translatable="false">OK</string>
+    <string name="dialog_error_notfound_title">Calendar not found !</string>
+    <string name="dialog_error_notfound_message_1">If you are on holiday, this is normal, please re-try once your timetable is available on Zimbra.\nIf you are not on holiday, then the username you have entered is incorrect.</string>
+    <string name="dialog_error_notfound_message_2">You may also have entered a bad calendar name in the application settings.</string>
+
 
     <string name="intro_slide_1_description">This application allows the students of the University of Caen Normandie to check their timetable directly on their smartphone.</string>
     <string name="intro_slide_1_title">Your timetable on your smartphone !</string>
@@ -38,7 +42,7 @@
     <string name="main_snackbar_success">Success !</string>
     <string name="main_snackbar_pinchtozoom">Don\'t forget that you can pinch to zoom or tap on a lesson to see more informations !</string>
     <string name="main_snackbar_error_network">Network error.</string>
-    <string name="main_snackbar_error_credentials">Bad username or password. Redirecting you to the login screen…</string>
+    <string name="main_snackbar_error_credentials">Bad password. Redirecting you to the login screen…</string>
     <string name="main_snackbar_error_loadfromdisk">Unable to load your timetable from the disk !</string>
     <string name="main_snackbar_error_saveondisk">Unable to save your timetable on the disk !</string>
 
