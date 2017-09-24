@@ -87,10 +87,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		return isXLargeTablet(this);
 	}
 
-	private static final boolean isXLargeTablet(final Context context) {
-		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-	}
-
 	@Override
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public final void onBuildHeaders(final List<Header> target) {
@@ -114,8 +110,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_server)));
 				break;
 			case MainActivity.PREFERENCES_CALENDAR:
-				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_calendar) : string);
-				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendar)));
+				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_calendarname) : string);
+				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendarname)));
 				break;
 			}
 			return true;
@@ -132,6 +128,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		final PreferenceManager manager = fragment.getPreferenceManager();
 		manager.setSharedPreferencesName(MainActivity.PREFERENCES_TITLE);
 		manager.setSharedPreferencesMode(Context.MODE_PRIVATE);
+	}
+
+	private static final boolean isXLargeTablet(final Context context) {
+		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -175,7 +175,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			this.setHasOptionsMenu(true);
 
 			final Activity activity = this.getActivity();
-			final SharedPreferences preferences = new ObscuredSharedPreferences(activity, activity.getSharedPreferences("authentication", Context.MODE_PRIVATE));
+			final SharedPreferences preferences = new ObscuredSharedPreferences(activity, activity.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
 
 			final Preference account = this.findPreference("account");
 			account.setSummary(this.getResources().getString(R.string.settings_account, preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "")));

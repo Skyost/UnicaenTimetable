@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
 
@@ -81,7 +82,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		final String minDate = Timetable.getMinStartDate().toString("MM/dd/YYYY");
 		final String maxDate = Timetable.getMaxEndDate().toString("MM/dd/YYYY");
 
-		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendar) + "?fmt=ics&start=" + minDate + "&end=" + maxDate);
+		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + Uri.encode(preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendarname))) + "?fmt=ics&start=" + minDate + "&end=" + maxDate;
 	}
 
 	public static final String getAuthenticationData(final String username, final String password) throws UnsupportedEncodingException {

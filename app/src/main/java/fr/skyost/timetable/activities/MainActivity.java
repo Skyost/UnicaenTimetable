@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String INTENT_SELECTED = "selected";
 
 	private Timetable timetable;
-	private int currentMenuSelected = -1;
+	public int currentMenuSelected = -1;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

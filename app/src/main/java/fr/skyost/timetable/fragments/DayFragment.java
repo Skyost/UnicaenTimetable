@@ -13,6 +13,7 @@ import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -24,6 +25,10 @@ import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.OnColorSelectedListener;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +50,8 @@ public class DayFragment extends Fragment {
 
 	private static final double DEFAULT_HOUR = 7d;
 
+	private static final String PREFERENCES_FILE = "colors";
+
 	private Day day;
 
 	@Override
@@ -59,11 +66,10 @@ public class DayFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
-		final Activity activity = DayFragment.this.getActivity();
+		final MainActivity activity = (MainActivity)DayFragment.this.getActivity();
 
 		final boolean withColors = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false);
 
-		/* https://github.com/Quivr/Android-Week-View */
 		final WeekView weekView = (WeekView)view.findViewById(R.id.main_day_weekview_day);
 		weekView.setDateTimeInterpreter(new DateTimeInterpreter() {
 
@@ -79,6 +85,8 @@ public class DayFragment extends Fragment {
 			}
 
 		});
+
+		final SharedPreferences colorPreferences = activity.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
 
 		final Calendar calendar = Calendar.getInstance();
 		final int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
@@ -102,7 +110,7 @@ public class DayFragment extends Fragment {
 					return events;
 				}
 
-				final Timetable timetable = ((MainActivity)activity).getTimetable();
+				final Timetable timetable = activity.getTimetable();
 				if(timetable == null) {
 					return events;
 				}
@@ -116,8 +124,11 @@ public class DayFragment extends Fragment {
 					final Calendar end = lesson.getEnd();
 					final String description = Utils.addZeroIfNeeded(start.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(start.get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(end.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(end.get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription();
 
-					final WeekViewEvent event = new WeekViewEvent(lesson.getId(), lesson.getName(), description, start, end);
-					if(withColors) {
+					final WeekViewEvent event = new WeekViewEvent(lesson.getId(), name, description, start, end);
+					if(colorPreferences.contains(name)) {
+						event.setColor(colorPreferences.getInt(name, ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)));
+					}
+					else if(withColors) {
 						event.setColor(Utils.randomColor(150, Utils.splitEqually(name, 3)));
 					}
 
@@ -126,6 +137,38 @@ public class DayFragment extends Fragment {
 
 				return events;
 			}
+		});
+		weekView.setEventLongPressListener(new WeekView.EventLongPressListener() {
+
+			@Override
+			public final void onEventLongPress(final WeekViewEvent event, final RectF eventRect) {
+				final ColorPickerDialogBuilder builder = ColorPickerDialogBuilder
+					.with(DayFragment.this.getContext())
+					.setTitle(R.string.dialog_color_title)
+					.wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
+					.setPositiveButton(R.string.dialog_event_button_positive, new ColorPickerClickListener() {
+
+						@Override
+						public final void onClick(final DialogInterface dialog, final int selectedColor, final Integer[] allColors) {
+							colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
+							activity.showFragment(activity.currentMenuSelected);
+						}
+
+					})
+					.setNegativeButton(R.string.dialog_color_button_cancel, new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(final DialogInterface dialog, final int which) {
+							dialog.dismiss();
+						}
+
+					});
+				if(colorPreferences.contains(event.getName())) {
+					builder.initialColor(colorPreferences.getInt(event.getName(), ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)));
+				}
+				builder.build().show();
+			}
+
 		});
 		weekView.setOnEventClickListener(new WeekView.EventClickListener() {
 
@@ -161,10 +204,10 @@ public class DayFragment extends Fragment {
 
 		});
 
-		final SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		if(preferences.getBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, true)) {
+		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, true)) {
 			Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_pinchtozoom, Snackbar.LENGTH_LONG).show();
-			preferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, false).apply();
+			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, false).apply();
 		}
 		return view;
 	}
