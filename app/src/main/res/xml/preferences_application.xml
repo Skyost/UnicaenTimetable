@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="one-color-per-course"
-        android:title="@string/preferences_application_onecolorpercourse"
+        android:key="color-lessons-automatically"
+        android:title="@string/preferences_application_colorlessonsautomatically"
         android:defaultValue="false" />
 
 </PreferenceScreen>

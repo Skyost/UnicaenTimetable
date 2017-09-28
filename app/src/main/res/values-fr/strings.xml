@@ -2,22 +2,21 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.0 et Joda-Time v2.9.9.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.5, Joda-Time v2.9.9 et Color Picker v0.0.13.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
 
+    <string name="dialog_generic_button_cancel">Annuler</string>
     <string name="dialog_login_title">Connexion</string>
     <string name="dialog_login_username">Identifiant (avant le @etu.unicaen.fr)</string>
     <string name="dialog_login_password">Mot de passe</string>
     <string name="dialog_login_button_positive">Connexion</string>
-    <string name="dialog_login_button_cancel">Annuler</string>
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
     <string name="dialog_error_notfound_title">Calendrier non trouvé !</string>
     <string name="dialog_error_notfound_message_1">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.</string>
     <string name="dialog_error_notfound_message_2">Vous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.</string>
     <string name="dialog_color_title">Changer la couleur</string>
-    <string name="dialog_color_button_cancel">Annuler</string>
 
 
     <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
@@ -41,6 +40,7 @@
 
     <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
     <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
+    <string name="main_snackbar_changecolor">Appuyez longtemps sur un cours pour changer sa couleur !</string>
     <string name="main_snackbar_success">Succès !</string>
     <string name="main_snackbar_error_network">Erreur réseau.</string>
     <string name="main_snackbar_error_credentials">Mauvais mot de passe. Redirection vers l\'écran de connexion…</string>
@@ -74,7 +74,7 @@
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
 
-    <string name="preferences_application_onecolorpercourse">Une couleur par cours</string>
+    <string name="preferences_application_colorlessonsautomatically">Colorer automatiquement les matières</string>
 
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>

@@ -2,23 +2,22 @@
     <string name="app_name">Unicaen Timetable</string>
 
     <string name="about_title">About</string>
-    <string name="about_description">\nThis software has been created by Skyost by using some libraries : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.0 and Joda-Time v2.9.9. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
+    <string name="about_description">\nThis software has been created by Skyost by using some libraries : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.5, Joda-Time v2.9.9 and Color Picker v0.0.13. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
     <string name="about_share_share">Share with…</string>
     <string name="about_share_title">Unicaen Timetable</string>
     <string name="about_share_description">Check your timetable on your smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
 
+    <string name="dialog_generic_button_positive" translatable="false">OK</string>
+    <string name="dialog_generic_button_cancel">Cancel</string>
     <string name="dialog_login_title">Log in</string>
     <string name="dialog_login_username">Username (before @etu.unicaen.fr)</string>
     <string name="dialog_login_password">Password</string>
     <string name="dialog_login_button_positive">Log in</string>
-    <string name="dialog_login_button_cancel">Cancel</string>
     <string name="dialog_event_button_neutral">Create alarm…</string>
-    <string name="dialog_event_button_positive" translatable="false">OK</string>
     <string name="dialog_error_notfound_title">Calendar not found !</string>
     <string name="dialog_error_notfound_message_1">If you are on holiday or you just come back from holidays, this is normal, please re-try once your timetable is available on Zimbra.\nElse, then the username you have entered may be incorrect.</string>
     <string name="dialog_error_notfound_message_2">You may also have entered a bad calendar name in the application settings.</string>
     <string name="dialog_color_title">Change color</string>
-    <string name="dialog_color_button_cancel">Cancel</string>
 
 
     <string name="intro_slide_1_description">This application allows the students of the University of Caen Normandie to check their timetable directly on their smartphone.</string>
@@ -43,6 +42,7 @@
     <string name="main_snackbar_downloading">Downloading your timetable…</string>
     <string name="main_snackbar_success">Success !</string>
     <string name="main_snackbar_pinchtozoom">Don\'t forget that you can pinch to zoom or tap on a lesson to see more informations !</string>
+    <string name="main_snackbar_changecolor">Long press on a lesson to change its color !</string>
     <string name="main_snackbar_error_network">Network error.</string>
     <string name="main_snackbar_error_credentials">Bad password. Redirecting you to the login screen…</string>
     <string name="main_snackbar_error_loadfromdisk">Unable to load your timetable from the disk !</string>
@@ -77,7 +77,7 @@
     <string name="preferences_server_server">Zimbra server</string>
 
     <string name="preferences_application" translatable="false">Application</string>
-    <string name="preferences_application_onecolorpercourse">One color per course</string>
+    <string name="preferences_application_colorlessonsautomatically">Automatically color lessons</string>
 
     <string name="settings_default" formatted="false">Default : %s</string>
     <string name="settings_account" formatted="false">Unicaen account : %s</string>

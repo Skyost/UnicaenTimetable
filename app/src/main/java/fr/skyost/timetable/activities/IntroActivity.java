@@ -239,7 +239,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 				new AuthenticationTask(IntroActivity.this, IntroActivity.this).execute();
 			}
 
-		}).setNegativeButton(R.string.dialog_login_button_cancel, new DialogInterface.OnClickListener() {
+		}).setNegativeButton(R.string.dialog_generic_button_cancel, new DialogInterface.OnClickListener() {
 
 			@Override
 			public final void onClick(final DialogInterface dialog, final int id) {

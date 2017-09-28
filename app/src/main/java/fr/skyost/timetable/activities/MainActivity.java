@@ -3,6 +3,7 @@ package fr.skyost.timetable.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -41,8 +42,9 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_SERVER = "server";
 	public static final String PREFERENCES_CALENDAR = "calendar";
 	public static final String PREFERENCES_LAST_UPDATE = "last-update";
-	public static final String PREFERENCES_ONE_COLOR_PER_COURSE = "one-color-per-course";
-	public static final String PREFERENCES_SHOW_PINCHTOZOOM_TIP = "show-pinchtozoom-tip";
+	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
+	public static final String PREFERENCES_TIP_SHOW_PINCHTOZOOM = "tip-show-pinchtozoom";
+	public static final String PREFERENCES_TIP_SHOW_CHANGECOLOR = "tip-show-changecolor";
 
 	public static final String INTENT_TIMETABLE = "timetable";
 	public static final String INTENT_SELECTED = "selected";
@@ -198,6 +200,14 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_notfound_title);
 			builder.setMessage(resources.getString(R.string.dialog_error_notfound_message_1) + "\n" + resources.getString(R.string.dialog_error_notfound_message_2));
+			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
+
+				@Override
+				public final void onClick(final DialogInterface dialog, final int id) {
+					dialog.dismiss();
+				}
+
+			});
 			builder.create().show();
 			break;
 		case AuthenticationTask.UNAUTHORIZED:

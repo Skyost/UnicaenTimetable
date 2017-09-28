@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -26,7 +27,6 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.flask.colorpicker.ColorPickerView;
-import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
@@ -50,7 +50,7 @@ public class DayFragment extends Fragment {
 
 	private static final double DEFAULT_HOUR = 7d;
 
-	private static final String PREFERENCES_FILE = "colors";
+	private static final String COLOR_PREFERENCES_FILE = "colors";
 
 	private Day day;
 
@@ -68,8 +68,6 @@ public class DayFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
 		final MainActivity activity = (MainActivity)DayFragment.this.getActivity();
 
-		final boolean withColors = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false);
-
 		final WeekView weekView = (WeekView)view.findViewById(R.id.main_day_weekview_day);
 		weekView.setDateTimeInterpreter(new DateTimeInterpreter() {
 
@@ -86,7 +84,8 @@ public class DayFragment extends Fragment {
 
 		});
 
-		final SharedPreferences colorPreferences = activity.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 
 		final Calendar calendar = Calendar.getInstance();
 		final int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
@@ -120,19 +119,7 @@ public class DayFragment extends Fragment {
 					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
 						continue;
 					}
-					final String name = lesson.getName();
-					final Calendar end = lesson.getEnd();
-					final String description = Utils.addZeroIfNeeded(start.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(start.get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(end.get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(end.get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription();
-
-					final WeekViewEvent event = new WeekViewEvent(lesson.getId(), name, description, start, end);
-					if(colorPreferences.contains(name)) {
-						event.setColor(colorPreferences.getInt(name, ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)));
-					}
-					else if(withColors) {
-						event.setColor(Utils.randomColor(150, Utils.splitEqually(name, 3)));
-					}
-
-					events.add(event);
+					events.add(new TimetableWeekViewEvent(lesson, activityPreferences, colorPreferences));
 				}
 
 				return events;
@@ -142,29 +129,28 @@ public class DayFragment extends Fragment {
 
 			@Override
 			public final void onEventLongPress(final WeekViewEvent event, final RectF eventRect) {
-				final ColorPickerDialogBuilder builder = ColorPickerDialogBuilder
-					.with(DayFragment.this.getContext())
-					.setTitle(R.string.dialog_color_title)
-					.wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
-					.setPositiveButton(R.string.dialog_event_button_positive, new ColorPickerClickListener() {
+				final ColorPickerDialogBuilder builder = ColorPickerDialogBuilder.with(DayFragment.this.getContext());
+				builder.setTitle(R.string.dialog_color_title);
+				builder.wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE);
+				builder.setPositiveButton(R.string.dialog_generic_button_positive, new ColorPickerClickListener() {
 
-						@Override
-						public final void onClick(final DialogInterface dialog, final int selectedColor, final Integer[] allColors) {
-							colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
-							activity.showFragment(activity.currentMenuSelected);
-						}
+					@Override
+					public final void onClick(final DialogInterface dialog, final int selectedColor, final Integer[] allColors) {
+						colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
+						activity.showFragment(activity.currentMenuSelected);
+					}
 
-					})
-					.setNegativeButton(R.string.dialog_color_button_cancel, new DialogInterface.OnClickListener() {
+				});
+				builder.setNegativeButton(R.string.dialog_generic_button_cancel, new DialogInterface.OnClickListener() {
 
-						@Override
-						public void onClick(final DialogInterface dialog, final int which) {
-							dialog.dismiss();
-						}
+					@Override
+					public void onClick(final DialogInterface dialog, final int which) {
+						dialog.dismiss();
+					}
 
-					});
-				if(colorPreferences.contains(event.getName())) {
-					builder.initialColor(colorPreferences.getInt(event.getName(), ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)));
+				});
+				if(event.getColor() != ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)) {
+					builder.initialColor(event.getColor());
 				}
 				builder.build().show();
 			}
@@ -200,14 +186,17 @@ public class DayFragment extends Fragment {
 
 				});
 				builder.create().show();
+				if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, true)) {
+					Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_changecolor, Snackbar.LENGTH_LONG).show();
+					activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, false).apply();
+				}
 			}
 
 		});
 
-		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, true)) {
+		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, true)) {
 			Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_pinchtozoom, Snackbar.LENGTH_LONG).show();
-			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_PINCHTOZOOM_TIP, false).apply();
+			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, false).apply();
 		}
 		return view;
 	}
@@ -260,6 +249,35 @@ public class DayFragment extends Fragment {
 		args.putString(Day.class.getName().toLowerCase(), day.name());
 		instance.setArguments(args);
 		return instance;
+	}
+
+	public class TimetableWeekViewEvent extends WeekViewEvent {
+
+		private final SharedPreferences activityPreferences;
+		private final SharedPreferences colorPreferences;
+
+		public TimetableWeekViewEvent(final Lesson lesson, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences) {
+			super(lesson.getId(), lesson.getName(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription(), lesson.getStart(), lesson.getEnd());
+			this.activityPreferences = activityPreferences;
+			this.colorPreferences = colorPreferences;
+		}
+
+		@Override
+		public final int getColor() {
+			final Activity activity = DayFragment.this.getActivity();
+			final String name = this.getName();
+			if(colorPreferences.contains(name)) {
+				return colorPreferences.getInt(name, ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault));
+			}
+			else if(activityPreferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false)) {
+				return Utils.randomColor(150, Utils.splitEqually(name, 3));
+			}
+			return ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault);
+		}
+
+		@Override
+		public final void setColor(final int color) {}
+
 	}
 
 }

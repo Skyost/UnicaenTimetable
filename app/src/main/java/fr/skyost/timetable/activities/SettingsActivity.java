@@ -218,7 +218,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			this.setHasOptionsMenu(true);
 
 			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-			((CheckBoxPreference)findPreference(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_ONE_COLOR_PER_COURSE, false));
+			((CheckBoxPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
 		}
 
 		@Override
