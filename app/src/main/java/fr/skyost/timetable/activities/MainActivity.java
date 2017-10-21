@@ -20,7 +20,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
@@ -41,15 +47,20 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_SHOW_INTRO = "show-intro";
 	public static final String PREFERENCES_SERVER = "server";
 	public static final String PREFERENCES_CALENDAR = "calendar";
+	public static final String PREFERENCES_CALENDAR_INTERVAL = "calendar-interval";
 	public static final String PREFERENCES_LAST_UPDATE = "last-update";
 	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
 	public static final String PREFERENCES_TIP_SHOW_PINCHTOZOOM = "tip-show-pinchtozoom";
 	public static final String PREFERENCES_TIP_SHOW_CHANGECOLOR = "tip-show-changecolor";
+	public static final String PREFERENCES_CHANGED_ACCOUNT = "changed-account";
+	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
 
 	public static final String INTENT_TIMETABLE = "timetable";
+	public static final String INTENT_BASEWEEK = "base-week";
 	public static final String INTENT_SELECTED = "selected";
 
 	private Timetable timetable;
+	public int baseWeek = -1;
 	public int currentMenuSelected = -1;
 
 	@Override
@@ -66,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 		if(savedInstanceState != null) {
 			timetable = (Timetable)savedInstanceState.getSerializable(INTENT_TIMETABLE);
+			baseWeek = savedInstanceState.getInt(INTENT_BASEWEEK, -1);
 			currentMenuSelected = savedInstanceState.getInt(INTENT_SELECTED, -1);
 		}
 		if(!showIntro && timetable == null) {
@@ -101,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable(INTENT_TIMETABLE, timetable);
+		outState.putInt(INTENT_BASEWEEK, baseWeek);
 		outState.putInt(INTENT_SELECTED, currentMenuSelected);
 	}
 
@@ -116,18 +129,21 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			refreshTimetable();
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
-			if(SettingsActivity.accountChanged) {
+			final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			if(preferences.getBoolean(PREFERENCES_CHANGED_ACCOUNT, false)) {
 				refreshTimetable();
 				final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
 				if(navigationView == null) {
 					break;
 				}
 				((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
-				SettingsActivity.accountChanged = false;
+				preferences.edit().putBoolean(MainActivity.PREFERENCES_CHANGED_ACCOUNT, false).apply();
 			}
-			if(currentMenuSelected != -1) {
-				showFragment(currentMenuSelected);
+			if(preferences.getBoolean(PREFERENCES_CHANGED_INTERVAL, false)) {
+				refreshTimetable();
+				preferences.edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, false).apply();
 			}
+			showFragment(currentMenuSelected);
 			break;
 		}
 	}
@@ -148,6 +164,30 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		switch(item.getItemId()) {
 		case R.id.nav_home_home:
 			showFragment(-1);
+			break;
+		case R.id.nav_week_selector_selector:
+			final List<DateTime> availableWeeks = timetable.getAvailableWeeks();
+			final List<String> dialogData = new ArrayList<String>();
+
+			final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+			for(final DateTime availableWeek : availableWeeks) {
+				dialogData.add(dateFormat.format(availableWeek.withDayOfWeek(DateTimeConstants.MONDAY).toDate()) + " - " + dateFormat.format(availableWeek.withDayOfWeek(DateTimeConstants.FRIDAY).toDate()));
+			}
+			dialogData.add(0, this.getString(R.string.dialog_weekselector_default));
+
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.main_nav_week_selector);
+			builder.setSingleChoiceItems(dialogData.toArray(new String[dialogData.size()]), baseWeek + 1, new DialogInterface.OnClickListener() {
+
+				@Override
+				public final void onClick(final DialogInterface dialog, final int id) {
+					baseWeek = id - 1;
+					dialog.dismiss();
+					showFragment(currentMenuSelected);
+				}
+
+			});
+			builder.create().show();
 			break;
 		case R.id.nav_timetable_monday:
 			showFragment(Day.MONDAY);
@@ -283,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	 */
 
 	public final void refreshTimetable() {
+		baseWeek = -1;
 		new CalendarTask(this, this).execute();
 	}
 

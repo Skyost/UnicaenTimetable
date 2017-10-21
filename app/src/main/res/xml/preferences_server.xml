@@ -3,7 +3,7 @@
     <EditTextPreference
         android:key="server"
         android:title="@string/preferences_server_server"
-        android:defaultValue="https://webmail.unicaen.fr"
+        android:defaultValue="@string/settings_default_server"
         android:selectAllOnFocus="true"
         android:inputType="textUri"
         android:singleLine="true"
@@ -12,10 +12,17 @@
     <EditTextPreference
         android:key="calendar"
         android:title="@string/preferences_server_calendar"
-        android:defaultValue="Emploi%20du%20temps"
+        android:defaultValue="@string/settings_default_calendarname"
         android:selectAllOnFocus="true"
         android:inputType="textFilter|textNoSuggestions"
         android:singleLine="true"
         android:maxLines="1" />
+
+    <ListPreference
+        android:key="calendar-interval"
+        android:title="@string/preferences_server_calendar_interval_values"
+        android:defaultValue="0"
+        android:entries="@array/preferences_server_calendar_interval_keys"
+        android:entryValues="@array/preferences_server_calendar_interval_values"/>
 
 </PreferenceScreen>

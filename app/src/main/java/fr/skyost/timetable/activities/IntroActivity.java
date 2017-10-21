@@ -85,8 +85,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 	@Override
 	public final void onDonePressed(final Fragment currentFragment) {
-		super.onDonePressed(currentFragment);
-
 		final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		preferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_INTRO, false).apply();
 
@@ -95,6 +93,8 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 		this.setResult(Activity.RESULT_OK, intent);
 		this.finish();
+
+		super.onDonePressed(currentFragment);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			builder.setTitle(R.string.dialog_error_notfound_title);
 			builder.setMessage(R.string.dialog_error_notfound_message_1);
 			builder.setCancelable(false);
-			builder.setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
+			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
 
 				@Override
 				public final void onClick(final DialogInterface dialog, final int id) {
@@ -208,34 +208,95 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 	private final void showLoginDialog() {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		final SharedPreferences preferences = new ObscuredSharedPreferences(this, this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
-
-		final String usernamePreferences = preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
-		final String passwordPreferences = preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "");
-
 		final View layout = this.getLayoutInflater().inflate(R.layout.dialog_login_layout, null);
-		final EditText usernameEditText = (EditText)layout.findViewById(R.id.dialog_login_edittext_username);
+		builder.setView(layout);
+
+		createDialog(builder, (EditText)layout.findViewById(R.id.dialog_login_edittext_username), (EditText)layout.findViewById(R.id.dialog_login_edittext_password), null, null);
+
+		builder.setNeutralButton(R.string.dialog_login_button_more, new DialogInterface.OnClickListener() {
+
+			@Override
+			public final void onClick(final DialogInterface dialog, final int id) {
+				dialog.dismiss();
+				showAdvancedLoginDialog();
+			}
+
+		});
+		builder.create().show();
+	}
+
+	/**
+	 * Shows the advanced login dialog.
+	 */
+
+	private final void showAdvancedLoginDialog() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		final View layout = this.getLayoutInflater().inflate(R.layout.dialog_advancedlogin_layout, null);
+		builder.setView(layout);
+
+		createDialog(builder, (EditText)layout.findViewById(R.id.dialog_advancedlogin_edittext_username), (EditText)layout.findViewById(R.id.dialog_advancedlogin_edittext_password), (EditText)layout.findViewById(R.id.dialog_advancedlogin_edittext_server), (EditText)layout.findViewById(R.id.dialog_advancedlogin_edittext_calendar));
+
+		builder.setNeutralButton(R.string.dialog_advancedlogin_button_less, new DialogInterface.OnClickListener() {
+
+			@Override
+			public final void onClick(final DialogInterface dialog, final int id) {
+				dialog.dismiss();
+				showLoginDialog();
+			}
+
+		});
+		builder.create().show();
+	}
+
+	/**
+	 * Creates a default dialog.
+	 *
+	 * @param builder The builder.
+	 * @param usernameEditText The username edit text.
+	 * @param passwordEditText The password edit text.
+	 * @param serverEditText The server edit text.
+	 * @param calendarEditText The calendar edit text.
+	 */
+
+	private final void createDialog(final AlertDialog.Builder builder, final EditText usernameEditText, final EditText passwordEditText, final EditText serverEditText, final EditText calendarEditText) {
+		final SharedPreferences obscuredPreferences = new ObscuredSharedPreferences(this, this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
+
+		final String usernamePreferences = obscuredPreferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
+		final String passwordPreferences = obscuredPreferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "");
+
 		usernameEditText.setText(usernamePreferences);
-		final EditText passwordEditTex = (EditText)layout.findViewById(R.id.dialog_login_edittext_password);
-		passwordEditTex.setText(passwordPreferences);
+		passwordEditText.setText(passwordPreferences);
+
+		if(serverEditText != null && calendarEditText != null) {
+			final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			serverEditText.setText(preferences.getString(MainActivity.PREFERENCES_SERVER, this.getString(R.string.settings_default_server)));
+			calendarEditText.setText(preferences.getString(MainActivity.PREFERENCES_CALENDAR, this.getString(R.string.settings_default_calendarname)));
+		}
 
 		builder.setTitle(R.string.dialog_login_title);
-		builder.setView(layout).setPositiveButton(R.string.dialog_login_button_positive, new DialogInterface.OnClickListener() {
+		builder.setPositiveButton(R.string.dialog_login_button_positive, new DialogInterface.OnClickListener() {
 
 			@Override
 			public final void onClick(final DialogInterface dialog, final int id) {
 				dialog.dismiss();
 				final String username = usernameEditText.getText().toString();
-				final String password = passwordEditTex.getText().toString();
+				final String password = passwordEditText.getText().toString();
 
 				if(!username.equals(usernamePreferences) || !password.equals(passwordPreferences)) {
 					accountChanged = true;
 				}
 
-				final SharedPreferences.Editor editor = preferences.edit();
-				editor.putString(AuthenticationTask.PREFERENCES_USERNAME, username);
-				editor.putString(AuthenticationTask.PREFERENCES_PASSWORD, password);
-				editor.commit();
+				final SharedPreferences.Editor obscuredEditor = obscuredPreferences.edit();
+				obscuredEditor.putString(AuthenticationTask.PREFERENCES_USERNAME, username);
+				obscuredEditor.putString(AuthenticationTask.PREFERENCES_PASSWORD, password);
+				obscuredEditor.commit();
+
+				if(serverEditText != null && calendarEditText != null) {
+					final SharedPreferences.Editor editor = IntroActivity.this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit();
+					editor.putString(MainActivity.PREFERENCES_SERVER, serverEditText.getText().toString());
+					editor.putString(MainActivity.PREFERENCES_CALENDAR, calendarEditText.getText().toString());
+					editor.commit();
+				}
 				new AuthenticationTask(IntroActivity.this, IntroActivity.this).execute();
 			}
 
@@ -270,7 +331,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 		});
 		builder.setCancelable(false);
-		builder.create().show();
 	}
 
 }

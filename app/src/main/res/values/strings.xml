@@ -12,12 +12,17 @@
     <string name="dialog_login_title">Log in</string>
     <string name="dialog_login_username">Username (before @etu.unicaen.fr)</string>
     <string name="dialog_login_password">Password</string>
+    <string name="dialog_login_button_more">More</string>
+    <string name="dialog_advancedlogin_server">Server</string>
+    <string name="dialog_advancedlogin_calendar">Calendar</string>
+    <string name="dialog_advancedlogin_button_less">Less</string>
     <string name="dialog_login_button_positive">Log in</string>
     <string name="dialog_event_button_neutral">Create alarm…</string>
     <string name="dialog_error_notfound_title">Calendar not found !</string>
     <string name="dialog_error_notfound_message_1">If you are on holiday or you just come back from holidays, this is normal, please re-try once your timetable is available on Zimbra.\nElse, then the username you have entered may be incorrect.</string>
     <string name="dialog_error_notfound_message_2">You may also have entered a bad calendar name in the application settings.</string>
     <string name="dialog_color_title">Change color</string>
+    <string name="dialog_weekselector_default">Default (current week)</string>
 
 
     <string name="intro_slide_1_description">This application allows the students of the University of Caen Normandie to check their timetable directly on their smartphone.</string>
@@ -37,7 +42,7 @@
     <string name="main_default_title">Hello !</string>
     <string name="main_default_description" formatted="false">And welcome to your timetable !\n\nPlease tap on the top button to check your timetable or to configure the application.\n\nPress the bottom button to refresh your timetable.\n\nUpdated your timetable for the last time : %s.</string>
     <string name="main_default_description_never">Never</string>
-    <string name="main_default_description_updaterequired">(either an update is required or you are on holiday)</string>
+    <string name="main_default_description_updaterequired">(either an update is required or no lesson is available)</string>
 
     <string name="main_snackbar_downloading">Downloading your timetable…</string>
     <string name="main_snackbar_success">Success !</string>
@@ -59,6 +64,7 @@
     <string name="main_nav_home_home">Home</string>
 
     <string name="main_nav_timetable">Timetable</string>
+    <string name="main_nav_week_selector">Week selector</string>
     <string name="main_nav_timetable_monday">Monday</string>
     <string name="main_nav_timetable_tuesday">Tuesday</string>
     <string name="main_nav_timetable_wednesday">Wednesday</string>
@@ -75,6 +81,19 @@
     <string name="preferences_server">Server</string>
     <string name="preferences_server_calendar">Calendar</string>
     <string name="preferences_server_server">Zimbra server</string>
+    <string name="preferences_server_calendar_interval_values">Calendar download interval</string>
+    <string-array name="preferences_server_calendar_interval_keys">
+        <item>2 weeks</item>
+        <item>1 month</item>
+        <item>3 months</item>
+        <item>Full available calendar</item>
+    </string-array>
+    <string-array name="preferences_server_calendar_interval_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
     <string name="preferences_application" translatable="false">Application</string>
     <string name="preferences_application_colorlessonsautomatically">Automatically color lessons</string>
@@ -82,7 +101,7 @@
     <string name="settings_default" formatted="false">Default : %s</string>
     <string name="settings_account" formatted="false">Unicaen account : %s</string>
 
-    <string name="settings_default_calendarname" translatable="false">Emploi du temps</string>
     <string name="settings_default_server" translatable="false">https://webmail.unicaen.fr</string>
+    <string name="settings_default_calendarname" translatable="false">Emploi du temps</string>
 
 </resources>

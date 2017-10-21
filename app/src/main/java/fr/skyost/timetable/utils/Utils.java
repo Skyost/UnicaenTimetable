@@ -1,12 +1,15 @@
 package fr.skyost.timetable.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class Utils {
@@ -86,6 +89,38 @@ public class Utils {
 			return Color.WHITE;
 		}
 		return Color.argb(alpha, new Random(seeds[0].hashCode()).nextInt(256), new Random(seeds[1].hashCode()).nextInt(256), new Random(seeds[2].hashCode()).nextInt(256));
+	}
+
+	/**
+	 * Safely casts a long to an int.
+	 *
+	 * @param l The long.
+	 *
+	 * @return The checked cast.
+	 */
+
+	public static final int safeLongToInt(final long l) {
+		if(l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException (l + " cannot be cast to int without changing its value.");
+		}
+		return (int)l;
+	}
+
+	/**
+	 * Gets the system's locale.
+	 *
+	 * @param context Context of the application.
+	 *
+	 * @return The locale.
+	 */
+
+	public static final Locale getCurrentLocale(final Context context){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+			return context.getResources().getConfiguration().getLocales().get(0);
+		}
+		else {
+			return context.getResources().getConfiguration().locale;
+		}
 	}
 
 }

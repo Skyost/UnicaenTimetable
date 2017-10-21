@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
 
+import org.joda.time.DateTime;
+
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -77,12 +79,12 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 
 	public static final String getCalendarAddress(final Context context, final String account) {
 		final Resources resources = context.getResources();
-		final SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+		final SharedPreferences preferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 
-		final String minDate = Timetable.getMinStartDate().toString("MM/dd/YYYY");
-		final String maxDate = Timetable.getMaxEndDate().toString("MM/dd/YYYY");
+		final DateTime minDate = Timetable.getMinStartDate(context);
+		final DateTime maxDate = Timetable.getMaxEndDate(context);
 
-		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + Uri.encode(preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendarname))) + "?fmt=ics&start=" + minDate + "&end=" + maxDate;
+		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + Uri.encode(preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendarname))) + "?auth=ba&fmt=ics" + (minDate == null ? "" : "&start=" + minDate.toString("MM/dd/YYYY")) + (maxDate == null ? "" : "&end=" + maxDate.toString("MM/dd/YYYY"));
 	}
 
 	public static final String getAuthenticationData(final String username, final String password) throws UnsupportedEncodingException {

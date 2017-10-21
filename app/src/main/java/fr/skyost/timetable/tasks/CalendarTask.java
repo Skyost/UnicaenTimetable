@@ -44,6 +44,7 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, username)).openConnection();
 			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(username, preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")));
+
 			final int response = urlConnection.getResponseCode();
 			if(response == 404) {
 				return new Response(AuthenticationTask.NOT_FOUND, null, null);

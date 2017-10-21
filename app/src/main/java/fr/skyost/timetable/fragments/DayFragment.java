@@ -88,6 +88,9 @@ public class DayFragment extends Fragment {
 		final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 
 		final Calendar calendar = Calendar.getInstance();
+		if(activity.baseWeek != -1) {
+			calendar.setTimeInMillis(activity.getTimetable().getAvailableWeeks().get(activity.baseWeek).getMillis());
+		}
 		final int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
 		if(currentDay == Calendar.SATURDAY || currentDay == Calendar.SUNDAY) {
 			final long aWeek = TimeUnit.DAYS.toMillis(7);
@@ -136,7 +139,7 @@ public class DayFragment extends Fragment {
 
 					@Override
 					public final void onClick(final DialogInterface dialog, final int selectedColor, final Integer[] allColors) {
-						colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
+						colorPreferences.edit().putInt(event.getName(), selectedColor).apply();
 						activity.showFragment(activity.currentMenuSelected);
 					}
 
@@ -177,7 +180,7 @@ public class DayFragment extends Fragment {
 						DayFragment.this.requestPermissions(new String[]{Manifest.permission.SET_ALARM}, ALARM_SET_REQUEST_CODE);
 					}
 
-				}).setPositiveButton(R.string.dialog_event_button_positive, new DialogInterface.OnClickListener() {
+				}).setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
 
 					@Override
 					public final void onClick(final DialogInterface dialog, final int which) {

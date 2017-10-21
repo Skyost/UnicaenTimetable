@@ -11,6 +11,14 @@
     </group>
 
     <group
+        android:id="@+id/nav_week_selector">
+        <item
+            android:id="@+id/nav_week_selector_selector"
+            android:icon="@drawable/nav_week_selector_selector_drawable"
+            android:title="@string/main_nav_week_selector"/>
+    </group>
+
+    <group
         android:id="@+id/nav_timetable"
         android:checkableBehavior="single"
         android:title="@string/main_nav_timetable">

@@ -17,11 +17,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.utils.Utils;
 
 /**
@@ -109,19 +113,38 @@ public class Timetable implements Serializable {
 	}
 
 	/**
-	 * Gets the min date of this timetable.
+	 * Gets the min date of this timetable according to preferences.
 	 *
-	 * @return The minimal date of this timetable.
+	 * @param context Used to get preferences.
+	 *
+	 * @return The min date of this timetable according to preferences.
 	 */
 
-	public static final DateTime getMinStartDate() {
-		return DateTime.now()
-				.withHourOfDay(0)
+	public static final DateTime getMinStartDate(final Context context) {
+		DateTime time = DateTime.now();
+
+		time = time.withHourOfDay(0)
 				.withMinuteOfHour(0)
 				.withSecondOfMinute(0)
-				.withSecondOfMinute(0)
-				.withDayOfWeek(DateTimeConstants.MONDAY)
-				.minusWeeks(1);
+				.withMillisOfSecond(0)
+				.withDayOfWeek(DateTimeConstants.MONDAY);
+
+		switch(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0")) {
+		case "0":
+			time = time.minusWeeks(2);
+			break;
+		case "1":
+			time = time.minusMonths(1);
+			break;
+		case "2":
+			time = time.minusMonths(3);
+			break;
+		case "3":
+			time = null;
+			break;
+		}
+
+		return time;
 	}
 
 	/**
@@ -148,19 +171,43 @@ public class Timetable implements Serializable {
 	}
 
 	/**
-	 * Gets the max date of this timetable.
+	 * Gets the max date of this timetable according to preferences.
 	 *
-	 * @return The max date of this timetable.
+	 * @param context Used to get preferences.
+	 *
+	 * @return The max date of this timetable according to preferences.
 	 */
 
-	public static final DateTime getMaxEndDate() {
-		return DateTime.now()
-				.withHourOfDay(0)
+	public static final DateTime getMaxEndDate(final Context context) {
+		DateTime time = DateTime.now();
+
+		final int currentDay = time.getDayOfWeek();
+		if(currentDay == DateTimeConstants.SATURDAY || currentDay == DateTimeConstants.SUNDAY) {
+			time = time.plusWeeks(1);
+		}
+
+		time = time.withHourOfDay(0)
 				.withMinuteOfHour(0)
 				.withSecondOfMinute(0)
-				.withSecondOfMinute(0)
-				.withDayOfWeek(DateTimeConstants.MONDAY)
-				.plusWeeks(2);
+				.withMillisOfSecond(0)
+				.withDayOfWeek(DateTimeConstants.SUNDAY);
+
+		switch(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0")) {
+		case "0":
+			time = time.plusWeeks(2);
+			break;
+		case "1":
+			time = time.plusMonths(1);
+			break;
+		case "2":
+			time = time.plusMonths(3);
+			break;
+		case "3":
+			time = null;
+			break;
+		}
+
+		return time;
 	}
 
 	/**
@@ -184,6 +231,30 @@ public class Timetable implements Serializable {
 		}
 
 		return end;
+	}
+
+	/**
+	 * Gets a list of weeks covered by this timetable.
+	 *
+	 * @return A list of weeks covered by this timetable.
+	 */
+
+	public final List<DateTime> getAvailableWeeks() {
+		final long finalStart = getStartDate();
+		final long aWeek = TimeUnit.DAYS.toMillis(7);
+
+		int weeksNumber = 0;
+		for(long start = finalStart; start < getEndDate(); start += aWeek) {
+			weeksNumber++;
+		}
+
+		final List<DateTime> weeks = new ArrayList<DateTime>();
+
+		for(int i = 0; i != weeksNumber; i++) {
+			weeks.add(new DateTime(finalStart + i * aWeek));
+		}
+
+		return weeks;
 	}
 
 	/**

@@ -12,11 +12,16 @@
     <string name="dialog_login_username">Identifiant (avant le @etu.unicaen.fr)</string>
     <string name="dialog_login_password">Mot de passe</string>
     <string name="dialog_login_button_positive">Connexion</string>
+    <string name="dialog_login_button_more">Plus</string>
+    <string name="dialog_advancedlogin_server">Serveur</string>
+    <string name="dialog_advancedlogin_calendar">Calendrier</string>
+    <string name="dialog_advancedlogin_button_less">Moins</string>
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
     <string name="dialog_error_notfound_title">Calendrier non trouvé !</string>
     <string name="dialog_error_notfound_message_1">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.</string>
     <string name="dialog_error_notfound_message_2">Vous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.</string>
     <string name="dialog_color_title">Changer la couleur</string>
+    <string name="dialog_weekselector_default">Par défaut (semaine en cours)</string>
 
 
     <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
@@ -36,7 +41,7 @@
     <string name="main_default_title">Bonjour !</string>
     <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %s.</string>
     <string name="main_default_description_never">Jamais</string>
-    <string name="main_default_description_updaterequired">(soit une mise à jour est requise, soit vous êtes en vacances)</string>
+    <string name="main_default_description_updaterequired">(soit une mise à jour est requise, soit aucun cours n\'est disponible)</string>
 
     <string name="main_snackbar_downloading">Téléchargement de votre emploi du temps…</string>
     <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
@@ -57,6 +62,7 @@
     <string name="main_nav_home_home">Accueil</string>
 
     <string name="main_nav_timetable">Emploi du temps</string>
+    <string name="main_nav_week_selector">Changer de semaine</string>
     <string name="main_nav_timetable_monday">Lundi</string>
     <string name="main_nav_timetable_tuesday">Mardi</string>
     <string name="main_nav_timetable_wednesday">Mercredi</string>
@@ -73,6 +79,13 @@
     <string name="preferences_server">Serveur</string>
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
+    <string name="preferences_server_calendar_interval_values">Intervalle de téléchargement du calendrier</string>
+    <string-array name="preferences_server_calendar_interval_keys">
+        <item>2 semaines</item>
+        <item>1 mois</item>
+        <item>3 mois</item>
+        <item>Tout le calendrier disponible</item>
+    </string-array>
 
     <string name="preferences_application_colorlessonsautomatically">Colorer automatiquement les matières</string>
 

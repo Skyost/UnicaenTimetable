@@ -28,7 +28,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 	private static final int INTRO_ACTIVITY_RESULT = 100;
 
-	protected static boolean accountChanged = false;
+	private static final Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+
+		@Override
+		public final boolean onPreferenceChange(final Preference preference, final Object value) {
+			final Resources resources = preference.getContext().getResources();
+			final String string = value.toString();
+			switch(preference.getKey().toLowerCase()) {
+			case MainActivity.PREFERENCES_SERVER:
+				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_server) : string);
+				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_server)));
+				break;
+			case MainActivity.PREFERENCES_CALENDAR:
+				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_calendarname) : string);
+				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendarname)));
+				break;
+			case MainActivity.PREFERENCES_CALENDAR_INTERVAL:
+				preference.setSummary(TextUtils.isEmpty(string) ? resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0] : resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[Integer.valueOf(string)]);
+				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0]));
+
+				preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
+				break;
+			}
+			return true;
+		}
+
+	};
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -38,16 +63,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		if(actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-
-		if(savedInstanceState != null) {
-			accountChanged = savedInstanceState.getBoolean(IntroActivity.INTENT_ACCOUNT_CHANGED, false);
-		}
 	}
 
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putBoolean(IntroActivity.INTENT_ACCOUNT_CHANGED, accountChanged);
 	}
 
 	@Override
@@ -57,18 +77,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		}
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
-			accountChanged = data.getBooleanExtra(IntroActivity.INTENT_ACCOUNT_CHANGED, true);
+			this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_ACCOUNT, true).apply();
 			onBackPressed();
 			break;
 		}
-	}
-
-	@Override
-	public final void onBackPressed() {
-		super.onBackPressed();
-
-		this.setResult(Activity.RESULT_OK);
-		this.finish();
 	}
 
 	@Override
@@ -98,30 +110,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		return PreferenceFragment.class.getName().equals(fragmentName) || ServerPreferenceFragment.class.getName().equals(fragmentName) || AccountPreferenceFragment.class.getName().equals(fragmentName) || AppPreferenceFragment.class.getName().equals(fragmentName);
 	}
 
-	private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-
-		@Override
-		public final boolean onPreferenceChange(final Preference preference, final Object value) {
-			final Resources resources = preference.getContext().getResources();
-			final String string = value.toString();
-			switch(preference.getKey().toLowerCase()) {
-			case MainActivity.PREFERENCES_SERVER:
-				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_server) : string);
-				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_server)));
-				break;
-			case MainActivity.PREFERENCES_CALENDAR:
-				preference.setSummary(TextUtils.isEmpty(string) ? resources.getString(R.string.settings_default_calendarname) : string);
-				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendarname)));
-				break;
-			}
-			return true;
-		}
-
-	};
-
-	private static final void bindPreferenceSummaryToValue(final Preference preference) {
-		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-		sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
+	private static final void bindPreferenceSummaryToValue(final SharedPreferences preferences, final Preference preference) {
+		preference.setOnPreferenceChangeListener(bindPreferenceSummaryToValueListener);
+		bindPreferenceSummaryToValueListener.onPreferenceChange(preference, preferences.getString(preference.getKey(), ""));
 	}
 
 	private static final void setDefaultPreferencesFile(final PreferenceFragment fragment) {
@@ -146,8 +137,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			this.addPreferencesFromResource(R.xml.preferences_server);
 			this.setHasOptionsMenu(true);
 
-			bindPreferenceSummaryToValue(findPreference(MainActivity.PREFERENCES_SERVER));
-			bindPreferenceSummaryToValue(findPreference(MainActivity.PREFERENCES_CALENDAR));
+			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+
+			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_SERVER));
+			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_CALENDAR));
+			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_CALENDAR_INTERVAL));
 		}
 
 		@Override
