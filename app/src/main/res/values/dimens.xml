@@ -11,4 +11,15 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="about_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="widget_today_layout_margin">8dp</dimen>
+    <dimen name="widget_today_layout_padding_top_bottom">8dp</dimen>
+    <dimen name="widget_today_layout_margin_right_left">12dp</dimen>
+    <dimen name="widget_today_title_size">24dp</dimen>
+    <dimen name="widget_today_refresh_size">32dp</dimen>
+    <dimen name="widget_today_rule_height">2dp</dimen>
+    <dimen name="widget_today_rule_margin_top">2dp</dimen>
+    <dimen name="widget_today_rule_margin_bottom">10dp</dimen>
+    <dimen name="widget_today_content_size">14dp</dimen>
+
 </resources>

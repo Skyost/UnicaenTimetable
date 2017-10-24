@@ -9,4 +9,6 @@
     <color name="colorUpdated">#2ECC71</color>
     <color name="colorUpdateRequired">#E74C3C</color>
     <color name="colorWeekViewEventDefault">#9FC6E7</color>
+    <color name="color_widget_today_white">#E6FFFFFF</color>
+    <color name="color_widget_today_dark">#992C3E50</color>
 </resources>

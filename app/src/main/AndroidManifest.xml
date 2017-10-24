@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="fr.skyost.timetable">
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
@@ -41,6 +44,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.skyost.timetable.activities.MainActivity"/>
         </activity>
+        <service
+            android:name="services.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <receiver android:name=".receivers.TimeChangeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receivers.TodayWidgetReceiver">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_today_meta" />
+        </receiver>
     </application>
 
 </manifest>

@@ -18,7 +18,6 @@ import java.net.URL;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
-import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 import fr.skyost.timetable.utils.Utils;
 
 public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask.Response> {
@@ -28,15 +27,22 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	public static final int UNAUTHORIZED = 300;
 	public static final int ERROR = 400;
 
+	@Deprecated
 	public static final String PREFERENCES_FILE = "authentication";
+	@Deprecated
 	public static final String PREFERENCES_USERNAME = "data-0";
+	@Deprecated
 	public static final String PREFERENCES_PASSWORD = "data-1";
 
 	private final Activity activity;
 	private final AuthenticationListener listener;
+	private final String username;
+	private final String password;
 
-	public AuthenticationTask(final Activity activity, final AuthenticationListener listener) {
+	public AuthenticationTask(final Activity activity, final String username, final String password, final AuthenticationListener listener) {
 		this.activity = activity;
+		this.username = username;
+		this.password = password;
 		this.listener = listener;
 	}
 
@@ -52,20 +58,19 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 				return new Response(UNAUTHORIZED, null);
 			}
 
-			final SharedPreferences preferences = new ObscuredSharedPreferences(activity, activity.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE));
-			final String username = preferences.getString(PREFERENCES_USERNAME, "");
-
 			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", getAuthenticationData(username, preferences.getString(PREFERENCES_PASSWORD, "")));
+			urlConnection.setRequestProperty("Authorization", getAuthenticationData(username, password));
+
 			final int response = urlConnection.getResponseCode();
-			if(response == 404) {
+			if(response == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(NOT_FOUND, null);
 			}
-			if(response == 401) {
+			if(response == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				return new Response(UNAUTHORIZED, null);
 			}
+
 			urlConnection.getInputStream();
-			return new Response(SUCCESS, null);
+			return new Response(SUCCESS, null, username, password);
 		}
 		catch(final Exception ex) {
 			return new Response(ERROR, ex);
@@ -74,7 +79,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 
 	@Override
 	protected final void onPostExecute(final Response result) {
-		listener.onAuthenticationResult(result.result, result.ex);
+		listener.onAuthenticationResult(result, result.ex);
 	}
 
 	public static final String getCalendarAddress(final Context context, final String account) {
@@ -96,9 +101,18 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		public Integer result;
 		public Exception ex;
 
+		public String username;
+		public String password;
+
 		public Response(final int result, final Exception ex) {
+			this(result, ex, null, null);
+		}
+
+		public Response(final int result, final Exception ex, final String username, final String password) {
 			this.result = result;
 			this.ex = ex;
+			this.username = username;
+			this.password = password;
 		}
 
 	}
@@ -106,7 +120,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	public interface AuthenticationListener {
 
 		void onAuthenticationTaskStarted();
-		void onAuthenticationResult(final int result, final Exception exception);
+		void onAuthenticationResult(final Response rsponse, final Exception exception);
 
 	}
 

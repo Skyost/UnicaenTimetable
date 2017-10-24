@@ -1,5 +1,6 @@
 package fr.skyost.timetable.activities;
 
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -18,9 +19,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.tasks.AuthenticationTask;
 import fr.skyost.timetable.utils.AppCompatPreferenceActivity;
-import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 
 import java.util.List;
 
@@ -28,10 +27,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 	private static final int INTRO_ACTIVITY_RESULT = 100;
 
-	private static final Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+	private static class BindPreferenceSummaryToValueListener implements Preference.OnPreferenceChangeListener {
 
 		@Override
 		public final boolean onPreferenceChange(final Preference preference, final Object value) {
+			return notifyPreferenceChange(preference, value, true);
+		}
+
+		public final boolean notifyPreferenceChange(final Preference preference, final Object value, final boolean savePreference) {
 			final Resources resources = preference.getContext().getResources();
 			final String string = value.toString();
 			switch(preference.getKey().toLowerCase()) {
@@ -47,7 +50,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				preference.setSummary(TextUtils.isEmpty(string) ? resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0] : resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[Integer.valueOf(string)]);
 				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0]));
 
-				preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
+				if(savePreference) {
+					preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
+				}
 				break;
 			}
 			return true;
@@ -111,8 +116,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	}
 
 	private static final void bindPreferenceSummaryToValue(final SharedPreferences preferences, final Preference preference) {
-		preference.setOnPreferenceChangeListener(bindPreferenceSummaryToValueListener);
-		bindPreferenceSummaryToValueListener.onPreferenceChange(preference, preferences.getString(preference.getKey(), ""));
+		final BindPreferenceSummaryToValueListener listener = new BindPreferenceSummaryToValueListener();
+		preference.setOnPreferenceChangeListener(listener);
+		listener.notifyPreferenceChange(preference, preferences.getString(preference.getKey(), ""), false);
 	}
 
 	private static final void setDefaultPreferencesFile(final PreferenceFragment fragment) {
@@ -169,21 +175,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			this.setHasOptionsMenu(true);
 
 			final Activity activity = this.getActivity();
-			final SharedPreferences preferences = new ObscuredSharedPreferences(activity, activity.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
 
 			final Preference account = this.findPreference("account");
-			account.setSummary(this.getResources().getString(R.string.settings_account, preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "")));
+			account.setSummary(this.getResources().getString(R.string.settings_account, AccountManager.get(activity).getAccountsByType(this.getString(R.string.account_type))[0].name));
 			account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
 				@Override
 				public final boolean onPreferenceClick(final Preference preference) {
 					final Activity activity = AccountPreferenceFragment.this.getActivity();
 					final Intent intent = new Intent(activity, IntroActivity.class);
-					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_PERMISSION_INTERNET);
+					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_ACCOUNT);
 					intent.putExtra(IntroActivity.INTENT_ALLOW_BACKWARD, false);
 					activity.startActivityForResult(intent, INTRO_ACTIVITY_RESULT);
 					return true;
 				}
+
 			});
 		}
 

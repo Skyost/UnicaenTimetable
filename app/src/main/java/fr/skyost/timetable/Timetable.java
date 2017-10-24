@@ -1,6 +1,7 @@
 package fr.skyost.timetable;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -8,6 +9,7 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Summary;
 
 import org.joda.time.DateTime;
@@ -58,7 +60,8 @@ public class Timetable implements Serializable {
 
 			final Summary summary = event.getSummary();
 			final Description description = event.getDescription();
-			lessons.add(new Lesson(summary == null ? "" : summary.getValue(), description == null ? "" : description.getValue(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
+			final Location location = event.getLocation();
+			lessons.add(new Lesson(summary == null ? "" : summary.getValue(), description == null ? "" : description.getValue(), location == null ? "" : location.getValue(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
 		}
 	}
 
@@ -69,6 +72,23 @@ public class Timetable implements Serializable {
 	 */
 
 	public final Set<Lesson> getLessons() {
+		return lessons;
+	}
+
+	/**
+	 * Gets today's lessons for this timetable.
+	 *
+	 * @return The lessons.
+	 */
+
+	public final Set<Lesson> getLessonsOfToday() {
+		final Set<Lesson> lessons = new HashSet<>(this.lessons);
+		for(final Lesson lesson : this.lessons) {
+			if(DateUtils.isToday(lesson.getStart().getTimeInMillis())) {
+				continue;
+			}
+			lessons.remove(lesson);
+		}
 		return lessons;
 	}
 
@@ -266,6 +286,7 @@ public class Timetable implements Serializable {
 		private final int id;
 		private final String name;
 		private final String description;
+		private final String location;
 		private final Day day;
 		private final Calendar start;
 		private final Calendar end;
@@ -275,12 +296,13 @@ public class Timetable implements Serializable {
 		 *
 		 * @param name The name of this lesson.
 		 * @param description The description of this lesson.
+		 * @param location The location of this lesson.
 		 * @param day The day of this lesson.
 		 * @param start The start time of this lesson.
 		 * @param end The end time of this lesson.
 		 */
 
-		public Lesson(final String name, final String description, final Day day, final Calendar start, final Calendar end) {
+		public Lesson(final String name, final String description, final String location, final Day day, final Calendar start, final Calendar end) {
 			final Random random = new Random();
 			int id;
 			do {
@@ -292,6 +314,7 @@ public class Timetable implements Serializable {
 
 			this.name = name;
 			this.description = description;
+			this.location = location;
 			this.day = day;
 			this.start = start;
 			this.end = end;
@@ -318,13 +341,23 @@ public class Timetable implements Serializable {
 		}
 
 		/**
+		 * Gets the description of this lesson.
+		 *
+		 * @return The description of this lesson.
+		 */
+
+		public final String getDescription() {
+			return description;
+		}
+
+		/**
 		 * Gets the location of this lesson.
 		 *
 		 * @return The location of this lesson.
 		 */
 
-		public final String getDescription() {
-			return description;
+		public final String getLocation() {
+			return location;
 		}
 
 		/**

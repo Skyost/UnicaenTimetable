@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
+    <item
         android:id="@+id/nav_home"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home_home"
-            android:icon="@drawable/nav_home_home_drawable"
-            android:title="@string/main_nav_home_home"/>
-    </group>
+        android:title="@string/main_nav_home_home">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_home_home"
+                    android:icon="@drawable/nav_home_home_drawable"
+                    android:title="@string/main_nav_home_home"/>
+                <item
+                    android:id="@+id/nav_week_selector"
+                    android:icon="@drawable/nav_week_selector_selector_drawable"
+                    android:title="@string/main_nav_week_selector"
+                    android:checkable="false"/>
+            </group>
+        </menu>
+    </item>
 
-    <group
-        android:id="@+id/nav_week_selector">
-        <item
-            android:id="@+id/nav_week_selector_selector"
-            android:icon="@drawable/nav_week_selector_selector_drawable"
-            android:title="@string/main_nav_week_selector"/>
-    </group>
-
-    <group
+    <item
         android:id="@+id/nav_timetable"
         android:checkableBehavior="single"
         android:title="@string/main_nav_timetable">
-        <item
-            android:id="@+id/nav_timetable_monday"
-            android:icon="@drawable/nav_timetable_monday_drawable"
-            android:title="@string/main_nav_timetable_monday"/>
-        <item
-            android:id="@+id/nav_timetable_tuesday"
-            android:icon="@drawable/nav_timetable_tuesday_drawable"
-            android:title="@string/main_nav_timetable_tuesday"/>
-        <item
-            android:id="@+id/nav_timetable_wednesday"
-            android:icon="@drawable/nav_timetable_wednesday_drawable"
-            android:title="@string/main_nav_timetable_wednesday"/>
-        <item
-            android:id="@+id/nav_timetable_thursday"
-            android:icon="@drawable/nav_timetable_thursday_drawable"
-            android:title="@string/main_nav_timetable_thursday"/>
-        <item
-            android:id="@+id/nav_timetable_friday"
-            android:icon="@drawable/nav_timetable_friday_drawable"
-            android:title="@string/main_nav_timetable_friday"/>
-    </group>
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_timetable_monday"
+                    android:icon="@drawable/nav_timetable_monday_drawable"
+                    android:title="@string/main_nav_timetable_monday"/>
+                <item
+                    android:id="@+id/nav_timetable_tuesday"
+                    android:icon="@drawable/nav_timetable_tuesday_drawable"
+                    android:title="@string/main_nav_timetable_tuesday"/>
+                <item
+                    android:id="@+id/nav_timetable_wednesday"
+                    android:icon="@drawable/nav_timetable_wednesday_drawable"
+                    android:title="@string/main_nav_timetable_wednesday"/>
+                <item
+                    android:id="@+id/nav_timetable_thursday"
+                    android:icon="@drawable/nav_timetable_thursday_drawable"
+                    android:title="@string/main_nav_timetable_thursday"/>
+                <item
+                    android:id="@+id/nav_timetable_friday"
+                    android:icon="@drawable/nav_timetable_friday_drawable"
+                    android:title="@string/main_nav_timetable_friday"/>
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/nav_others"

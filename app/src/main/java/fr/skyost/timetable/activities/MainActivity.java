@@ -1,7 +1,11 @@
 package fr.skyost.timetable.activities;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +22,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -33,10 +38,10 @@ import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.Timetable.Day;
 import fr.skyost.timetable.fragments.DayFragment;
 import fr.skyost.timetable.fragments.DefaultFragment;
+import fr.skyost.timetable.receivers.TodayWidgetReceiver;
 import fr.skyost.timetable.tasks.AuthenticationTask;
 import fr.skyost.timetable.tasks.CalendarTask;
 import fr.skyost.timetable.tasks.CalendarTask.CalendarTaskListener;
-import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 
 public class MainActivity extends AppCompatActivity implements CalendarTaskListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
 
 	public static final String INTENT_TIMETABLE = "timetable";
+	public static final String INTENT_REFRESH_TIMETABLE = "refresh-timetable";
+	public static final String INTENT_CURRENT_FRAGMENT = "current-fragment";
 	public static final String INTENT_BASEWEEK = "base-week";
 	public static final String INTENT_SELECTED = "selected";
 
@@ -67,8 +74,11 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		final Account[] accounts = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type));
 		final SharedPreferences preferences = this.getSharedPreferences(PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		boolean showIntro = preferences.getBoolean(PREFERENCES_SHOW_INTRO, true);
+		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
+		boolean showIntro = preferences.getBoolean(PREFERENCES_SHOW_INTRO, true) || accounts.length == 0 || authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD);
+
 		if(showIntro) {
 			this.startActivityForResult(new Intent(this, IntroActivity.class), INTRO_ACTIVITY_RESULT);
 		}
@@ -101,12 +111,24 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
-		final String username = new ObscuredSharedPreferences(this, getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE)).getString(AuthenticationTask.PREFERENCES_USERNAME, "xxxxxxxx");
+		final String username = accounts.length > 0 ? accounts[0].name : "21700000";
+
 		final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
 		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
 		navigationView.setNavigationItemSelectedListener(this);
 
-		showFragment(currentMenuSelected);
+		final Intent intent = this.getIntent();
+		if(intent.hasExtra(INTENT_REFRESH_TIMETABLE) && intent.getBooleanExtra(INTENT_REFRESH_TIMETABLE, true)) {
+			refreshTimetable();
+			intent.removeExtra(INTENT_REFRESH_TIMETABLE);
+		}
+		if(intent.hasExtra(INTENT_CURRENT_FRAGMENT)) {
+			showFragment(intent.getIntExtra(INTENT_CURRENT_FRAGMENT, -1));
+			intent.removeExtra(INTENT_CURRENT_FRAGMENT);
+		}
+		else {
+			showFragment(currentMenuSelected);
+		}
 	}
 
 	@Override
@@ -119,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	@Override
 	protected final void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		final String username = new ObscuredSharedPreferences(this, getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE)).getString(AuthenticationTask.PREFERENCES_USERNAME, "xxxxxxxx");
+		final String username = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type))[0].name;
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
 			if(resultCode != Activity.RESULT_OK) {
@@ -165,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		case R.id.nav_home_home:
 			showFragment(-1);
 			break;
-		case R.id.nav_week_selector_selector:
+		case R.id.nav_week_selector:
 			final List<DateTime> availableWeeks = timetable.getAvailableWeeks();
 			final List<String> dialogData = new ArrayList<String>();
 
@@ -233,7 +255,14 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		switch(result) {
 		case AuthenticationTask.SUCCESS:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_success, Snackbar.LENGTH_SHORT).show();
+			baseWeek = -1;
 			showFragment(currentMenuSelected);
+
+			final RemoteViews remoteViews = new RemoteViews(this.getPackageName(), R.layout.widget_today_layout);
+			final AppWidgetManager manager = AppWidgetManager.getInstance(this);
+			for(final int id : manager.getAppWidgetIds(new ComponentName(this, TodayWidgetReceiver.class))) {
+				manager.updateAppWidget(id, remoteViews);
+			}
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			final Resources resources = this.getResources();
@@ -257,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 				public final void onDismissed(final Snackbar snackbar, final int event) {
 					super.onDismissed(snackbar, event);
 					final Intent intent = new Intent(MainActivity.this, IntroActivity.class);
-					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_PERMISSION_INTERNET);
+					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_ACCOUNT);
 					MainActivity.this.startActivityForResult(intent, INTRO_ACTIVITY_RESULT);
 				}
 
@@ -323,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	 */
 
 	public final void refreshTimetable() {
-		baseWeek = -1;
 		new CalendarTask(this, this).execute();
 	}
 

@@ -187,6 +187,15 @@ public class DayFragment extends Fragment {
 						dialog.dismiss();
 					}
 
+				}).setNegativeButton(R.string.dialog_event_button_negative, new DialogInterface.OnClickListener() {
+
+					@Override
+					public final void onClick(final DialogInterface dialog, final int which) {
+						colorPreferences.edit().remove(event.getName()).apply();
+						dialog.dismiss();
+						activity.showFragment(activity.currentMenuSelected);
+					}
+
 				});
 				builder.create().show();
 				if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, true)) {

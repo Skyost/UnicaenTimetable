@@ -17,9 +17,12 @@
     <string name="dialog_advancedlogin_calendar">Calendrier</string>
     <string name="dialog_advancedlogin_button_less">Moins</string>
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
+    <string name="dialog_event_button_negative">Couleur par défaut</string>
     <string name="dialog_error_notfound_title">Calendrier non trouvé !</string>
     <string name="dialog_error_notfound_message_1">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.</string>
     <string name="dialog_error_notfound_message_2">Vous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.</string>
+    <string name="dialog_error_newauth_title">Nouvelle méthode d\'authentification</string>
+    <string name="dialog_error_newauth_message">Hey !\nNous utilisons une nouvelle méthode d\'authentification dans cette nouvelle version d\'Emploi du temps Unicaen, cela signifie que vous devez vous re-connecter.\nDésolé pour le dérangement !</string>
     <string name="dialog_color_title">Changer la couleur</string>
     <string name="dialog_weekselector_default">Par défaut (semaine en cours)</string>
 
@@ -91,5 +94,10 @@
 
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>
+
+    <string name="widget_today_title">AUJOURD\'HUI</string>
+    <string name="widget_today_nothing">Aucun cours aujourd\'hui.</string>
+    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
+    <string name="widget_today_error">Impossible de charger votre emploi du temps.</string>
 
 </resources>

@@ -1,16 +1,24 @@
 package fr.skyost.timetable.utils;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 public class Utils {
 
@@ -107,20 +115,50 @@ public class Utils {
 	}
 
 	/**
-	 * Gets the system's locale.
+	 * Removes an account.
 	 *
-	 * @param context Context of the application.
-	 *
-	 * @return The locale.
+	 * @param manager The accounts manager.
+	 * @param account The account.
 	 */
 
-	public static final Locale getCurrentLocale(final Context context){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-			return context.getResources().getConfiguration().getLocales().get(0);
+	public static final void removeAccount(final AccountManager manager, final Account account) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+			manager.removeAccountExplicitly(account);
 		}
 		else {
-			return context.getResources().getConfiguration().locale;
+			manager.removeAccount(account, null, null);
 		}
+	}
+
+	public static final String a(final Activity activity, final Account account) {
+		final String value = AccountManager.get(activity).getPassword(account);
+		try {
+			final byte[] bytes = value == null ? new byte[0] : Base64.decode(value,Base64.DEFAULT);
+			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+			final SecretKey key = keyFactory.generateSecret(new PBEKeySpec(Settings.Secure.ANDROID_ID.toCharArray()));
+			final Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+			pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(activity.getContentResolver(),Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
+			return new String(pbeCipher.doFinal(bytes), Utils.UTF_8);
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+		}
+		return value;
+	}
+
+	public static final String b(final Activity activity, final String value) {
+		try {
+			final byte[] bytes = value == null ? new byte[0] : value.getBytes(UTF_8);
+			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+			final SecretKey key = keyFactory.generateSecret(new PBEKeySpec(Settings.Secure.ANDROID_ID.toCharArray()));
+			final Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+			pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
+			return new String(Base64.encode(pbeCipher.doFinal(bytes), Base64.NO_WRAP), Utils.UTF_8);
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+		}
+		return value;
 	}
 
 }

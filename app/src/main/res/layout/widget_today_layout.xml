@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/widget_today_layout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="@dimen/widget_today_layout_margin"
+              android:paddingTop="@dimen/widget_today_layout_padding_top_bottom"
+              android:paddingRight="@dimen/widget_today_layout_margin_right_left"
+              android:paddingBottom="@dimen/widget_today_layout_padding_top_bottom"
+              android:paddingLeft="@dimen/widget_today_layout_margin_right_left"
+              android:background="@drawable/widget_today_background"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widget_today_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_today_title"
+        android:textColor="@color/color_widget_today_white"
+        android:textSize="@dimen/widget_today_title_size"
+        android:textStyle="bold"
+        android:layout_toStartOf="@+id/widget_today_refresh"/>
+
+    <LinearLayout
+        android:id="@+id/widget_horizontal_white_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/widget_today_rule_height"
+        android:layout_marginTop="@dimen/widget_today_rule_margin_top"
+        android:layout_marginBottom="@dimen/widget_today_rule_margin_bottom"
+        android:layout_below="@id/widget_today_title"
+        android:background="@color/color_widget_today_white"
+        android:orientation="horizontal" >
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/widget_today_refresh"
+        android:layout_width="@dimen/widget_today_refresh_size"
+        android:layout_height="@dimen/widget_today_refresh_size"
+        android:src="@drawable/widget_today_refresh_drawable"
+        android:layout_above="@id/widget_horizontal_white_bar"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/widget_today_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:ellipsize="end"
+        android:textSize="@dimen/widget_today_content_size"
+        android:maxLines="9"
+        android:layout_below="@id/widget_horizontal_white_bar"
+        android:textColor="@color/color_widget_today_white"/>
+
+</RelativeLayout>

@@ -1,10 +1,11 @@
 package fr.skyost.timetable.tasks;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -12,9 +13,11 @@ import net.fortuna.ical4j.model.Calendar;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
+import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
-import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 import fr.skyost.timetable.utils.Utils;
 
 public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
@@ -39,17 +42,26 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 
-			final SharedPreferences preferences = new ObscuredSharedPreferences(activity, activity.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
-			final String username = preferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
+			final AccountManager manager = AccountManager.get(activity);
+			final Account account = manager.getAccountsByType(activity.getString(R.string.account_type))[0];
 
-			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(username, preferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "")));
+			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, account.name)).openConnection();
+			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(account.name, Utils.a(activity, account)));
 
 			final int response = urlConnection.getResponseCode();
-			if(response == 404) {
+
+			for (Map.Entry<String, List<String>> entries : urlConnection.getHeaderFields().entrySet()) {
+				String values = "";
+				for (String value : entries.getValue()) {
+					values += value + ",";
+				}
+				Log.d("RESPONSE LOLILOLLLLL", entries.getKey() + " - " +  values );
+			}
+
+			if(response == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(AuthenticationTask.NOT_FOUND, null, null);
 			}
-			if(response == 401) {
+			if(response == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 

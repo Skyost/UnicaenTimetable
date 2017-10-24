@@ -1,6 +1,8 @@
 package fr.skyost.timetable.activities;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -8,11 +10,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.EditText;
@@ -22,22 +21,17 @@ import com.github.paolorotolo.appintro.AppIntro2;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.fragments.FirstSlideFragment;
-import fr.skyost.timetable.fragments.FourthSlideFragment;
-import fr.skyost.timetable.fragments.SecondSlideFragment;
 import fr.skyost.timetable.fragments.ThirdSlideFragment;
+import fr.skyost.timetable.fragments.SecondSlideFragment;
 import fr.skyost.timetable.tasks.AuthenticationTask;
 import fr.skyost.timetable.tasks.AuthenticationTask.AuthenticationListener;
-import fr.skyost.timetable.utils.ObscuredSharedPreferences;
 import fr.skyost.timetable.utils.Utils;
 
 public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
-	private static final int INTERNET_REQUEST_CODE = 100;
-
 	public static final int SLIDE_PRESENTATION = 0;
-	public static final int SLIDE_PERMISSION_INTERNET = 1;
-	public static final int SLIDE_ACCOUNT = 2;
-	public static final int SLIDE_DONE = 3;
+	public static final int SLIDE_ACCOUNT = 1;
+	public static final int SLIDE_DONE = 2;
 
 	public static final String INTENT_GOTO = "goto";
 	public static final String INTENT_ALLOW_BACKWARD = "allow-backward";
@@ -56,7 +50,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 		this.addSlide(new FirstSlideFragment());
 		this.addSlide(new SecondSlideFragment());
 		this.addSlide(new ThirdSlideFragment());
-		this.addSlide(new FourthSlideFragment());
 
 		this.setProgressButtonEnabled(false);
 
@@ -71,6 +64,22 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			return;
 		}
 		allowBackward = intent.getBooleanExtra(INTENT_ALLOW_BACKWARD, true);
+
+		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
+		if(authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD)) {
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.dialog_error_newauth_title);
+			builder.setMessage(R.string.dialog_error_newauth_message);
+			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
+
+				@Override
+				public final void onClick(final DialogInterface dialog, final int id) {
+					dialog.dismiss();
+				}
+
+			});
+			builder.create().show();
+		}
 	}
 
 	@Override
@@ -114,29 +123,11 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 		}
 		else if(newFragment instanceof SecondSlideFragment) {
 			this.setNextPageSwipeLock(true);
-			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, INTERNET_REQUEST_CODE);
-		}
-		else if(newFragment instanceof ThirdSlideFragment) {
-			this.setNextPageSwipeLock(true);
 			showLoginDialog();
 		}
-		else if(newFragment instanceof FourthSlideFragment) {
+		else if(newFragment instanceof ThirdSlideFragment) {
 			this.setSwipeLock(true);
 			this.setProgressButtonEnabled(true);
-		}
-	}
-
-	@Override
-	public final void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
-		switch(requestCode) {
-		case INTERNET_REQUEST_CODE:
-			if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				this.getPager().setCurrentItem(SLIDE_ACCOUNT);
-				break;
-			}
-			this.setNextPageSwipeLock(false);
-			this.getPager().setCurrentItem(SLIDE_PRESENTATION);
-			break;
 		}
 	}
 
@@ -149,7 +140,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	}
 
 	@Override
-	public final void onAuthenticationResult(final int result, final Exception exception) {
+	public final void onAuthenticationResult(final AuthenticationTask.Response response, final Exception exception) {
 		if(dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
@@ -157,10 +148,18 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 		if(exception != null) {
 			exception.printStackTrace();
 		}
-		switch(result) {
+		switch(response.result) {
 		case AuthenticationTask.SUCCESS:
 			this.setNextPageSwipeLock(true);
 			this.getPager().setCurrentItem(SLIDE_DONE);
+
+			final AccountManager manager = AccountManager.get(this);
+			for(final Account account : manager.getAccountsByType(this.getString(R.string.account_type))) {
+				Utils.removeAccount(manager, account);
+			}
+
+			final Account account = new Account(response.username, this.getString(R.string.account_type));
+			manager.addAccountExplicitly(account, Utils.b(this, response.password), null);
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			if(!Utils.hasPermission(this, Manifest.permission.INTERNET)) {
@@ -259,13 +258,14 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	 */
 
 	private final void createDialog(final AlertDialog.Builder builder, final EditText usernameEditText, final EditText passwordEditText, final EditText serverEditText, final EditText calendarEditText) {
-		final SharedPreferences obscuredPreferences = new ObscuredSharedPreferences(this, this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE));
+		final AccountManager manager = AccountManager.get(this);
+		final Account[] accounts = manager.getAccountsByType(this.getString(R.string.account_type));
+		final Account account = accounts.length > 0 ? accounts[0] : null;
 
-		final String usernamePreferences = obscuredPreferences.getString(AuthenticationTask.PREFERENCES_USERNAME, "");
-		final String passwordPreferences = obscuredPreferences.getString(AuthenticationTask.PREFERENCES_PASSWORD, "");
-
-		usernameEditText.setText(usernamePreferences);
-		passwordEditText.setText(passwordPreferences);
+		if(account != null) {
+			usernameEditText.setText(account.name);
+			passwordEditText.setText(Utils.a(this, account));
+		}
 
 		if(serverEditText != null && calendarEditText != null) {
 			final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
@@ -282,14 +282,9 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 				final String username = usernameEditText.getText().toString();
 				final String password = passwordEditText.getText().toString();
 
-				if(!username.equals(usernamePreferences) || !password.equals(passwordPreferences)) {
+				if(account == null || !username.equals(account.name) || !password.equals(Utils.a(IntroActivity.this, account))) {
 					accountChanged = true;
 				}
-
-				final SharedPreferences.Editor obscuredEditor = obscuredPreferences.edit();
-				obscuredEditor.putString(AuthenticationTask.PREFERENCES_USERNAME, username);
-				obscuredEditor.putString(AuthenticationTask.PREFERENCES_PASSWORD, password);
-				obscuredEditor.commit();
 
 				if(serverEditText != null && calendarEditText != null) {
 					final SharedPreferences.Editor editor = IntroActivity.this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit();
@@ -297,7 +292,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 					editor.putString(MainActivity.PREFERENCES_CALENDAR, calendarEditText.getText().toString());
 					editor.commit();
 				}
-				new AuthenticationTask(IntroActivity.this, IntroActivity.this).execute();
+				new AuthenticationTask(IntroActivity.this, username, password, IntroActivity.this).execute();
 			}
 
 		}).setNegativeButton(R.string.dialog_generic_button_cancel, new DialogInterface.OnClickListener() {
