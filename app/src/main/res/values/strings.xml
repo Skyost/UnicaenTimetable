@@ -108,6 +108,9 @@
     <string name="settings_default_server" translatable="false">https://webmail.unicaen.fr</string>
     <string name="settings_default_calendarname" translatable="false">Emploi du temps</string>
 
+    <string name="settings_calendar_interval_description_1" formatted="false">This will download your timetable from %s to %s.</string>
+    <string name="settings_calendar_interval_description_2" formatted="false">This will download all your available timetable on the Unicaen servers.</string>
+
     <string name="widget_today_title">TODAY</string>
     <string name="widget_today_nothing">Nothing today.</string>
     <string name="widget_today_nothingremaining">There\'s nothing remaining today.</string>

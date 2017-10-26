@@ -95,6 +95,9 @@
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>
 
+    <string name="settings_calendar_interval_description_1" formatted="false">Cela va télécharger votre emploi du temps du %s au %s.</string>
+    <string name="settings_calendar_interval_description_2" formatted="false">Cela va télécharger tout votre emploi du temps disponible sur les serveurs d\'Unicaen.</string>
+
     <string name="widget_today_title">AUJOURD\'HUI</string>
     <string name="widget_today_nothing">Aucun cours aujourd\'hui.</string>
     <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>

@@ -100,21 +100,6 @@ public class Utils {
 	}
 
 	/**
-	 * Safely casts a long to an int.
-	 *
-	 * @param l The long.
-	 *
-	 * @return The checked cast.
-	 */
-
-	public static final int safeLongToInt(final long l) {
-		if(l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException (l + " cannot be cast to int without changing its value.");
-		}
-		return (int)l;
-	}
-
-	/**
 	 * Removes an account.
 	 *
 	 * @param manager The accounts manager.

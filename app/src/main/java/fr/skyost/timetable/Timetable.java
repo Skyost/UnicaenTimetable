@@ -150,9 +150,6 @@ public class Timetable implements Serializable {
 				.withDayOfWeek(DateTimeConstants.MONDAY);
 
 		switch(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0")) {
-		case "0":
-			time = time.minusWeeks(2);
-			break;
 		case "1":
 			time = time.minusMonths(1);
 			break;
@@ -161,6 +158,9 @@ public class Timetable implements Serializable {
 			break;
 		case "3":
 			time = null;
+			break;
+		default:
+			time = time.minusWeeks(2);
 			break;
 		}
 
@@ -213,9 +213,6 @@ public class Timetable implements Serializable {
 				.withDayOfWeek(DateTimeConstants.SUNDAY);
 
 		switch(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0")) {
-		case "0":
-			time = time.plusWeeks(2);
-			break;
 		case "1":
 			time = time.plusMonths(1);
 			break;
@@ -224,6 +221,9 @@ public class Timetable implements Serializable {
 			break;
 		case "3":
 			time = null;
+			break;
+		default:
+			time = time.plusWeeks(2);
 			break;
 		}
 

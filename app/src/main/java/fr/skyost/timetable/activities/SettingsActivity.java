@@ -18,9 +18,12 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import org.joda.time.DateTime;
+
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.utils.AppCompatPreferenceActivity;
 
+import java.text.DateFormat;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -47,8 +50,37 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getString(R.string.settings_default_calendarname)));
 				break;
 			case MainActivity.PREFERENCES_CALENDAR_INTERVAL:
+				DateTime inf = DateTime.now();
+				DateTime sup = DateTime.now();
+
+				switch(string) {
+				case "1":
+					inf = inf.minusMonths(1);
+					sup = sup.plusMonths(1);
+					break;
+				case "2":
+					inf = inf.minusMonths(3);
+					sup = sup.plusMonths(3);
+					break;
+				case "3":
+					inf = null;
+					sup = null;
+					break;
+				default:
+					inf = inf.minusWeeks(2);
+					sup = sup.plusWeeks(2);
+					break;
+				}
+
+				final DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+
 				preference.setSummary(TextUtils.isEmpty(string) ? resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0] : resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[Integer.valueOf(string)]);
-				preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_default, resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0]));
+				if(inf == null || sup == null) {
+					preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_calendar_interval_description_2));
+				}
+				else {
+					preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_calendar_interval_description_1, formatter.format(inf.toDate()), formatter.format(sup.toDate())));
+				}
 
 				if(savePreference) {
 					preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
