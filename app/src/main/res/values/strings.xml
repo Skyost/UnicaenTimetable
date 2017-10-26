@@ -85,7 +85,7 @@
     <string name="preferences_server">Server</string>
     <string name="preferences_server_calendar">Calendar</string>
     <string name="preferences_server_server">Zimbra server</string>
-    <string name="preferences_server_calendar_interval_values">Calendar download interval</string>
+    <string name="preferences_server_calendar_interval">Calendar download interval</string>
     <string-array name="preferences_server_calendar_interval_keys">
         <item>2 weeks</item>
         <item>1 month</item>

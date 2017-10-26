@@ -82,7 +82,7 @@
     <string name="preferences_server">Serveur</string>
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
-    <string name="preferences_server_calendar_interval_values">Intervalle de téléchargement du calendrier</string>
+    <string name="preferences_server_calendar_interval">Intervalle de téléchargement du calendrier</string>
     <string-array name="preferences_server_calendar_interval_keys">
         <item>2 semaines</item>
         <item>1 mois</item>

@@ -20,7 +20,7 @@
 
     <ListPreference
         android:key="calendar-interval"
-        android:title="@string/preferences_server_calendar_interval_values"
+        android:title="@string/preferences_server_calendar_interval"
         android:defaultValue="0"
         android:entries="@array/preferences_server_calendar_interval_keys"
         android:entryValues="@array/preferences_server_calendar_interval_values"/>
