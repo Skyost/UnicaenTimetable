@@ -10,7 +10,7 @@
         android:maxLines="1" />
 
     <EditTextPreference
-        android:key="calendar"
+        android:key="calendar-nohtml"
         android:title="@string/preferences_server_calendar"
         android:defaultValue="@string/settings_default_calendarname"
         android:selectAllOnFocus="true"

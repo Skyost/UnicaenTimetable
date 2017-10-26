@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	public static final String PREFERENCES_TITLE = "preferences";
 	public static final String PREFERENCES_SHOW_INTRO = "show-intro";
 	public static final String PREFERENCES_SERVER = "server";
-	public static final String PREFERENCES_CALENDAR = "calendar";
+	public static final String PREFERENCES_CALENDAR = "calendar-nohtml";
 	public static final String PREFERENCES_CALENDAR_INTERVAL = "calendar-interval";
 	public static final String PREFERENCES_LAST_UPDATE = "last-update";
 	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
