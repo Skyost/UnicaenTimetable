@@ -5,7 +5,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -13,8 +12,6 @@ import net.fortuna.ical4j.model.Calendar;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
@@ -49,15 +46,6 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(account.name, Utils.a(activity, account)));
 
 			final int response = urlConnection.getResponseCode();
-
-			for (Map.Entry<String, List<String>> entries : urlConnection.getHeaderFields().entrySet()) {
-				String values = "";
-				for (String value : entries.getValue()) {
-					values += value + ",";
-				}
-				Log.d("RESPONSE LOLILOLLLLL", entries.getKey() + " - " +  values );
-			}
-
 			if(response == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(AuthenticationTask.NOT_FOUND, null, null);
 			}

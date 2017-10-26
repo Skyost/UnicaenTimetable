@@ -43,7 +43,7 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today_layout);
 
-		Lesson lastLesson = null;
+		Lesson nextLesson = null;
 		try {
 			final StringBuilder content = new StringBuilder();
 			final List<Lesson> lessons = new ArrayList<Lesson>(Timetable.loadFromDisk(context).getLessonsOfToday());
@@ -68,13 +68,13 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 						content.append(Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "&emsp;");
 						content.append("<i>" + lesson.getLocation() + "</i><br/><br/>");
 
-						if(lastLesson == null || lastLesson.getEnd().getTimeInMillis() < lesson.getEnd().getTimeInMillis()) {
-							lastLesson = lesson;
+						if(nextLesson == null || lesson.getEnd().getTimeInMillis() < nextLesson.getEnd().getTimeInMillis()) {
+							nextLesson = lesson;
 						}
 					}
 				}
 
-				if(lastLesson == null) {
+				if(nextLesson == null) {
 					content.append("<i>" + context.getResources().getString(R.string.widget_today_nothingremaining) + "</i>");
 				}
 				else {
@@ -93,8 +93,15 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 		for(final int id : ids) {
 			manager.updateAppWidget(id, views);
 		}
-		scheduleNextUpdate(context, lastLesson);
+		scheduleNextUpdate(context, nextLesson);
 	}
+
+	/**
+	 * Update widgets' message.
+	 *
+	 * @param views Widgets' RemoteViews.
+	 * @param content The message.
+	 */
 
 	public final void updateMessage(final RemoteViews views, final String content) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -104,6 +111,13 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 			views.setTextViewText(R.id.widget_today_content, Html.fromHtml(content.toString()));
 		}
 	}
+
+	/**
+	 * Attaches MainActivity intents to this widget.
+	 *
+	 * @param context A context.
+	 * @param views Widgets' RemoteViews.
+	 */
 
 	public final void registerIntents(final Context context, final RemoteViews views) {
 		int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
@@ -119,6 +133,13 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 		views.setOnClickPendingIntent(R.id.widget_today_refresh, PendingIntent.getActivity(context, REFRESH_REQUEST, refresh, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
+	/**
+	 * Schedules widgets next update.
+	 *
+	 * @param context A context.
+	 * @param lesson The next lesson.
+	 */
+
 	private static final void scheduleNextUpdate(final Context context, final Lesson lesson) {
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
@@ -131,13 +152,14 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 			calendar = Calendar.getInstance();
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 1);
+			calendar.set(Calendar.SECOND, 0);
 			calendar.set(Calendar.MILLISECOND, 0);
 			calendar.add(Calendar.DAY_OF_YEAR, 1);
 		}
 		else {
 			calendar = lesson.getEnd();
 		}
+		calendar.add(Calendar.SECOND, 1);
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending);

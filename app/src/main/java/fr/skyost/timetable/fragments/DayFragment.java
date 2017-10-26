@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.provider.AlarmClock;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
-import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
@@ -43,6 +41,7 @@ import fr.skyost.timetable.Timetable.Day;
 import fr.skyost.timetable.Timetable.Lesson;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.utils.Utils;
+import fr.skyost.timetable.utils.WeekView;
 
 public class DayFragment extends Fragment {
 
