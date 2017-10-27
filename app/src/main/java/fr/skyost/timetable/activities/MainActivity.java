@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type));
 		final SharedPreferences preferences = this.getSharedPreferences(PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
-		boolean showIntro = preferences.getBoolean(PREFERENCES_SHOW_INTRO, true) || accounts.length == 0 || authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD);
+		boolean showIntro = preferences.getBoolean(PREFERENCES_SHOW_INTRO, true) || (accounts.length == 0 && (authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD)));
 
 		if(showIntro) {
 			this.startActivityForResult(new Intent(this, IntroActivity.class), INTRO_ACTIVITY_RESULT);

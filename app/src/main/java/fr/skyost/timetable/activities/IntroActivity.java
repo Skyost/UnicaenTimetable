@@ -67,6 +67,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
 		if(authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD)) {
+			authentication.edit().clear().apply();
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_newauth_title);
 			builder.setMessage(R.string.dialog_error_newauth_message);
