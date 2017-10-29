@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -258,17 +259,15 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			baseWeek = -1;
 			showFragment(currentMenuSelected);
 
-			final RemoteViews remoteViews = new RemoteViews(this.getPackageName(), R.layout.widget_today_layout);
-			final AppWidgetManager manager = AppWidgetManager.getInstance(this);
-			for(final int id : manager.getAppWidgetIds(new ComponentName(this, TodayWidgetReceiver.class))) {
-				manager.updateAppWidget(id, remoteViews);
-			}
+			final Intent updateIntent = new Intent();
+			updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
+			this.sendBroadcast(updateIntent);
 			break;
 		case AuthenticationTask.NOT_FOUND:
-			final Resources resources = this.getResources();
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_notfound_title);
-			builder.setMessage(resources.getString(R.string.dialog_error_notfound_message_1) + "\n" + resources.getString(R.string.dialog_error_notfound_message_2));
+			builder.setMessage(R.string.dialog_error_notfound_message);
 			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
 
 				@Override
@@ -280,7 +279,8 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			builder.create().show();
 			break;
 		case AuthenticationTask.UNAUTHORIZED:
-			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_credentials, Snackbar.LENGTH_SHORT).setCallback(new Snackbar.Callback() {
+			final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_credentials, Snackbar.LENGTH_SHORT);
+			final Snackbar.Callback callback = new Snackbar.Callback() {
 
 				@Override
 				public final void onDismissed(final Snackbar snackbar, final int event) {
@@ -290,7 +290,14 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 					MainActivity.this.startActivityForResult(intent, INTRO_ACTIVITY_RESULT);
 				}
 
-			}).show();
+			};
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1){
+				snackbar.addCallback(callback);
+			}
+			else {
+				snackbar.setCallback(callback);
+			}
+			snackbar.show();
 			break;
 		case AuthenticationTask.ERROR:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_network, Snackbar.LENGTH_SHORT).show();

@@ -5,8 +5,8 @@ configurations {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     packagingOptions {
         exclude('org/apache/commons/codec/language/bm/*.txt') // 124 files (uncompressed 215kb) with unused language specific rules.
@@ -14,9 +14,10 @@ android {
     defaultConfig {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
-        targetSdkVersion 25
-        versionCode 17
-        versionName "v1.0.2"
+        targetSdkVersion 26
+        versionCode 19
+        versionName "v1.0.4"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -28,9 +29,9 @@ android {
 
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
     compile 'org.slf4j:slf4j-android:1.7.25'
     compile 'org.apache.commons:commons-lang3:3.6'
     compile 'org.mnode.ical4j:ical4j:2.0.5'

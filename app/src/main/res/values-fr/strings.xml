@@ -19,8 +19,7 @@
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
     <string name="dialog_event_button_negative">Couleur par défaut</string>
     <string name="dialog_error_notfound_title">Calendrier non trouvé !</string>
-    <string name="dialog_error_notfound_message_1">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.</string>
-    <string name="dialog_error_notfound_message_2">Vous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.</string>
+    <string name="dialog_error_notfound_message">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.\nVous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.\nQuoi qu\'il en soit, cette erreur est fréquente. Veuillez réessayer plus tard.</string>
     <string name="dialog_error_newauth_title">Nouvelle méthode d\'authentification</string>
     <string name="dialog_error_newauth_message">Hey !\nNous utilisons une nouvelle méthode d\'authentification dans cette nouvelle version d\'Emploi du temps Unicaen, cela signifie que vous devez vous re-connecter.\nDésolé pour le dérangement !</string>
     <string name="dialog_color_title">Changer la couleur</string>
@@ -29,12 +28,10 @@
 
     <string name="intro_slide_1_title">Votre emploi du temps sur votre smartphone !</string>
     <string name="intro_slide_1_description">Cette application permet aux étudiants de l\'Université de Caen Normandie d\'avoir leur emploi du temps directement sur leur smartphone.</string>
-    <string name="intro_slide_2_title">Permission d\'utiliser Internet ?</string>
-    <string name="intro_slide_2_description">Nous avons besoin d\'internet pour télécharger votre emploi du temps !</string>
-    <string name="intro_slide_3_title">Nous devons maintenant accéder à votre compte Unicaen…</string>
-    <string name="intro_slide_3_description">Pas d\'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen.</string>
-    <string name="intro_slide_4_title">Tout est prêt !</string>
-    <string name="intro_slide_4_description">Vous êtes fin prêt. Appuyez sur le bouton ci-dessous pour commencer.</string>
+    <string name="intro_slide_2_title">Nous devons maintenant accéder à votre compte Unicaen…</string>
+    <string name="intro_slide_2_description">Pas d\'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen.</string>
+    <string name="intro_slide_3_title">Tout est prêt !</string>
+    <string name="intro_slide_3_description">Vous êtes fin prêt. Appuyez sur le bouton ci-dessous pour commencer.</string>
 
     <string name="intro_dialog_wait">Veuillez patienter…</string>
     <string name="intro_toast_error_permission">Nous avons besoin de la permission Internet !</string>
@@ -100,7 +97,7 @@
 
     <string name="widget_today_title">AUJOURD\'HUI</string>
     <string name="widget_today_nothing">Aucun cours aujourd\'hui.</string>
-    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
+    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui. Si vous pensez avoir quelque chose aujourd\'hui, veuillez rafraîchir votre emploi du temps.</string>
     <string name="widget_today_error">Impossible de charger votre emploi du temps.</string>
 
 </resources>

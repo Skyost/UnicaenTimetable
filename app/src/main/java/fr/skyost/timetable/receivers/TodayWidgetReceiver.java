@@ -29,9 +29,11 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	public static final int REFRESH_REQUEST = 200;
 	public static final int SCHEDULE_REQUEST = 300;
 
+	public static final String INTENT_REFRESH_WIDGETS = "refresh-wdgets";
+
 	@Override
 	public final void onReceive(final Context context, final Intent intent) {
-		if(intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+		if(intent.hasExtra(INTENT_REFRESH_WIDGETS)) {
 			final AppWidgetManager manager = AppWidgetManager.getInstance(context);
 			this.onUpdate(context, manager, manager.getAppWidgetIds(new ComponentName(context, TodayWidgetReceiver.class)));
 		}
@@ -80,9 +82,8 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 				else {
 					content.setLength(content.length() - 10);
 				}
-
-				updateMessage(views, content.toString());
 			}
+			updateMessage(views, content.toString());
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();

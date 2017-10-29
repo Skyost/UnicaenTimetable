@@ -15,7 +15,7 @@
         android:gravity="center"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:text="@string/intro_slide_4_title"
+        android:text="@string/intro_slide_3_title"
         android:textColor="#ffffff"
         android:textSize="28sp"/>
 
@@ -43,7 +43,7 @@
         android:gravity="center"
         android:paddingLeft="64dp"
         android:paddingRight="64dp"
-        android:text="@string/intro_slide_4_description"
+        android:text="@string/intro_slide_3_description"
         android:textColor="#ffffff"
         android:textSize="16sp"/>
 

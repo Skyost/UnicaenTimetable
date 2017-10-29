@@ -171,7 +171,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			}
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_notfound_title);
-			builder.setMessage(R.string.dialog_error_notfound_message_1);
+			builder.setMessage(R.string.dialog_error_notfound_message);
 			builder.setCancelable(false);
 			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
 
