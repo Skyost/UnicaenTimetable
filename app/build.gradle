@@ -15,8 +15,8 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 19
-        versionName "v1.0.4"
+        versionCode 21
+        versionName "v1.0.6"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -40,4 +40,5 @@ dependencies {
     compile 'joda-time:joda-time:2.9.9'
     compile 'com.github.quivr:android-week-view:2.0.2'
     compile 'com.github.QuadFlask:colorpicker:0.0.13'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
 }

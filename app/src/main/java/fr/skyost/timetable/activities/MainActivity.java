@@ -142,13 +142,13 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	@Override
 	protected final void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		final String username = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type))[0].name;
+		final Account[] accounts = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type));
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
 			if(resultCode != Activity.RESULT_OK) {
 				return;
 			}
-			((TextView)((NavigationView)this.findViewById(R.id.main_nav_view)).getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
+			((TextView)((NavigationView)this.findViewById(R.id.main_nav_view)).getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(accounts.length < 1 ? this.getString(R.string.main_noaccount) : this.getString(R.string.main_nav_email, accounts[0].name));
 			refreshTimetable();
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 				if(navigationView == null) {
 					break;
 				}
-				((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
+				((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(accounts.length < 1 ? this.getString(R.string.main_noaccount) : this.getString(R.string.main_nav_email, accounts[0].name));
 				preferences.edit().putBoolean(MainActivity.PREFERENCES_CHANGED_ACCOUNT, false).apply();
 			}
 			if(preferences.getBoolean(PREFERENCES_CHANGED_INTERVAL, false)) {
@@ -245,15 +245,15 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	}
 
 	@Override
-	public final void onCalendarResult(final int result, final Timetable timetable, final Exception exception) {
-		if(exception != null) {
-			exception.printStackTrace();
+	public final void onCalendarResult(final CalendarTask.Response response) {
+		if(response.ex != null) {
+			response.ex.printStackTrace();
 		}
-		setTimetable(timetable);
-		if(timetable != null) {
+		setTimetable(response.timetable);
+		if(response.timetable != null) {
 			saveTimetableOnDisk();
 		}
-		switch(result) {
+		switch(response.result) {
 		case AuthenticationTask.SUCCESS:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_success, Snackbar.LENGTH_SHORT).show();
 			baseWeek = -1;
@@ -264,6 +264,28 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
 			this.sendBroadcast(updateIntent);
 			break;
+		case AuthenticationTask.NO_ACCOUNT: {
+			final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_noaccount, Snackbar.LENGTH_SHORT);
+			final Snackbar.Callback callback = new Snackbar.Callback() {
+
+				@Override
+				public final void onDismissed(final Snackbar snackbar, final int event) {
+					super.onDismissed(snackbar, event);
+					final Intent intent = new Intent(MainActivity.this, IntroActivity.class);
+					intent.putExtra(IntroActivity.INTENT_GOTO, IntroActivity.SLIDE_ACCOUNT);
+					MainActivity.this.startActivityForResult(intent, INTRO_ACTIVITY_RESULT);
+				}
+
+			};
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+				snackbar.addCallback(callback);
+			}
+			else {
+				snackbar.setCallback(callback);
+			}
+			snackbar.show();
+			break;
+		}
 		case AuthenticationTask.NOT_FOUND:
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_notfound_title);
@@ -278,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			});
 			builder.create().show();
 			break;
-		case AuthenticationTask.UNAUTHORIZED:
+		case AuthenticationTask.UNAUTHORIZED: {
 			final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_credentials, Snackbar.LENGTH_SHORT);
 			final Snackbar.Callback callback = new Snackbar.Callback() {
 
@@ -291,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 				}
 
 			};
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1){
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 				snackbar.addCallback(callback);
 			}
 			else {
@@ -299,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			}
 			snackbar.show();
 			break;
+		}
 		case AuthenticationTask.ERROR:
 			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_network, Snackbar.LENGTH_SHORT).show();
 			break;

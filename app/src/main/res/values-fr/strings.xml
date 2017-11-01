@@ -2,7 +2,7 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.5, Joda-Time v2.9.9 et Color Picker v0.0.13.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, Android-Rate v1.0.1, WeekView (by Quivr) v2.0.2, iCal4j v2.0.5, Joda-Time v2.9.9, Color Picker v0.0.13 et OkHttp v3.9.0.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -35,7 +35,7 @@
 
     <string name="intro_dialog_wait">Veuillez patienter…</string>
     <string name="intro_toast_error_permission">Nous avons besoin de la permission Internet !</string>
-    <string name="intro_toast_error_network">Erreur réseau.</string>
+    <string name="intro_toast_error_network">Erreur lors du téléchargement.</string>
     <string name="intro_toast_error_credentials">Nom d\'utilisateur ou mot de passe invalide.</string>
 
     <string name="main_default_title">Bonjour !</string>
@@ -47,12 +47,15 @@
     <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
     <string name="main_snackbar_changecolor">Appuyez longtemps sur un cours pour changer sa couleur !</string>
     <string name="main_snackbar_success">Succès !</string>
-    <string name="main_snackbar_error_network">Erreur réseau.</string>
+    <string name="main_snackbar_error_network">Erreur lors du téléchargement.</string>
+    <string name="main_snackbar_error_noaccount">Pas de compte. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_credentials">Mauvais mot de passe. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_loadfromdisk">Impossible de charger votre emploi du temps depuis le disque !</string>
     <string name="main_snackbar_error_saveondisk">Impossible d\'enregistrer votre emploi du temps !</string>
 
     <string name="main_toast_nopermission">Nous n\'avons pas la permission de créer une alarme !</string>
+
+    <string name="main_noaccount">Veuillez ajouter un compte</string>
 
     <string name="main_nav_open">Ouvrir la navigation</string>
     <string name="main_nav_close">Fermer la navigation</string>
@@ -96,8 +99,8 @@
     <string name="settings_calendar_interval_description_2" formatted="false">Cela va télécharger tout votre emploi du temps disponible sur les serveurs d\'Unicaen.</string>
 
     <string name="widget_today_title">AUJOURD\'HUI</string>
-    <string name="widget_today_nothing">Aucun cours aujourd\'hui.</string>
-    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui. Si vous pensez avoir quelque chose aujourd\'hui, veuillez rafraîchir votre emploi du temps.</string>
+    <string name="widget_today_nothing">Aucun cours aujourd\'hui.  Si vous pensiez avoir quelque chose aujourd\'hui, veuillez rafraîchir votre emploi du temps.</string>
+    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
     <string name="widget_today_error">Impossible de charger votre emploi du temps.</string>
 
 </resources>

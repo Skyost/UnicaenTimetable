@@ -9,13 +9,12 @@ import android.os.AsyncTask;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.utils.Utils;
+import okhttp3.OkHttpClient;
 
 public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 
@@ -39,24 +38,23 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 
-			final AccountManager manager = AccountManager.get(activity);
-			final Account account = manager.getAccountsByType(activity.getString(R.string.account_type))[0];
+			final Account[] accounts = AccountManager.get(activity).getAccountsByType(activity.getString(R.string.account_type));
+			if(accounts.length < 1) {
+				return new Response(AuthenticationTask.NO_ACCOUNT, null, null);
+			}
 
-			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(AuthenticationTask.getCalendarAddress(activity, account.name)).openConnection();
-			urlConnection.setRequestProperty("Authorization", AuthenticationTask.getAuthenticationData(account.name, Utils.a(activity, account)));
+			final Account account = accounts[0];
+			final okhttp3.Response response = new OkHttpClient().newCall(AuthenticationTask.buildRequest(activity, account.name, Utils.a(activity, account))).execute();
 
-			final int response = urlConnection.getResponseCode();
-			if(response == HttpURLConnection.HTTP_NOT_FOUND) {
+			final int code = response.code();
+			if(code == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(AuthenticationTask.NOT_FOUND, null, null);
 			}
-			if(response == HttpURLConnection.HTTP_UNAUTHORIZED) {
+			if(code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 
-			final InputStream input = urlConnection.getInputStream();
-			final Calendar calendar = new CalendarBuilder().build(input);
-			input.close();
-
+			final Calendar calendar = new CalendarBuilder().build(response.body().byteStream());
 			return new Response(AuthenticationTask.SUCCESS, new Timetable(calendar), null);
 		}
 		catch(final Exception ex) {
@@ -66,14 +64,14 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 
 	@Override
 	protected final void onPostExecute(final Response result) {
-		listener.onCalendarResult(result.result, result.timetable, result.ex);
+		listener.onCalendarResult(result);
 	}
 
 	public static class Response {
 
-		private Integer result;
-		private Timetable timetable;
-		private Exception ex;
+		public Integer result;
+		public Timetable timetable;
+		public Exception ex;
 
 		public Response(final int result, final Timetable timetable, final Exception ex) {
 			this.result = result;
@@ -86,7 +84,7 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 	public interface CalendarTaskListener {
 
 		void onCalendarTaskStarted();
-		void onCalendarResult(final int result, final Timetable timetable, final Exception exception);
+		void onCalendarResult(final Response response);
 
 	}
 

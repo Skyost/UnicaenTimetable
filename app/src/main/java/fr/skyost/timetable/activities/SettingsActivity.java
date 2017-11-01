@@ -1,5 +1,6 @@
 package fr.skyost.timetable.activities;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -208,8 +209,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			final Activity activity = this.getActivity();
 
+			final Account[] accounts = AccountManager.get(activity).getAccountsByType(this.getString(R.string.account_type));
+
 			final Preference account = this.findPreference("account");
-			account.setSummary(this.getResources().getString(R.string.settings_account, AccountManager.get(activity).getAccountsByType(this.getString(R.string.account_type))[0].name));
+			if(accounts.length > 0) {
+				account.setSummary(this.getResources().getString(R.string.settings_account, accounts[0].name));
+			}
 			account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
 				@Override

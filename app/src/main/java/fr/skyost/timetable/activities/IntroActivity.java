@@ -141,13 +141,13 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	}
 
 	@Override
-	public final void onAuthenticationResult(final AuthenticationTask.Response response, final Exception exception) {
+	public final void onAuthenticationResult(final AuthenticationTask.Response response) {
 		if(dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
-		if(exception != null) {
-			exception.printStackTrace();
+		if(response.ex != null) {
+			response.ex.printStackTrace();
 		}
 		switch(response.result) {
 		case AuthenticationTask.SUCCESS:
@@ -194,7 +194,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			Toast.makeText(this, R.string.intro_toast_error_credentials, Toast.LENGTH_LONG).show();
 			break;
 		case AuthenticationTask.ERROR:
-			exception.printStackTrace();
 			Toast.makeText(this, R.string.intro_toast_error_network, Toast.LENGTH_LONG).show();
 			this.setNextPageSwipeLock(false);
 			this.getPager().setCurrentItem(SLIDE_PRESENTATION);

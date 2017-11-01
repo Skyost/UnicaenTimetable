@@ -7,25 +7,26 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Base64;
 
 import org.joda.time.DateTime;
 
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.utils.Utils;
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask.Response> {
 
 	public static final int SUCCESS = 100;
-	public static final int NOT_FOUND = 200;
-	public static final int UNAUTHORIZED = 300;
-	public static final int ERROR = 400;
+	public static final int NO_ACCOUNT = 200;
+	public static final int NOT_FOUND = 300;
+	public static final int UNAUTHORIZED = 400;
+	public static final int ERROR = 500;
 
 	@Deprecated
 	public static final String PREFERENCES_FILE = "authentication";
@@ -58,18 +59,14 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 				return new Response(UNAUTHORIZED, null);
 			}
 
-			final HttpURLConnection urlConnection = (HttpURLConnection)new URL(getCalendarAddress(activity, username)).openConnection();
-			urlConnection.setRequestProperty("Authorization", getAuthenticationData(username, password));
-
-			final int response = urlConnection.getResponseCode();
-			if(response == HttpURLConnection.HTTP_NOT_FOUND) {
+			final int code = new OkHttpClient().newCall(buildRequest(activity, username, password)).execute().code();
+			if(code == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(NOT_FOUND, null);
 			}
-			if(response == HttpURLConnection.HTTP_UNAUTHORIZED) {
+			if(code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				return new Response(UNAUTHORIZED, null);
 			}
 
-			urlConnection.getInputStream();
 			return new Response(SUCCESS, null, username, password);
 		}
 		catch(final Exception ex) {
@@ -79,8 +76,35 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 
 	@Override
 	protected final void onPostExecute(final Response result) {
-		listener.onAuthenticationResult(result, result.ex);
+		listener.onAuthenticationResult(result);
 	}
+
+	/**
+	 * Builds a new calendar request.
+	 *
+	 * @param activity We need a context to get the calendar address.
+	 * @param username The username.
+	 * @param password The password.
+	 *
+	 * @return The request.
+	 */
+
+	public static final Request buildRequest(final Activity activity, final String username, final String password) {
+		return new Request.Builder()
+				.url(getCalendarAddress(activity, username))
+				.header("Authorization", Credentials.basic(username, password))
+				.get()
+				.build();
+	}
+
+	/**
+	 * Gets the calendar address.
+	 *
+	 * @param context We need it to read preferences.
+	 * @param account The account.
+	 *
+	 * @return The calendar address.
+	 */
 
 	public static final String getCalendarAddress(final Context context, final String account) {
 		final Resources resources = context.getResources();
@@ -90,10 +114,6 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		final DateTime maxDate = Timetable.getMaxEndDate(context);
 
 		return preferences.getString(MainActivity.PREFERENCES_SERVER, resources.getString(R.string.settings_default_server)) + "/home/" + account + "/" + Uri.encode(preferences.getString(MainActivity.PREFERENCES_CALENDAR, resources.getString(R.string.settings_default_calendarname))) + "?auth=ba&fmt=ics" + (minDate == null ? "" : "&start=" + minDate.toString("MM/dd/YYYY")) + (maxDate == null ? "" : "&end=" + maxDate.toString("MM/dd/YYYY"));
-	}
-
-	public static final String getAuthenticationData(final String username, final String password) throws UnsupportedEncodingException {
-		return "Basic " + new String(Base64.encode((username + ":" + password).getBytes(Utils.UTF_8), Base64.DEFAULT));
 	}
 
 	public static class Response {
@@ -120,7 +140,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	public interface AuthenticationListener {
 
 		void onAuthenticationTaskStarted();
-		void onAuthenticationResult(final Response rsponse, final Exception exception);
+		void onAuthenticationResult(final Response response);
 
 	}
 
