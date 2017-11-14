@@ -15,8 +15,8 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 21
-        versionName "v1.0.6"
+        versionCode 23
+        versionName "v1.0.8"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

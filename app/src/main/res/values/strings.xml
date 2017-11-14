@@ -24,6 +24,8 @@
     <string name="dialog_error_notfound_message">If you are on holiday or you just come back from holidays, this is normal, please re-try once your timetable is available on Zimbra.\nElse, then the username you have entered may be incorrect.\nYou may also have entered a bad calendar name in the application settings.\nAnyway, this error is frequent. Do not hesitate to try again later.</string>
     <string name="dialog_error_newauth_title">New authentication method</string>
     <string name="dialog_error_newauth_message">Hey !\nWe use a new authentication method in this new version of Unicaen Timetable, this means that you have to re-authenticate yourself.\nSorry for this little disagreement !</string>
+    <string name="dialog_error_notimetable_title">No timetable downloaded</string>
+    <string name="dialog_error_notimetable_message">You must refresh the timetable in order to do that.</string>
     <string name="dialog_color_title">Change color</string>
     <string name="dialog_weekselector_default">Default (current week)</string>
 

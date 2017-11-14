@@ -37,7 +37,7 @@
         android:id="@+id/widget_today_refresh"
         android:layout_width="@dimen/widget_today_refresh_size"
         android:layout_height="@dimen/widget_today_refresh_size"
-        android:src="@drawable/widget_today_refresh_drawable"
+        app:srcCompat="@drawable/widget_today_refresh_drawable"
         android:layout_above="@id/widget_horizontal_white_bar"
         android:layout_alignParentEnd="true"/>
 

@@ -186,6 +186,21 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			showFragment(-1);
 			break;
 		case R.id.nav_week_selector:
+			if(timetable == null) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+				builder.setTitle(R.string.dialog_error_notimetable_title);
+				builder.setMessage(R.string.dialog_error_notimetable_message);
+				builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {
+
+					@Override
+					public final void onClick(final DialogInterface dialog, final int id) {
+						dialog.dismiss();
+					}
+
+				});
+				builder.create().show();
+				break;
+			}
 			final List<DateTime> availableWeeks = timetable.getAvailableWeeks();
 			final List<String> dialogData = new ArrayList<String>();
 
@@ -284,7 +299,10 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			break;
 		}
 		case AuthenticationTask.NOT_FOUND:
-			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			if(this.isFinishing()) {
+				break;
+			}
+			final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 			builder.setTitle(R.string.dialog_error_notfound_title);
 			builder.setMessage(R.string.dialog_error_notfound_message);
 			builder.setPositiveButton(R.string.dialog_generic_button_positive, new DialogInterface.OnClickListener() {

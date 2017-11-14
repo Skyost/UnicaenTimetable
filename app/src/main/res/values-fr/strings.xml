@@ -22,6 +22,8 @@
     <string name="dialog_error_notfound_message">Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d\'utilisateur que vous avez entré est incorrect.\nVous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l\'application.\nQuoi qu\'il en soit, cette erreur est fréquente. Veuillez réessayer plus tard.</string>
     <string name="dialog_error_newauth_title">Nouvelle méthode d\'authentification</string>
     <string name="dialog_error_newauth_message">Hey !\nNous utilisons une nouvelle méthode d\'authentification dans cette nouvelle version d\'Emploi du temps Unicaen, cela signifie que vous devez vous re-connecter.\nDésolé pour le dérangement !</string>
+    <string name="dialog_error_notimetable_title">Pas d\'emploi du temps</string>
+    <string name="dialog_error_notimetable_message">Vous devez rafraîchir l\'emploi du temps pour effectuer cette action.</string>
     <string name="dialog_color_title">Changer la couleur</string>
     <string name="dialog_weekselector_default">Par défaut (semaine en cours)</string>
 

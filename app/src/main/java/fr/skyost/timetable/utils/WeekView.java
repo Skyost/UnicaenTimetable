@@ -2015,10 +2015,13 @@ public class WeekView extends View {
 	 */
 	public void setMinDate(Calendar minDate) {
 		if (minDate != null) {
+			final int dayOfWeek = minDate.get(Calendar.DAY_OF_WEEK);
+
 			minDate.set(Calendar.HOUR_OF_DAY, 0);
 			minDate.set(Calendar.MINUTE, 0);
 			minDate.set(Calendar.SECOND, 0);
 			minDate.set(Calendar.MILLISECOND, 0);
+			minDate.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 			if(mMaxDate != null && minDate.after(mMaxDate)) {
 				throw new IllegalArgumentException("minDate cannot be later than maxDate");
 			}
@@ -2047,10 +2050,13 @@ public class WeekView extends View {
 	 */
 	public void setMaxDate(Calendar maxDate) {
 		if (maxDate != null) {
+			final int dayOfWeek = maxDate.get(Calendar.DAY_OF_WEEK);
+
 			maxDate.set(Calendar.HOUR_OF_DAY, 0);
 			maxDate.set(Calendar.MINUTE, 0);
 			maxDate.set(Calendar.SECOND, 0);
 			maxDate.set(Calendar.MILLISECOND, 0);
+			maxDate.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 			if(mMinDate != null && maxDate.before(mMinDate)) {
 				throw new IllegalArgumentException("maxDate has to be after minDate");
 			}
