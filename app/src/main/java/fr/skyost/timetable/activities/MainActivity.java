@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			baseWeek = -1;
 			showFragment(currentMenuSelected);
 
-			final Intent updateIntent = new Intent();
+			final Intent updateIntent = new Intent(this, TodayWidgetReceiver.class);
 			updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 			updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
 			this.sendBroadcast(updateIntent);

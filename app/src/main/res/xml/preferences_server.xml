@@ -7,7 +7,7 @@
         android:selectAllOnFocus="true"
         android:inputType="textUri"
         android:singleLine="true"
-        android:maxLines="1" />
+        android:maxLines="1"/>
 
     <EditTextPreference
         android:key="calendar-nohtml"
@@ -16,7 +16,7 @@
         android:selectAllOnFocus="true"
         android:inputType="textFilter|textNoSuggestions"
         android:singleLine="true"
-        android:maxLines="1" />
+        android:maxLines="1"/>
 
     <ListPreference
         android:key="calendar-interval"

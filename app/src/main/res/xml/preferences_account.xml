@@ -3,6 +3,6 @@
     <Preference
         android:key="account"
         android:title="@string/preferences_account_account"
-        android:persistent="false" />
+        android:persistent="false"/>
 
 </PreferenceScreen>

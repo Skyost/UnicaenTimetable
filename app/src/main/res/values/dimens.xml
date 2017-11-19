@@ -15,11 +15,12 @@
     <dimen name="widget_today_layout_margin">8dp</dimen>
     <dimen name="widget_today_layout_padding_top_bottom">8dp</dimen>
     <dimen name="widget_today_layout_margin_right_left">12dp</dimen>
-    <dimen name="widget_today_title_size">24dp</dimen>
+    <dimen name="widget_today_title_size">24sp</dimen>
     <dimen name="widget_today_refresh_size">32dp</dimen>
-    <dimen name="widget_today_rule_height">2dp</dimen>
+    <dimen name="widget_today_bar_height">2dp</dimen>
     <dimen name="widget_today_rule_margin_top">2dp</dimen>
-    <dimen name="widget_today_rule_margin_bottom">10dp</dimen>
-    <dimen name="widget_today_content_size">14dp</dimen>
+    <dimen name="widget_today_content_padding_top_bottom">10dp</dimen>
+    <dimen name="widget_today_content_divider">12dp</dimen>
+    <dimen name="widget_today_row_text_size">14sp</dimen>
 
 </resources>

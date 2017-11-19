@@ -5,16 +5,16 @@
     <header
         android:fragment="fr.skyost.timetable.activities.SettingsActivity$ServerPreferenceFragment"
         android:title="@string/preferences_server"
-        android:icon="@drawable/preferences_server_drawable" />
+        android:icon="@drawable/preferences_server_drawable"/>
 
     <header
         android:fragment="fr.skyost.timetable.activities.SettingsActivity$AccountPreferenceFragment"
         android:title="@string/preferences_account"
-        android:icon="@drawable/preferences_account_drawable" />
+        android:icon="@drawable/preferences_account_drawable"/>
 
     <header
         android:fragment="fr.skyost.timetable.activities.SettingsActivity$AppPreferenceFragment"
         android:title="@string/preferences_application"
-        android:icon="@drawable/preferences_application_drawable" />
+        android:icon="@drawable/preferences_application_drawable"/>
 
 </preference-headers>

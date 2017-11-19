@@ -117,5 +117,6 @@
     <string name="widget_today_nothing">Nothing today. If you think there should be something, please refresh your timetable.</string>
     <string name="widget_today_nothingremaining">There\'s nothing remaining today.</string>
     <string name="widget_today_error">Failed to load your timetable.</string>
+    <string name="widget_refresh">Refresh</string>
 
 </resources>

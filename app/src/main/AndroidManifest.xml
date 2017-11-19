@@ -45,6 +45,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.skyost.timetable.activities.MainActivity"/>
         </activity>
+
         <service
             android:name="services.AuthenticatorService">
             <intent-filter>
@@ -52,8 +53,9 @@
             </intent-filter>
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
+                android:resource="@xml/authenticator"/>
         </service>
+
         <receiver android:name=".receivers.NeedUpdateWidgetReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET"/>
@@ -61,14 +63,20 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receivers.TodayWidgetReceiver">
+        <receiver
+            android:label="@string/app_name"
+            android:name=".receivers.TodayWidgetReceiver">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_today_meta" />
+                android:resource="@xml/widget_today_meta"/>
         </receiver>
+
+        <service
+            android:name=".services.TodayWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>

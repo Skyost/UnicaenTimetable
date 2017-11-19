@@ -3,6 +3,6 @@
     <CheckBoxPreference
         android:key="color-lessons-automatically"
         android:title="@string/preferences_application_colorlessonsautomatically"
-        android:defaultValue="false" />
+        android:defaultValue="false"/>
 
 </PreferenceScreen>

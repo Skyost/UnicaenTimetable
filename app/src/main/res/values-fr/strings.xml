@@ -104,5 +104,6 @@
     <string name="widget_today_nothing">Aucun cours aujourd\'hui.  Si vous pensiez avoir quelque chose aujourd\'hui, veuillez rafraîchir votre emploi du temps.</string>
     <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
     <string name="widget_today_error">Impossible de charger votre emploi du temps.</string>
+    <string name="widget_refresh">Rafraîchir</string>
 
 </resources>
