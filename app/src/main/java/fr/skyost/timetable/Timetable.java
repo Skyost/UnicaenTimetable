@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -275,6 +277,46 @@ public class Timetable implements Serializable {
 		}
 
 		return weeks;
+	}
+
+	/**
+	 * Gets remaining lessons of the day.
+	 *
+	 * @return Remaining lessons of the day.
+	 */
+
+	public final Lesson[] getRemainingLessons() {
+		final List<Timetable.Lesson> lessons = new ArrayList<Timetable.Lesson>(getLessonsOfToday());
+		if(lessons.size() == 0) {
+			return null;
+		}
+		Collections.sort(lessons, new Comparator<Lesson>() {
+
+			@Override
+			public final int compare(final Timetable.Lesson lesson1, final Timetable.Lesson lesson2) {
+				return lesson1.getStart().compareTo(lesson2.getStart());
+			}
+
+		});
+		final Calendar now = Calendar.getInstance();
+		for(final Timetable.Lesson lesson : new ArrayList<Timetable.Lesson>(lessons)) {
+			if(!now.after(lesson.getEnd())) {
+				continue;
+			}
+			lessons.remove(lesson);
+		}
+		return lessons.toArray(new Lesson[lessons.size()]);
+	}
+
+	/**
+	 * Gets the next lesson of the day.
+	 *
+	 * @return The next lesson of the day.
+	 */
+
+	public final Lesson getNextLesson() {
+		final Lesson[] nextLessons = getRemainingLessons();
+		return nextLessons.length > 0 ? nextLessons[0] : null;
 	}
 
 	/**

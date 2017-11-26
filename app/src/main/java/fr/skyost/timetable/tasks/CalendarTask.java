@@ -14,7 +14,6 @@ import java.net.HttpURLConnection;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.utils.Utils;
-import okhttp3.OkHttpClient;
 
 public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 
@@ -44,7 +43,7 @@ public class CalendarTask extends AsyncTask<Void, Void, CalendarTask.Response> {
 			}
 
 			final Account account = accounts[0];
-			final okhttp3.Response response = new OkHttpClient().newCall(AuthenticationTask.buildRequest(activity, account.name, Utils.a(activity, account))).execute();
+			final okhttp3.Response response = AuthenticationTask.buildClient().newCall(AuthenticationTask.buildRequest(activity, account.name, Utils.a(activity, account))).execute();
 
 			final int code = response.code();
 			if(code == HttpURLConnection.HTTP_NOT_FOUND) {

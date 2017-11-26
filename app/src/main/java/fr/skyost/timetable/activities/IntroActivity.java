@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 
+import java.io.File;
+
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.fragments.FirstSlideFragment;
 import fr.skyost.timetable.fragments.ThirdSlideFragment;
@@ -67,7 +69,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
 		if(authentication.contains(AuthenticationTask.PREFERENCES_USERNAME) || authentication.contains(AuthenticationTask.PREFERENCES_PASSWORD)) {
-			authentication.edit().clear().apply();
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_error_newauth_title);
 			builder.setMessage(R.string.dialog_error_newauth_message);
@@ -75,6 +76,11 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 				@Override
 				public final void onClick(final DialogInterface dialog, final int id) {
+					authentication.edit().clear().commit();
+					final File preferenceFile = new File(IntroActivity.this.getFilesDir().getParent() + "/shared_prefs/" + AuthenticationTask.PREFERENCES_FILE + ".xml");
+					if(preferenceFile.exists()) {
+						preferenceFile.delete();
+					}
 					dialog.dismiss();
 				}
 

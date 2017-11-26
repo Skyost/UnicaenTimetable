@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				final DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
 				preference.setSummary(TextUtils.isEmpty(string) ? resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[0] : resources.getStringArray(R.array.preferences_server_calendar_interval_keys)[Integer.valueOf(string)]);
-				if(inf == null || sup == null) {
+				if(inf == null/* || sup == null*/) {
 					preference.setSummary(preference.getSummary() + "\n" + resources.getString(R.string.settings_calendar_interval_description_2));
 				}
 				else {
@@ -91,7 +91,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			return true;
 		}
 
-	};
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

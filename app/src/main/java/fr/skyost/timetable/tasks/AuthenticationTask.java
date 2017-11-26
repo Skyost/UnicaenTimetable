@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import org.joda.time.DateTime;
 
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
@@ -59,7 +60,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 				return new Response(UNAUTHORIZED, null);
 			}
 
-			final int code = new OkHttpClient().newCall(buildRequest(activity, username, password)).execute().code();
+			final int code = buildClient().newCall(buildRequest(activity, username, password)).execute().code();
 			if(code == HttpURLConnection.HTTP_NOT_FOUND) {
 				return new Response(NOT_FOUND, null);
 			}
@@ -77,6 +78,19 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	@Override
 	protected final void onPostExecute(final Response result) {
 		listener.onAuthenticationResult(result);
+	}
+
+	/**
+	 * Builds a new client.
+	 *
+	 * @return The new client.
+	 */
+
+	public static final OkHttpClient buildClient() {
+		return new OkHttpClient.Builder()
+				.connectTimeout(15, TimeUnit.SECONDS)
+				.readTimeout(15, TimeUnit.SECONDS)
+				.build();
 	}
 
 	/**

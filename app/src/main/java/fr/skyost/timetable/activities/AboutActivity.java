@@ -47,7 +47,7 @@ public class AboutActivity extends AppCompatActivity {
 		links.put("Github", "https://github.com/Skyost/UnicaenTimetable");
 		links.put("GNU GPL v3", "http://choosealicense.com/licenses/gpl-3.0");
 
-		final TextView description = (TextView)this.findViewById(R.id.about_textview_description);
+		final TextView description = this.findViewById(R.id.about_textview_description);
 		description.setText(createLinks(description.getText().toString(), links));
 		description.setMovementMethod(LinkMovementMethod.getInstance());
 

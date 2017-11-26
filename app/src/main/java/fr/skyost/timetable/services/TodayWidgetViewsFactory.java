@@ -1,30 +1,38 @@
 package fr.skyost.timetable.services;
 
+import android.content.Context;
 import android.os.Build;
 import android.text.Html;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import fr.skyost.timetable.R;
+import fr.skyost.timetable.Timetable;
+import fr.skyost.timetable.utils.Utils;
 
 public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-	private String packageName;
+	private Context context;
 	private String[] items;
 
-	public TodayWidgetViewsFactory(final String packageName, final String[] items) {
-		this.packageName = packageName;
-		this.items = items;
+	public TodayWidgetViewsFactory(final Context context) {
+		this.context = context;
 	}
 
 	@Override
 	public final int getCount() {
-		return items.length;
+		return items == null ? 0 : items.length;
 	}
 
 	@Override
 	public final RemoteViews getViewAt(final int i) {
-		final RemoteViews row = new RemoteViews(packageName, R.layout.widget_today_row);
+		final RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.widget_today_row);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			row.setTextViewText(R.id.widget_today_row, Html.fromHtml(items[i], Html.FROM_HTML_MODE_COMPACT));
 		}
@@ -46,7 +54,46 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 	public final void onDestroy() {}
 
 	@Override
-	public final void onDataSetChanged() {}
+	public final void onDataSetChanged() {
+		final List<String> items = new ArrayList<String>();
+		try {
+			final List<Timetable.Lesson> lessons = new ArrayList<Timetable.Lesson>(Timetable.loadFromDisk(context).getLessonsOfToday());
+			if(lessons.size() == 0) {
+				items.add("<i>" + context.getResources().getString(R.string.widget_today_nothing) + "</i>");
+			}
+			else {
+				Collections.sort(lessons, new Comparator<Timetable.Lesson>() {
+
+					@Override
+					public final int compare(final Timetable.Lesson lesson1, final Timetable.Lesson lesson2) {
+						return lesson1.getStart().compareTo(lesson2.getStart());
+					}
+
+				});
+
+				Timetable.Lesson nextLesson = null;
+				final Calendar now = Calendar.getInstance();
+				for(final Timetable.Lesson lesson : lessons) {
+					if(!now.after(lesson.getEnd())) {
+						items.add("<b>" + lesson.getName() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "<br/>" + "<i>" + lesson.getLocation() + "</i>");
+
+						if(nextLesson == null || lesson.getEnd().getTimeInMillis() < nextLesson.getEnd().getTimeInMillis()) {
+							nextLesson = lesson;
+						}
+					}
+				}
+
+				if(nextLesson == null) {
+					items.add("<i>" + context.getResources().getString(R.string.widget_today_nothingremaining) + "</i>");
+				}
+			}
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+			items.add("<i>" + context.getResources().getString(R.string.widget_today_error) + "</i>");
+		}
+		this.items = items.toArray(new String[items.size()]);
+	}
 
 	@Override
 	public final RemoteViews getLoadingView() {

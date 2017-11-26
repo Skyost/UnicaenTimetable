@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.Timetable.Day;
@@ -67,7 +67,7 @@ public class DayFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
 		final MainActivity activity = (MainActivity)DayFragment.this.getActivity();
 
-		final WeekView weekView = (WeekView)view.findViewById(R.id.main_day_weekview_day);
+		final WeekView weekView = view.findViewById(R.id.main_day_weekview_day);
 		weekView.setDateTimeInterpreter(new DateTimeInterpreter() {
 
 			@Override
@@ -198,7 +198,7 @@ public class DayFragment extends Fragment {
 				});
 				builder.create().show();
 				if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, true)) {
-					Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_changecolor, Snackbar.LENGTH_LONG).show();
+					Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_changecolor).info().show();
 					activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, false).apply();
 				}
 			}
@@ -206,7 +206,7 @@ public class DayFragment extends Fragment {
 		});
 
 		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, true)) {
-			Snackbar.make(activity.findViewById(R.id.main_fab), R.string.main_snackbar_pinchtozoom, Snackbar.LENGTH_LONG).show();
+			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_pinchtozoom).info().show();
 			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, false).apply();
 		}
 		return view;

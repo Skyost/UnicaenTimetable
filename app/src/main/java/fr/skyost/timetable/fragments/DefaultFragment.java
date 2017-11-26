@@ -24,15 +24,12 @@ import fr.skyost.timetable.R;
 
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
-import hotchemi.android.rate.AppRate;
 
 public class DefaultFragment extends Fragment {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final MainActivity activity = (MainActivity)this.getActivity();
-		AppRate.with(activity).setInstallDays(3).showRateDialogIfMeetsConditions(activity);
-
 		final View view = inflater.inflate(R.layout.fragment_main_default, container, false);
 
 		final TextView description = (TextView)view.findViewById(R.id.main_default_textview_description);

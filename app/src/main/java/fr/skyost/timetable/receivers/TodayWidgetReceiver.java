@@ -15,17 +15,12 @@ import android.os.Build;
 import android.support.v7.content.res.AppCompatResources;
 import android.widget.RemoteViews;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.services.TodayWidgetService;
-import fr.skyost.timetable.utils.Utils;
 
 public class TodayWidgetReceiver extends AppWidgetProvider {
 
@@ -34,7 +29,6 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	public static final int SCHEDULE_REQUEST = 300;
 
 	public static final String INTENT_REFRESH_WIDGETS = "refresh-widgets";
-	public static final String INTENT_ITEMS = "items";
 
 	@Override
 	public final void onReceive(final Context context, final Intent intent) {
@@ -53,49 +47,20 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	@Override
 	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today_layout);
-		final List<String> items = new ArrayList<String>();
 		Timetable.Lesson nextLesson = null;
 
 		try {
-			final List<Timetable.Lesson> lessons = new ArrayList<Timetable.Lesson>(Timetable.loadFromDisk(context).getLessonsOfToday());
-			if(lessons.size() == 0) {
-				items.add("<i>" + context.getResources().getString(R.string.widget_today_nothing) + "</i>");
-			}
-			else {
-				Collections.sort(lessons, new Comparator<Timetable.Lesson>() {
-
-					@Override
-					public final int compare(final Timetable.Lesson lesson1, final Timetable.Lesson lesson2) {
-						return lesson1.getStart().compareTo(lesson2.getStart());
-					}
-
-				});
-
-				final Calendar now = Calendar.getInstance();
-				for(final Timetable.Lesson lesson : lessons) {
-					if(!now.after(lesson.getEnd())) {
-						items.add("<b>" + lesson.getName() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "<br/>" + "<i>" + lesson.getLocation() + "</i>");
-
-						if(nextLesson == null || lesson.getEnd().getTimeInMillis() < nextLesson.getEnd().getTimeInMillis()) {
-							nextLesson = lesson;
-						}
-					}
-				}
-
-				if(nextLesson == null) {
-					items.add("<i>" + context.getResources().getString(R.string.widget_today_nothingremaining) + "</i>");
-				}
-			}
+			nextLesson = Timetable.loadFromDisk(context).getNextLesson();
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();
-			items.add("<i>" + context.getResources().getString(R.string.widget_today_error) + "</i>");
 		}
 
 		updateDrawables(views, context);
-		updateMessage(context, views, items);
+		updateMessage(context, views);
 		registerIntents(context, views);
 		for(final int id : ids) {
+			manager.notifyAppWidgetViewDataChanged(id, R.id.widget_today_content);
 			manager.updateAppWidget(id, views);
 		}
 		scheduleNextUpdate(context, nextLesson);
@@ -133,15 +98,11 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 *
 	 * @param context The context.
 	 * @param views Widgets' RemoteViews.
-	 * @param items The message (HTML formatted).
 	 */
 
-	public final void updateMessage(final Context context, final RemoteViews views, final List<String> items) {
+	public final void updateMessage(final Context context, final RemoteViews views) {
 		final Intent intent = new Intent(context, TodayWidgetService.class);
-
-		intent.putExtra(INTENT_ITEMS, items.toArray(new String[items.size()]));
 		intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-
 		views.setRemoteAdapter(R.id.widget_today_content, intent);
 	}
 
@@ -176,8 +137,9 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	public final void scheduleNextUpdate(final Context context, final Timetable.Lesson lesson) {
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
-		final Intent intent = new Intent(context, TodayWidgetReceiver.class);
+		final Intent intent = new Intent(context, this.getClass());
 		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		intent.putExtra(INTENT_REFRESH_WIDGETS, true);
 		final PendingIntent pending = PendingIntent.getBroadcast(context, SCHEDULE_REQUEST, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		final Calendar calendar;

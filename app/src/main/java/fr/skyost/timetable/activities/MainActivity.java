@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -23,14 +24,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.kobakei.ratethisapp.RateThisApp;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
 import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.Timetable.Day;
@@ -72,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		RateThisApp.init(new RateThisApp.Config(5, 10));
+		RateThisApp.onCreate(this);
+
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(this.getString(R.string.account_type));
 		final SharedPreferences preferences = this.getSharedPreferences(PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		final SharedPreferences authentication = this.getSharedPreferences(AuthenticationTask.PREFERENCES_FILE, Context.MODE_PRIVATE);
@@ -79,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 		if(showIntro) {
 			this.startActivityForResult(new Intent(this, IntroActivity.class), INTRO_ACTIVITY_RESULT);
+		}
+		else {
+			RateThisApp.showRateDialogIfNeeded(this);
 		}
 
 		this.setContentView(R.layout.activity_main_nav);
@@ -92,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			loadTimetableFromDisk();
 		}
 
-		final Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+		final Toolbar toolbar = this.findViewById(R.id.main_toolbar);
 		this.setSupportActionBar(toolbar);
 
 		this.findViewById(R.id.main_fab).setOnClickListener(new View.OnClickListener() {
@@ -104,14 +115,14 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 		});
 
-		final DrawerLayout drawer = (DrawerLayout)findViewById(R.id.main_nav_layout);
+		final DrawerLayout drawer = this.findViewById(R.id.main_nav_layout);
 		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.main_nav_open, R.string.main_nav_close);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
-		final String username = accounts.length > 0 ? accounts[0].name : "21700000";
+		final String username = accounts.length > 0 ? accounts[0].name : String.valueOf(Calendar.getInstance().get(Calendar.YEAR)).replace("0", "") + "00000";
 
-		final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
+		final NavigationView navigationView = this.findViewById(R.id.main_nav_view);
 		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getResources().getString(R.string.main_nav_email, username));
 		navigationView.setNavigationItemSelectedListener(this);
 
@@ -152,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 			if(preferences.getBoolean(PREFERENCES_CHANGED_ACCOUNT, false)) {
 				refreshTimetable();
-				final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
+				final NavigationView navigationView = this.findViewById(R.id.main_nav_view);
 				if(navigationView == null) {
 					break;
 				}
@@ -170,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	@Override
 	public final void onBackPressed() {
-		final DrawerLayout drawer = (DrawerLayout)this.findViewById(R.id.main_nav_layout);
+		final DrawerLayout drawer = this.findViewById(R.id.main_nav_layout);
 		if(drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		}
@@ -180,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	}
 
 	@Override
-	public final boolean onNavigationItemSelected(final MenuItem item) {
+	public final boolean onNavigationItemSelected(@NonNull final MenuItem item) {
 		switch(item.getItemId()) {
 		case R.id.nav_home_home:
 			showFragment(-1);
@@ -246,15 +257,13 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			this.startActivity(new Intent(this, AboutActivity.class));
 			break;
 		}
-		final DrawerLayout drawer = (DrawerLayout)findViewById(R.id.main_nav_layout);
+		final DrawerLayout drawer = this.findViewById(R.id.main_nav_layout);
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
 	}
 
 	@Override
-	public final void onCalendarTaskStarted() {
-		Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_downloading, Snackbar.LENGTH_SHORT).show();
-	}
+	public final void onCalendarTaskStarted() {}
 
 	@Override
 	public final void onCalendarResult(final CalendarTask.Response response) {
@@ -267,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 		}
 		switch(response.result) {
 		case AuthenticationTask.SUCCESS:
-			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_success, Snackbar.LENGTH_SHORT).show();
+			Snacky.builder().setView(this.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_success).success().show();
 			baseWeek = -1;
 			showFragment(currentMenuSelected);
 
@@ -277,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			this.sendBroadcast(updateIntent);
 			break;
 		case AuthenticationTask.NO_ACCOUNT: {
-			final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_noaccount, Snackbar.LENGTH_SHORT);
+			final Snackbar snackbar = Snacky.builder().setView(this.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_noaccount).warning();
 			final Snackbar.Callback callback = new Snackbar.Callback() {
 
 				@Override
@@ -316,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			builder.create().show();
 			break;
 		case AuthenticationTask.UNAUTHORIZED: {
-			final Snackbar snackbar = Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_credentials, Snackbar.LENGTH_SHORT);
+			final Snackbar snackbar = Snacky.builder().setView(this.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_credentials).warning();
 			final Snackbar.Callback callback = new Snackbar.Callback() {
 
 				@Override
@@ -338,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 			break;
 		}
 		case AuthenticationTask.ERROR:
-			Snackbar.make(this.findViewById(R.id.main_fab), R.string.main_snackbar_error_network, Snackbar.LENGTH_SHORT).show();
+			Snacky.builder().setView(this.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_network).error().show();
 			break;
 		}
 	}
@@ -361,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 
 	public final void showFragment(final Day day) {
 		currentMenuSelected = day == null ? -1 : day.getValue();
-		final NavigationView navigationView = (NavigationView)this.findViewById(R.id.main_nav_view);
+		final NavigationView navigationView = this.findViewById(R.id.main_nav_view);
 		if(day == null) {
 			navigationView.setCheckedItem(R.id.nav_home_home);
 		}
@@ -397,7 +406,23 @@ public class MainActivity extends AppCompatActivity implements CalendarTaskListe
 	 */
 
 	public final void refreshTimetable() {
-		new CalendarTask(this, this).execute();
+		final Snackbar snackbar = Snacky.builder().setView(this.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_downloading).info();
+		final Snackbar.Callback callback = new Snackbar.Callback() {
+
+			@Override
+			public final void onDismissed(final Snackbar snackbar, final int event) {
+				super.onDismissed(snackbar, event);
+				new CalendarTask(MainActivity.this, MainActivity.this).execute();
+			}
+
+		};
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+			snackbar.addCallback(callback);
+		}
+		else {
+			snackbar.setCallback(callback);
+		}
+		snackbar.show();
 	}
 
 	/**
