@@ -7,12 +7,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ComponentName;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.content.res.AppCompatResources;
 import android.widget.RemoteViews;
 
 import java.util.Calendar;
@@ -21,6 +17,7 @@ import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.services.TodayWidgetService;
+import fr.skyost.timetable.utils.Utils;
 
 public class TodayWidgetReceiver extends AppWidgetProvider {
 
@@ -80,16 +77,7 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 			views.setImageViewResource(R.id.widget_today_refresh, R.drawable.widget_today_refresh_drawable);
 		}
 		else {
-			for(int[] drawableData : new int[][]{
-					new int[]{R.drawable.widget_today_refresh_drawable, R.id.widget_today_refresh}
-			}) {
-				final Drawable drawable = AppCompatResources.getDrawable(context, drawableData[0]);
-				final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-				Canvas canvas = new Canvas(bitmap);
-				drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-				drawable.draw(canvas);
-				views.setImageViewBitmap(drawableData[1], bitmap);
-			}
+			views.setImageViewBitmap(R.id.widget_today_refresh, Utils.drawableToBitmap(context, R.drawable.widget_today_refresh_drawable));
 		}
 	}
 

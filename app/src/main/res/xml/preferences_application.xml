@@ -5,4 +5,11 @@
         android:title="@string/preferences_application_colorlessonsautomatically"
         android:defaultValue="false"/>
 
+    <ListPreference
+        android:key="lessons-ringer-mode"
+        android:title="@string/preferences_application_lessonsringermode"
+        android:defaultValue="0"
+        android:entries="@array/preferences_application_lessonsringermode_keys"
+        android:entryValues="@array/preferences_application_lessonsringermode_values"/>
+
 </PreferenceScreen>

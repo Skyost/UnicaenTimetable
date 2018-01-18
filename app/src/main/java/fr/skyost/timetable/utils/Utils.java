@@ -2,23 +2,33 @@ package fr.skyost.timetable.utils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+
+import fr.skyost.timetable.R;
 
 public class Utils {
 
@@ -43,15 +53,15 @@ public class Utils {
 	/**
 	 * Checks if the application has a specified permission.
 	 *
-	 * @param activity The Activity.
+	 * @param context The Context.
 	 * @param permission The permission (can be obtained with Manifest.permission.(...)).
 	 *
 	 * @return <b>true</b> If it has the permission.
 	 * <br><b>false</b> Otherwise.
 	 */
 
-	public static final boolean hasPermission(final Activity activity, final String permission) {
-		return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+	public static final boolean hasPermission(final Context context, final String permission) {
+		return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	/**
@@ -115,14 +125,29 @@ public class Utils {
 		}
 	}
 
-	public static final String a(final Activity activity, final Account account) {
-		final String value = AccountManager.get(activity).getPassword(account);
+	/**
+	 * Makes an account syncable.
+	 *
+	 * @param context A context.
+	 * @param account The account.
+	 */
+
+	public static final void makeAccountSyncable(final Context context, final Account account) {
+		final String authority = context.getString(R.string.account_type_authority);
+
+		ContentResolver.setIsSyncable(account, authority, 1);
+		ContentResolver.setSyncAutomatically(account, authority, true);
+		ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, TimeUnit.DAYS.toSeconds(3L));
+	}
+
+	public static final String a(final Context context, final Account account) {
+		final String value = AccountManager.get(context).getPassword(account);
 		try {
 			final byte[] bytes = value == null ? new byte[0] : Base64.decode(value,Base64.DEFAULT);
 			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
 			final SecretKey key = keyFactory.generateSecret(new PBEKeySpec(Settings.Secure.ANDROID_ID.toCharArray()));
 			final Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
-			pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(activity.getContentResolver(),Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
+			pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
 			return new String(pbeCipher.doFinal(bytes), Utils.UTF_8);
 		}
 		catch(final Exception ex) {
@@ -131,19 +156,54 @@ public class Utils {
 		return value;
 	}
 
-	public static final String b(final Activity activity, final String value) {
+	public static final String b(final Context context, final String value) {
 		try {
 			final byte[] bytes = value == null ? new byte[0] : value.getBytes(UTF_8);
 			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
 			final SecretKey key = keyFactory.generateSecret(new PBEKeySpec(Settings.Secure.ANDROID_ID.toCharArray()));
 			final Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
-			pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
+			pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(Utils.UTF_8), 20));
 			return new String(Base64.encode(pbeCipher.doFinal(bytes), Base64.NO_WRAP), Utils.UTF_8);
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();
 		}
 		return value;
+	}
+
+	/**
+	 * Creates a Bitmap from a Drawable.
+	 *
+	 * @param context The context.
+	 * @param drawableId ID of the Drawable.
+	 *
+	 * @return The Bitmap.
+	 */
+
+	public static final Bitmap drawableToBitmap(final Context context, final int drawableId) {
+		final Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+		final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
+		return bitmap;
+	}
+
+	/**
+	 * Gets tomorrow midnight (and 1 second) calendar.
+	 *
+	 * @return Tomorrow midnight calendar.
+	 */
+
+	public static final long tomorrowMidnight() {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 1);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+		return calendar.getTimeInMillis();
 	}
 
 }

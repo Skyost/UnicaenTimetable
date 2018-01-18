@@ -4,11 +4,13 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -18,10 +20,12 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
 import fr.skyost.timetable.R;
+import fr.skyost.timetable.receivers.ringer.RingerModeManager;
 import fr.skyost.timetable.utils.AppCompatPreferenceActivity;
 
 import java.text.DateFormat;
@@ -32,6 +36,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	private static final int INTRO_ACTIVITY_RESULT = 100;
 
 	private static class BindPreferenceSummaryToValueListener implements Preference.OnPreferenceChangeListener {
+
+		private final Activity activity;
+
+		public BindPreferenceSummaryToValueListener(final Activity activity) {
+			this.activity = activity;
+		}
 
 		@Override
 		public final boolean onPreferenceChange(final Preference preference, final Object value) {
@@ -86,6 +96,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				if(savePreference) {
 					preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
 				}
+				break;
+			case MainActivity.PREFERENCES_LESSONS_RINGER_MODE:
+				final String[] values = resources.getStringArray(R.array.preferences_application_lessonsringermode_keys);
+				final int mode = TextUtils.isEmpty(string) ? 0 : Integer.parseInt(string);
+				final int previousMode = Integer.parseInt(preference.getSharedPreferences().getString(preference.getKey(), "0"));
+
+				try {
+					RingerModeManager.cancel(activity);
+					preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit();
+					if(mode != 0 && previousMode == 0) {
+						if(mode == 1) {
+							final NotificationManager manager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
+							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted()) {
+								final Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+								activity.startActivityForResult(intent, 0);
+								return false;
+							}
+						}
+
+						preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit();
+						RingerModeManager.schedule(activity);
+					}
+				}
+				catch(final Exception ex) {
+					ex.printStackTrace();
+					Toast.makeText(activity, ex.getClass().getName(), Toast.LENGTH_LONG).show();
+				}
+
+				preference.setSummary(values[mode]);
 				break;
 			}
 			return true;
@@ -148,8 +187,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		return PreferenceFragment.class.getName().equals(fragmentName) || ServerPreferenceFragment.class.getName().equals(fragmentName) || AccountPreferenceFragment.class.getName().equals(fragmentName) || AppPreferenceFragment.class.getName().equals(fragmentName);
 	}
 
-	private static final void bindPreferenceSummaryToValue(final SharedPreferences preferences, final Preference preference) {
-		final BindPreferenceSummaryToValueListener listener = new BindPreferenceSummaryToValueListener();
+	private static final void bindPreferenceSummaryToValue(final Activity activity, final SharedPreferences preferences, final Preference preference) {
+		final BindPreferenceSummaryToValueListener listener = new BindPreferenceSummaryToValueListener(activity);
 		preference.setOnPreferenceChangeListener(listener);
 		listener.notifyPreferenceChange(preference, preferences.getString(preference.getKey(), ""), false);
 	}
@@ -171,6 +210,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		public final void onCreate(final Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
+			final Activity activity = this.getActivity();
+
 			setDefaultPreferencesFile(this);
 
 			this.addPreferencesFromResource(R.xml.preferences_server);
@@ -178,9 +219,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 
-			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_SERVER));
-			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_CALENDAR));
-			bindPreferenceSummaryToValue(preferences, findPreference(MainActivity.PREFERENCES_CALENDAR_INTERVAL));
+			bindPreferenceSummaryToValue(activity, preferences, findPreference(MainActivity.PREFERENCES_SERVER));
+			bindPreferenceSummaryToValue(activity, preferences, findPreference(MainActivity.PREFERENCES_CALENDAR));
+			bindPreferenceSummaryToValue(activity, preferences, findPreference(MainActivity.PREFERENCES_CALENDAR_INTERVAL));
 		}
 
 		@Override
@@ -209,7 +250,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			final Activity activity = this.getActivity();
 
-			final Account[] accounts = AccountManager.get(activity).getAccountsByType(this.getString(R.string.account_type));
+			final Account[] accounts = AccountManager.get(activity).getAccountsByType(this.getString(R.string.account_type_authority));
 
 			final Preference account = this.findPreference("account");
 			if(accounts.length > 0) {
@@ -249,6 +290,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		public final void onCreate(final Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
+			final Activity activity = this.getActivity();
+
 			setDefaultPreferencesFile(this);
 
 			this.addPreferencesFromResource(R.xml.preferences_application);
@@ -256,6 +299,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 			((CheckBoxPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
+
+			final Preference automaticallyToggleSilentMode = findPreference(MainActivity.PREFERENCES_LESSONS_RINGER_MODE);
+			bindPreferenceSummaryToValue(activity, preferences, automaticallyToggleSilentMode);
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && ((AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE)).isVolumeFixed()) {
+				automaticallyToggleSilentMode.setEnabled(false);
+			}
 		}
 
 		@Override

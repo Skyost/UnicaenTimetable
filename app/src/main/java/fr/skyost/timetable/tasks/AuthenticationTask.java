@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 
 import org.joda.time.DateTime;
 
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
@@ -36,13 +37,13 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	@Deprecated
 	public static final String PREFERENCES_PASSWORD = "data-1";
 
-	private final Activity activity;
+	private final WeakReference<Activity> activity;
 	private final AuthenticationListener listener;
 	private final String username;
 	private final String password;
 
 	public AuthenticationTask(final Activity activity, final String username, final String password, final AuthenticationListener listener) {
-		this.activity = activity;
+		this.activity = new WeakReference<Activity>(activity);
 		this.username = username;
 		this.password = password;
 		this.listener = listener;
@@ -56,6 +57,11 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	@Override
 	protected final Response doInBackground(final Void... params) {
 		try {
+			final Activity activity = this.activity.get();
+			if(activity == null) {
+				throw new NullPointerException("Unable to access to parent activity.");
+			}
+
 			if(!Utils.hasPermission(activity, Manifest.permission.INTERNET)) {
 				return new Response(UNAUTHORIZED, null);
 			}
@@ -96,16 +102,16 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	/**
 	 * Builds a new calendar request.
 	 *
-	 * @param activity We need a context to get the calendar address.
+	 * @param context We need a context to get the calendar address.
 	 * @param username The username.
 	 * @param password The password.
 	 *
 	 * @return The request.
 	 */
 
-	public static final Request buildRequest(final Activity activity, final String username, final String password) {
+	public static final Request buildRequest(final Context context, final String username, final String password) {
 		return new Request.Builder()
-				.url(getCalendarAddress(activity, username))
+				.url(getCalendarAddress(context, username))
 				.header("Authorization", Credentials.basic(username, password))
 				.get()
 				.build();

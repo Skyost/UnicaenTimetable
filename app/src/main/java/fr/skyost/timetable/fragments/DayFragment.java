@@ -116,7 +116,7 @@ public class DayFragment extends Fragment {
 					return events;
 				}
 
-				for(final Lesson lesson : timetable.getLessons()) {
+				for(final Lesson lesson : timetable.getLessons(calendar)) {
 					final Calendar start = lesson.getStart();
 					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
 						continue;
@@ -268,7 +268,7 @@ public class DayFragment extends Fragment {
 		private final SharedPreferences colorPreferences;
 
 		public TimetableWeekViewEvent(final Lesson lesson, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences) {
-			super(lesson.getId(), lesson.getName(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription(), lesson.getStart(), lesson.getEnd());
+			super(lesson.getId(), lesson.getSummary(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription(), lesson.getStart(), lesson.getEnd());
 			this.activityPreferences = activityPreferences;
 			this.colorPreferences = colorPreferences;
 		}

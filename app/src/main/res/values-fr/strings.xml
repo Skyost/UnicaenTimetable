@@ -2,7 +2,7 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.0.2, iCal4j v2.0.5, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.9.0 et Snacky v1.0.2.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.0.2, biweekly v0.6.1, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.9.1 et Snacky v1.0.2.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -49,6 +49,7 @@
     <string name="main_snackbar_pinchtozoom">N\'oubliez pas que vous pouvez pincer pour zoomer ou appuyer sur un cours pour voir plus d\'informations !</string>
     <string name="main_snackbar_changecolor">Appuyez longtemps sur un cours pour changer sa couleur !</string>
     <string name="main_snackbar_success">Succès !</string>
+    <string name="main_snackbar_error_syncactive">Une synchronisation est déjà en cours.</string>
     <string name="main_snackbar_error_network">Erreur lors du téléchargement.</string>
     <string name="main_snackbar_error_noaccount">Pas de compte. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_credentials">Mauvais mot de passe. Redirection vers l\'écran de connexion…</string>
@@ -78,6 +79,10 @@
     <string name="main_nav_others_settings">Paramètres</string>
     <string name="main_nav_others_about">À propos</string>
 
+    <string name="notification_lessonsringermode_title">Mode cours activé</string>
+    <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
+    <string name="notification_lessonsringermode_button">Désactiver</string>
+
     <string name="preferences_account">Compte</string>
     <string name="preferences_account_account">Changer de compte</string>
 
@@ -93,6 +98,12 @@
     </string-array>
 
     <string name="preferences_application_colorlessonsautomatically">Colorer automatiquement les matières</string>
+    <string name="preferences_application_lessonsringermode">Mode de sonnerie pendant les cours</string>
+    <string-array name="preferences_application_lessonsringermode_keys">
+        <item>Aucun changement</item>
+        <item>Silencieux</item>
+        <item>Vibreur</item>
+    </string-array>
 
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>

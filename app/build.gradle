@@ -15,8 +15,8 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 28
-        versionName "v1.0.12"
+        versionCode 30
+        versionName "v1.1"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -32,14 +32,12 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'org.slf4j:slf4j-android:1.7.25'
-    implementation 'org.apache.commons:commons-lang3:3.6'
-    implementation 'org.mnode.ical4j:ical4j:2.0.5'
+    implementation 'net.sf.biweekly:biweekly:0.6.1'
     implementation 'com.github.apl-devs:appintro:v4.2.2'
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'com.github.quivr:android-week-view:2.0.2'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
-    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation 'com.github.matecode:Snacky:1.0.2'
 }

@@ -15,6 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,18 +31,20 @@ import fr.skyost.timetable.activities.MainActivity;
 
 public class DefaultFragment extends Fragment {
 
+	public static final String UPDATE_TIME_FILE = "update_time";
+
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final MainActivity activity = (MainActivity)this.getActivity();
 		final View view = inflater.inflate(R.layout.fragment_main_default, container, false);
 
-		final TextView description = (TextView)view.findViewById(R.id.main_default_textview_description);
+		final TextView description = view.findViewById(R.id.main_default_textview_description);
 		if(description == null) {
 			return view;
 		}
 
-		final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		final long updateTime = preferences.getLong(MainActivity.PREFERENCES_LAST_UPDATE, -1L);
+		final long updateTime = getUpdateTime();
+
 		final Resources resources = this.getResources();
 		final HashMap<String, Integer> colors = new HashMap<String, Integer>();
 
@@ -88,6 +94,42 @@ public class DefaultFragment extends Fragment {
 			spannable.setSpan(new ForegroundColorSpan(entry.getValue()), text.indexOf(colorText), text.indexOf(colorText) + colorText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 		return spannable;
+	}
+
+	/**
+	 * Gets the last update time.
+	 *
+	 * @return The last update time.
+	 */
+
+	private final long getUpdateTime() {
+		final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		long updateTime = preferences.getLong(MainActivity.PREFERENCES_LAST_UPDATE, -1L);
+		preferences.edit().remove(MainActivity.PREFERENCES_LAST_UPDATE).apply();
+
+		try {
+			final InputStream input = this.getActivity().openFileInput(UPDATE_TIME_FILE);
+
+			final InputStreamReader streamReader = new InputStreamReader(input);
+			final BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+			final String line = bufferedReader.readLine();
+			if(line != null) {
+				updateTime = Long.parseLong(line);
+			}
+
+			bufferedReader.close();
+			streamReader.close();
+			input.close();
+		}
+		catch(final FileNotFoundException ex) {
+			return updateTime;
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return updateTime;
 	}
 
 }

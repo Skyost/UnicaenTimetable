@@ -101,9 +101,6 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 	@Override
 	public final void onDonePressed(final Fragment currentFragment) {
-		final SharedPreferences preferences = this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		preferences.edit().putBoolean(MainActivity.PREFERENCES_SHOW_INTRO, false).apply();
-
 		final Intent intent = new Intent();
 		intent.putExtra(INTENT_ACCOUNT_CHANGED, accountChanged);
 
@@ -161,12 +158,15 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 			this.getPager().setCurrentItem(SLIDE_DONE);
 
 			final AccountManager manager = AccountManager.get(this);
-			for(final Account account : manager.getAccountsByType(this.getString(R.string.account_type))) {
+			for(final Account account : manager.getAccountsByType(this.getString(R.string.account_type_authority))) {
 				Utils.removeAccount(manager, account);
 			}
 
-			final Account account = new Account(response.username, this.getString(R.string.account_type));
-			manager.addAccountExplicitly(account, Utils.b(this, response.password), null);
+			final Account account = new Account(response.username, this.getString(R.string.account_type_authority));
+			if(manager.addAccountExplicitly(account, Utils.b(this, response.password), null)) {
+				Utils.makeAccountSyncable(this, account);
+				return;
+			}
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			if(!Utils.hasPermission(this, Manifest.permission.INTERNET)) {
@@ -265,7 +265,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 	private final void createDialog(final AlertDialog.Builder builder, final EditText usernameEditText, final EditText passwordEditText, final EditText serverEditText, final EditText calendarEditText) {
 		final AccountManager manager = AccountManager.get(this);
-		final Account[] accounts = manager.getAccountsByType(this.getString(R.string.account_type));
+		final Account[] accounts = manager.getAccountsByType(this.getString(R.string.account_type_authority));
 		final Account account = accounts.length > 0 ? accounts[0] : null;
 
 		if(account != null) {

@@ -1,19 +1,15 @@
 package fr.skyost.timetable;
 
 import android.content.Context;
-import android.text.format.DateUtils;
-
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.ParserException;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.component.CalendarComponent;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.Summary;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,29 +17,58 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import biweekly.Biweekly;
+import biweekly.ICalendar;
+import biweekly.component.VEvent;
+import biweekly.property.Description;
+import biweekly.property.Location;
+import biweekly.property.Summary;
 import fr.skyost.timetable.activities.MainActivity;
-import fr.skyost.timetable.utils.Utils;
+import fr.skyost.timetable.utils.HashMultiMap;
 
 /**
  * A class which represents a timetable.
  */
 
-public class Timetable implements Serializable {
+public class Timetable implements Parcelable {
 
 	public static final String TIMETABLE_FILE = "current_timetable";
+	public static final Parcelable.Creator<Timetable> CREATOR = new Parcelable.Creator<Timetable>() {
 
-	private final Set<Integer> usedIds = new HashSet<Integer>();
+		@Override
+		public final Timetable createFromParcel(final Parcel source) {
+			return new Timetable(source);
+		}
 
-	private final net.fortuna.ical4j.model.Calendar calendar;
-	private final HashSet<Lesson> lessons = new HashSet<Lesson>();
+		@Override
+		public final Timetable[] newArray(final int size) {
+			return new Timetable[size];
+		}
+
+	};
+
+	private final HashSet<Integer> usedIds = new HashSet<Integer>();
+
+	private final ICalendar calendar;
+	private final HashMultiMap<LocalDate, Lesson> lessons = new HashMultiMap<LocalDate, Lesson>();
+
+	/**
+	 * Creates a new timetable instance.
+	 *
+	 * @param parcel Used to pass arguments.
+	 */
+
+	public Timetable(final Parcel parcel) {
+		this(Biweekly.parse(parcel.readString()).first());
+	}
 
 	/**
 	 * Creates a new timetable instance.
@@ -51,20 +76,26 @@ public class Timetable implements Serializable {
 	 * @param calendar The corresponding calendar.
 	 */
 
-	public Timetable(final net.fortuna.ical4j.model.Calendar calendar) {
+	public Timetable(final ICalendar calendar) {
 		this.calendar = calendar;
-		for(final CalendarComponent component : calendar.getComponents(Component.VEVENT)) {
-			final VEvent event = (VEvent)component;
+		for(final VEvent event : calendar.getEvents()) {
 			final Calendar start = Calendar.getInstance();
-			start.setTime(event.getStartDate().getDate());
+			start.setTime(event.getDateStart().getValue());
 			final Calendar end = Calendar.getInstance();
-			end.setTime(event.getEndDate().getDate());
+			end.setTime(event.getDateEnd().getValue());
 
-			final Summary summary = event.getSummary();
-			final Description description = event.getDescription();
-			final Location location = event.getLocation();
-			lessons.add(new Lesson(summary == null ? "" : summary.getValue(), description == null ? "" : description.getValue(), location == null ? "" : location.getValue(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
+			lessons.put(new LocalDate(start), new Lesson(event.getSummary(), event.getDescription(), event.getLocation(), Day.getByValue(start.get(Calendar.DAY_OF_WEEK)), start, end));
 		}
+	}
+
+	@Override
+	public final int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel parcel, final int flags) {
+		parcel.writeString(Biweekly.write(calendar == null ? new ICalendar() : calendar).go());
 	}
 
 	/**
@@ -73,8 +104,20 @@ public class Timetable implements Serializable {
 	 * @return The lessons.
 	 */
 
-	public final Set<Lesson> getLessons() {
-		return lessons;
+	public final Collection<Lesson> getLessons() {
+		return lessons.getAllValues();
+	}
+
+	/**
+	 * Gets all lessons for a specific day.
+	 *
+	 * @param day The day.
+	 *
+	 * @return The lessons for a specific day.
+	 */
+
+	public final Collection<Lesson> getLessons(final Calendar day) {
+		return lessons.get(new LocalDate(day));
 	}
 
 	/**
@@ -83,24 +126,17 @@ public class Timetable implements Serializable {
 	 * @return The lessons.
 	 */
 
-	public final Set<Lesson> getLessonsOfToday() {
-		final Set<Lesson> lessons = new HashSet<>(this.lessons);
-		for(final Lesson lesson : this.lessons) {
-			if(DateUtils.isToday(lesson.getStart().getTimeInMillis())) {
-				continue;
-			}
-			lessons.remove(lesson);
-		}
-		return lessons;
+	public final Collection<Lesson> getLessonsOfToday() {
+		return getLessons(Calendar.getInstance());
 	}
 
 	/**
-	 * Gets the calendar of this timetable.
+	 * Gets the calendar representation of this timetable.
 	 *
 	 * @return The calendar.
 	 */
 
-	public final net.fortuna.ical4j.model.Calendar getCalendar() {
+	public final ICalendar getCalendar() {
 		return calendar;
 	}
 
@@ -109,12 +145,12 @@ public class Timetable implements Serializable {
 	 *
 	 * @param context A context (the timetable will be loaded from the application working directory).
 	 *
-	 * @throws IOException If an exception occurrs.
+	 * @throws IOException If an exception occurs.
 	 */
 
-	public static final Timetable loadFromDisk(final Context context) throws IOException, ParserException {
+	public static final Timetable loadFromDisk(final Context context) throws IOException {
 		final FileInputStream input = context.openFileInput(TIMETABLE_FILE);
-		final net.fortuna.ical4j.model.Calendar calendar = new CalendarBuilder().build(input);
+		final ICalendar calendar = Biweekly.parse(input).first();
 
 		input.close();
 		return new Timetable(calendar);
@@ -130,7 +166,7 @@ public class Timetable implements Serializable {
 
 	public final void saveOnDisk(final Context context) throws IOException {
 		final FileOutputStream output = context.openFileOutput(TIMETABLE_FILE, Context.MODE_PRIVATE);
-		output.write(calendar.toString().getBytes(Utils.UTF_8));
+		Biweekly.write(calendar).go(output);
 		output.close();
 	}
 
@@ -176,20 +212,15 @@ public class Timetable implements Serializable {
 	 */
 
 	public final long getStartDate() {
-		long start = -1L;
-
-		final Calendar now = Calendar.getInstance();
-		for(final CalendarComponent component : calendar.getComponents(Component.VEVENT)) {
-			final VEvent event = (VEvent)component;
-			now.setTime(event.getStartDate().getDate());
-
-			final long millis = now.getTimeInMillis();
-			if(start < 0 || millis < start) {
-				start = millis;
+		LocalDate min = null;
+		for(final LocalDate date : lessons.getAllKeys()) {
+			if(min != null && date.compareTo(min) >= 0) {
+				continue;
 			}
+			min = date;
 		}
 
-		return start;
+		return min == null ? -1L : min.toDateTimeAtCurrentTime().getMillis();
 	}
 
 	/**
@@ -239,20 +270,15 @@ public class Timetable implements Serializable {
 	 */
 
 	public final long getEndDate() {
-		long end = -1L;
-
-		final Calendar now = Calendar.getInstance();
-		for(final CalendarComponent component : calendar.getComponents(Component.VEVENT)) {
-			final VEvent event = (VEvent)component;
-			now.setTime(event.getEndDate().getDate());
-
-			final long millis = now.getTimeInMillis();
-			if(end < 0 || millis > end) {
-				end = millis;
+		LocalDate max = null;
+		for(final LocalDate date : lessons.getAllKeys()) {
+			if(max != null && date.compareTo(max) <= 0) {
+				continue;
 			}
+			max = date;
 		}
 
-		return end;
+		return max == null ? -1L : max.toDateTimeAtCurrentTime().getMillis();
 	}
 
 	/**
@@ -288,16 +314,9 @@ public class Timetable implements Serializable {
 	public final Lesson[] getRemainingLessons() {
 		final List<Timetable.Lesson> lessons = new ArrayList<Timetable.Lesson>(getLessonsOfToday());
 		if(lessons.size() == 0) {
-			return null;
+			return new Lesson[0];
 		}
-		Collections.sort(lessons, new Comparator<Lesson>() {
-
-			@Override
-			public final int compare(final Timetable.Lesson lesson1, final Timetable.Lesson lesson2) {
-				return lesson1.getStart().compareTo(lesson2.getStart());
-			}
-
-		});
+		Collections.sort(lessons);
 		final Calendar now = Calendar.getInstance();
 		for(final Timetable.Lesson lesson : new ArrayList<Timetable.Lesson>(lessons)) {
 			if(!now.after(lesson.getEnd())) {
@@ -323,10 +342,10 @@ public class Timetable implements Serializable {
 	 * A class which represents a lesson.
 	 */
 
-	public class Lesson implements Serializable {
+	public class Lesson implements Serializable, Comparable<Lesson> {
 
 		private final int id;
-		private final String name;
+		private final String summary;
 		private final String description;
 		private final String location;
 		private final Day day;
@@ -336,7 +355,7 @@ public class Timetable implements Serializable {
 		/**
 		 * Creates a lesson.
 		 *
-		 * @param name The name of this lesson.
+		 * @param summary The summary of this lesson.
 		 * @param description The description of this lesson.
 		 * @param location The location of this lesson.
 		 * @param day The day of this lesson.
@@ -344,7 +363,7 @@ public class Timetable implements Serializable {
 		 * @param end The end time of this lesson.
 		 */
 
-		public Lesson(final String name, final String description, final String location, final Day day, final Calendar start, final Calendar end) {
+		public Lesson(final Summary summary, final Description description, final Location location, final Day day, final Calendar start, final Calendar end) {
 			final Random random = new Random();
 			int id;
 			do {
@@ -354,12 +373,18 @@ public class Timetable implements Serializable {
 			usedIds.add(id);
 			this.id = id;
 
-			this.name = name;
-			this.description = description;
-			this.location = location;
+			this.summary = summary == null ? null : summary.getValue();
+			this.description = description == null ? null : description.getValue();
+			this.location = location == null ? null : location.getValue();
+
 			this.day = day;
 			this.start = start;
 			this.end = end;
+		}
+
+		@Override
+		public final int compareTo(@NonNull Lesson lesson) {
+			return getStart().compareTo(lesson.getStart());
 		}
 
 		/**
@@ -378,8 +403,8 @@ public class Timetable implements Serializable {
 		 * @return The name of this lesson.
 		 */
 
-		public final String getName() {
-			return name;
+		public final String getSummary() {
+			return summary;
 		}
 
 		/**
