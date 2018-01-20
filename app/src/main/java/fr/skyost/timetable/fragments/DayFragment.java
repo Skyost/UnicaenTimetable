@@ -27,6 +27,8 @@ import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
+import org.joda.time.DateTime;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,7 +90,14 @@ public class DayFragment extends Fragment {
 
 		final Calendar calendar = Calendar.getInstance();
 		if(activity.baseWeek != -1) {
-			calendar.setTimeInMillis(activity.getTimetable().getAvailableWeeks().get(activity.baseWeek).getMillis());
+			final List<DateTime> availableWeeks = activity.getTimetable().getAvailableWeeks();
+			if(availableWeeks.size() > activity.baseWeek) {
+				calendar.setTimeInMillis(availableWeeks.get(activity.baseWeek).getMillis());
+			}
+			else if(!availableWeeks.isEmpty()) {
+				final int size = availableWeeks.size() - 1;
+				calendar.setTimeInMillis(availableWeeks.get(size).getMillis() + TimeUnit.DAYS.toMillis(7 * (activity.baseWeek - size)));
+			}
 		}
 		final int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
 		if(currentDay == Calendar.SATURDAY || currentDay == Calendar.SUNDAY) {

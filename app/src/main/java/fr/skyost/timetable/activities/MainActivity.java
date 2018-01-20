@@ -30,12 +30,17 @@ import com.kobakei.ratethisapp.RateThisApp;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeField;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.Weeks;
 
 import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
@@ -68,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public static final String INTENT_TIMETABLE = "timetable";
 	public static final String INTENT_REFRESH_TIMETABLE = "refresh-timetable";
 	public static final String INTENT_CURRENT_FRAGMENT = "current-fragment";
+	public static final String INTENT_DATE = "date";
 	public static final String INTENT_BASEWEEK = "base-week";
 	public static final String INTENT_SELECTED = "selected";
 
@@ -204,6 +210,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if(intent.hasExtra(INTENT_CURRENT_FRAGMENT)) {
 			showFragment(intent.getIntExtra(INTENT_CURRENT_FRAGMENT, -1));
 			intent.removeExtra(INTENT_CURRENT_FRAGMENT);
+		}
+		else if(intent.hasExtra(INTENT_DATE)) {
+			final DateTime target = new DateTime(intent.getLongExtra(INTENT_DATE, System.currentTimeMillis()));
+
+			final Calendar now = Calendar.getInstance();
+			int day = now.get(Calendar.DAY_OF_WEEK);
+			if(day == Calendar.SATURDAY) {
+				now.setTimeInMillis(now.getTimeInMillis() + TimeUnit.DAYS.toMillis(2));
+			}
+			else if(day == Calendar.SUNDAY) {
+				now.setTimeInMillis(now.getTimeInMillis() + TimeUnit.DAYS.toMillis(1));
+			}
+			else {
+				now.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			}
+
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.MILLISECOND, 0);
+
+			final DateTime start = new DateTime(timetable.getStartDate()).withDayOfWeek(DateTimeConstants.MONDAY).withTime(0, 0, 0, 0);
+
+			final int betweenNowTarget = Weeks.weeksBetween(new DateTime(now), target).getWeeks();
+			int betweenStartTarget = Weeks.weeksBetween(start, target).getWeeks();
+
+			baseWeek = betweenNowTarget == 0 ? -1 : betweenStartTarget;
+
+			showFragment(target.toCalendar(Locale.getDefault()).get(Calendar.DAY_OF_WEEK));
+			intent.removeExtra(INTENT_DATE);
 		}
 		else {
 			showFragment(currentMenuSelected);

@@ -117,7 +117,20 @@ public class Timetable implements Parcelable {
 	 */
 
 	public final Collection<Lesson> getLessons(final Calendar day) {
-		return lessons.get(new LocalDate(day));
+		return getLessons(new LocalDate(day));
+	}
+
+	/**
+	 * Gets all lessons for a specific day.
+	 *
+	 * @param day The day.
+	 *
+	 * @return The lessons for a specific day.
+	 */
+
+	public final Collection<Lesson> getLessons(final LocalDate day) {
+		final Collection<Lesson> lessons = this.lessons.get(day);
+		return lessons == null ? new HashSet<Lesson>() : lessons;
 	}
 
 	/**

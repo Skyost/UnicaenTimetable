@@ -3,7 +3,7 @@
     <string name="account_type_authority" translatable="false">fr.skyost.timetable</string>
 
     <string name="about_title">About</string>
-    <string name="about_description">\nThis software has been created by Skyost with the help of some libraries : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.0.2, biweekly v0.6.1, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.9.1 and Snacky v1.0.2. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
+    <string name="about_description">\nThis software has been created by Skyost with the help of some libraries : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.2.1, biweekly v0.6.1, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.9.1 and Snacky v1.0.2. \n\nYou can check the source code of this software on Github.\n\nThe software and its source code are available under GNU GPL v3.\n\nDisclaimer :\nThis application has not been developed by any official member of the University. Consequently, do not send any request to the establishment if you have a problem with this application.\nFurthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable.\nIf you do not trust this application, you can still check the source code with the "Github" link below.</string>
     <string name="about_share_share">Share with…</string>
     <string name="about_share_title">Unicaen Timetable</string>
     <string name="about_share_description">Check your timetable on your smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -129,10 +129,12 @@
     <string name="settings_calendar_interval_description_1" formatted="false">This will download your timetable from %s to %s.</string>
     <string name="settings_calendar_interval_description_2" formatted="false">This will download all your available timetable on the Unicaen servers.</string>
 
-    <string name="widget_today_title">TODAY</string>
-    <string name="widget_today_nothing">Nothing today. If you think there should be something, please refresh your timetable.</string>
+    <string name="widget_today_title">Today</string>
+    <string name="widget_today_nothing">Nothing for this day. If you think there should be something, please refresh your timetable.</string>
     <string name="widget_today_nothingremaining">There\'s nothing remaining today.</string>
     <string name="widget_today_error">Failed to load your timetable.</string>
     <string name="widget_refresh">Refresh</string>
+    <string name="widget_back">Back</string>
+    <string name="widget_next">Next</string>
 
 </resources>

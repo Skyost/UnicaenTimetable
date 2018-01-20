@@ -89,7 +89,7 @@ public class RingerModeManager {
 		final Timetable.Lesson[] remaining = Timetable.loadFromDisk(context).getRemainingLessons();
 
 		if(remaining.length == 0) {
-			return Utils.tomorrowMidnight();
+			return Utils.tomorrowMidnight().getTimeInMillis();
 		}
 
 		if(task == RingerModeDisabler.TASK_ID) {
@@ -100,7 +100,7 @@ public class RingerModeManager {
 			if(nowIfPossible) {
 				return -1L;
 			}
-			return remaining.length > 1 ? remaining[1].getStart().getTimeInMillis() + 1000L : Utils.tomorrowMidnight();
+			return remaining.length > 1 ? remaining[1].getStart().getTimeInMillis() + 1000L : Utils.tomorrowMidnight().getTimeInMillis();
 		}
 		return remaining[0].getStart().getTimeInMillis() + 1000L;
 	}
@@ -139,11 +139,13 @@ public class RingerModeManager {
 		currentFragment.putExtra(MainActivity.INTENT_CURRENT_FRAGMENT, day);
 
 		final int value = Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1"));
+		final String message = context.getString(R.string.notification_lessonsringermode_message, context.getResources().getStringArray(R.array.preferences_application_lessonsringermode_keys)[value].toUpperCase());
 
 		final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
 		builder.setSmallIcon(R.drawable.notification_ringer_small_drawable);
 		builder.setContentTitle(context.getString(R.string.notification_lessonsringermode_title));
-		builder.setContentText(context.getString(R.string.notification_lessonsringermode_message, context.getResources().getStringArray(R.array.preferences_application_lessonsringermode_keys)[value].toUpperCase()));
+		builder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+		builder.setContentText(message);
 		builder.addAction(R.drawable.notification_ringer_block_drawable, context.getString(R.string.notification_lessonsringermode_button), PendingIntent.getBroadcast(context, 0, new Intent(context, RingerModeDisabler.class), PendingIntent.FLAG_CANCEL_CURRENT));
 		builder.setOngoing(true);
 		builder.setContentIntent(PendingIntent.getActivity(context, TodayWidgetReceiver.CURRENT_DAY_REQUEST, currentFragment, PendingIntent.FLAG_UPDATE_CURRENT));
