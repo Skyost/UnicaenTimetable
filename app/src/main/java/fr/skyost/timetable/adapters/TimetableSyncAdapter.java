@@ -2,7 +2,6 @@ package fr.skyost.timetable.adapters;
 
 import android.Manifest;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.appwidget.AppWidgetManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
-import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.fragments.DefaultFragment;
@@ -28,6 +26,7 @@ import fr.skyost.timetable.receivers.ringer.RingerModeManager;
 import fr.skyost.timetable.receivers.TodayWidgetReceiver;
 import fr.skyost.timetable.tasks.AuthenticationTask;
 import fr.skyost.timetable.utils.Utils;
+import okhttp3.ResponseBody;
 
 public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -93,15 +92,10 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 		context.sendBroadcast(intent);
 	}
 
-	public static final Response sync(final Context context, final Account account) {
+	private static Response sync(final Context context, final Account account) {
 		try {
 			if(!Utils.hasPermission(context, Manifest.permission.INTERNET)) {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
-			}
-
-			final Account[] accounts = AccountManager.get(context).getAccountsByType(context.getString(R.string.account_type_authority));
-			if(accounts.length < 1) {
-				return new Response(AuthenticationTask.NO_ACCOUNT, null, null);
 			}
 
 			final okhttp3.Response response = AuthenticationTask.buildClient().newCall(AuthenticationTask.buildRequest(context, account.name, Utils.a(context, account))).execute();
@@ -114,7 +108,12 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 				return new Response(AuthenticationTask.UNAUTHORIZED, null, null);
 			}
 
-			final ICalendar calendar = Biweekly.parse(response.body().byteStream()).first();
+			final ResponseBody body = response.body();
+			if(body == null) {
+				throw new NullPointerException();
+			}
+
+			final ICalendar calendar = Biweekly.parse(body.byteStream()).first();
 			return new Response(AuthenticationTask.SUCCESS, new Timetable(calendar), null);
 		}
 		catch(final Exception ex) {
@@ -122,13 +121,13 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 		}
 	}
 
-	public static class Response {
+	private static class Response {
 
-		public Integer result;
-		public Timetable timetable;
-		public Exception ex;
+		private Integer result;
+		private Timetable timetable;
+		private Exception ex;
 
-		public Response(final int result, final Timetable timetable, final Exception ex) {
+		private Response(final int result, final Timetable timetable, final Exception ex) {
 			this.result = result;
 			this.timetable = timetable;
 			this.ex = ex;

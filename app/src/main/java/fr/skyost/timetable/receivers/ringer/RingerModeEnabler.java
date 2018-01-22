@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class RingerModeEnabler extends BroadcastReceiver {
 
@@ -20,10 +21,15 @@ public class RingerModeEnabler extends BroadcastReceiver {
 		}
 
 		try {
+			if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 0 && RingerModeManager.getScheduleTime(context, TASK_ID, true) != -1) { // We're at midnight.
+				schedule(context, false);
+				return;
+			}
+
 			final SharedPreferences preferences = RingerModeManager.getSharedPreferences(context);
 			final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 
-			if(!preferences.contains(RingerModeManager.RINGER_MODE) && !preferences.contains(RingerModeManager.RINGER_MODE)) {
+			if(manager != null && !preferences.contains(RingerModeManager.RINGER_MODE) && !preferences.contains(RingerModeManager.RINGER_MODE)) {
 				final SharedPreferences.Editor editor = preferences.edit();
 
 				/*final StringBuilder builder = new StringBuilder();
@@ -48,23 +54,23 @@ public class RingerModeEnabler extends BroadcastReceiver {
 		}
 	}
 
-	public static final void schedule(final Context context) throws IOException {
+	public static void schedule(final Context context) throws IOException {
 		schedule(context, true);
 	}
 
-	public static final void schedule(final Context context,  final boolean nowIfPossible) throws IOException {
+	public static void schedule(final Context context,  final boolean nowIfPossible) throws IOException {
 		RingerModeManager.schedule(context, nowIfPossible, TASK_ID);
 	}
 
-	public static final void cancel(final Context context) {
+	public static void cancel(final Context context) {
 		RingerModeManager.cancel(context, TASK_ID);
 	}
 
-	private static final PendingIntent getPendingIntent(final Context context) {
+	private static PendingIntent getPendingIntent(final Context context) {
 		return RingerModeManager.getPendingIntent(context, TASK_ID);
 	}
 
-	public static final long getScheduleTime(final Context context) throws IOException {
+	public static long getScheduleTime(final Context context) throws IOException {
 		return RingerModeManager.getScheduleTime(context, TASK_ID, false);
 	}
 

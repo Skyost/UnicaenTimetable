@@ -28,7 +28,7 @@ public class HashMultiMap<K, V> {
 	}
 
 	public final Set<V> getAllValues() {
-		final Set<V> values = new HashSet<V>();
+		final Set<V> values = new HashSet<>();
 		for(final Map.Entry<K, Set<V>> entry : map.entrySet()) {
 			values.addAll(entry.getValue());
 		}

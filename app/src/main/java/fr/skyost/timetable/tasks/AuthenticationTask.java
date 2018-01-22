@@ -43,7 +43,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	private final String password;
 
 	public AuthenticationTask(final Activity activity, final String username, final String password, final AuthenticationListener listener) {
-		this.activity = new WeakReference<Activity>(activity);
+		this.activity = new WeakReference<>(activity);
 		this.username = username;
 		this.password = password;
 		this.listener = listener;
@@ -92,7 +92,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	 * @return The new client.
 	 */
 
-	public static final OkHttpClient buildClient() {
+	public static OkHttpClient buildClient() {
 		return new OkHttpClient.Builder()
 				.connectTimeout(15, TimeUnit.SECONDS)
 				.readTimeout(15, TimeUnit.SECONDS)
@@ -109,7 +109,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	 * @return The request.
 	 */
 
-	public static final Request buildRequest(final Context context, final String username, final String password) {
+	public static Request buildRequest(final Context context, final String username, final String password) {
 		return new Request.Builder()
 				.url(getCalendarAddress(context, username))
 				.header("Authorization", Credentials.basic(username, password))
@@ -126,7 +126,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 	 * @return The calendar address.
 	 */
 
-	public static final String getCalendarAddress(final Context context, final String account) {
+	private static String getCalendarAddress(final Context context, final String account) {
 		final Resources resources = context.getResources();
 		final SharedPreferences preferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 
@@ -144,11 +144,11 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationTask
 		public String username;
 		public String password;
 
-		public Response(final int result, final Exception ex) {
+		private Response(final int result, final Exception ex) {
 			this(result, ex, null, null);
 		}
 
-		public Response(final int result, final Exception ex, final String username, final String password) {
+		private Response(final int result, final Exception ex, final String username, final String password) {
 			this.result = result;
 			this.ex = ex;
 			this.username = username;

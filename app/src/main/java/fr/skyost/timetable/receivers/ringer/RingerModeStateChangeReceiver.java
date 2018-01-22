@@ -12,7 +12,7 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
 		try {
 			if(RingerModeManager.isEnabled(context) && RingerModeManager.getScheduleTime(context, RingerModeEnabler.TASK_ID, true) == -1L) {
 				final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-				if(RingerModeManager.getPreferenceMode(context) == manager.getRingerMode()) {
+				if(manager == null || RingerModeManager.getPreferenceMode(context) == manager.getRingerMode()) {
 					return;
 				}
 

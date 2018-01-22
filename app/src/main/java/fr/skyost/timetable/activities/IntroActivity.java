@@ -211,7 +211,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	 * Shows the login dialog.
 	 */
 
-	private final void showLoginDialog() {
+	private void showLoginDialog() {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		final View layout = this.getLayoutInflater().inflate(R.layout.dialog_login_layout, null);
 		builder.setView(layout);
@@ -234,7 +234,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	 * Shows the advanced login dialog.
 	 */
 
-	private final void showAdvancedLoginDialog() {
+	private void showAdvancedLoginDialog() {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		final View layout = this.getLayoutInflater().inflate(R.layout.dialog_advancedlogin_layout, null);
 		builder.setView(layout);
@@ -263,7 +263,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	 * @param calendarEditText The calendar edit text.
 	 */
 
-	private final void createDialog(final AlertDialog.Builder builder, final EditText usernameEditText, final EditText passwordEditText, final EditText serverEditText, final EditText calendarEditText) {
+	private void createDialog(final AlertDialog.Builder builder, final EditText usernameEditText, final EditText passwordEditText, final EditText serverEditText, final EditText calendarEditText) {
 		final AccountManager manager = AccountManager.get(this);
 		final Account[] accounts = manager.getAccountsByType(this.getString(R.string.account_type_authority));
 		final Account account = accounts.length > 0 ? accounts[0] : null;

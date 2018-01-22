@@ -39,7 +39,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 		private final Activity activity;
 
-		public BindPreferenceSummaryToValueListener(final Activity activity) {
+		private BindPreferenceSummaryToValueListener(final Activity activity) {
 			this.activity = activity;
 		}
 
@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			return notifyPreferenceChange(preference, value, true);
 		}
 
-		public final boolean notifyPreferenceChange(final Preference preference, final Object value, final boolean savePreference) {
+		private boolean notifyPreferenceChange(final Preference preference, final Object value, final boolean savePreference) {
 			final Resources resources = preference.getContext().getResources();
 			final String string = value.toString();
 			switch(preference.getKey().toLowerCase()) {
@@ -105,6 +105,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 				try {
 					RingerModeManager.cancel(activity);
 					preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit();
+
 					if(mode != 0 && previousMode == 0) {
 						if(mode == 1) {
 							final NotificationManager manager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -115,7 +116,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 							}
 						}
 
-						preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit();
 						RingerModeManager.schedule(activity);
 					}
 				}
@@ -187,19 +187,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		return PreferenceFragment.class.getName().equals(fragmentName) || ServerPreferenceFragment.class.getName().equals(fragmentName) || AccountPreferenceFragment.class.getName().equals(fragmentName) || AppPreferenceFragment.class.getName().equals(fragmentName);
 	}
 
-	private static final void bindPreferenceSummaryToValue(final Activity activity, final SharedPreferences preferences, final Preference preference) {
+	private static void bindPreferenceSummaryToValue(final Activity activity, final SharedPreferences preferences, final Preference preference) {
 		final BindPreferenceSummaryToValueListener listener = new BindPreferenceSummaryToValueListener(activity);
 		preference.setOnPreferenceChangeListener(listener);
 		listener.notifyPreferenceChange(preference, preferences.getString(preference.getKey(), ""), false);
 	}
 
-	private static final void setDefaultPreferencesFile(final PreferenceFragment fragment) {
+	private static void setDefaultPreferencesFile(final PreferenceFragment fragment) {
 		final PreferenceManager manager = fragment.getPreferenceManager();
 		manager.setSharedPreferencesName(MainActivity.PREFERENCES_TITLE);
 		manager.setSharedPreferencesMode(Context.MODE_PRIVATE);
 	}
 
-	private static final boolean isXLargeTablet(final Context context) {
+	private static boolean isXLargeTablet(final Context context) {
 		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
 	}
 
@@ -302,7 +302,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 			final Preference automaticallyToggleSilentMode = findPreference(MainActivity.PREFERENCES_LESSONS_RINGER_MODE);
 			bindPreferenceSummaryToValue(activity, preferences, automaticallyToggleSilentMode);
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && ((AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE)).isVolumeFixed()) {
+
+			final AudioManager manager = (AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE);
+
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (manager == null || manager.isVolumeFixed())) {
 				automaticallyToggleSilentMode.setEnabled(false);
 			}
 		}

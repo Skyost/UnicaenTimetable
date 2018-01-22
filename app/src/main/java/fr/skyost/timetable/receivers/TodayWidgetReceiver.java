@@ -9,17 +9,19 @@ import android.content.Intent;
 import android.content.ComponentName;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.text.format.DateFormat;
 import android.widget.RemoteViews;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 import fr.skyost.timetable.services.TodayWidgetService;
-import fr.skyost.timetable.services.TodayWidgetViewsFactory;
 import fr.skyost.timetable.utils.Utils;
 
 public class TodayWidgetReceiver extends AppWidgetProvider {
@@ -41,7 +43,7 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 					context,
 					manager,
 					intent.hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID) ? new int[]{intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)} : manager.getAppWidgetIds(new ComponentName(context, this.getClass())),
-					intent.hasExtra(INTENT_RELATIVE_DAY) ? intent.getBooleanExtra(INTENT_RELATIVE_DAY, false) : null
+					intent.getIntExtra(INTENT_RELATIVE_DAY, 0)
 			);
 		}
 
@@ -50,32 +52,26 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 
 	@Override
 	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
-		onUpdate(context, manager, ids, null);
+		onUpdate(context, manager, ids, 0);
 	}
 
-	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids, final Boolean backNext) {
+	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids, final int relativeDay) {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today_layout);
 
-		TodayWidgetViewsFactory.WidgetDateManager dateManager = TodayWidgetViewsFactory.WidgetDateManager.getInstance();
-		if(backNext != null) {
-			if(backNext) {
-				dateManager.plusRelativeDay();
-			}
-			else {
-				dateManager.minusRelativeDay();
-			}
-		}
+		final WidgetDateManager dateManager = WidgetDateManager.getInstance();
+		dateManager.setRelativeDay(relativeDay);
 
 		updateDrawables(context, views, dateManager);
 		updateTitle(context, views, dateManager);
 		updateMessage(context, views);
 		registerIntents(context, views, dateManager);
+
 		for(final int id : ids) {
 			manager.notifyAppWidgetViewDataChanged(id, R.id.widget_today_content);
 			manager.updateAppWidget(id, views);
 		}
-		scheduleNextUpdate(context);
 
+		scheduleNextUpdate(context);
 		super.onUpdate(context, manager, ids);
 	}
 
@@ -87,7 +83,7 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * @param dateManager The date manager.
 	 */
 
-	public final void updateDrawables(final Context context, final RemoteViews views, final TodayWidgetViewsFactory.WidgetDateManager dateManager) {
+	public final void updateDrawables(final Context context, final RemoteViews views, final WidgetDateManager dateManager) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			views.setImageViewResource(R.id.widget_today_refresh, R.drawable.widget_today_refresh_drawable);
 			views.setImageViewResource(R.id.widget_today_back, R.drawable.widget_today_back_drawable);
@@ -115,16 +111,14 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * @param dateManager The date manager.
 	 */
 
-	public final void updateTitle(final Context context, final RemoteViews views, final TodayWidgetViewsFactory.WidgetDateManager dateManager) {
-		if(dateManager.getRelativeDay() <= 0) {
+	public final void updateTitle(final Context context, final RemoteViews views, final WidgetDateManager dateManager) {
+		if(dateManager.getRelativeDay() == 0) {
 			views.setTextViewText(R.id.widget_today_title, context.getString(R.string.widget_today_title));
 			return;
 		}
 
-		final Calendar now = Calendar.getInstance();
-		now.setTimeInMillis(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(dateManager.getRelativeDay()));
-
-		views.setTextViewText(R.id.widget_today_title, DateFormat.getDateInstance().format(now.getTime()));
+		final Date date = dateManager.getAbsoluteDay().getTime();
+		views.setTextViewText(R.id.widget_today_title, new SimpleDateFormat("E", Locale.getDefault()).format(date).toUpperCase() + " " + DateFormat.getDateFormat(context).format(date));
 	}
 
 	/**
@@ -147,7 +141,7 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * @param dateManager The date manager.
 	 */
 
-	public final void registerIntents(final Context context, final RemoteViews views, final TodayWidgetViewsFactory.WidgetDateManager dateManager) {
+	public final void registerIntents(final Context context, final RemoteViews views, final WidgetDateManager dateManager) {
 		final Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(dateManager.getRelativeDay()));
 
@@ -174,12 +168,15 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 
 		final Intent next = new Intent(context, this.getClass());
 		next.putExtra(INTENT_REFRESH_WIDGETS, true);
-		next.putExtra(INTENT_RELATIVE_DAY, true);
+		next.putExtra(INTENT_RELATIVE_DAY, dateManager.getRelativeDay() + 1);
 		views.setOnClickPendingIntent(R.id.widget_today_next, PendingIntent.getBroadcast(context, BACK_REQUEST, next, PendingIntent.FLAG_UPDATE_CURRENT));
 
-		if(dateManager.getRelativeDay() > 0) {
+		if(dateManager.getRelativeDay() <= 0) {
+			views.setOnClickPendingIntent(R.id.widget_today_back, null);
+		}
+		else {
 			final Intent back = (Intent)next.clone();
-			back.putExtra(INTENT_RELATIVE_DAY, false);
+			back.putExtra(INTENT_RELATIVE_DAY, dateManager.getRelativeDay() - 1);
 			views.setOnClickPendingIntent(R.id.widget_today_back, PendingIntent.getBroadcast(context, NEXT_REQUEST, back, PendingIntent.FLAG_UPDATE_CURRENT));
 		}
 	}
@@ -202,6 +199,10 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
+		if(manager == null) {
+			return;
+		}
+
 		final Intent intent = new Intent(context, this.getClass());
 		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(INTENT_REFRESH_WIDGETS, true);
@@ -218,6 +219,50 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 		else {
 			manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending);
 		}
+	}
+
+	public static final class WidgetDateManager {
+
+		private int relativeDay = 0;
+
+		private static class Holder {
+
+			private static final WidgetDateManager INSTANCE = new WidgetDateManager();
+
+		}
+
+		public static WidgetDateManager getInstance() {
+			return Holder.INSTANCE;
+		}
+
+		public final int getRelativeDay() {
+			return relativeDay;
+		}
+
+		public final void plusRelativeDay() {
+			this.relativeDay++;
+		}
+
+		public final void minusRelativeDay() {
+			this.relativeDay--;
+		}
+
+		public final void setRelativeDay(final int relativeDay) {
+			this.relativeDay = relativeDay;
+		}
+
+		public final Calendar getAbsoluteDay() {
+			final Calendar day = Calendar.getInstance();
+			day.setTimeInMillis(day.getTimeInMillis() + TimeUnit.DAYS.toMillis(this.relativeDay));
+
+			day.set(Calendar.HOUR_OF_DAY, 0);
+			day.set(Calendar.MINUTE, 0);
+			day.set(Calendar.SECOND, 0);
+			day.set(Calendar.MILLISECOND, 0);
+
+			return day;
+		}
+
 	}
 
 }

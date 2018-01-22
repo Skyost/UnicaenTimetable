@@ -55,7 +55,7 @@ public class Timetable implements Parcelable {
 
 	};
 
-	private final HashSet<Integer> usedIds = new HashSet<Integer>();
+	private final HashSet<Integer> USED_IDS = new HashSet<Integer>();
 
 	private final ICalendar calendar;
 	private final HashMultiMap<LocalDate, Lesson> lessons = new HashMultiMap<LocalDate, Lesson>();
@@ -382,8 +382,8 @@ public class Timetable implements Parcelable {
 			do {
 				id = random.nextInt();
 			}
-			while(usedIds.contains(id));
-			usedIds.add(id);
+			while(USED_IDS.contains(id));
+			USED_IDS.add(id);
 			this.id = id;
 
 			this.summary = summary == null ? null : summary.getValue();
@@ -406,8 +406,8 @@ public class Timetable implements Parcelable {
 		 * @return The unique id of this lesson.
 		 */
 
-		public final int getId() {
-			return id;
+		public final String getId() {
+			return String.valueOf(id);
 		}
 
 		/**

@@ -42,7 +42,7 @@ public class Utils {
 	 * @return A String corresponding to the operation.
 	 */
 
-	public static final String addZeroIfNeeded(final Integer integer) {
+	public static String addZeroIfNeeded(final Integer integer) {
 		final String value = String.valueOf(integer);
 		if(value.length() < 2) {
 			return "0" + value;
@@ -60,7 +60,7 @@ public class Utils {
 	 * <br><b>false</b> Otherwise.
 	 */
 
-	public static final boolean hasPermission(final Context context, final String permission) {
+	public static boolean hasPermission(final Context context, final String permission) {
 		return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
 	}
 
@@ -73,8 +73,8 @@ public class Utils {
 	 * @return An array which contains the String.
 	 */
 
-	public static final String[] splitEqually(final String text, int size) {
-		final List<String> result = new ArrayList<String>();
+	public static String[] splitEqually(final String text, int size) {
+		final List<String> result = new ArrayList<>();
 		int start = 0;
 		int end = text.length() / size;
 		for(int i = 0; i != size; i++) {
@@ -102,7 +102,7 @@ public class Utils {
 	 * @return The random color.
 	 */
 
-	public static final int randomColor(final int alpha, final String... seeds) {
+	public static int randomColor(final int alpha, final String... seeds) {
 		if(seeds.length < 3) {
 			return Color.WHITE;
 		}
@@ -116,7 +116,7 @@ public class Utils {
 	 * @param account The account.
 	 */
 
-	public static final void removeAccount(final AccountManager manager, final Account account) {
+	public static void removeAccount(final AccountManager manager, final Account account) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 			manager.removeAccountExplicitly(account);
 		}
@@ -132,7 +132,7 @@ public class Utils {
 	 * @param account The account.
 	 */
 
-	public static final void makeAccountSyncable(final Context context, final Account account) {
+	public static void makeAccountSyncable(final Context context, final Account account) {
 		final String authority = context.getString(R.string.account_type_authority);
 
 		ContentResolver.setIsSyncable(account, authority, 1);
@@ -140,7 +140,7 @@ public class Utils {
 		ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, TimeUnit.DAYS.toSeconds(3L));
 	}
 
-	public static final String a(final Context context, final Account account) {
+	public static String a(final Context context, final Account account) {
 		final String value = AccountManager.get(context).getPassword(account);
 		try {
 			final byte[] bytes = value == null ? new byte[0] : Base64.decode(value,Base64.DEFAULT);
@@ -156,7 +156,7 @@ public class Utils {
 		return value;
 	}
 
-	public static final String b(final Context context, final String value) {
+	public static String b(final Context context, final String value) {
 		try {
 			final byte[] bytes = value == null ? new byte[0] : value.getBytes(UTF_8);
 			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
@@ -180,8 +180,12 @@ public class Utils {
 	 * @return The Bitmap.
 	 */
 
-	public static final Bitmap drawableToBitmap(final Context context, final int drawableId) {
+	public static Bitmap drawableToBitmap(final Context context, final int drawableId) {
 		final Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+		if(drawable == null) {
+			return null;
+		}
+
 		final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -195,7 +199,7 @@ public class Utils {
 	 * @return Tomorrow midnight calendar.
 	 */
 
-	public static final Calendar tomorrowMidnight() {
+	public static Calendar tomorrowMidnight() {
 		final Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);

@@ -23,7 +23,7 @@ public class RingerModeDisabler extends BroadcastReceiver {
 			final SharedPreferences preferences = RingerModeManager.getSharedPreferences(context);
 			final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 
-			if(RingerModeManager.getPreferenceMode(context) == manager.getRingerMode()) {
+			if(manager != null && RingerModeManager.getPreferenceMode(context) == manager.getRingerMode()) {
 				/*if(preferences.contains(RingerModeManager.RINGER_VOLUMES)) {
 					final String[] parts = preferences.getString(RingerModeManager.RINGER_VOLUMES, "").split(" ");
 					if(parts.length < 6) {
@@ -56,23 +56,23 @@ public class RingerModeDisabler extends BroadcastReceiver {
 		}
 	}
 
-	public static final void schedule(final Context context) throws IOException {
+	public static void schedule(final Context context) throws IOException {
 		schedule(context, false);
 	}
 
-	public static final void schedule(final Context context,  final boolean nowIfPossible) throws IOException {
+	public static void schedule(final Context context,  final boolean nowIfPossible) throws IOException {
 		RingerModeManager.schedule(context, nowIfPossible, TASK_ID);
 	}
 
-	public static final void cancel(final Context context) {
+	public static void cancel(final Context context) {
 		RingerModeManager.cancel(context, TASK_ID);
 	}
 
-	private static final PendingIntent getPendingIntent(final Context context) {
+	private static PendingIntent getPendingIntent(final Context context) {
 		return RingerModeManager.getPendingIntent(context, TASK_ID);
 	}
 
-	public static final long getScheduleTime(final Context context) throws IOException {
+	public static long getScheduleTime(final Context context) throws IOException {
 		return RingerModeManager.getScheduleTime(context, TASK_ID, false);
 	}
 

@@ -30,8 +30,6 @@ import com.kobakei.ratethisapp.RateThisApp;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.Weeks;
 
 import java.io.FileNotFoundException;
@@ -203,10 +201,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		navigationView.setNavigationItemSelectedListener(this);
 
 		final Intent intent = this.getIntent();
-		if(intent.hasExtra(INTENT_REFRESH_TIMETABLE) && intent.getBooleanExtra(INTENT_REFRESH_TIMETABLE, true)) {
-			refreshTimetable();
-			intent.removeExtra(INTENT_REFRESH_TIMETABLE);
-		}
 		if(intent.hasExtra(INTENT_CURRENT_FRAGMENT)) {
 			showFragment(intent.getIntExtra(INTENT_CURRENT_FRAGMENT, -1));
 			intent.removeExtra(INTENT_CURRENT_FRAGMENT);
@@ -243,6 +237,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 		else {
 			showFragment(currentMenuSelected);
+		}
+
+		if(intent.hasExtra(INTENT_REFRESH_TIMETABLE) && intent.getBooleanExtra(INTENT_REFRESH_TIMETABLE, true)) {
+			refreshTimetable();
+			intent.removeExtra(INTENT_REFRESH_TIMETABLE);
 		}
 	}
 
@@ -331,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				break;
 			}
 			final List<DateTime> availableWeeks = timetable.getAvailableWeeks();
-			final List<String> dialogData = new ArrayList<String>();
+			final List<String> dialogData = new ArrayList<>();
 
 			final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
 			for(final DateTime availableWeek : availableWeeks) {

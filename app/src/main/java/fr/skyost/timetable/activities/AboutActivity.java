@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
@@ -42,7 +43,7 @@ public class AboutActivity extends AppCompatActivity {
 
 		});
 
-		final HashMap<String, String> links = new HashMap<String, String>();
+		final HashMap<String, String> links = new HashMap<>();
 		links.put("Skyost", "https://www.skyost.eu");
 		links.put("Github", "https://github.com/Skyost/UnicaenTimetable");
 		links.put("GNU GPL v3", "http://choosealicense.com/licenses/gpl-3.0");
@@ -51,7 +52,10 @@ public class AboutActivity extends AppCompatActivity {
 		description.setText(createLinks(description.getText().toString(), links));
 		description.setMovementMethod(LinkMovementMethod.getInstance());
 
-		this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		final ActionBar actionBar = this.getSupportActionBar();
+		if(actionBar != null) {
+			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
 	}
 
 	@Override
@@ -73,7 +77,7 @@ public class AboutActivity extends AppCompatActivity {
 	 * @return The Spannable, ready to use.
 	 */
 
-	private final Spannable createLinks(final String text, final Map<String, String> links) {
+	private Spannable createLinks(final String text, final Map<String, String> links) {
 		final Spannable spannable = new SpannableString(text);
 		for(final Map.Entry<String, String> entry : links.entrySet()) {
 			final String linkText = entry.getKey();

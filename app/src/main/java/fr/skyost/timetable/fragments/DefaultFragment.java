@@ -46,7 +46,7 @@ public class DefaultFragment extends Fragment {
 		final long updateTime = getUpdateTime();
 
 		final Resources resources = this.getResources();
-		final HashMap<String, Integer> colors = new HashMap<String, Integer>();
+		final HashMap<String, Integer> colors = new HashMap<>();
 
 		final Timetable timetable = activity.getTimetable();
 		if(updateTime == -1L || timetable == null) {
@@ -87,7 +87,7 @@ public class DefaultFragment extends Fragment {
 	 * @return The Spannable, ready to use.
 	 */
 
-	private final Spannable addColors(final String text, final Map<String, Integer> colors) {
+	private Spannable addColors(final String text, final Map<String, Integer> colors) {
 		final Spannable spannable = new SpannableString(text);
 		for(final Map.Entry<String, Integer> entry : colors.entrySet()) {
 			final String colorText = entry.getKey();
@@ -102,7 +102,7 @@ public class DefaultFragment extends Fragment {
 	 * @return The last update time.
 	 */
 
-	private final long getUpdateTime() {
+	private long getUpdateTime() {
 		final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		long updateTime = preferences.getLong(MainActivity.PREFERENCES_LAST_UPDATE, -1L);
 		preferences.edit().remove(MainActivity.PREFERENCES_LAST_UPDATE).apply();

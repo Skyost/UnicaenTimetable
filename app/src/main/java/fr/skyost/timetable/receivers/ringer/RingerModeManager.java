@@ -29,21 +29,25 @@ public class RingerModeManager {
 	public static final String RINGER_MODE = "mode";
 	//public static final String RINGER_VOLUMES = "volumes";
 
-	public static final boolean isEnabled(final Context context) {
+	public static boolean isEnabled(final Context context) {
 		return Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "0")) != 0;
 	}
 
-	public static final void schedule(final Context context) throws IOException {
+	public static void schedule(final Context context) throws IOException {
 		schedule(context, true);
 	}
 
-	public static final void schedule(final Context context, final boolean nowIfPossible) throws IOException {
+	public static void schedule(final Context context, final boolean nowIfPossible) throws IOException {
 		RingerModeEnabler.schedule(context, nowIfPossible);
 		RingerModeDisabler.schedule(context, nowIfPossible);
 	}
 
-	public static final void schedule(final Context context, final boolean nowIfPossible, final int task) throws IOException {
+	public static void schedule(final Context context, final boolean nowIfPossible, final int task) throws IOException {
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		if(manager == null) {
+			return;
+		}
+
 		final long time = getScheduleTime(context, task, nowIfPossible);
 
 		if(task == RingerModeEnabler.TASK_ID && time == -1L) {
@@ -63,13 +67,17 @@ public class RingerModeManager {
 		}
 	}
 
-	public static final void cancel(final Context context) {
+	public static void cancel(final Context context) {
 		RingerModeEnabler.cancel(context);
 		RingerModeDisabler.cancel(context);
 	}
 
-	public static final void cancel(final Context context, final int task) {
+	public static void cancel(final Context context, final int task) {
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		if(manager == null) {
+			return;
+		}
+
 		final PendingIntent pendingIntent = getPendingIntent(context, task);
 
 		manager.cancel(pendingIntent);
@@ -80,12 +88,12 @@ public class RingerModeManager {
 		}
 	}
 
-	protected static final PendingIntent getPendingIntent(final Context context, final int task) {
+	protected static PendingIntent getPendingIntent(final Context context, final int task) {
 		final Intent intent = new Intent(context, task == RingerModeEnabler.TASK_ID ? RingerModeEnabler.class : RingerModeDisabler.class);
 		return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 	}
 
-	public static final long getScheduleTime(final Context context, final int task, final boolean nowIfPossible) throws IOException {
+	public static long getScheduleTime(final Context context, final int task, final boolean nowIfPossible) throws IOException {
 		final Timetable.Lesson[] remaining = Timetable.loadFromDisk(context).getRemainingLessons();
 
 		if(remaining.length == 0) {
@@ -105,16 +113,18 @@ public class RingerModeManager {
 		return remaining[0].getStart().getTimeInMillis() + 1000L;
 	}
 
-	public static final SharedPreferences getSharedPreferences(final Context context) {
+	public static SharedPreferences getSharedPreferences(final Context context) {
 		return context.getSharedPreferences(RINGER_FILE, Context.MODE_PRIVATE);
 	}
 
-	public static final int getPreferenceMode(final Context context) {
+	public static int getPreferenceMode(final Context context) {
 		final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-		final int value = Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1"));
+		if(manager == null) {
+			return -1;
+		}
 
-		final int currentMode = manager.getRingerMode();
-		int mode = currentMode;
+		final int value = Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1"));
+		int mode = manager.getRingerMode();
 
 		switch(value) {
 		case 1:
@@ -130,7 +140,7 @@ public class RingerModeManager {
 		return mode;
 	}
 
-	protected static final void displayNotification(final Context context) {
+	protected static void displayNotification(final Context context) {
 		int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 		if(day == Calendar.SATURDAY || day == Calendar.SUNDAY) {
 			day = Calendar.MONDAY;
@@ -151,11 +161,19 @@ public class RingerModeManager {
 		builder.setContentIntent(PendingIntent.getActivity(context, TodayWidgetReceiver.CURRENT_DAY_REQUEST, currentFragment, PendingIntent.FLAG_UPDATE_CURRENT));
 
 		final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if(manager == null) {
+			return;
+		}
+
 		manager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, builder.build());
 	}
 
-	protected static final void closeNotification(final Context context) {
+	protected static void closeNotification(final Context context) {
 		final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if(manager == null) {
+			return;
+		}
+
 		manager.cancel(NOTIFICATION_TAG, NOTIFICATION_ID);
 	}
 

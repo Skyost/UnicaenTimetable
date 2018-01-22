@@ -11,10 +11,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.Timetable;
+import fr.skyost.timetable.receivers.TodayWidgetReceiver;
 import fr.skyost.timetable.utils.Utils;
 
 public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -23,7 +23,7 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 
 	private String[] items;
 
-	public TodayWidgetViewsFactory(final Context context) {
+	protected TodayWidgetViewsFactory(final Context context) {
 		this.context = context;
 	}
 
@@ -57,12 +57,9 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 
 	@Override
 	public final void onDataSetChanged() {
-		final List<String> items = new ArrayList<String>();
+		final List<String> items = new ArrayList<>();
 		try {
-			final Calendar nowRelative = Calendar.getInstance();
-			nowRelative.setTimeInMillis(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(WidgetDateManager.getInstance().getRelativeDay()));
-
-			final List<Timetable.Lesson> lessons = new ArrayList<Timetable.Lesson>(Timetable.loadFromDisk(context).getLessons(nowRelative));
+			final List<Timetable.Lesson> lessons = new ArrayList<>(Timetable.loadFromDisk(context).getLessons(TodayWidgetReceiver.WidgetDateManager.getInstance().getAbsoluteDay()));
 			if(lessons.size() == 0) {
 				items.add("<i>" + context.getResources().getString(R.string.widget_today_nothing) + "</i>");
 			}
@@ -76,10 +73,10 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 
 				});
 
-				final Calendar nowAbsolute = Calendar.getInstance();
+				final Calendar now = Calendar.getInstance();
 				Timetable.Lesson nextLesson = null;
 				for(final Timetable.Lesson lesson : lessons) {
-					if(!nowAbsolute.after(lesson.getEnd())) {
+					if(!now.after(lesson.getEnd())) {
 						items.add("<b>" + lesson.getSummary() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "<br/>" + "<i>" + lesson.getLocation() + "</i>");
 
 						if(nextLesson == null || lesson.getEnd().getTimeInMillis() < nextLesson.getEnd().getTimeInMillis()) {
@@ -113,37 +110,6 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 	@Override
 	public final boolean hasStableIds() {
 		return true;
-	}
-
-	public static final class WidgetDateManager {
-
-		private int relativeDay = 0;
-
-		public static WidgetDateManager instance;
-
-		public static final WidgetDateManager getInstance() {
-			if(instance == null) {
-				instance = new WidgetDateManager();
-			}
-			return instance;
-		}
-
-		public final int getRelativeDay() {
-			return relativeDay;
-		}
-
-		public final void setRelativeDay(final int relativeDay) {
-			this.relativeDay = relativeDay;
-		}
-
-		public final void plusRelativeDay() {
-			this.relativeDay++;
-		}
-
-		public final void minusRelativeDay() {
-			this.relativeDay--;
-		}
-
 	}
 
 }

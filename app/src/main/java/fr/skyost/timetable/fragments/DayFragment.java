@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import de.mateware.snacky.Snacky;
@@ -75,7 +76,7 @@ public class DayFragment extends Fragment {
 			@Override
 			public final String interpretDate(final Calendar calendar) {
 				final Date date = calendar.getTime();
-				return new SimpleDateFormat("E").format(date) + " " + DateFormat.getDateFormat(activity).format(date);
+				return new SimpleDateFormat("E", Locale.getDefault()).format(date) + " " + DateFormat.getDateFormat(activity).format(date);
 			}
 
 			@Override
@@ -115,7 +116,7 @@ public class DayFragment extends Fragment {
 
 			@Override
 			public final List<? extends WeekViewEvent> onMonthChange(final int newYear, final int newMonth) {
-				final List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+				final List<WeekViewEvent> events = new ArrayList<>();
 				if(weekView.getFirstVisibleDay().get(Calendar.MONTH) + 1 != newMonth) {
 					return events;
 				}
@@ -263,7 +264,7 @@ public class DayFragment extends Fragment {
 	 * @return An instance of this fragment corresponding to the day.
 	 */
 
-	public static final DayFragment newInstance(final Day day) {
+	public static DayFragment newInstance(final Day day) {
 		final DayFragment instance = new DayFragment();
 		final Bundle args = new Bundle();
 		args.putString(Day.class.getName().toLowerCase(), day.name());
@@ -276,7 +277,7 @@ public class DayFragment extends Fragment {
 		private final SharedPreferences activityPreferences;
 		private final SharedPreferences colorPreferences;
 
-		public TimetableWeekViewEvent(final Lesson lesson, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences) {
+		private TimetableWeekViewEvent(final Lesson lesson, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences) {
 			super(lesson.getId(), lesson.getSummary(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription(), lesson.getStart(), lesson.getEnd());
 			this.activityPreferences = activityPreferences;
 			this.colorPreferences = colorPreferences;

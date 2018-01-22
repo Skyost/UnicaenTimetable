@@ -26,7 +26,7 @@ public class AuthenticatorService extends Service {
 
 	public class Authenticator extends AbstractAccountAuthenticator {
 
-		public Authenticator(final Context context) {
+		private Authenticator(final Context context) {
 			super(context);
 		}
 
