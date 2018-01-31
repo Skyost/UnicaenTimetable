@@ -8,11 +8,9 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
 
-import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +19,6 @@ import biweekly.Biweekly;
 import biweekly.ICalendar;
 import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
-import fr.skyost.timetable.fragments.DefaultFragment;
 import fr.skyost.timetable.receivers.ringer.RingerModeManager;
 import fr.skyost.timetable.receivers.TodayWidgetReceiver;
 import fr.skyost.timetable.tasks.AuthenticationTask;
@@ -53,14 +50,6 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 
 			response.timetable.saveOnDisk(context);
-
-			final long updateTime = System.currentTimeMillis();
-			final FileOutputStream output = context.openFileOutput(DefaultFragment.UPDATE_TIME_FILE, Context.MODE_PRIVATE);
-			output.write(String.valueOf(updateTime).getBytes(Utils.UTF_8));
-			output.close();
-
-			final SharedPreferences preferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-			preferences.edit().putLong(MainActivity.PREFERENCES_LAST_UPDATE, updateTime).apply();
 
 			final Intent updateIntent = new Intent(context, TodayWidgetReceiver.class);
 			updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);

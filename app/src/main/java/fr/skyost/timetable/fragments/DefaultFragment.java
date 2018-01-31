@@ -1,7 +1,5 @@
 package fr.skyost.timetable.fragments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,10 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,8 +24,6 @@ import fr.skyost.timetable.Timetable;
 import fr.skyost.timetable.activities.MainActivity;
 
 public class DefaultFragment extends Fragment {
-
-	public static final String UPDATE_TIME_FILE = "update_time";
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -103,33 +95,14 @@ public class DefaultFragment extends Fragment {
 	 */
 
 	private long getUpdateTime() {
-		final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		long updateTime = preferences.getLong(MainActivity.PREFERENCES_LAST_UPDATE, -1L);
-		preferences.edit().remove(MainActivity.PREFERENCES_LAST_UPDATE).apply();
-
 		try {
-			final InputStream input = this.getActivity().openFileInput(UPDATE_TIME_FILE);
-
-			final InputStreamReader streamReader = new InputStreamReader(input);
-			final BufferedReader bufferedReader = new BufferedReader(streamReader);
-
-			final String line = bufferedReader.readLine();
-			if(line != null) {
-				updateTime = Long.parseLong(line);
-			}
-
-			bufferedReader.close();
-			streamReader.close();
-			input.close();
-		}
-		catch(final FileNotFoundException ex) {
-			return updateTime;
+			return this.getActivity().getFileStreamPath(Timetable.TIMETABLE_FILE).lastModified();
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();
 		}
 
-		return updateTime;
+		return -1L;
 	}
 
 }

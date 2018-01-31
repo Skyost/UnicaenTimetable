@@ -117,9 +117,6 @@ public class DayFragment extends Fragment {
 			@Override
 			public final List<? extends WeekViewEvent> onMonthChange(final int newYear, final int newMonth) {
 				final List<WeekViewEvent> events = new ArrayList<>();
-				if(weekView.getFirstVisibleDay().get(Calendar.MONTH) + 1 != newMonth) {
-					return events;
-				}
 
 				final Timetable timetable = activity.getTimetable();
 				if(timetable == null) {
@@ -127,10 +124,6 @@ public class DayFragment extends Fragment {
 				}
 
 				for(final Lesson lesson : timetable.getLessons(calendar)) {
-					final Calendar start = lesson.getStart();
-					if(start.get(Calendar.DAY_OF_MONTH) != calendar.get(Calendar.DAY_OF_MONTH)) {
-						continue;
-					}
 					events.add(new TimetableWeekViewEvent(lesson, activityPreferences, colorPreferences));
 				}
 

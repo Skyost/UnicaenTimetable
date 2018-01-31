@@ -30,7 +30,7 @@ public class RingerModeManager {
 	//public static final String RINGER_VOLUMES = "volumes";
 
 	public static boolean isEnabled(final Context context) {
-		return Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "0")) != 0;
+		return !context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "0").equals("0");
 	}
 
 	public static void schedule(final Context context) throws IOException {
@@ -90,7 +90,7 @@ public class RingerModeManager {
 
 	protected static PendingIntent getPendingIntent(final Context context, final int task) {
 		final Intent intent = new Intent(context, task == RingerModeEnabler.TASK_ID ? RingerModeEnabler.class : RingerModeDisabler.class);
-		return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		return PendingIntent.getBroadcast(context, 0, intent, 0);
 	}
 
 	public static long getScheduleTime(final Context context, final int task, final boolean nowIfPossible) throws IOException {
