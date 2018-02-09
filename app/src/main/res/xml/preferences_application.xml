@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="color-lessons-automatically"
         android:title="@string/preferences_application_colorlessonsautomatically"
         android:defaultValue="false"/>
@@ -11,5 +11,10 @@
         android:defaultValue="0"
         android:entries="@array/preferences_application_lessonsringermode_keys"
         android:entryValues="@array/preferences_application_lessonsringermode_values"/>
+
+    <SwitchPreference
+        android:key="today-automatically"
+        android:title="@string/preferences_application_todayautomatically"
+        android:defaultValue="false"/>
 
 </PreferenceScreen>

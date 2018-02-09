@@ -60,6 +60,8 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
+        <service android:name=".receivers.ringer.RingerModeManager$NotificationAction"/>
+
         <service
             android:name=".services.TimetableSyncService"
             android:exported="true"
@@ -78,15 +80,15 @@
 
         <receiver android:name=".receivers.NeedUpdateReceiver">
             <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
                 <action android:name="android.intent.action.TIME_SET"/>
                 <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.ringer.RingerModeEnabler"/>
-        <receiver android:name=".receivers.ringer.RingerModeDisabler"/>
+        <receiver android:name=".receivers.ringer.RingerModeManager"/>
 
         <receiver
             android:name=".receivers.ringer.RingerModeStateChangeReceiver">

@@ -108,7 +108,7 @@
 
     <string name="preferences_application" translatable="false">Application</string>
     <string name="preferences_application_colorlessonsautomatically">Automatically color lessons</string>
-    <string name="preferences_application_lessonsringermode">Ringer mode during lessons</string>
+    <string name="preferences_application_lessonsringermode">Ringer mode during lessons (Beta)</string>
     <string-array name="preferences_application_lessonsringermode_keys">
         <item>No change</item>
         <item>Silent</item>
@@ -119,6 +119,8 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string name="preferences_application_todayautomatically">Automatically open today\'s page</string>
 
     <string name="settings_default" formatted="false">Default : %s</string>
     <string name="settings_account" formatted="false">Unicaen account : %s</string>

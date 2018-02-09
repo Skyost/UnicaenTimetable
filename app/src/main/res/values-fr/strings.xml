@@ -98,12 +98,14 @@
     </string-array>
 
     <string name="preferences_application_colorlessonsautomatically">Colorer automatiquement les matières</string>
-    <string name="preferences_application_lessonsringermode">Mode de sonnerie pendant les cours</string>
+    <string name="preferences_application_lessonsringermode">Mode de sonnerie pendant les cours (Bêta)</string>
     <string-array name="preferences_application_lessonsringermode_keys">
         <item>Aucun changement</item>
         <item>Silencieux</item>
         <item>Vibreur</item>
     </string-array>
+
+    <string name="preferences_application_todayautomatically">Ouvrir automatiquement la page du jour</string>
 
     <string name="settings_default" formatted="false">Défaut : %s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %s</string>

@@ -56,8 +56,8 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 			updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
 			context.sendBroadcast(updateIntent);
 
-			if(RingerModeManager.isEnabled(context)) {
-				RingerModeManager.schedule(context, false);
+			if(RingerModeManager.isEnabled(context) && RingerModeManager.getScheduleTime(context) != -1L) {
+				RingerModeManager.schedule(context);
 			}
 
 			syncResult.stats.numUpdates++;
@@ -77,7 +77,7 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 		final Intent intent = new Intent(MainActivity.INTENT_SYNC_FINISHED);
 		intent.putExtra(MainActivity.INTENT_SYNC_TIMETABLE, response.timetable);
 		intent.putExtra(MainActivity.INTENT_SYNC_RESULT, response.result);
-		intent.putExtra(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		intent.putExtra(ContentResolver.SYNC_EXTRAS_MANUAL, extras != null && extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false));
 		context.sendBroadcast(intent);
 	}
 

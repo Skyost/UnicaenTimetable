@@ -13,8 +13,8 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -100,13 +100,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			case MainActivity.PREFERENCES_LESSONS_RINGER_MODE:
 				final String[] values = resources.getStringArray(R.array.preferences_application_lessonsringermode_keys);
 				final int mode = TextUtils.isEmpty(string) ? 0 : Integer.parseInt(string);
-				final int previousMode = Integer.parseInt(preference.getSharedPreferences().getString(preference.getKey(), "0"));
 
 				try {
-					RingerModeManager.cancel(activity);
 					preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit();
 
-					if(mode != 0 && previousMode == 0) {
+					if(mode == 0) {
+						RingerModeManager.cancel(activity);
+
+						if(RingerModeManager.inLesson(activity)) {
+							RingerModeManager.disable(activity);
+						}
+					}
+					else {
 						if(mode == 1) {
 							final NotificationManager manager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
 							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted()) {
@@ -117,6 +122,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 						}
 
 						RingerModeManager.schedule(activity);
+
+						if(RingerModeManager.inLesson(activity)) {
+							RingerModeManager.enable(activity);
+						}
 					}
 				}
 				catch(final Exception ex) {
@@ -298,10 +307,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			this.setHasOptionsMenu(true);
 
 			final SharedPreferences preferences = this.getActivity().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-			((CheckBoxPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
+			((SwitchPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
 
 			final Preference automaticallyToggleSilentMode = findPreference(MainActivity.PREFERENCES_LESSONS_RINGER_MODE);
 			bindPreferenceSummaryToValue(activity, preferences, automaticallyToggleSilentMode);
+
+			((SwitchPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false));
 
 			final AudioManager manager = (AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE);
 

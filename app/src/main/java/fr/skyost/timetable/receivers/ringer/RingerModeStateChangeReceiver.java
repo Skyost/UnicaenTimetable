@@ -10,13 +10,13 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
 	@Override
 	public final void onReceive(final Context context, final Intent intent) {
 		try {
-			if(RingerModeManager.isEnabled(context) && RingerModeManager.getScheduleTime(context, RingerModeEnabler.TASK_ID, true) == -1L) {
+			if(RingerModeManager.isEnabled(context) && RingerModeManager.inLesson(context)) {
 				final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 				if(manager == null || RingerModeManager.getPreferenceMode(context) == manager.getRingerMode()) {
 					return;
 				}
 
-				new RingerModeDisabler().onReceive(context, intent);
+				RingerModeManager.disable(context);
 			}
 		}
 		catch(final Exception ex) {

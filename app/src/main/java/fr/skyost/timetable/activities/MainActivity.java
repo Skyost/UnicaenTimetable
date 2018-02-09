@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public static final String PREFERENCES_CALENDAR = "calendar-nohtml";
 	public static final String PREFERENCES_CALENDAR_INTERVAL = "calendar-interval";
 	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
+	public static final String PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE = "today-automatically";
 	public static final String PREFERENCES_LESSONS_RINGER_MODE = "lessons-ringer-mode";
 	public static final String PREFERENCES_TIP_SHOW_PINCHTOZOOM = "tip-show-pinchtozoom";
 	public static final String PREFERENCES_TIP_SHOW_CHANGECOLOR = "tip-show-changecolor";
@@ -167,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			baseWeek = savedInstanceState.getInt(INTENT_BASEWEEK, -1);
 			currentMenuSelected = savedInstanceState.getInt(INTENT_SELECTED, -1);
 		}
+		else if(baseWeek == -1 && currentMenuSelected == -1 && this.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false)) {
+			currentMenuSelected = Day.today().getValue();
+		}
+
 		if(accounts.length > 0 && timetable == null) {
 			loadTimetableFromDisk();
 		}

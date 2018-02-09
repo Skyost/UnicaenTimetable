@@ -7,11 +7,10 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -99,6 +97,25 @@ public class Timetable implements Parcelable {
 	}
 
 	/**
+	 * Gets the last modification time of this timetable (on disk).
+	 *
+	 * @param context The context.
+	 *
+	 * @return The last modification time of this timetable (on disk).
+	 */
+
+	public final long getLastModificationTime(final Context context) {
+		try {
+			return context.getFileStreamPath(Timetable.TIMETABLE_FILE).lastModified();
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return -1L;
+	}
+
+	/**
 	 * Gets the lessons for this timetable.
 	 *
 	 * @return The lessons.
@@ -161,12 +178,16 @@ public class Timetable implements Parcelable {
 	 * @throws IOException If an exception occurs.
 	 */
 
-	public static final Timetable loadFromDisk(final Context context) throws IOException {
-		final FileInputStream input = context.openFileInput(TIMETABLE_FILE);
-		final ICalendar calendar = Biweekly.parse(input).first();
+	public static Timetable loadFromDisk(final Context context) throws IOException {
+		try {
+			final FileInputStream input = context.openFileInput(TIMETABLE_FILE);
+			final ICalendar calendar = Biweekly.parse(input).first();
 
-		input.close();
-		return new Timetable(calendar);
+			input.close();
+			return new Timetable(calendar);
+		}
+		catch(final FileNotFoundException ex) {}
+		return null;
 	}
 
 	/**
@@ -513,6 +534,27 @@ public class Timetable implements Parcelable {
 
 		public final int getValue() {
 			return value;
+		}
+
+		/**
+		 * Gets today's day.
+		 *
+		 * @return Today's day.
+		 */
+
+		public static Day today() {
+			switch(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+			case Calendar.TUESDAY:
+				return Day.TUESDAY;
+			case Calendar.WEDNESDAY:
+				return Day.WEDNESDAY;
+			case Calendar.THURSDAY:
+				return Day.THURSDAY;
+			case Calendar.FRIDAY:
+				return Day.FRIDAY;
+			default:
+				return Day.MONDAY;
+			}
 		}
 
 	}

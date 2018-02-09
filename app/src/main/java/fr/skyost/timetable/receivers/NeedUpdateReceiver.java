@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import fr.skyost.timetable.receivers.ringer.RingerModeEnabler;
 import fr.skyost.timetable.receivers.ringer.RingerModeManager;
 
 public class NeedUpdateReceiver extends BroadcastReceiver {
@@ -17,10 +16,13 @@ public class NeedUpdateReceiver extends BroadcastReceiver {
 		updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
 		context.sendBroadcast(updateIntent);
 
-		if(RingerModeManager.isEnabled(context) ) {
+		if(RingerModeManager.isEnabled(context)) {
 			try {
-				if(RingerModeManager.getScheduleTime(context, RingerModeEnabler.TASK_ID, true) != -1L) {
-					RingerModeManager.cancel(context);
+				if(RingerModeManager.inLesson(context)) {
+					RingerModeManager.enable(context);
+				}
+				else {
+					RingerModeManager.disable(context);
 				}
 				RingerModeManager.schedule(context);
 			}

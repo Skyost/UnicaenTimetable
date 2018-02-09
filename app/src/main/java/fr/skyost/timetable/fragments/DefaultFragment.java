@@ -35,13 +35,12 @@ public class DefaultFragment extends Fragment {
 			return view;
 		}
 
-		final long updateTime = getUpdateTime();
+		final Timetable timetable = activity.getTimetable();
 
 		final Resources resources = this.getResources();
 		final HashMap<String, Integer> colors = new HashMap<>();
 
-		final Timetable timetable = activity.getTimetable();
-		if(updateTime == -1L || timetable == null) {
+		if(timetable == null || timetable.getLastModificationTime(activity) == -1) {
 			final String never = resources.getString(R.string.main_default_description_never);
 			description.setText(resources.getString(R.string.main_default_description, never));
 			colors.put(never, ContextCompat.getColor(activity, R.color.colorUpdateRequired));
@@ -51,7 +50,7 @@ public class DefaultFragment extends Fragment {
 		}
 
 		final Calendar updateCalendar = Calendar.getInstance();
-		updateCalendar.setTimeInMillis(updateTime);
+		updateCalendar.setTimeInMillis(timetable.getLastModificationTime(activity));
 
 		final String date = DateFormat.getDateTimeInstance().format(updateCalendar.getTime());
 		if(Calendar.getInstance().getTimeInMillis() > timetable.getEndDate()) {
@@ -86,23 +85,6 @@ public class DefaultFragment extends Fragment {
 			spannable.setSpan(new ForegroundColorSpan(entry.getValue()), text.indexOf(colorText), text.indexOf(colorText) + colorText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 		return spannable;
-	}
-
-	/**
-	 * Gets the last update time.
-	 *
-	 * @return The last update time.
-	 */
-
-	private long getUpdateTime() {
-		try {
-			return this.getActivity().getFileStreamPath(Timetable.TIMETABLE_FILE).lastModified();
-		}
-		catch(final Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return -1L;
 	}
 
 }
