@@ -60,6 +60,9 @@
 
     <string name="main_noaccount">Veuillez ajouter un compte</string>
 
+    <string name="main_menu_previous">Précédent</string>
+    <string name="main_menu_next">Suivant</string>
+
     <string name="main_nav_open">Ouvrir la navigation</string>
     <string name="main_nav_close">Fermer la navigation</string>
 

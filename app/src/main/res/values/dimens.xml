@@ -15,8 +15,8 @@
     <dimen name="widget_today_layout_margin">8dp</dimen>
     <dimen name="widget_today_layout_padding_top_bottom">8dp</dimen>
     <dimen name="widget_today_layout_margin_right_left">12dp</dimen>
-    <dimen name="widget_today_title_size">18sp</dimen>
-    <dimen name="widget_today_images_size">22dp</dimen>
+    <dimen name="widget_today_title_size">20sp</dimen>
+    <dimen name="widget_today_images_size">24dp</dimen>
     <dimen name="widget_today_right_margin_right">8dp</dimen>
     <dimen name="widget_today_bar_height">1dp</dimen>
     <dimen name="widget_today_rule_margin_top">4dp</dimen>

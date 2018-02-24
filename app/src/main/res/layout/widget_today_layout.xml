@@ -27,26 +27,32 @@
         android:id="@+id/widget_today_back"
         android:layout_width="@dimen/widget_today_images_size"
         android:layout_height="@dimen/widget_today_images_size"
-        android:layout_toStartOf="@+id/widget_today_next"
         android:layout_above="@id/widget_today_horizontal_white_bar"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/widget_today_next"
+        android:scaleType="fitCenter"
         android:contentDescription="@string/widget_back"/>
 
     <ImageView
         android:id="@+id/widget_today_next"
         android:layout_width="@dimen/widget_today_images_size"
         android:layout_height="@dimen/widget_today_images_size"
-        android:layout_toStartOf="@+id/widget_today_refresh"
         android:layout_above="@id/widget_today_horizontal_white_bar"
+        android:layout_alignParentTop="true"
         android:layout_marginRight="@dimen/widget_today_right_margin_right"
+        android:layout_toStartOf="@+id/widget_today_refresh"
+        android:scaleType="fitCenter"
         android:contentDescription="@string/widget_next"/>
 
     <ImageView
         android:id="@+id/widget_today_refresh"
-        android:contentDescription="@string/widget_refresh"
         android:layout_width="@dimen/widget_today_images_size"
         android:layout_height="@dimen/widget_today_images_size"
         android:layout_above="@id/widget_today_horizontal_white_bar"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/widget_refresh"/>
 
     <LinearLayout
         android:id="@+id/widget_today_horizontal_white_bar"

@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			showFragment(intent.getIntExtra(INTENT_CURRENT_FRAGMENT, -1));
 			intent.removeExtra(INTENT_CURRENT_FRAGMENT);
 		}
-		else if(intent.hasExtra(INTENT_DATE)) {
+		else if(intent.hasExtra(INTENT_DATE) && timetable != null) {
 			final DateTime target = new DateTime(intent.getLongExtra(INTENT_DATE, System.currentTimeMillis()));
 
 			final Calendar now = Calendar.getInstance();

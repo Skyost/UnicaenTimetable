@@ -537,6 +537,48 @@ public class Timetable implements Parcelable {
 		}
 
 		/**
+		 * Gets the previous day of the current day.
+		 *
+		 * @return The previous day of the current day.
+		 */
+
+		public Day previous() {
+			switch(this) {
+			case TUESDAY:
+				return MONDAY;
+			case WEDNESDAY:
+				return TUESDAY;
+			case THURSDAY:
+				return WEDNESDAY;
+			case FRIDAY:
+				return THURSDAY;
+			default:
+				return FRIDAY;
+			}
+		}
+
+		/**
+		 * Gets the next day of the current day.
+		 *
+		 * @return The next day of the current day.
+		 */
+
+		public Day next() {
+			switch(this) {
+			case MONDAY:
+				return TUESDAY;
+			case TUESDAY:
+				return WEDNESDAY;
+			case WEDNESDAY:
+				return THURSDAY;
+			case THURSDAY:
+				return FRIDAY;
+			default:
+				return MONDAY;
+			}
+		}
+
+		/**
 		 * Gets today's day.
 		 *
 		 * @return Today's day.

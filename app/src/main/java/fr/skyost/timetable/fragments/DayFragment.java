@@ -16,6 +16,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -63,10 +66,40 @@ public class DayFragment extends Fragment {
 		if(args != null) {
 			day = Day.valueOf(args.getString(Day.class.getName().toLowerCase()));
 		}
+
+		this.setHasOptionsMenu(true);
 	}
 
 	@Override
-	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+	public final void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.activity_main_day, menu);
+	}
+
+	@Override
+	public final void onPrepareOptionsMenu(final Menu menu) {
+		disableMenuForDay(menu.findItem(R.id.main_menu_previous), Day.MONDAY);
+		disableMenuForDay(menu.findItem(R.id.main_menu_next), Day.FRIDAY);
+	}
+
+	@Override
+	public final boolean onOptionsItemSelected(final MenuItem item) {
+		final MainActivity activity = (MainActivity)DayFragment.this.getActivity();
+
+		switch(item.getItemId()) {
+		case R.id.main_menu_previous:
+			activity.showFragment(day.previous());
+			return true;
+		case R.id.main_menu_next:
+			activity.showFragment(day.next());
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public final View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
 		final MainActivity activity = (MainActivity)DayFragment.this.getActivity();
 
@@ -263,6 +296,24 @@ public class DayFragment extends Fragment {
 		args.putString(Day.class.getName().toLowerCase(), day.name());
 		instance.setArguments(args);
 		return instance;
+	}
+
+	/**
+	 * Disables a menu item for the specified day (enables it otherwise).
+	 *
+	 * @param item The item.
+	 * @param day The day.
+	 */
+
+	private void disableMenuForDay(final MenuItem item, final Day day) {
+		if(this.day == day) {
+			item.setEnabled(false);
+			item.getIcon().setAlpha(130);
+		}
+		else {
+			item.setEnabled(true);
+			item.getIcon().setAlpha(255);
+		}
 	}
 
 	public class TimetableWeekViewEvent extends WeekViewEvent {

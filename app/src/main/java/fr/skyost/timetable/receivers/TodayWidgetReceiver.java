@@ -12,9 +12,13 @@ import android.support.v4.content.ContextCompat;
 import android.text.format.DateFormat;
 import android.widget.RemoteViews;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -56,22 +60,39 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	}
 
 	public final void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids, final int relativeDay) {
-		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today_layout);
-
 		final WidgetDateManager dateManager = WidgetDateManager.getInstance();
 		dateManager.setRelativeDay(relativeDay);
 
-		updateDrawables(context, views, dateManager);
+		Timetable timetable = null;
+		boolean nextAvailable = false;
+		try {
+			timetable = Timetable.loadFromDisk(context);
+
+			if(timetable != null) {
+				final List<DateTime> availableWeeks = timetable.getAvailableWeeks();
+				if(!availableWeeks.isEmpty()) {
+					nextAvailable = !availableWeeks.get(availableWeeks.size() - 1).withDayOfWeek(DateTimeConstants.THURSDAY).isBefore(new DateTime(dateManager.getAbsoluteDay()));
+				}
+			}
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+		}
+
+
+		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today_layout);
+
+		updateDrawables(context, views, dateManager, nextAvailable);
 		updateTitle(context, views, dateManager);
 		updateMessage(context, views);
-		registerIntents(context, views, dateManager);
+		registerIntents(context, views, dateManager, nextAvailable);
 
 		for(final int id : ids) {
 			manager.notifyAppWidgetViewDataChanged(id, R.id.widget_today_content);
 			manager.updateAppWidget(id, views);
 		}
 
-		scheduleNextUpdate(context);
+		scheduleNextUpdate(context, timetable);
 		super.onUpdate(context, manager, ids);
 	}
 
@@ -81,9 +102,10 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * @param context The context.
 	 * @param views Widgets' RemoteViews.
 	 * @param dateManager The date manager.
+	 * @param nextAvailable If next button should be available.
 	 */
 
-	public final void updateDrawables(final Context context, final RemoteViews views, final WidgetDateManager dateManager) {
+	public final void updateDrawables(final Context context, final RemoteViews views, final WidgetDateManager dateManager, final boolean nextAvailable) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			views.setImageViewResource(R.id.widget_today_refresh, R.drawable.widget_today_refresh_drawable);
 			views.setImageViewResource(R.id.widget_today_back, R.drawable.widget_today_back_drawable);
@@ -100,6 +122,13 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 		}
 		else {
 			views.setInt(R.id.widget_today_back, "setColorFilter", ContextCompat.getColor(context, R.color.color_widget_today_white));
+		}
+
+		if(nextAvailable) {
+			views.setInt(R.id.widget_today_next, "setColorFilter", ContextCompat.getColor(context, R.color.color_widget_today_white));
+		}
+		else {
+			views.setInt(R.id.widget_today_next, "setColorFilter", ContextCompat.getColor(context, R.color.color_widget_today_white_disabled));
 		}
 	}
 
@@ -139,9 +168,10 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * @param context A context.
 	 * @param views Widgets' RemoteViews.
 	 * @param dateManager The date manager.
+	 * @param nextAvailable If next button should be available.
 	 */
 
-	public final void registerIntents(final Context context, final RemoteViews views, final WidgetDateManager dateManager) {
+	public final void registerIntents(final Context context, final RemoteViews views, final WidgetDateManager dateManager, final boolean nextAvailable) {
 		final Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(dateManager.getRelativeDay()));
 
@@ -168,16 +198,22 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 
 		final Intent next = new Intent(context, this.getClass());
 		next.putExtra(INTENT_REFRESH_WIDGETS, true);
-		next.putExtra(INTENT_RELATIVE_DAY, dateManager.getRelativeDay() + 1);
-		views.setOnClickPendingIntent(R.id.widget_today_next, PendingIntent.getBroadcast(context, BACK_REQUEST, next, PendingIntent.FLAG_UPDATE_CURRENT));
 
-		if(dateManager.getRelativeDay() <= 0) {
-			views.setOnClickPendingIntent(R.id.widget_today_back, null);
+		if(nextAvailable) {
+			next.putExtra(INTENT_RELATIVE_DAY, dateManager.getRelativeDay() + 1);
+			views.setOnClickPendingIntent(R.id.widget_today_next, PendingIntent.getBroadcast(context, BACK_REQUEST, next, PendingIntent.FLAG_UPDATE_CURRENT));
 		}
 		else {
+			views.setOnClickPendingIntent(R.id.widget_today_next, null);
+		}
+
+		if(dateManager.getRelativeDay() > 0) {
 			final Intent back = (Intent)next.clone();
 			back.putExtra(INTENT_RELATIVE_DAY, dateManager.getRelativeDay() - 1);
 			views.setOnClickPendingIntent(R.id.widget_today_back, PendingIntent.getBroadcast(context, NEXT_REQUEST, back, PendingIntent.FLAG_UPDATE_CURRENT));
+		}
+		else {
+			views.setOnClickPendingIntent(R.id.widget_today_back, null);
 		}
 	}
 
@@ -185,23 +221,17 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 	 * Schedules widgets next update.
 	 *
 	 * @param context A context.
+	 * @param timetable The timetable.
 	 */
 
-	public final void scheduleNextUpdate(final Context context) {
-		Timetable.Lesson nextLesson = null;
-
-		try {
-			nextLesson = Timetable.loadFromDisk(context).getNextLesson();
-		}
-		catch(final Exception ex) {
-			ex.printStackTrace();
-		}
-
+	public final void scheduleNextUpdate(final Context context, final Timetable timetable) {
 		final AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
 		if(manager == null) {
 			return;
 		}
+
+		final Timetable.Lesson nextLesson = timetable == null ? null : timetable.getNextLesson();
 
 		final Intent intent = new Intent(context, this.getClass());
 		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
