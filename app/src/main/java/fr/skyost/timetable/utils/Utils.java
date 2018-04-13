@@ -16,7 +16,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -63,17 +65,48 @@ public class Utils {
 	}
 
 	/**
-	 * Picks a random color from a specific seed.
+	 * Splits a String in separate parts.
 	 *
-	 * @param context The context.
-	 * @param seed The seed.
+	 * @param text The text.
+	 * @param size The parts number.
 	 *
-	 * @return A random color.
+	 * @return An array which contains the String.
 	 */
 
-	public static int randomMaterialColor(final Context context, final String seed) {
-		final String[] materialColors = context.getResources().getStringArray(R.array.material_colors);
-		return Color.parseColor("#99" + materialColors[new Random(seed.hashCode()).nextInt(materialColors.length)].substring(1));
+	public static String[] splitEqually(final String text, int size) {
+		final List<String> result = new ArrayList<>();
+		int start = 0;
+		int end = text.length() / size;
+		for(int i = 0; i != size; i++) {
+			final StringBuilder builder = new StringBuilder();
+			int j;
+			for(j = start; j != end; j++) {
+				if(j >= text.length()) {
+					break;
+				}
+				builder.append(String.valueOf(text.charAt(j)));
+			}
+			result.add(builder.toString());
+			start = j;
+			end += end;
+		}
+		return result.toArray(new String[result.size()]);
+	}
+
+	/**
+	 * Creates a random color with seeds.
+	 *
+	 * @param alpha The opacity.
+	 * @param seeds The seeds.
+	 *
+	 * @return The random color.
+	 */
+
+	public static int randomColor(final int alpha, final String... seeds) {
+		if(seeds.length < 3) {
+			return Color.WHITE;
+		}
+		return Color.argb(alpha, new Random(seeds[0].hashCode()).nextInt(256), new Random(seeds[1].hashCode()).nextInt(256), new Random(seeds[2].hashCode()).nextInt(256));
 	}
 
 	/**

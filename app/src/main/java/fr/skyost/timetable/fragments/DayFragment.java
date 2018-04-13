@@ -335,7 +335,7 @@ public class DayFragment extends Fragment {
 				return colorPreferences.getInt(name, ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault));
 			}
 			else if(activityPreferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false)) {
-				return Utils.randomMaterialColor(activity, name);
+				return Utils.randomColor(150, Utils.splitEqually(name, 3));
 			}
 			return ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault);
 		}
