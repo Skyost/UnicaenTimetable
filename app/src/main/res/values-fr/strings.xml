@@ -2,7 +2,7 @@
     <string name="app_name">Emploi du temps Unicaen</string>
 
     <string name="about_title">À propos</string>
-    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.2.1, biweekly v0.6.1, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.9.1 et Snacky v1.0.2.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
+    <string name="about_description">\nCe logiciel a été créé par Skyost et utilise certaines dépendances : AppIntro v4.2.2, RateThisApp v1.2.0, WeekView (by Quivr) v2.2.1, biweekly v0.6.1, Joda-Time v2.9.9, Color Picker v0.0.13, OkHttp v3.10.0 et Snacky v1.0.2.\n\nVous pouvez consulter le code source de l\'application sur Github.\n\nLe logiciel et son code source sont disponibles sous licence GNU GPL v3.\n\nAvertissement :\nCette application n\'a en aucun cas été conçue par un quelconque officiel de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'institution en cas de problème avec l\'application.\nDe plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps.\nSi vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessus.</string>
     <string name="about_share_share">Partager avec…</string>
     <string name="about_share_title">Emploi du temps Unicaen</string>
     <string name="about_share_description">Consultez votre emploi du temps directement sur votre smartphone : https://play.google.com/store/apps/details?id=fr.skyost.timetable.</string>
@@ -41,7 +41,7 @@
     <string name="intro_toast_error_credentials">Nom d\'utilisateur ou mot de passe invalide.</string>
 
     <string name="main_default_title">Bonjour !</string>
-    <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %s.</string>
+    <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %1$s.</string>
     <string name="main_default_description_never">Jamais</string>
     <string name="main_default_description_updaterequired">(soit une mise à jour est requise, soit aucun cours n\'est disponible)</string>
 
@@ -83,7 +83,7 @@
     <string name="main_nav_others_about">À propos</string>
 
     <string name="notification_lessonsringermode_title">Mode cours activé</string>
-    <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
+    <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
     <string name="notification_lessonsringermode_button">Désactiver</string>
 
     <string name="preferences_account">Compte</string>
@@ -110,10 +110,10 @@
 
     <string name="preferences_application_todayautomatically">Ouvrir automatiquement la page du jour</string>
 
-    <string name="settings_default" formatted="false">Défaut : %s</string>
-    <string name="settings_account" formatted="false">Compte Unicaen : %s</string>
+    <string name="settings_default" formatted="false">Défaut : %1$s</string>
+    <string name="settings_account" formatted="false">Compte Unicaen : %1$s</string>
 
-    <string name="settings_calendar_interval_description_1" formatted="false">Cela va télécharger votre emploi du temps du %s au %s.</string>
+    <string name="settings_calendar_interval_description_1" formatted="false">Cela va télécharger votre emploi du temps du %1$s au %2$s.</string>
     <string name="settings_calendar_interval_description_2" formatted="false">Cela va télécharger tout votre emploi du temps disponible sur les serveurs d\'Unicaen.</string>
 
     <string name="widget_today_title">Aujourd\'hui</string>

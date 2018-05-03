@@ -77,7 +77,11 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 				Timetable.Lesson nextLesson = null;
 				for(final Timetable.Lesson lesson : lessons) {
 					if(!now.after(lesson.getEnd())) {
-						items.add("<b>" + lesson.getSummary() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "<br/>" + "<i>" + lesson.getLocation() + "</i>");
+						String content = "<b>" + lesson.getSummary() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE));
+						if(lesson.getLocation() != null) {
+							content += "<br/>" + "<i>" + lesson.getLocation() + "</i>";
+						}
+						items.add(content);
 
 						if(nextLesson == null || lesson.getEnd().getTimeInMillis() < nextLesson.getEnd().getTimeInMillis()) {
 							nextLesson = lesson;

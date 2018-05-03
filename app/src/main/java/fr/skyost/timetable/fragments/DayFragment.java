@@ -322,7 +322,7 @@ public class DayFragment extends Fragment {
 		private final SharedPreferences colorPreferences;
 
 		private TimetableWeekViewEvent(final Lesson lesson, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences) {
-			super(lesson.getId(), lesson.getSummary(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + "\n\n" + lesson.getDescription(), lesson.getStart(), lesson.getEnd());
+			super(lesson.getId(), lesson.getSummary(), Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getStart().get(Calendar.MINUTE)) + " - " + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.HOUR_OF_DAY)) + ":" + Utils.addZeroIfNeeded(lesson.getEnd().get(Calendar.MINUTE)) + (lesson.getDescription() == null ? "" : "\n\n" + lesson.getDescription()), lesson.getStart(), lesson.getEnd());
 			this.activityPreferences = activityPreferences;
 			this.colorPreferences = colorPreferences;
 		}

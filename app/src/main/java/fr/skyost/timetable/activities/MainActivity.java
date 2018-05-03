@@ -14,16 +14,16 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.kobakei.ratethisapp.RateThisApp;
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public static final String PREFERENCES_CHANGED_ACCOUNT = "changed-account";
 	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
 
-	public static final String INTENT_TIMETABLE = "timetable";
 	public static final String INTENT_REFRESH_TIMETABLE = "refresh-timetable";
 	public static final String INTENT_CURRENT_FRAGMENT = "current-fragment";
 	public static final String INTENT_DATE = "date";
@@ -164,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		this.setContentView(R.layout.activity_main_nav);
 
 		if(savedInstanceState != null) {
-			timetable = savedInstanceState.getParcelable(INTENT_TIMETABLE);
 			baseWeek = savedInstanceState.getInt(INTENT_BASEWEEK, -1);
 			currentMenuSelected = savedInstanceState.getInt(INTENT_SELECTED, -1);
 		}
@@ -253,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable(INTENT_TIMETABLE, timetable);
 		outState.putInt(INTENT_BASEWEEK, baseWeek);
 		outState.putInt(INTENT_SELECTED, currentMenuSelected);
 	}
