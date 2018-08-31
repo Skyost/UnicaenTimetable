@@ -310,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	@Override
 	public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-		// TODO: Show week + 1 if saturday / sunday
 		// The switch statement is pretty easy : if the user clicks on home, we shows a "Saturday" fragment (allows to keep the selected week in memory). Otherwise we shows the corresponding fragment (or activity).
 		switch(item.getItemId()) {
 		case R.id.nav_home_home:

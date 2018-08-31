@@ -35,7 +35,7 @@
         </activity>
         <activity
             android:name=".activity.settings.SettingsActivity"
-            android:label="Paramètres"
+            android:label="@string/main_nav_others_settings"
             android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

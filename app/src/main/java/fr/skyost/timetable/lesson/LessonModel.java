@@ -133,6 +133,7 @@ public class LessonModel extends AndroidViewModel {
 		return WEEK_FORMAT.format(date.withDayOfWeek(DateTimeConstants.MONDAY).toDate()) + " - " + WEEK_FORMAT.format(date.withDayOfWeek(DateTimeConstants.FRIDAY).toDate());
 	}
 
+	@NonNull
 	@Override
 	public TimetableApplication getApplication() {
 		return (TimetableApplication)super.getApplication();

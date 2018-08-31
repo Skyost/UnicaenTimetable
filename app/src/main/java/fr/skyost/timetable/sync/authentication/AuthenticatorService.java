@@ -3,7 +3,6 @@ package fr.skyost.timetable.sync.authentication;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -74,17 +73,17 @@ public class AuthenticatorService extends Service {
 		}
 
 		@Override
-		public Bundle addAccount(final AccountAuthenticatorResponse r, final String string, final String string2, final String[] strings, final Bundle bundle) throws NetworkErrorException {
+		public Bundle addAccount(final AccountAuthenticatorResponse r, final String string, final String string2, final String[] strings, final Bundle bundle) {
 			return null;
 		}
 
 		@Override
-		public Bundle confirmCredentials(final AccountAuthenticatorResponse response, final Account account, final Bundle bundle) throws NetworkErrorException {
+		public Bundle confirmCredentials(final AccountAuthenticatorResponse response, final Account account, final Bundle bundle) {
 			return null;
 		}
 
 		@Override
-		public Bundle getAuthToken(final AccountAuthenticatorResponse response, final Account account, final String string, final Bundle bundle) throws NetworkErrorException {
+		public Bundle getAuthToken(final AccountAuthenticatorResponse response, final Account account, final String string, final Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -94,12 +93,12 @@ public class AuthenticatorService extends Service {
 		}
 
 		@Override
-		public Bundle updateCredentials(final AccountAuthenticatorResponse response, final Account account, final String string, final Bundle bundle) throws NetworkErrorException {
+		public Bundle updateCredentials(final AccountAuthenticatorResponse response, final Account account, final String string, final Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Bundle hasFeatures(final AccountAuthenticatorResponse response, final Account account, final String[] strings) throws NetworkErrorException {
+		public Bundle hasFeatures(final AccountAuthenticatorResponse response, final Account account, final String[] strings) {
 			throw new UnsupportedOperationException();
 		}
 

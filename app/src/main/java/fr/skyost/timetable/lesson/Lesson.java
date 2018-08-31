@@ -55,7 +55,7 @@ public class Lesson implements Comparable<Lesson> {
 	private final DateTime startDate;
 
 	/**
-	 * The end ddate.
+	 * The end date.
 	 */
 
 	private final DateTime endDate;
