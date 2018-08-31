@@ -18,6 +18,15 @@
         android:singleLine="true"
         android:maxLines="1"/>
 
+    <EditTextPreference
+        android:key="additional-parameters"
+        android:title="@string/preferences_server_parameters"
+        android:defaultValue="@string/settings_default_parameters"
+        android:selectAllOnFocus="true"
+        android:inputType="textFilter|textNoSuggestions"
+        android:singleLine="true"
+        android:maxLines="1"/>
+
     <ListPreference
         android:key="calendar-interval"
         android:title="@string/preferences_server_calendar_interval"

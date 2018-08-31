@@ -15,12 +15,13 @@
 
     <application
         android:allowBackup="true"
+        android:name=".application.TimetableApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,29 +30,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.IntroActivity"
+            android:name=".activity.IntroActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activity.settings.SettingsActivity"
             android:label="Paramètres"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fr.skyost.timetable.activities.MainActivity"/>
+                android:value="fr.skyost.timetable.activity.MainActivity"/>
         </activity>
         <activity
-            android:name=".activities.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/about_title"
-            android:parentActivityName=".activities.MainActivity"
+            android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fr.skyost.timetable.activities.MainActivity"/>
+                android:value="fr.skyost.timetable.activity.MainActivity"/>
         </activity>
 
         <service
-            android:name=".services.AuthenticatorService">
+            android:name=".sync.authentication.AuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
@@ -60,12 +61,12 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
-        <service android:name=".receivers.ringer.RingerModeManager$NotificationAction"/>
+        <service android:name=".lesson.ringer.LessonModeManager$NotificationAction"/>
 
+        <!-- android:process=":sync" -->
         <service
-            android:name=".services.TimetableSyncService"
-            android:exported="true"
-            android:process=":sync">
+            android:name=".sync.TimetableSyncService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -75,10 +76,10 @@
         </service>
 
         <service
-            android:name=".services.TodayWidgetService"
+            android:name=".widget.TodayWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
-        <receiver android:name=".receivers.NeedUpdateReceiver">
+        <receiver android:name=".receiver.NeedUpdateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
@@ -88,10 +89,10 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.ringer.RingerModeManager"/>
+        <receiver android:name=".lesson.ringer.LessonModeManager"/>
 
         <receiver
-            android:name=".receivers.ringer.RingerModeStateChangeReceiver">
+            android:name=".lesson.ringer.RingerModeStateChangeReceiver">
             <intent-filter>
                 <action android:name="android.media.RINGER_MODE_CHANGED"/>
             </intent-filter>
@@ -99,7 +100,7 @@
 
         <receiver
             android:label="@string/app_name"
-            android:name=".receivers.TodayWidgetReceiver">
+            android:name=".widget.TodayWidgetReceiver">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -109,7 +110,7 @@
         </receiver>
 
         <provider
-            android:name=".adapters.TimetableSyncContentProvider"
+            android:name=".sync.TimetableSyncContentProvider"
             android:authorities="@string/account_type_authority"
             android:exported="false"
             android:syncable="true"/>

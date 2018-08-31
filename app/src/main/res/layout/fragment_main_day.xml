@@ -1,14 +1,21 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".fragments.DayFragment">
+             tools:context=".fragment.day.DayFragment">
+
+    <ProgressBar
+        android:id="@+id/main_day_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
     <fr.skyost.timetable.utils.WeekView
         android:id="@+id/main_day_weekview_day"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="invisible"
         app:columnGap="8dp"
         app:dayBackgroundColor="#05000000"
         app:eventTextColor="@android:color/white"
@@ -22,4 +29,4 @@
         app:eventTextSize="14sp"
         app:todayBackgroundColor="#1848adff"/>
 
-</FrameLayout>
+</RelativeLayout>

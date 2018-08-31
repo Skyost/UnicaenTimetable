@@ -15,9 +15,14 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 35
-        versionName "v1.2.1"
+        versionCode 36
+        versionName "v2.0"
         vectorDrawables.useSupportLibrary = true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -29,19 +34,35 @@ android {
             versionNameSuffix "-dev"
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
-    //compile fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'net.sf.biweekly:biweekly:0.6.1'
+    def supportVersion = '27.1.1'
+    def lifecycleVersion = '1.1.1'
+    def roomVersion = '1.1.1'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:support-v4:$supportVersion"
+
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    implementation "android.arch.lifecycle:common-java8:$lifecycleVersion"
+
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
+
+    implementation 'net.sf.biweekly:biweekly:0.6.2'
     implementation 'com.github.apl-devs:appintro:v4.2.3'
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
-    implementation 'joda-time:joda-time:2.9.9'
-    implementation 'com.github.quivr:android-week-view:2.2.1'
+    implementation 'joda-time:joda-time:2.10'
+    implementation 'com.github.quivr:android-week-view:2.3.0'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.matecode:Snacky:1.0.3'
 }

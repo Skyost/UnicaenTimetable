@@ -3,17 +3,17 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="fr.skyost.timetable.activities.SettingsActivity$ServerPreferenceFragment"
+        android:fragment="fr.skyost.timetable.activity.settings.SettingsActivity$ServerPreferenceFragment"
         android:title="@string/preferences_server"
         android:icon="@drawable/preferences_server_drawable"/>
 
     <header
-        android:fragment="fr.skyost.timetable.activities.SettingsActivity$AccountPreferenceFragment"
+        android:fragment="fr.skyost.timetable.activity.settings.SettingsActivity$AccountPreferenceFragment"
         android:title="@string/preferences_account"
         android:icon="@drawable/preferences_account_drawable"/>
 
     <header
-        android:fragment="fr.skyost.timetable.activities.SettingsActivity$AppPreferenceFragment"
+        android:fragment="fr.skyost.timetable.activity.settings.SettingsActivity$AppPreferenceFragment"
         android:title="@string/preferences_application"
         android:icon="@drawable/preferences_application_drawable"/>
 

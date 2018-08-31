@@ -2,6 +2,7 @@ package fr.skyost.timetable.utils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,12 +13,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +33,17 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import fr.skyost.timetable.R;
 
+/**
+ * Some utilities methods.
+ */
+
 public class Utils {
 
-	public static final String UTF_8 = "UTF-8";
+	/**
+	 * UTF-8 charset.
+	 */
+
+	private static final String UTF_8 = "UTF-8";
 
 	/**
 	 * Adds a leading zero to an int if needed.
@@ -114,15 +125,40 @@ public class Utils {
 	 *
 	 * @param manager The accounts manager.
 	 * @param account The account.
+	 * @param activity The activity.
+	 * @param ifSuccess Runnable to run when the account was removed with success.
+	 * @param ifError Runnable to run when the account was not removed.
 	 */
 
-	public static void removeAccount(final AccountManager manager, final Account account) {
+	public static void removeAccount(final AccountManager manager, final Account account, final Activity activity, final Runnable ifSuccess, final Runnable ifError) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-			manager.removeAccountExplicitly(account);
+			manager.removeAccount(account, activity, accountManagerFuture -> {
+				try {
+					if(accountManagerFuture.getResult().getBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)) {
+						ifSuccess.run();
+						return;
+					}
+				}
+				catch(final Exception ex) {
+					ex.printStackTrace();
+				}
+				ifError.run();
+			}, null);
+			return;
 		}
-		else {
-			manager.removeAccount(account, null, null);
-		}
+
+		manager.removeAccount(account, accountManagerFuture -> {
+			try {
+				if(accountManagerFuture.getResult()) {
+					ifSuccess.run();
+					return;
+				}
+			}
+			catch(final Exception ex) {
+				ex.printStackTrace();
+			}
+			ifError.run();
+		}, null);
 	}
 
 	/**
@@ -140,7 +176,16 @@ public class Utils {
 		ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, TimeUnit.DAYS.toSeconds(3L));
 	}
 
-	public static String a(final Context context, final Account account) {
+	/**
+	 * Decodes a password.
+	 *
+	 * @param context The context.
+	 * @param account The account.
+	 *
+	 * @return The decoded password.
+	 */
+
+	public static String base64Decode(final Context context, final Account account) {
 		final String value = AccountManager.get(context).getPassword(account);
 		try {
 			final byte[] bytes = value == null ? new byte[0] : Base64.decode(value,Base64.DEFAULT);
@@ -156,7 +201,16 @@ public class Utils {
 		return value;
 	}
 
-	public static String b(final Context context, final String value) {
+	/**
+	 * Encodes a String.
+	 *
+	 * @param context The context.
+	 * @param value The String.
+	 *
+	 * @return The encoded String.
+	 */
+
+	public static String base64Encode(final Context context, final String value) {
 		try {
 			final byte[] bytes = value == null ? new byte[0] : value.getBytes(UTF_8);
 			final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
@@ -194,20 +248,30 @@ public class Utils {
 	}
 
 	/**
-	 * Gets tomorrow midnight (and 1 second) calendar.
+	 * Returns tomorrow midnight (and 1 second) calendar.
 	 *
 	 * @return Tomorrow midnight calendar.
 	 */
 
-	public static Calendar tomorrowMidnight() {
-		final Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 1);
-		calendar.set(Calendar.MILLISECOND, 0);
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
+	public static DateTime tomorrowMidnight() {
+		return DateTime.now().plusDays(1).withTimeAtStartOfDay();
+	}
 
-		return calendar;
+	/**
+	 * Sets the specified callback to the specified SnackBar.
+	 *
+	 * @param snackbar The SnackBar.
+	 * @param callback The callback.
+	 */
+
+	@SuppressWarnings("deprecation")
+	public static void setSnackBarCallback(final Snackbar snackbar, final Snackbar.Callback callback) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+			snackbar.addCallback(callback);
+		}
+		else {
+			snackbar.setCallback(callback);
+		}
 	}
 
 }

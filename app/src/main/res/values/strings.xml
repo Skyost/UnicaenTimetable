@@ -17,6 +17,7 @@
     <string name="dialog_login_button_more">More</string>
     <string name="dialog_advancedlogin_server">Server</string>
     <string name="dialog_advancedlogin_calendar">Calendar</string>
+    <string name="dialog_advancedlogin_parameters">Additional parameters</string>
     <string name="dialog_advancedlogin_button_less">Less</string>
     <string name="dialog_event_button_neutral">Create alarm…</string>
     <string name="dialog_event_button_negative">Reset color</string>
@@ -41,6 +42,7 @@
     <string name="intro_toast_error_permission">We need the Internet permission !</string>
     <string name="intro_toast_error_network">Error while downloading your timetable.</string>
     <string name="intro_toast_error_credentials">Invalid username or password.</string>
+    <string name="intro_toast_error_account">Unable to delete the existing account, please try back later.</string>
 
     <string name="main_default_title">Hello !</string>
     <string name="main_default_description" formatted="false">And welcome to your timetable !\n\nPlease tap on the top button to check your timetable or to configure the application.\n\nPress the bottom button to refresh your timetable.\n\nUpdated your timetable for the last time : %1$s.</string>
@@ -62,8 +64,9 @@
 
     <string name="main_noaccount">Please add an account</string>
 
-    <string name="main_menu_previous">Previous</string>
-    <string name="main_menu_next">Next</string>
+    <string name="day_menu_week">Week selector</string>
+    <string name="day_menu_previous">Previous</string>
+    <string name="day_menu_next">Next</string>
 
     <string name="main_nav_open">Open navigation drawer</string>
     <string name="main_nav_close">Close navigation drawer</string>
@@ -74,7 +77,6 @@
     <string name="main_nav_home_home">Home</string>
 
     <string name="main_nav_timetable">Timetable</string>
-    <string name="main_nav_week_selector">Week selector</string>
     <string name="main_nav_timetable_monday">Monday</string>
     <string name="main_nav_timetable_tuesday">Tuesday</string>
     <string name="main_nav_timetable_wednesday">Wednesday</string>
@@ -95,6 +97,7 @@
     <string name="preferences_server">Server</string>
     <string name="preferences_server_calendar">Calendar</string>
     <string name="preferences_server_server">Zimbra server</string>
+    <string name="preferences_server_parameters">Additional parameters</string>
     <string name="preferences_server_calendar_interval">Calendar download interval</string>
     <string-array name="preferences_server_calendar_interval_keys">
         <item>2 weeks</item>
@@ -130,9 +133,12 @@
 
     <string name="settings_default_server" translatable="false">https://webmail.unicaen.fr</string>
     <string name="settings_default_calendarname" translatable="false">Emploi du temps</string>
+    <string name="settings_default_parameters" translatable="false">auth=ba&amp;fmt=ics</string>
 
     <string name="settings_calendar_interval_description_1" formatted="false">This will download your timetable from %1$s to %2$s.</string>
     <string name="settings_calendar_interval_description_2" formatted="false">This will download all your available timetable on the Unicaen servers.</string>
+
+    <string name="settings_toast_silent">Please tick "Unicaen Timetable".</string>
 
     <string name="widget_today_title">Today</string>
     <string name="widget_today_nothing">Nothing for this day. If you think there should be something, please refresh your timetable.</string>

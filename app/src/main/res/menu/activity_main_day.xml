@@ -4,17 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/main_menu_previous"
-        android:icon="@drawable/main_menu_previous"
-        android:title="@string/main_menu_previous"
-        android:orderInCategory="300"
-        app:showAsAction="always" />
+        android:id="@+id/day_menu_week"
+        android:icon="@drawable/day_menu_week"
+        android:title="@string/day_menu_week"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/main_menu_next"
-        android:icon="@drawable/main_menu_next"
-        android:title="@string/main_menu_next"
-        android:orderInCategory="400"
-        app:showAsAction="always" />
+        android:id="@+id/day_menu_previous"
+        android:icon="@drawable/day_menu_previous"
+        android:title="@string/day_menu_previous"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/day_menu_next"
+        android:icon="@drawable/day_menu_next"
+        android:title="@string/day_menu_next"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom"/>
 
 </menu>

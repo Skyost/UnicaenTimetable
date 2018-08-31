@@ -15,6 +15,7 @@
     <string name="dialog_login_button_more">Plus</string>
     <string name="dialog_advancedlogin_server">Serveur</string>
     <string name="dialog_advancedlogin_calendar">Calendrier</string>
+    <string name="dialog_advancedlogin_parameters">Additional parameters</string>
     <string name="dialog_advancedlogin_button_less">Moins</string>
     <string name="dialog_event_button_neutral">Créer une alarme…</string>
     <string name="dialog_event_button_negative">Couleur par défaut</string>
@@ -39,6 +40,7 @@
     <string name="intro_toast_error_permission">Nous avons besoin de la permission Internet !</string>
     <string name="intro_toast_error_network">Erreur lors du téléchargement.</string>
     <string name="intro_toast_error_credentials">Nom d\'utilisateur ou mot de passe invalide.</string>
+    <string name="intro_toast_error_account">Impossible de supprimer le compte existant, veuillez réessayer plus tard.</string>
 
     <string name="main_default_title">Bonjour !</string>
     <string name="main_default_description" formatted="false">Et bienvenue sur votre emploi du temps !\n\nVeuillez cliquer sur le bouton en haut à gauche pour visualiser votre emploi du temps et configurer l\'application.\n\nLe bouton flottant du bas sert à rafraîchir l\'emploi du temps.\n\nEmploi du temps mis à jour pour la dernière fois : %1$s.</string>
@@ -60,8 +62,9 @@
 
     <string name="main_noaccount">Veuillez ajouter un compte</string>
 
-    <string name="main_menu_previous">Précédent</string>
-    <string name="main_menu_next">Suivant</string>
+    <string name="day_menu_week">Changer de semaine</string>
+    <string name="day_menu_previous">Précédent</string>
+    <string name="day_menu_next">Suivant</string>
 
     <string name="main_nav_open">Ouvrir la navigation</string>
     <string name="main_nav_close">Fermer la navigation</string>
@@ -71,7 +74,6 @@
     <string name="main_nav_home_home">Accueil</string>
 
     <string name="main_nav_timetable">Emploi du temps</string>
-    <string name="main_nav_week_selector">Changer de semaine</string>
     <string name="main_nav_timetable_monday">Lundi</string>
     <string name="main_nav_timetable_tuesday">Mardi</string>
     <string name="main_nav_timetable_wednesday">Mercredi</string>
@@ -92,6 +94,7 @@
     <string name="preferences_server">Serveur</string>
     <string name="preferences_server_server">Serveur Zimbra</string>
     <string name="preferences_server_calendar">Calendrier</string>
+    <string name="preferences_server_parameters">Paramètres additionnels</string>
     <string name="preferences_server_calendar_interval">Intervalle de téléchargement du calendrier</string>
     <string-array name="preferences_server_calendar_interval_keys">
         <item>2 semaines</item>
@@ -115,6 +118,8 @@
 
     <string name="settings_calendar_interval_description_1" formatted="false">Cela va télécharger votre emploi du temps du %1$s au %2$s.</string>
     <string name="settings_calendar_interval_description_2" formatted="false">Cela va télécharger tout votre emploi du temps disponible sur les serveurs d\'Unicaen.</string>
+
+    <string name="settings_toast_silent">Veuillez cocher "Emploi du temps Unicaen".</string>
 
     <string name="widget_today_title">Aujourd\'hui</string>
     <string name="widget_today_nothing">Aucun cours pour cette journée.  Si vous pensiez avoir quelque chose, veuillez rafraîchir votre emploi du temps.</string>
