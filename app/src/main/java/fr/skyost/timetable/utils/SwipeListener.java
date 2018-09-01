@@ -48,8 +48,8 @@ public class SwipeListener {
 	 * @param event The event.
 	 */
 
-	public void dispatchTouchEvent(final MotionEvent event) {
-		gestureDetector.onTouchEvent(event);
+	public boolean dispatchTouchEvent(final MotionEvent event) {
+		return gestureDetector.onTouchEvent(event);
 	}
 
 	/**

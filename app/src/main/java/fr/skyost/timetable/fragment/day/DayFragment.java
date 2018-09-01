@@ -39,13 +39,13 @@ import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.utils.Utils;
-import fr.skyost.timetable.utils.WeekView;
+import fr.skyost.timetable.utils.weekview.CustomWeekView;
 
 /**
  * The fragment that allows to show lessons.
  */
 
-public class DayFragment extends Fragment implements DateTimeInterpreter, WeekView.EventClickListener, WeekView.EventLongPressListener {
+public class DayFragment extends Fragment implements DateTimeInterpreter, CustomWeekView.EventClickListener, CustomWeekView.EventLongPressListener {
 
 	/**
 	 * The preference file that stores lesson colors.
@@ -130,7 +130,9 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, WeekVi
 		}
 
 		// We create our WeekView.
-		final WeekView weekView = view.findViewById(R.id.main_day_weekview_day);
+		final CustomWeekView weekView = view.findViewById(R.id.main_day_weekview_day);
+		weekView.setSwipeLeftRunnable(activity::nextDayFragment);
+		weekView.setSwipeRightRunnable(activity::previousDayFragment);
 		weekView.setDateTimeInterpreter(this);
 		weekView.setMonthChangeListener((newYear, newMonth) -> new ArrayList<>());
 		weekView.setHorizontalFlingEnabled(false);

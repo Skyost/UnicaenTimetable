@@ -1,4 +1,4 @@
-package fr.skyost.timetable.utils;
+package fr.skyost.timetable.utils.weekview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -47,7 +47,6 @@ import com.alamkanak.weekview.WeekViewUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,7 +64,7 @@ import static com.alamkanak.weekview.WeekViewUtil.today;
  * Created by Raquib-ul-Alam Kanak on 7/21/2014.
  * Website: http://alamkanak.github.io/
  */
-public class WeekView extends View {
+public class BaseWeekView extends View {
 
 	private enum Direction {
 		NONE, LEFT, RIGHT, VERTICAL
@@ -106,7 +105,7 @@ public class WeekView extends View {
 	private float mHeaderColumnWidth;
 	private List<EventRect> mEventRects;
 	private List<WeekViewEvent> mEvents;
-	private TextPaint mEventTextPaint;
+	protected TextPaint mEventTextPaint;
 	private TextPaint mNewEventTextPaint;
 	private Paint mHeaderColumnBackgroundPaint;
 	private int mFetchedPeriod = -1; // the middle period the calendar has fetched.
@@ -119,7 +118,7 @@ public class WeekView extends View {
 	private int mMinimumFlingVelocity = 0;
 	private int mScaledTouchSlop = 0;
 	private EventRect mNewEventRect;
-	private TextColorPicker textColorPicker;
+	protected TextColorPicker textColorPicker;
 
 	// Attributes and their default values.
 	private int mHourHeight = 50;
@@ -148,7 +147,7 @@ public class WeekView extends View {
 	private int mTodayHeaderTextColor = Color.rgb(39, 137, 228);
 	private int mEventTextSize = 12;
 	private int mEventTextColor = Color.BLACK;
-	private int mEventPadding = 8;
+	protected int mEventPadding = 8;
 	private int mHeaderColumnBackgroundColor = Color.WHITE;
 	private int mDefaultEventColor;
 	private int mNewEventColor;
@@ -255,7 +254,7 @@ public class WeekView extends View {
 				} else {
 					mCurrentOrigin.x -= distanceX * mXScrollingSpeed;
 				}
-				ViewCompat.postInvalidateOnAnimation(WeekView.this);
+				ViewCompat.postInvalidateOnAnimation(BaseWeekView.this);
 				break;
 			case VERTICAL:
 				float minY = getYMinLimit();
@@ -267,7 +266,7 @@ public class WeekView extends View {
 				} else {
 					mCurrentOrigin.y -= distanceY;
 				}
-				ViewCompat.postInvalidateOnAnimation(WeekView.this);
+				ViewCompat.postInvalidateOnAnimation(BaseWeekView.this);
 				break;
 			default:
 				break;
@@ -301,7 +300,7 @@ public class WeekView extends View {
 				break;
 			}
 
-			ViewCompat.postInvalidateOnAnimation(WeekView.this);
+			ViewCompat.postInvalidateOnAnimation(BaseWeekView.this);
 			return true;
 		}
 
@@ -391,7 +390,7 @@ public class WeekView extends View {
 							newEvent.setColor(mNewEventColor);
 							mNewEventRect = new EventRect(newEvent, newEvent, dayRectF);
 							tempEvents.add(newEvent);
-							WeekView.this.clearEvents();
+							BaseWeekView.this.clearEvents();
 							cacheAndSortEvents(tempEvents);
 							computePositionOfEvents(mEventRects);
 							invalidate();
@@ -431,15 +430,15 @@ public class WeekView extends View {
 		}
 	};
 
-	public WeekView(Context context) {
+	public BaseWeekView(Context context) {
 		this(context, null);
 	}
 
-	public WeekView(Context context, AttributeSet attrs) {
+	public BaseWeekView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public WeekView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public BaseWeekView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 
 		// Hold references.
@@ -1173,7 +1172,7 @@ public class WeekView extends View {
 	 * @param originalTop  The original top position of the rectangle. The rectangle may have some of its portion outside of the visible area.
 	 * @param originalLeft The original left position of the rectangle. The rectangle may have some of its portion outside of the visible area.
 	 */
-	private void drawEventTitle(WeekViewEvent event, RectF rect, Canvas canvas, float originalTop, float originalLeft) {
+	protected void drawEventTitle(WeekViewEvent event, RectF rect, Canvas canvas, float originalTop, float originalLeft) {
 		if (rect.right - rect.left - mEventPadding * 2 < 0) return;
 		if (rect.bottom - rect.top - mEventPadding * 2 < 0) return;
 
@@ -1205,24 +1204,16 @@ public class WeekView extends View {
 			if (availableHeight >= lineHeight) {
 				// Calculate available number of line counts.
 				int availableLineCount = availableHeight / lineHeight;
+				do {
+					// Ellipsize text to fit into event rect.
+					if (!mNewEventIdentifier.equals(event.getIdentifier()))
+						textLayout = new StaticLayout(TextUtils.ellipsize(bob, mEventTextPaint, availableLineCount * availableWidth, TextUtils.TruncateAt.END), mEventTextPaint, (int) (rect.right - originalLeft - mEventPadding * 2), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 
-				// Ellipsize text to fit into event rect.
-				String[] lines = textLayout.getText().toString().split("\\r?\\n");
-				for(int i = 0; i != lines.length; i++) {
-					lines[i] = TextUtils.ellipsize(lines[i], mEventTextPaint, availableWidth, TextUtils.TruncateAt.END).toString();
-				}
+					// Reduce line count.
+					availableLineCount--;
 
-				// We create a whole new text.
-				if(lines.length > availableLineCount && !lines[availableLineCount - 1].endsWith("…")) {
-					if(TextUtils.isEmpty(lines[availableLineCount - 1])) {
-						lines[availableLineCount - 1] = "…";
-					}
-					else {
-						lines[availableLineCount - 1] = lines[availableLineCount - 1].substring(0, lines[availableLineCount - 1].length() - 2) + "…";
-					}
-				}
-				lines = Arrays.copyOfRange(lines, 0, Math.min(lines.length, availableLineCount));
-				textLayout = new StaticLayout(TextUtils.join("\n", lines), mEventTextPaint, availableWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+					// Repeat until text is short enough.
+				} while (textLayout.getHeight() > availableHeight);
 
 				// Draw text.
 				canvas.save();
@@ -2580,7 +2571,7 @@ public class WeekView extends View {
 
 		if (mayScrollHorizontal) {
 			mScroller.startScroll((int) mCurrentOrigin.x, (int) mCurrentOrigin.y, -nearestOrigin, 0);
-			ViewCompat.postInvalidateOnAnimation(WeekView.this);
+			ViewCompat.postInvalidateOnAnimation(BaseWeekView.this);
 		}
 
 		if (nearestOrigin != 0 && mayScrollHorizontal) {
@@ -2588,7 +2579,7 @@ public class WeekView extends View {
 			mScroller.forceFinished(true);
 			// Snap to date.
 			mScroller.startScroll((int) mCurrentOrigin.x, (int) mCurrentOrigin.y, -nearestOrigin, 0, (int) (Math.abs(nearestOrigin) / mWidthPerDay * mScrollDuration));
-			ViewCompat.postInvalidateOnAnimation(WeekView.this);
+			ViewCompat.postInvalidateOnAnimation(BaseWeekView.this);
 		}
 		// Reset scrolling and fling direction.
 		mCurrentScrollDirection = mCurrentFlingDirection = Direction.NONE;

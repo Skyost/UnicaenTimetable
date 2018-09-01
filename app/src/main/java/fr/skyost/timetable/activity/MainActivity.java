@@ -22,7 +22,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,7 +40,6 @@ import fr.skyost.timetable.fragment.day.DayFragment;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.LessonModel;
 import fr.skyost.timetable.receiver.MainActivitySyncReceiver;
-import fr.skyost.timetable.utils.SwipeListener;
 import fr.skyost.timetable.utils.Utils;
 
 /**
@@ -158,12 +156,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	private MainActivitySyncReceiver syncReceiver;
 
-	/**
-	 * The swipe listener.
-	 */
-
-	private SwipeListener swipeListener;
-
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -213,9 +205,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
-		// And we register a swipe listener.
-		swipeListener = new SwipeListener(this, this::nextDayFragment, this::previousDayFragment);
-
 		// If there is no account, we have to start the intro activity (through refreshTimetable).
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
 		if(accounts.length == 0) {
@@ -245,15 +234,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		unregisterReceiver(syncReceiver);
 		syncReceiver = null;
 		super.onPause();
-	}
-
-	@Override
-	public boolean dispatchTouchEvent(final MotionEvent event) {
-		// We dispatch the touch event to the swipe listener first.
-		if(swipeListener != null) {
-			swipeListener.dispatchTouchEvent(event);
-		}
-		return super.dispatchTouchEvent(event);
 	}
 
 	@Override

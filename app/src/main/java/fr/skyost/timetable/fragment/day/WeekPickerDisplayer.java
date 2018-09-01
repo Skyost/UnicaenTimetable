@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 		// And we return our builder.
 		return new AlertDialog.Builder(context)
 				.setTitle(R.string.day_menu_week)
-				.setSingleChoiceItems(formattedWeeks.toArray(new String[0]), availableWeeks.indexOf(fragment.getDate()), (dialog, id) -> {
+				.setSingleChoiceItems(formattedWeeks.toArray(new String[0]), availableWeeks.indexOf(fragment.getDate().withDayOfWeek(DateTimeConstants.MONDAY)), (dialog, id) -> {
 					// We show the fragment of the selected date.
 					final LocalDate selected = availableWeeks.get(id).withDayOfWeek(fragment.getDate().getDayOfWeek());
 					activity.showFragment(selected);

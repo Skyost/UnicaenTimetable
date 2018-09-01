@@ -22,7 +22,7 @@ import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.LessonModel;
-import fr.skyost.timetable.utils.WeekView;
+import fr.skyost.timetable.utils.weekview.CustomWeekView;
 
 /**
  * The AsyncTask that allows to load the DayFragment view.
@@ -98,7 +98,7 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 		}
 
 		// We create our WeekView and we make it visible.
-		final WeekView weekView = view.findViewById(R.id.main_day_weekview_day);
+		final CustomWeekView weekView = view.findViewById(R.id.main_day_weekview_day);
 		weekView.setMonthChangeListener((newYear, newMonth) -> events);
 		weekView.goToDate(calendar);
 		weekView.setMinDate(calendar);
