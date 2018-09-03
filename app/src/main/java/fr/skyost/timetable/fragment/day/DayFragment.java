@@ -99,8 +99,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		final MainActivity activity = (MainActivity)getActivity();
-		final Context context = getContext();
-		if(activity == null || context == null) {
+		if(activity == null) {
 			return super.onOptionsItemSelected(item);
 		}
 
@@ -124,8 +123,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_main_day, container, false);
 		final MainActivity activity = (MainActivity)getActivity();
-		final Context context = getContext();
-		if(activity == null || context == null) {
+		if(activity == null) {
 			return view;
 		}
 
@@ -140,7 +138,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		weekView.setOnEventClickListener(this);
 
 		// And we don't forget to show the SnackBar (if enabled).
-		final SharedPreferences activityPreferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, true)) {
 			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_pinchtozoom).info().show();
 			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, false).apply();
@@ -204,13 +202,12 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	@Override
 	public void onEventClick(final WeekViewEvent event, final RectF eventRect) {
 		final MainActivity activity = (MainActivity)getActivity();
-		final Context context = getContext();
-		if(activity == null || context == null) {
+		if(activity == null) {
 			return;
 		}
 
 		// We show a dialog that displays some info about the event.
-		new AlertDialog.Builder(context)
+		new AlertDialog.Builder(activity)
 				.setMessage(event.getName() + "\n" + event.getLocation())
 				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> {
 					final Calendar start = event.getStartTime();
@@ -226,7 +223,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 				.setPositiveButton(R.string.dialog_generic_button_positive, null)
 				.setNegativeButton(R.string.dialog_event_button_negative, (dialog, which) -> {
 					// The negative button allows to reset the event color.
-					final SharedPreferences colorPreferences = context.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
+					final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 					colorPreferences.edit().remove(event.getName()).apply();
 					dialog.dismiss();
 					activity.showFragment(date);
@@ -234,7 +231,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 				.show();
 
 		// When an event is clicked, we show a little message in the SnackBar to tell the user that he can change the event color.
-		final SharedPreferences activityPreferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, true)) {
 			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_changecolor).info().show();
 			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, false).apply();
@@ -244,25 +241,24 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	@Override
 	public void onEventLongPress(final WeekViewEvent event, final RectF eventRect) {
 		final MainActivity activity = (MainActivity)getActivity();
-		final Context context = getContext();
-		if(activity == null || context == null) {
+		if(activity == null) {
 			return;
 		}
 
 		// When the user press longer on an event, we show the color picker dialog.
-		final ColorPickerDialogBuilder builder = ColorPickerDialogBuilder.with(context)
+		final ColorPickerDialogBuilder builder = ColorPickerDialogBuilder.with(activity)
 				.setTitle(R.string.dialog_color_title)
 				.wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
 				.setPositiveButton(R.string.dialog_generic_button_positive, (dialog, selectedColor, allColors) -> {
 					// Pressing the positive button allows to change the event color.
-					final SharedPreferences colorPreferences = context.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
+					final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 					colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
 					activity.showFragment(date);
 				})
 				.setNegativeButton(R.string.dialog_generic_button_cancel, (dialog, which) -> dialog.dismiss());
 
 		// If the event already has a custom color, we set it in our builder.
-		if(event.getColor() != ContextCompat.getColor(getContext(), R.color.colorWeekViewEventDefault)) {
+		if(event.getColor() != ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)) {
 			builder.initialColor(event.getColor());
 		}
 		builder.build().show();

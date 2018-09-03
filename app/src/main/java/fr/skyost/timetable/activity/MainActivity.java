@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 		});
 		model.getLessonsLiveData().observe(this, lessons -> {
-			if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY) {
+			if(currentDate != null && currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY) {
 				return;
 			}
 			showFragment(currentDate);

@@ -15,8 +15,8 @@ android {
         applicationId "fr.skyost.timetable"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 36
-        versionName "v2.0"
+        versionCode 38
+        versionName "v2.0.2"
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {

@@ -1,7 +1,6 @@
 package fr.skyost.timetable.fragment.day;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 
@@ -25,8 +24,7 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 	protected AlertDialog.Builder doInBackground(final DayFragment... fragments) {
 		final DayFragment fragment = fragments[0];
 		final MainActivity activity = (MainActivity)fragment.getActivity();
-		final Context context = fragment.getContext();
-		if(activity == null || context == null) {
+		if(activity == null) {
 			return null;
 		}
 
@@ -35,11 +33,11 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 
 		// If there is no available week, we tell the user.
 		if(availableWeeks.isEmpty()) {
-			final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-			builder.setTitle(R.string.dialog_error_notimetable_title);
-			builder.setMessage(R.string.dialog_error_notimetable_message);
-			builder.setPositiveButton(R.string.dialog_generic_button_positive, null);
-			builder.create().show();
+			new AlertDialog.Builder(activity)
+					.setTitle(R.string.dialog_error_notimetable_title)
+					.setMessage(R.string.dialog_error_notimetable_message)
+					.setPositiveButton(R.string.dialog_generic_button_positive, null)
+					.show();
 			return null;
 		}
 
@@ -50,7 +48,7 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 		}
 
 		// And we return our builder.
-		return new AlertDialog.Builder(context)
+		return new AlertDialog.Builder(activity)
 				.setTitle(R.string.day_menu_week)
 				.setSingleChoiceItems(formattedWeeks.toArray(new String[0]), availableWeeks.indexOf(fragment.getDate().withDayOfWeek(DateTimeConstants.MONDAY)), (dialog, id) -> {
 					// We show the fragment of the selected date.
