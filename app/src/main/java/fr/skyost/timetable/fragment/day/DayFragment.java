@@ -140,7 +140,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		// And we don't forget to show the SnackBar (if enabled).
 		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, true)) {
-			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_pinchtozoom).info().show();
+			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_pinchtozoom).info().show();
 			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_PINCHTOZOOM, false).apply();
 		}
 
@@ -233,7 +233,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		// When an event is clicked, we show a little message in the SnackBar to tell the user that he can change the event color.
 		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		if(activityPreferences.getBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, true)) {
-			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_changecolor).info().show();
+			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_changecolor).info().show();
 			activityPreferences.edit().putBoolean(MainActivity.PREFERENCES_TIP_SHOW_CHANGECOLOR, false).apply();
 		}
 	}

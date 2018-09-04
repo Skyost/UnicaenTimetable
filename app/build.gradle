@@ -12,11 +12,11 @@ android {
         exclude('org/apache/commons/codec/language/bm/*.txt') // 124 files (uncompressed 215kb) with unused language specific rules.
     }
     defaultConfig {
-        applicationId "fr.skyost.timetable"
+        applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 38
-        versionName "v2.0.2"
+        versionCode 41
+        versionName 'v2.0.5'
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -30,8 +30,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            applicationIdSuffix = ".dev"
-            versionNameSuffix "-dev"
+            applicationIdSuffix = '.dev'
+            versionNameSuffix '-dev'
         }
     }
     compileOptions {

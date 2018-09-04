@@ -56,8 +56,11 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		intent.removeExtra(ContentResolver.SYNC_EXTRAS_MANUAL);
 		switch(intent.getIntExtra(INTENT_RESPONSE, AuthenticationTask.ERROR)) {
 		case AuthenticationTask.SUCCESS:
-			// If success, nothing particular, we just open a SnackBar message.
-			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_success).success().show();
+			// If success, we reload the current fragment.
+			activity.showFragment(activity.getCurrentDate());
+
+			// And we open a SnackBar message.
+			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_success).success().show();
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			// If not found, we notify the user.
@@ -72,7 +75,7 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 			break;
 		case AuthenticationTask.UNAUTHORIZED: {
 			// If unauthorized, it means that the user has changed its credentials so we redirect him to the IntroActivity.
-			final Snackbar snackbar = Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_credentials).warning();
+			final Snackbar snackbar = Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_credentials).warning();
 			Utils.setSnackBarCallback(snackbar, new Snackbar.Callback() {
 
 				@Override
@@ -90,7 +93,7 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		}
 		case AuthenticationTask.ERROR:
 			// If error, we only have to notify the user.
-			Snacky.builder().setView(activity.findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_network).error().show();
+			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_network).error().show();
 			break;
 		}
 	}

@@ -32,13 +32,11 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 		final List<LocalDate> availableWeeks = model.getAvailableWeeks();
 
 		// If there is no available week, we tell the user.
-		if(availableWeeks.isEmpty()) {
-			new AlertDialog.Builder(activity)
+		if(availableWeeks == null || availableWeeks.isEmpty()) {
+			return new AlertDialog.Builder(activity)
 					.setTitle(R.string.dialog_error_notimetable_title)
 					.setMessage(R.string.dialog_error_notimetable_message)
-					.setPositiveButton(R.string.dialog_generic_button_positive, null)
-					.show();
-			return null;
+					.setPositiveButton(R.string.dialog_generic_button_positive, null);
 		}
 
 		// We create a list of strings (from the previous list).

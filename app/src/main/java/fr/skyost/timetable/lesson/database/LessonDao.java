@@ -3,7 +3,6 @@ package fr.skyost.timetable.lesson.database;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -13,6 +12,9 @@ import android.content.Context;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,10 +44,10 @@ public abstract class LessonDao {
 	public static final String PREFERENCE_FILE = "dao";
 
 	/**
-	 * The last modification preference key.
+	 * The last modification file.
 	 */
 
-	public static final String PREFERENCE_LAST_MODIFICATION = "last-modification";
+	private static final String LAST_MODIFICATION_FILE = "last_modification";
 
 	/**
 	 * Refreshes the database from the remote calendar.
@@ -69,7 +71,7 @@ public abstract class LessonDao {
 			}
 
 			// We update the last modification preference.
-			context.getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE).edit().putLong(PREFERENCE_LAST_MODIFICATION, DateTime.now().getMillis()).apply();
+			updateLastModificationFile(context);
 
 			final Account account = accounts[0];
 			final okhttp3.Response response = AuthenticationTask.buildClient().newCall(AuthenticationTask.buildRequest(context, account.name, Utils.base64Decode(context, account))).execute();
@@ -107,6 +109,33 @@ public abstract class LessonDao {
 	}
 
 	/**
+	 * Reads and parses the last modification file.
+	 *
+	 * @param context The context.
+	 *
+	 * @return The parsed content.
+	 */
+
+	public long readLastModificationFile(final Context context) {
+		final File file = context.getFileStreamPath(LAST_MODIFICATION_FILE);
+		return file.exists() ? file.lastModified() : -1;
+	}
+
+	/**
+	 * Updates the last modification file.
+	 *
+	 * @param context The context.
+	 *
+	 * @throws IOException If any I/O exception occurs.
+	 */
+
+	private void updateLastModificationFile(final Context context) throws IOException {
+		final OutputStreamWriter writer = new OutputStreamWriter(context.openFileOutput(LAST_MODIFICATION_FILE, Context.MODE_PRIVATE));
+		writer.write(String.valueOf(DateTime.now().getMillis()));
+		writer.close();
+	}
+
+	/**
 	 * Returns the remaining lessons of the day.
 	 *
 	 * @return The remaining lessons of the day.
@@ -128,31 +157,31 @@ public abstract class LessonDao {
 	}
 
 	/**
-	 * Returns the lessons LiveData.
+	 * Returns the minimum start date.
 	 *
-	 * @return The lessons LiveData.
+	 * @return The minimum start date.
 	 */
 
-	@Query("SELECT * FROM " + Lesson.TABLE_NAME)
-	public abstract LiveData<List<Lesson>> getLessonsLiveData();
+	@Query("SELECT startDate FROM " + Lesson.TABLE_NAME + " ORDER BY startDate ASC LIMIT 1")
+	public abstract LocalDate getMinStartDate();
 
 	/**
-	 * Returns the expiration date LiveData.
+	 * Returns the maximum start date.
 	 *
-	 * @return The expiration date LiveData.
+	 * @return The maximum start date.
+	 */
+
+	@Query("SELECT startDate FROM " + Lesson.TABLE_NAME + " ORDER BY startDate DESC LIMIT 1")
+	public abstract LocalDate getMaxStartDate();
+
+	/**
+	 * Returns the maximum end date.
+	 *
+	 * @return The maximum end date.
 	 */
 
 	@Query("SELECT endDate FROM " + Lesson.TABLE_NAME + " ORDER BY endDate DESC LIMIT 1")
-	public abstract LiveData<DateTime> getExpirationDateLiveData();
-
-	/**
-	 * Returns an ordered list of all start dates.
-	 *
-	 * @return An ordered list of all start dates.
-	 */
-
-	@Query("SELECT startDate FROM " + Lesson.TABLE_NAME + " ORDER BY startDate")
-	public abstract List<LocalDate> getStartDates();
+	public abstract DateTime getMaxEndDate();
 
 	/**
 	 * Returns the lessons contained in the specified bounds.

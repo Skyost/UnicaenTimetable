@@ -3,8 +3,6 @@ package fr.skyost.timetable.activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -30,15 +27,11 @@ import com.kobakei.ratethisapp.RateThisApp;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
-import java.util.List;
-
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
-import fr.skyost.timetable.fragment.DefaultFragment;
 import fr.skyost.timetable.fragment.day.DayFragment;
-import fr.skyost.timetable.lesson.Lesson;
-import fr.skyost.timetable.lesson.LessonModel;
+import fr.skyost.timetable.fragment.default_.DefaultFragment;
 import fr.skyost.timetable.receiver.MainActivitySyncReceiver;
 import fr.skyost.timetable.utils.Utils;
 
@@ -174,36 +167,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			getIntent().removeExtra(INTENT_DATE);
 		}
 
-		// We create our ViewModel.
-		final LessonModel model = ViewModelProviders.of(this).get(LessonModel.class);
-		model.getLessonsLiveData().observe(this, new Observer<List<Lesson>>() {
-
-			@Override
-			public void onChanged(@Nullable final List<Lesson> lessons) {
-				onTimetableFirstLoaded();
-				model.getLessonsLiveData().removeObserver(this);
-			}
-		});
-		model.getLessonsLiveData().observe(this, lessons -> {
-			if(currentDate != null && currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY) {
-				return;
-			}
-			showFragment(currentDate);
-		});
+		// We load our activity.
+		onTimetableFirstLoaded();
 
 		// We have to initialize RateThisApp.
 		RateThisApp.init(new RateThisApp.Config(5, 10));
 		RateThisApp.onCreate(this);
 		RateThisApp.showRateDialogIfNeeded(this);
-
-		// We set the required views.
-		final Toolbar toolbar = findViewById(R.id.main_toolbar);
-		setSupportActionBar(toolbar);
-
-		final DrawerLayout drawer = findViewById(R.id.main_nav_layout);
-		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.main_nav_open, R.string.main_nav_close);
-		drawer.addDrawerListener(toggle);
-		toggle.syncState();
 
 		// If there is no account, we have to start the intro activity (through refreshTimetable).
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
@@ -253,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 			// If our IntroActivity is a result, we have to refresh our header view and our timetable.
 			onTimetableFirstLoaded();
-			((TextView)((NavigationView)findViewById(R.id.main_nav_view)).getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(this.getString(R.string.main_nav_email, accounts[0].name));
 			refreshTimetable();
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
@@ -382,12 +351,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	 */
 
 	private void onTimetableFirstLoaded() {
+		// We set the required views.
+		final Toolbar toolbar = findViewById(R.id.main_toolbar);
+		setSupportActionBar(toolbar);
+
+		final DrawerLayout drawer = findViewById(R.id.main_nav_layout);
+		final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.main_nav_open, R.string.main_nav_close);
+		drawer.addDrawerListener(toggle);
+		toggle.syncState();
+
 		// We get our accounts.
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
 		if(accounts.length == 0) {
 			refreshTimetable();
 			return;
 		}
+		final Account account = accounts[0];
+		//Utils.makeAccountSyncable(this, account);
 
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
@@ -396,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		// We setup the navigation view.
 		final NavigationView navigationView = findViewById(R.id.main_nav_view);
-		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getResources().getString(R.string.main_nav_email, accounts[0].name));
+		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getString(R.string.main_nav_email, account.name));
 		navigationView.setNavigationItemSelectedListener(this);
 
 		// If we need to, we refresh the timetable (from network).
@@ -416,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
 		// If there is no account, we redirect the user to the login screen located in IntroActivity.
 		if(accounts.length == 0) {
-			final Snackbar noAccountSnackbar = Snacky.builder().setView(findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_noaccount).warning();
+			final Snackbar noAccountSnackbar = Snacky.builder().setActivity(this).setText(R.string.main_snackbar_error_noaccount).warning();
 			Utils.setSnackBarCallback(noAccountSnackbar, new Snackbar.Callback() {
 
 				@Override
@@ -436,12 +416,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// Otherwise, we have to check that a synchronization is not active.
 		final Account account = accounts[0];
 		if(ContentResolver.isSyncActive(account, getString(R.string.account_type_authority))) {
-			Snacky.builder().setView(findViewById(R.id.main_fab)).setText(R.string.main_snackbar_error_syncactive).error().show();
+			Snacky.builder().setActivity(this).setText(R.string.main_snackbar_error_syncactive).error().show();
 			return;
 		}
 
 		// If everything is okay, we can start the synchronization.
-		final Snackbar downloadSnackbar = Snacky.builder().setView(findViewById(R.id.main_fab)).setText(R.string.main_snackbar_downloading).info();
+		final Snackbar downloadSnackbar = Snacky.builder().setActivity(this).setText(R.string.main_snackbar_downloading).info();
 		Utils.setSnackBarCallback(downloadSnackbar, new Snackbar.Callback() {
 
 			@Override

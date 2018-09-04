@@ -2,15 +2,17 @@ package fr.skyost.timetable.lesson;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fr.skyost.timetable.application.TimetableApplication;
@@ -35,18 +37,6 @@ public class LessonModel extends AndroidViewModel {
 	private final LessonDao dao;
 
 	/**
-	 * The lesson LiveData.
-	 */
-
-	private final LiveData<List<Lesson>> lessons;
-
-	/**
-	 * The expiration date LiveData.
-	 */
-
-	private final LiveData<DateTime> expirationDate;
-
-	/**
 	 * Creates a new lesson model instance.
 	 *
 	 * @param application The application.
@@ -56,8 +46,6 @@ public class LessonModel extends AndroidViewModel {
 		super(application);
 
 		dao = getApplication().getDatabase().getLessonDao();
-		lessons = dao.getLessonsLiveData();
-		expirationDate = dao.getExpirationDateLiveData();
 	}
 
 	/**
@@ -71,13 +59,17 @@ public class LessonModel extends AndroidViewModel {
 	}
 
 	/**
-	 * Returns the lessons LiveData.
+	 * Returns the database last modification time.
 	 *
-	 * @return The lessons LiveData.
+	 * @param context The context.
+	 *
+	 * @return The database last modification time.
+	 *
+	 * @throws IOException If any I/O exception occurs.
 	 */
 
-	public LiveData<List<Lesson>> getLessonsLiveData() {
-		return lessons;
+	public long getLastModificationTime(final Context context) throws IOException {
+		return dao.readLastModificationFile(context);
 	}
 
 	/**
@@ -86,8 +78,8 @@ public class LessonModel extends AndroidViewModel {
 	 * @return The expiration date LiveData.
 	 */
 
-	public LiveData<DateTime> getExpirationDateLiveData() {
-		return expirationDate;
+	public DateTime getMaxEndDate() {
+		return dao.getMaxEndDate();
 	}
 
 	/**
@@ -97,14 +89,24 @@ public class LessonModel extends AndroidViewModel {
 	 */
 
 	public List<LocalDate> getAvailableWeeks() {
-		// We get all start dates, we change the day to monday and we add them to a list (if not previously inserted).
+		// We get all start dates, we change the day to monday and we add one week to the minimum until we hit the maximum.
 		final List<LocalDate> result = new ArrayList<>();
-		for(LocalDate date : dao.getStartDates()) {
-			date = date.withDayOfWeek(DateTimeConstants.MONDAY);
-			if(!result.contains(date)) {
-				result.add(date);
-			}
+		LocalDate min = dao.getMinStartDate();
+		LocalDate max = dao.getMaxStartDate();
+
+		if(min == null || max == null) {
+			return Collections.emptyList();
 		}
+
+		min = min.withDayOfWeek(DateTimeConstants.MONDAY);
+		max = max.withDayOfWeek(DateTimeConstants.MONDAY);
+
+		LocalDate current = min;
+		while(!current.isAfter(max)) {
+			result.add(current);
+			current = current.plusWeeks(1);
+		}
+
 		return result;
 	}
 

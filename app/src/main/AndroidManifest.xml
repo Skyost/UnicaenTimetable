@@ -63,10 +63,10 @@
 
         <service android:name=".lesson.ringer.LessonModeManager$NotificationAction"/>
 
-        <!-- android:process=":sync" -->
         <service
             android:name=".sync.TimetableSyncService"
-            android:exported="true">
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>

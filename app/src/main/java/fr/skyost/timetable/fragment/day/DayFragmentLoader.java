@@ -81,7 +81,7 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 		}
 
 		// If we are displaying the today's fragment, we go to the current hour.
-		if(LocalDate.now().equals(date)) {
+		if(LocalDate.now().isEqual(date)) {
 			final DateTime now = DateTime.now();
 			hour = now.getHourOfDay() + (now.getMinuteOfHour() / 60d);
 		}
