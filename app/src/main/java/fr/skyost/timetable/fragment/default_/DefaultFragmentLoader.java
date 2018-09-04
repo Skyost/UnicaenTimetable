@@ -21,10 +21,30 @@ import java.util.concurrent.atomic.AtomicReference;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.lesson.LessonModel;
 
+/**
+ * The task that allows to load the default fragment.
+ */
+
 public class DefaultFragmentLoader extends AsyncTask<Void, Void, DateTime> {
 
+	/**
+	 * The default fragment.
+	 */
+
 	private DefaultFragment fragment;
+
+	/**
+	 * The view reference.
+	 */
+
 	private AtomicReference<View> view;
+
+	/**
+	 * Creates a new default fragment loader instance.
+	 *
+	 * @param fragment The fragment.
+	 * @param view The view.
+	 */
 
 	DefaultFragmentLoader(final DefaultFragment fragment, final View view) {
 		this.fragment = fragment;
@@ -43,10 +63,14 @@ public class DefaultFragmentLoader extends AsyncTask<Void, Void, DateTime> {
 	}
 
 	@Override
-	protected void onPostExecute(final DateTime expiration) {
+	protected void onPostExecute(DateTime expiration) {
+		if(expiration == null) {
+			expiration = DateTime.now().minusSeconds(1);
+		}
+
 		final FragmentActivity activity = fragment.getActivity();
 		final View view = this.view.get();
-		if(expiration == null || activity == null || view == null) {
+		if(activity == null || view == null) {
 			return;
 		}
 
