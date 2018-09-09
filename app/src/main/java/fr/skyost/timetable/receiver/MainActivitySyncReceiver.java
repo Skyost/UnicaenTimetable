@@ -50,21 +50,24 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(final Context context, final Intent intent) {
-		if(!intent.getBooleanExtra(ContentResolver.SYNC_EXTRAS_MANUAL, false)) {
-			return;
+		final boolean manualSync = intent.getBooleanExtra(ContentResolver.SYNC_EXTRAS_MANUAL, false);
+		if(manualSync) {
+			intent.removeExtra(ContentResolver.SYNC_EXTRAS_MANUAL);
 		}
-		intent.removeExtra(ContentResolver.SYNC_EXTRAS_MANUAL);
+
 		switch(intent.getIntExtra(INTENT_RESPONSE, AuthenticationTask.ERROR)) {
 		case AuthenticationTask.SUCCESS:
 			// If success, we reload the current fragment.
 			activity.showFragment(activity.getCurrentDate());
 
 			// And we open a SnackBar message.
-			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_success).success().show();
+			if(manualSync) {
+				Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_success).success().show();
+			}
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			// If not found, we notify the user.
-			if(activity.isFinishing()) {
+			if(!manualSync || activity.isFinishing()) {
 				break;
 			}
 			new AlertDialog.Builder(activity)
@@ -93,7 +96,9 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		}
 		case AuthenticationTask.ERROR:
 			// If error, we only have to notify the user.
-			Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_network).error().show();
+			if(manualSync) {
+				Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_network).error().show();
+			}
 			break;
 		}
 	}

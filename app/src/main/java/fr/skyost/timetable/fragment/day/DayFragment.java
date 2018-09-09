@@ -4,10 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,12 +20,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import org.joda.time.LocalDate;
 
@@ -52,12 +54,6 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	 */
 
 	public static final String COLOR_PREFERENCES_FILE = "colors";
-
-	/**
-	 * The alarm request code.
-	 */
-
-	private static final int ALARM_SET_REQUEST_CODE = 100;
 
 	/**
 	 * The date formatter.
@@ -156,39 +152,6 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	}
 
 	@Override
-	public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
-		switch(requestCode) {
-		case ALARM_SET_REQUEST_CODE:
-			if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				// If the permission has been granted, we can start the alarm intent.
-				final Bundle args = getArguments();
-				if(args == null) {
-					return;
-				}
-
-				// This code is used to create the alarm intent.
-				final Intent alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
-				alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, args.getString(AlarmClock.EXTRA_MESSAGE, "A Lesson"));
-				alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, args.getInt(AlarmClock.EXTRA_HOUR, 0));
-				alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, args.getInt(AlarmClock.EXTRA_MINUTES, 0));
-
-				// Don't forget to remove the alarm parameters from the fragment arguments.
-				args.remove(AlarmClock.EXTRA_MESSAGE);
-				args.remove(AlarmClock.EXTRA_HOUR);
-				args.remove(AlarmClock.EXTRA_MINUTES);
-
-				// Then we start it.
-				startActivity(alarmIntent);
-				break;
-			}
-
-			// Otherwise we show a little text to the user.
-			Toast.makeText(getActivity(), R.string.main_toast_nopermission, Toast.LENGTH_LONG).show();
-			break;
-		}
-	}
-
-	@Override
 	public String interpretDate(final Calendar calendar) {
 		final Date date = calendar.getTime();
 		return new SimpleDateFormat("E", Locale.getDefault()).format(date) + " " + DATE_FORMAT.format(date);
@@ -209,17 +172,36 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		// We show a dialog that displays some info about the event.
 		new AlertDialog.Builder(activity)
 				.setMessage(event.getName() + "\n" + event.getLocation())
-				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> {
-					final Calendar start = event.getStartTime();
+				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> Permissions.check(activity, Manifest.permission.SET_ALARM, null, new PermissionHandler() {
 
-					// We store the alarm parameters in the fragment arguments.
-					final Bundle args = getArguments() == null ? new Bundle() : getArguments();
-					args.putString(AlarmClock.EXTRA_MESSAGE, event.getName());
-					args.putInt(AlarmClock.EXTRA_HOUR, start.get(Calendar.HOUR_OF_DAY));
-					args.putInt(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
+					@Override
+					public void onGranted() {
+						// If granted, we can start the alarm manager.
+						final Calendar start = event.getStartTime();
+						final Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+						intent.putExtra(AlarmClock.EXTRA_MESSAGE, event.getName());
+						intent.putExtra(AlarmClock.EXTRA_HOUR, start.get(Calendar.HOUR_OF_DAY));
+						intent.putExtra(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
+						startActivity(intent);
+					}
 
-					requestPermissions(new String[]{Manifest.permission.SET_ALARM}, ALARM_SET_REQUEST_CODE);
-				})
+					@Override
+					public void onDenied(final Context context, final ArrayList<String> deniedPermissions) {
+						// If denied, we show an error.
+						Snacky.builder().setActivity(activity).setText(R.string.main_toast_nopermission).error().show();
+					}
+
+					@Override
+					public boolean onBlocked(final Context context, final ArrayList<String> blockedList) {
+						// If blocked, we take the user to the permissions settings.
+						final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity.getPackageName()));
+						intent.addCategory(Intent.CATEGORY_DEFAULT);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
+						return false;
+					}
+
+				}))
 				.setPositiveButton(R.string.dialog_generic_button_positive, null)
 				.setNegativeButton(R.string.dialog_event_button_negative, (dialog, which) -> {
 					// The negative button allows to reset the event color.
