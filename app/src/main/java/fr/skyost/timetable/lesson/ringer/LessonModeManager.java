@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -25,7 +26,6 @@ import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.application.TimetableApplication;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.utils.Utils;
-import fr.skyost.timetable.widget.TodayWidgetReceiver;
 
 /**
  * The manager that allows to manager the lesson mode.
@@ -46,10 +46,16 @@ public class LessonModeManager extends BroadcastReceiver {
 	public static final String NOTIFICATION_TAG = "timetable_ringer";
 
 	/**
-	 * The notification ID.
+	 * The mode notification ID.
 	 */
 
-	public static final int NOTIFICATION_ID = 1;
+	public static final int MODE_NOTIFICATION_ID = 1;
+
+	/**
+	 * The exception notification ID.
+	 */
+
+	public static final int EXCEPTION_NOTIFICATION_ID = 2;
 
 	/**
 	 * The ringer preference file.
@@ -89,19 +95,44 @@ public class LessonModeManager extends BroadcastReceiver {
 	 */
 
 	public static void enable(final Context context) {
-		final SharedPreferences preferences = LessonModeManager.getSharedPreferences(context);
-		final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+		try {
+			final SharedPreferences preferences = LessonModeManager.getSharedPreferences(context);
+			final AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 
-		// If it's possible, we save the current ringer mode.
-		if(manager != null && !preferences.contains(LessonModeManager.RINGER_MODE)) {
-			final SharedPreferences.Editor editor = preferences.edit();
-			editor.putInt(LessonModeManager.RINGER_MODE, manager.getRingerMode());
-			manager.setRingerMode(LessonModeManager.getPreferenceMode(context));
-			editor.commit();
+			// If it's possible, we save the current ringer mode.
+			if(manager != null && !preferences.contains(LessonModeManager.RINGER_MODE)) {
+				final SharedPreferences.Editor editor = preferences.edit();
+				final int mode =  manager.getRingerMode();
+				manager.setRingerMode(LessonModeManager.getPreferenceMode(context));
+				editor.putInt(LessonModeManager.RINGER_MODE, mode);
+				editor.commit();
+			}
+
+			// And we display the notification.
+			LessonModeManager.displayNotification(context);
 		}
+		catch(final SecurityException ex) {
+			// If the user has disabled the application in its settings, this exception will be thrown.
+			final String message = context.getString(R.string.notification_lessonsringermode_exception);
+			final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+					.setSmallIcon(R.drawable.notification_ringer_small_drawable)
+					.setContentTitle(context.getString(R.string.notification_lessonsringermode_title))
+					.setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+					.setContentText(message);
 
-		// And we display the notification.
-		LessonModeManager.displayNotification(context);
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				final Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+				builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+			}
+
+			final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+			if(manager == null) {
+				return;
+			}
+
+			// So we have to notify the user.
+			manager.notify(NOTIFICATION_TAG, EXCEPTION_NOTIFICATION_ID, builder.build());
+		}
 	}
 
 	/**
@@ -334,7 +365,7 @@ public class LessonModeManager extends BroadcastReceiver {
 				.setContentText(message)
 				.addAction(R.drawable.notification_ringer_block_drawable, context.getString(R.string.notification_lessonsringermode_button), disableMode)
 				.setOngoing(true)
-				.setContentIntent(PendingIntent.getActivity(context, TodayWidgetReceiver.CURRENT_DAY_REQUEST, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+				.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
 
 		final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 		if(manager == null) {
@@ -342,7 +373,7 @@ public class LessonModeManager extends BroadcastReceiver {
 		}
 
 		// And we send it !
-		manager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, builder.build());
+		manager.notify(NOTIFICATION_TAG, MODE_NOTIFICATION_ID, builder.build());
 	}
 
 	/**
@@ -358,7 +389,7 @@ public class LessonModeManager extends BroadcastReceiver {
 		}
 
 		// Closes the notification if possible.
-		manager.cancel(NOTIFICATION_TAG, NOTIFICATION_ID);
+		manager.cancel(NOTIFICATION_TAG, MODE_NOTIFICATION_ID);
 	}
 
 	/**

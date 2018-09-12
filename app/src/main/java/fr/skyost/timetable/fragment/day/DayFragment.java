@@ -1,14 +1,11 @@
 package fr.skyost.timetable.fragment.day;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.RectF;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.AlarmClock;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,8 +22,6 @@ import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-import com.nabinbhandari.android.permissions.PermissionHandler;
-import com.nabinbhandari.android.permissions.Permissions;
 
 import org.joda.time.LocalDate;
 
@@ -172,11 +167,9 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		// We show a dialog that displays some info about the event.
 		new AlertDialog.Builder(activity)
 				.setMessage(event.getName() + "\n" + event.getLocation())
-				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> Permissions.check(activity, Manifest.permission.SET_ALARM, null, new PermissionHandler() {
-
-					@Override
-					public void onGranted() {
-						// If granted, we can start the alarm manager.
+				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> {
+					try {
+						// We can start the alarm manager.
 						final Calendar start = event.getStartTime();
 						final Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
 						intent.putExtra(AlarmClock.EXTRA_MESSAGE, event.getName());
@@ -184,24 +177,10 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 						intent.putExtra(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
 						startActivity(intent);
 					}
-
-					@Override
-					public void onDenied(final Context context, final ArrayList<String> deniedPermissions) {
-						// If denied, we show an error.
-						Snacky.builder().setActivity(activity).setText(R.string.main_toast_nopermission).error().show();
+					catch(final Exception ex) {
+						Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_alarm).error().show();
 					}
-
-					@Override
-					public boolean onBlocked(final Context context, final ArrayList<String> blockedList) {
-						// If blocked, we take the user to the permissions settings.
-						final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity.getPackageName()));
-						intent.addCategory(Intent.CATEGORY_DEFAULT);
-						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						startActivity(intent);
-						return false;
-					}
-
-				}))
+				})
 				.setPositiveButton(R.string.dialog_generic_button_positive, null)
 				.setNegativeButton(R.string.dialog_event_button_negative, (dialog, which) -> {
 					// The negative button allows to reset the event color.

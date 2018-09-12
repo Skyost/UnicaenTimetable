@@ -180,8 +180,11 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 	@Override
 	public void onAuthenticationResult(final AuthenticationResponse response) {
 		// We try to dismiss the dialog.
-		if(dialog != null && dialog.isShowing()) {
-			dialog.dismiss();
+		if(dialog != null && dialog.isShowing() && !this.isFinishing() && !this.isDestroyed()) {
+			try {
+				dialog.dismiss();
+			}
+			catch(final IllegalArgumentException ex) {}
 			dialog = null;
 		}
 

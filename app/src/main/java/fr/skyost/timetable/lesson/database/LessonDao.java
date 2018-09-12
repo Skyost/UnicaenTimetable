@@ -38,12 +38,6 @@ import okhttp3.ResponseBody;
 public abstract class LessonDao {
 
 	/**
-	 * The preference file.
-	 */
-
-	public static final String PREFERENCE_FILE = "dao";
-
-	/**
 	 * The last modification file.
 	 */
 

@@ -31,24 +31,6 @@ import fr.skyost.timetable.utils.Utils;
 public class TodayWidgetReceiver extends AppWidgetProvider {
 
 	/**
-	 * The current day request.
-	 */
-
-	public static final int CURRENT_DAY_REQUEST = 100;
-
-	/**
-	 * The refresh request.
-	 */
-
-	public static final int REFRESH_REQUEST = 200;
-
-	/**
-	 * The schedule request.
-	 */
-
-	public static final int SCHEDULE_REQUEST = 300;
-
-	/**
 	 * The back request.
 	 */
 
@@ -192,12 +174,12 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 		// We create the intent that allows to go to the current date.
 		final Intent currentFragment = new Intent(context, MainActivity.class);
 		currentFragment.putExtra(MainActivity.INTENT_DATE, now.toString("yyyy-MM-dd"));
-		views.setOnClickPendingIntent(R.id.widget_today_title, PendingIntent.getActivity(context, CURRENT_DAY_REQUEST, currentFragment, PendingIntent.FLAG_UPDATE_CURRENT));
+		views.setOnClickPendingIntent(R.id.widget_today_title, PendingIntent.getActivity(context, 0, currentFragment, PendingIntent.FLAG_UPDATE_CURRENT));
 
 		// The refresh intent.
 		final Intent refresh = (Intent)currentFragment.clone();
 		refresh.putExtra(MainActivity.INTENT_REFRESH_TIMETABLE, true);
-		views.setOnClickPendingIntent(R.id.widget_today_refresh, PendingIntent.getActivity(context, REFRESH_REQUEST, refresh, PendingIntent.FLAG_UPDATE_CURRENT));
+		views.setOnClickPendingIntent(R.id.widget_today_refresh, PendingIntent.getActivity(context, 0, refresh, PendingIntent.FLAG_UPDATE_CURRENT));
 
 		// The next button intent.
 		final Intent next = new Intent(context, this.getClass());

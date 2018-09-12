@@ -54,8 +54,7 @@
     <string name="main_snackbar_error_network">Erreur lors du téléchargement.</string>
     <string name="main_snackbar_error_noaccount">Pas de compte. Redirection vers l\'écran de connexion…</string>
     <string name="main_snackbar_error_credentials">Mauvais mot de passe. Redirection vers l\'écran de connexion…</string>
-
-    <string name="main_toast_nopermission">Nous n\'avons pas la permission de créer une alarme !</string>
+    <string name="main_snackbar_error_alarm">Impossible de lancer le gestionnaire d\'alarmes.</string>
 
     <string name="day_menu_week">Changer de semaine</string>
     <string name="day_menu_previous">Précédent</string>
@@ -81,6 +80,7 @@
 
     <string name="notification_lessonsringermode_title">Mode cours activé</string>
     <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
+    <string name="notification_lessonsringermode_exception" formatted="false">Impossible de changer le mode de sonnerie. Veuillez être sûr que l\'application a toujours la permission de changer le mode de sonnerie.</string>
     <string name="notification_lessonsringermode_button">Désactiver</string>
 
     <string name="preferences_account">Compte</string>

@@ -55,8 +55,7 @@
     <string name="main_snackbar_error_network">Error while downloading your timetable.</string>
     <string name="main_snackbar_error_noaccount">No account. Redirecting you to the login screen…</string>
     <string name="main_snackbar_error_credentials">Bad password. Redirecting you to the login screen…</string>
-
-    <string name="main_toast_nopermission">We do not have the permission to create an alarm !</string>
+    <string name="main_snackbar_error_alarm">Unable to start the alarm manager.</string>
 
     <string name="day_menu_week">Week selector</string>
     <string name="day_menu_previous">Previous</string>
@@ -83,6 +82,7 @@
 
     <string name="notification_lessonsringermode_title">Lessons mode activated</string>
     <string name="notification_lessonsringermode_message" formatted="false">The ringer mode has been set to %1$s. You can disable this option for this lesson by clicking on the button below.</string>
+    <string name="notification_lessonsringermode_exception" formatted="false">Unable to change the ringer mode. Please be sure that the application still has the permission to change the ringer mode.</string>
     <string name="notification_lessonsringermode_button">Disable</string>
 
     <string name="preferences_account">Account</string>

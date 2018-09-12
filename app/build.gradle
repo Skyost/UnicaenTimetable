@@ -15,12 +15,12 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 43
-        versionName 'v2.0.6'
+        versionCode 45
+        versionName 'v2.0.8'
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments = ['room.schemaLocation': "$projectDir/schemas".toString()]
             }
         }
     }
@@ -65,5 +65,4 @@ dependencies {
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.matecode:Snacky:1.0.3'
-    implementation 'com.nabinbhandari.android:permissions:3.7'
 }

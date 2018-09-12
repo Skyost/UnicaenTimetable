@@ -66,7 +66,7 @@ public class TodayWidgetUpdateScheduler extends AsyncTask<LessonDao, Void, DateT
 		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true);
 
-		manager.set(AlarmManager.RTC_WAKEUP, date.getMillis(), PendingIntent.getBroadcast(context, TodayWidgetReceiver.SCHEDULE_REQUEST, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+		manager.set(AlarmManager.RTC_WAKEUP, date.getMillis(), PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
 	/**

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.Preference;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -110,9 +111,13 @@ public class BindPreferenceValueToSummaryListener implements Preference.OnPrefer
 				// If mode = 1 (i.e. silent), we have to request the required permissions.
 				if(mode == 1) {
 					final NotificationManager manager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && manager != null && !manager.isNotificationPolicyAccessGranted()) {
+					if(manager == null) {
+						return false;
+					}
+
+					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted()) {
 						Toast.makeText(activity, R.string.settings_toast_silent, Toast.LENGTH_LONG).show();
-						final Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+						final Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
 						activity.startActivityForResult(intent, 0);
 						return false;
 					}
