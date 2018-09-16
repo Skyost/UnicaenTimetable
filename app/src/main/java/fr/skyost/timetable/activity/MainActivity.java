@@ -174,12 +174,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		RateThisApp.init(new RateThisApp.Config(5, 10));
 		RateThisApp.onCreate(this);
 		RateThisApp.showRateDialogIfNeeded(this);
-
-		// If there is no account, we have to start the intro activity (through refreshTimetable).
-		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
-		if(accounts.length == 0) {
-			refreshTimetable();
-		}
 	}
 
 	@Override
@@ -366,8 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			refreshTimetable();
 			return;
 		}
-		final Account account = accounts[0];
-		//Utils.makeAccountSyncable(this, account);
 
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
@@ -376,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		// We setup the navigation view.
 		final NavigationView navigationView = findViewById(R.id.main_nav_view);
-		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getString(R.string.main_nav_email, account.name));
+		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getString(R.string.main_nav_email, accounts[0].name));
 		navigationView.setNavigationItemSelectedListener(this);
 
 		// If we need to, we refresh the timetable (from network).
@@ -393,7 +385,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	 */
 
 	private void refreshTimetable() {
-		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
+		final String authority = getString(R.string.account_type_authority);
+		final Account[] accounts = AccountManager.get(this).getAccountsByType(authority);
 		// If there is no account, we redirect the user to the login screen located in IntroActivity.
 		if(accounts.length == 0) {
 			final Snackbar noAccountSnackbar = Snacky.builder().setActivity(this).setText(R.string.main_snackbar_error_noaccount).warning();
@@ -413,8 +406,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			return;
 		}
 
-		// Otherwise, we have to check that a synchronization is not active.
 		final Account account = accounts[0];
+		// Otherwise, if the synchronization has been turned off, we have to turn it back on !
+		if(ContentResolver.getIsSyncable(account, authority) <= 0) {
+			Utils.makeAccountSyncable(this, account);
+		}
+
+		// Then we have to check that a synchronization is not active.
 		if(ContentResolver.isSyncActive(account, getString(R.string.account_type_authority))) {
 			Snacky.builder().setActivity(this).setText(R.string.main_snackbar_error_syncactive).error().show();
 			return;

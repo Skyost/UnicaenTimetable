@@ -15,8 +15,8 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 45
-        versionName 'v2.0.8'
+        versionCode 46
+        versionName 'v2.0.9'
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -28,10 +28,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue 'string', 'account_type_authority', '"fr.skyost.timetable"'
         }
         debug {
             applicationIdSuffix = '.dev'
             versionNameSuffix '-dev'
+            resValue 'string', 'account_type_authority', '"fr.skyost.timetable.dev"'
         }
     }
     compileOptions {
