@@ -47,7 +47,7 @@ public class AuthenticatorService extends Service {
 	 * @param authenticator The authenticator.
 	 */
 
-	public void setAuthenticator(Authenticator authenticator) {
+	public void setAuthenticator(final Authenticator authenticator) {
 		this.authenticator = authenticator;
 	}
 

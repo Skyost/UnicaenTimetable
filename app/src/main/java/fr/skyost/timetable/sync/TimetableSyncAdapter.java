@@ -25,11 +25,11 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 	/**
 	 * Creates a new synchronization adapter instance.
 	 *
-	 * @param application The application.
+	 * @param context The context.
 	 */
 
-	TimetableSyncAdapter(final TimetableApplication application) {
-		super(application, true, false);
+	TimetableSyncAdapter(final Context context) {
+		super(context, true);
 	}
 
 	@Override

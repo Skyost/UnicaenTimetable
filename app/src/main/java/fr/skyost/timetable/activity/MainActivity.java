@@ -367,8 +367,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		showFragment(currentDate);
 
 		// We setup the navigation view.
+		final String name = accounts[0].name;
 		final NavigationView navigationView = findViewById(R.id.main_nav_view);
-		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getString(R.string.main_nav_email, accounts[0].name));
+		((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(name.contains("@") ? name : getString(R.string.main_nav_email, name));
 		navigationView.setNavigationItemSelectedListener(this);
 
 		// If we need to, we refresh the timetable (from network).

@@ -4,8 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import fr.skyost.timetable.application.TimetableApplication;
-
 /**
  * The synchronization service.
  */
@@ -29,7 +27,7 @@ public class TimetableSyncService extends Service {
 		// Creates a synchronized synchronization adapter.
 		synchronized(syncAdapterLock) {
 			if(syncAdapter == null) {
-				syncAdapter = new TimetableSyncAdapter((TimetableApplication)getApplicationContext());
+				syncAdapter = new TimetableSyncAdapter(getApplicationContext());
 			}
 		}
 	}
