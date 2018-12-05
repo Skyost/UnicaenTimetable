@@ -1,8 +1,8 @@
 package fr.skyost.timetable.application;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
 
+import androidx.room.Room;
 import fr.skyost.timetable.lesson.database.AppDatabase;
 
 /**

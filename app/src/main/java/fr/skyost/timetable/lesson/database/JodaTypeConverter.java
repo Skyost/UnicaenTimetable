@@ -1,9 +1,9 @@
 package fr.skyost.timetable.lesson.database;
 
-import android.arch.persistence.room.TypeConverter;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
+import androidx.room.TypeConverter;
 
 /**
  * Allows to convert some Joda objects.

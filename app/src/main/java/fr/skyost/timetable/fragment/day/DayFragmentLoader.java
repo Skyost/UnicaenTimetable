@@ -1,10 +1,8 @@
 package fr.skyost.timetable.fragment.day;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.alamkanak.weekview.WeekViewEvent;
@@ -18,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.Lesson;

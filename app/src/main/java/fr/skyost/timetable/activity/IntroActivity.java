@@ -3,15 +3,11 @@ package fr.skyost.timetable.activity;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,6 +16,10 @@ import com.github.paolorotolo.appintro.AppIntro2;
 
 import java.io.File;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.fragment.intro.FirstSlideFragment;
 import fr.skyost.timetable.fragment.intro.IntroFragment;
@@ -150,7 +150,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 		final Intent intent = new Intent();
 		intent.putExtra(INTENT_ACCOUNT_CHANGED, accountChanged);
 
-		setResult(Activity.RESULT_OK, intent);
+		setResult(AppCompatActivity.RESULT_OK, intent);
 		finish();
 	}
 
@@ -342,7 +342,7 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 		}).setNegativeButton(R.string.dialog_generic_button_cancel, (dialog, id) -> {
 			// If the user has dismissed the dialog, we have to either close the activity or go back (depends on the allowBackward field).
 			if(!allowBackward) {
-				setResult(Activity.RESULT_CANCELED);
+				setResult(AppCompatActivity.RESULT_CANCELED);
 				finish();
 				return;
 			}

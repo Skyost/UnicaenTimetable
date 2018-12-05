@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import org.joda.time.DateTime;
@@ -19,6 +18,7 @@ import org.joda.time.DateTimeConstants;
 
 import java.util.List;
 
+import androidx.appcompat.app.ActionBar;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.fragment.settings.AccountPreferenceFragment;

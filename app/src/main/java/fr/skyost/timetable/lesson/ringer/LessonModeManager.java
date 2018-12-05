@@ -12,8 +12,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -21,6 +19,8 @@ import org.joda.time.LocalDate;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.application.TimetableApplication;

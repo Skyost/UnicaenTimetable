@@ -2,7 +2,6 @@ package fr.skyost.timetable.utils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -13,10 +12,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.Base64;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.joda.time.DateTime;
 
@@ -31,6 +29,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import fr.skyost.timetable.R;
 
 /**
@@ -130,7 +131,7 @@ public class Utils {
 	 * @param ifError Runnable to run when the account was not removed.
 	 */
 
-	public static void removeAccount(final AccountManager manager, final Account account, final Activity activity, final Runnable ifSuccess, final Runnable ifError) {
+	public static void removeAccount(final AccountManager manager, final Account account, final AppCompatActivity activity, final Runnable ifSuccess, final Runnable ifError) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 			manager.removeAccount(account, activity, accountManagerFuture -> {
 				try {

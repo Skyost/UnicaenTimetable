@@ -1,8 +1,6 @@
 package fr.skyost.timetable.fragment.day;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -10,6 +8,8 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProviders;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.LessonModel;

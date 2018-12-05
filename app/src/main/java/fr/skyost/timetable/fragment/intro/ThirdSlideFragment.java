@@ -1,11 +1,11 @@
 package fr.skyost.timetable.fragment.intro;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.IntroActivity;
 

@@ -1,9 +1,6 @@
 package fr.skyost.timetable.fragment.default_;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -18,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.lesson.LessonModel;
 

@@ -4,9 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AlertDialog;
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.IntroActivity;
@@ -61,13 +62,13 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 			activity.showFragment(activity.getCurrentDate());
 
 			// And we open a SnackBar message.
-			if(manualSync) {
+			if(manualSync && !activity.isFinishing() && !activity.isDestroyed()) {
 				Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_success).success().show();
 			}
 			break;
 		case AuthenticationTask.NOT_FOUND:
 			// If not found, we notify the user.
-			if(!manualSync || activity.isFinishing()) {
+			if(!manualSync || activity.isFinishing() || activity.isDestroyed()) {
 				break;
 			}
 			new AlertDialog.Builder(activity)
@@ -78,6 +79,10 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 			break;
 		case AuthenticationTask.UNAUTHORIZED: {
 			// If unauthorized, it means that the user has changed its credentials so we redirect him to the IntroActivity.
+			if(!activity.isFinishing() && !activity.isDestroyed()) {
+				break;
+			}
+
 			final Snackbar snackbar = Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_credentials).warning();
 			Utils.setSnackBarCallback(snackbar, new Snackbar.Callback() {
 
@@ -96,7 +101,7 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		}
 		case AuthenticationTask.ERROR:
 			// If error, we only have to notify the user.
-			if(manualSync) {
+			if(manualSync && !activity.isFinishing() && !activity.isDestroyed()) {
 				Snacky.builder().setActivity(activity).setText(R.string.main_snackbar_error_network).error().show();
 			}
 			break;

@@ -1,9 +1,7 @@
 package fr.skyost.timetable.lesson;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -15,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import fr.skyost.timetable.application.TimetableApplication;
 import fr.skyost.timetable.lesson.database.LessonDao;
 

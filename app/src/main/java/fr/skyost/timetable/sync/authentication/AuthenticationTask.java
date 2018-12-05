@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import androidx.appcompat.app.AppCompatActivity;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
@@ -82,7 +83,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 * The activity reference.
 	 */
 
-	private final AtomicReference<Activity> activity;
+	private final AtomicReference<AppCompatActivity> activity;
 
 	/**
 	 * The authentication listener.
@@ -111,7 +112,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 * @param listener The authentication listener.
 	 */
 
-	public AuthenticationTask(final Activity activity, final String username, final String password, final AuthenticationListener listener) {
+	public AuthenticationTask(final AppCompatActivity activity, final String username, final String password, final AuthenticationListener listener) {
 		this.activity = new AtomicReference<>(activity);
 		this.username = username;
 		this.password = password;
@@ -246,7 +247,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 * @return A reference to the activity.
 	 */
 
-	public AtomicReference<Activity> getActivity() {
+	public AtomicReference<AppCompatActivity> getActivity() {
 		return activity;
 	}
 
