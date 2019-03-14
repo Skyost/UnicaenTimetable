@@ -114,6 +114,10 @@
             android:authorities="@string/account_type_authority"
             android:exported="false"
             android:syncable="true"/>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/ADMOB_APP_ID"/>
     </application>
 
 </manifest>

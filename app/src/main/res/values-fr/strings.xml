@@ -108,6 +108,10 @@
 
     <string name="preferences_application_todayautomatically">Ouvrir automatiquement la page du jour</string>
 
+    <string name="preferences_application_enableads_title">Activer les publicités</string>
+    <string name="preferences_application_enableads_description">Vous avez le choix d\'activer ou de désactiver les publicités. Sachez cependant que cela ne consiste qu\'en une petite bannière publicitaire sur la page d\'accueil.</string>
+    <string name="preferences_application_enableads_restart">Veuillez redémarrer l\'application pour voir les changements.</string>
+
     <string name="settings_default" formatted="false">Défaut : %1$s</string>
     <string name="settings_account" formatted="false">Compte Unicaen : %1$s</string>
 

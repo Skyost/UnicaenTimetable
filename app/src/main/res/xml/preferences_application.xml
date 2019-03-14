@@ -17,4 +17,10 @@
         android:title="@string/preferences_application_todayautomatically"
         android:defaultValue="false"/>
 
+    <SwitchPreference
+        android:key="ads"
+        android:title="@string/preferences_application_enableads_title"
+        android:summary="@string/preferences_application_enableads_description"
+        android:defaultValue="true"/>
+
 </PreferenceScreen>

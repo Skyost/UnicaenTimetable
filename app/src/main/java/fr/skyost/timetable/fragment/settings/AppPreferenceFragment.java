@@ -13,6 +13,7 @@ import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
 
+import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
@@ -42,6 +43,10 @@ public class AppPreferenceFragment extends PreferenceFragment {
 		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, automaticallyToggleSilentMode);
 
 		((SwitchPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false));
+		findPreference(MainActivity.PREFERENCES_ADS).setOnPreferenceChangeListener((preference, newValue) -> {
+			Snacky.builder().setActivity(activity).setText(R.string.preferences_application_enableads_restart).info().show();
+			return true;
+		});
 
 		// Oh, and we have to disable the automaticallyToggleSilentMode if the current AudioManager doesn't allow to use it.
 		final AudioManager manager = (AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);

@@ -25,7 +25,7 @@ import fr.skyost.timetable.lesson.LessonModel;
  * The task that allows to load the default fragment.
  */
 
-public class DefaultFragmentLoader extends AsyncTask<Void, Void, DateTime> {
+public class DefaultFragmentLoader extends AsyncTask<LessonModel, Void, DateTime> {
 
 	/**
 	 * The default fragment.
@@ -52,14 +52,13 @@ public class DefaultFragmentLoader extends AsyncTask<Void, Void, DateTime> {
 	}
 
 	@Override
-	protected DateTime doInBackground(final Void... voids) {
+	protected DateTime doInBackground(final LessonModel... models) {
 		final FragmentActivity activity = fragment.getActivity();
 		if(activity == null) {
 			return null;
 		}
 
-		final LessonModel model = ViewModelProviders.of(activity).get(LessonModel.class);
-		return model.getMaxEndDate();
+		return models[0].getMaxEndDate();
 	}
 
 	@Override

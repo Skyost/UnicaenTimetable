@@ -61,6 +61,10 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 	public RemoteViews getViewAt(final int i) {
 		// We update the TextView text according to the SDK version.
 		final RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.widget_today_row);
+		if(i <= 0 || i >= items.size()) {
+			return row;
+		}
+
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			row.setTextViewText(R.id.widget_today_row, Html.fromHtml(items.get(i), Html.FROM_HTML_MODE_COMPACT));
 		}

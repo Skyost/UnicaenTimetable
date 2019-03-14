@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.kobakei.ratethisapp.RateThisApp;
@@ -127,6 +128,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
 
 	/**
+	 * The ads preference key.
+	 */
+
+	public static final String PREFERENCES_ADS = "ads";
+
+	/**
 	 * The refresh timetable intent key.
 	 */
 
@@ -155,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_nav);
 
+		// We initialize AdMob.
+		MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
+
 		// We try to get the current date by any mean.
 		if(currentDate == null && getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false)) {
 			final int dayOfWeek = LocalDate.now().getDayOfWeek();
@@ -178,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	@Override
-	public void onSaveInstanceState(final Bundle outState) {
+	public void onSaveInstanceState(@NonNull final Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if(currentDate != null) {
 			outState.putString(INTENT_DATE, currentDate.toString("yyyy-MM-dd"));

@@ -23,6 +23,8 @@ android {
                 arguments = ['room.schemaLocation': "$projectDir/schemas".toString()]
             }
         }
+        resValue "string", "ADMOB_APP_ID", getLocalProperty("admob.appId")
+        resValue "string", "ADMOB_HOME_SCREEN_BANNER", getLocalProperty("admob.homeScreenBanner")
     }
     buildTypes {
         release {
@@ -34,6 +36,7 @@ android {
             applicationIdSuffix = '.dev'
             versionNameSuffix '-dev'
             resValue 'string', 'account_type_authority', '"fr.skyost.timetable.dev"'
+            resValue "string", "ADMOB_HOME_SCREEN_BANNER", "ca-app-pub-3940256099942544/6300978111"
         }
     }
     compileOptions {
@@ -45,22 +48,30 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'com.google.android.material:material:1.1.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
+    implementation 'com.google.android.material:material:1.1.0-alpha04'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
 
-    implementation 'androidx.room:room-runtime:2.1.0-alpha03'
-    annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha03'
+    implementation 'androidx.room:room-runtime:2.1.0-alpha05'
+    annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha05'
+    implementation 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
 
-    implementation 'net.sf.biweekly:biweekly:0.6.2'
-    implementation 'com.github.apl-devs:appintro:v4.2.3'
+    implementation 'net.sf.biweekly:biweekly:0.6.3'
+    implementation 'com.github.AppIntro:AppIntro:v5.1.0'
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
-    implementation 'joda-time:joda-time:2.10'
+    implementation 'joda-time:joda-time:2.10.1'
     implementation 'com.github.quivr:android-week-view:2.3.0'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
-    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.github.matecode:Snacky:1.0.3'
+    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+    implementation 'com.github.matecode:Snacky:1.1.4'
+    implementation 'com.google.android.gms:play-services-ads:17.2.0'
+}
+
+def getLocalProperty(String name) {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty(name)
 }
