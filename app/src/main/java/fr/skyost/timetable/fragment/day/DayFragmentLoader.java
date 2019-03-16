@@ -5,9 +5,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.view.View;
 
-import com.alamkanak.weekview.WeekViewEvent;
+import com.alamkanak.weekview.WeekView;
+import com.alamkanak.weekview.WeekViewDisplayable;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -17,18 +17,16 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProviders;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.LessonModel;
-import fr.skyost.timetable.utils.weekview.CustomWeekView;
 
 /**
  * The AsyncTask that allows to load the DayFragment view.
  */
 
-public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends WeekViewEvent>> {
+public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekViewDisplayable<Lesson>>> {
 
 	/**
 	 * The DayFragment.
@@ -43,10 +41,10 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 	private final AtomicReference<View> view;
 
 	/**
-	 * The hour to display.
+	 * The current date.
 	 */
 
-	private double hour = DayFragment.DEFAULT_HOUR;
+	private final LocalDate date;
 
 	/**
 	 * Creates a new day fragment loader instance.
@@ -55,42 +53,37 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 	 * @param view The view.
 	 */
 
-	DayFragmentLoader(final DayFragment fragment, final View view) {
+	DayFragmentLoader(final DayFragment fragment, final View view, final LocalDate date) {
 		this.fragment = fragment;
 		this.view = new AtomicReference<>(view);
+		this.date = date;
 	}
 
 	@Override
-	protected List<? extends WeekViewEvent> doInBackground(final LocalDate... dates) {
+	protected List<WeekViewDisplayable<Lesson>> doInBackground(final LessonModel... models) {
 		final MainActivity activity = (MainActivity)fragment.getActivity();
 		if(activity == null) {
 			return new ArrayList<>();
 		}
 
 		// Let's create our list of lessons !
-		final LocalDate date = dates[0];
 		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		final SharedPreferences colorPreferences = activity.getSharedPreferences(DayFragment.COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 		final int defaultColor = ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault);
 
-		final List<WeekViewEvent> events = new ArrayList<>();
-		final LessonModel model = ViewModelProviders.of(activity).get(LessonModel.class);
-		final List<Lesson> lessons = model.getLessons(date.toDateTimeAtStartOfDay(), date.toDateTimeAtStartOfDay().plusDays(1));
+		final List<Lesson> lessons = models[0].getLessons(date.toDateTimeAtStartOfDay(), date.toDateTimeAtStartOfDay().plusDays(1));
+		final List<WeekViewDisplayable<Lesson>> result = new ArrayList<>();
+
 		for(final Lesson lesson : lessons) {
-			events.add(new TimetableWeekViewEvent(lesson, activityPreferences, colorPreferences, defaultColor));
+			lesson.loadColor(activityPreferences, colorPreferences, defaultColor);
+			result.add(lesson);
 		}
 
-		// If we are displaying the today's fragment, we go to the current hour.
-		if(LocalDate.now().isEqual(date)) {
-			final DateTime now = DateTime.now();
-			hour = now.getHourOfDay() + (now.getMinuteOfHour() / 60d);
-		}
-
-		return events;
+		return result;
 	}
 
 	@Override
-	protected void onPostExecute(final List<? extends WeekViewEvent> events) {
+	protected void onPostExecute(final List<WeekViewDisplayable<Lesson>> lessons) {
 		final Calendar calendar = fragment.getDate().toDateTimeAtStartOfDay().toCalendar(Locale.getDefault());
 		final View view = this.view.get();
 		if(view == null) {
@@ -98,12 +91,24 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 		}
 
 		// We create our WeekView and we make it visible.
-		final CustomWeekView weekView = view.findViewById(R.id.main_day_weekview_day);
-		weekView.setMonthChangeListener((newYear, newMonth) -> events);
+		final WeekView<Lesson> weekView = view.findViewById(R.id.main_day_weekview_day);
 		weekView.goToDate(calendar);
 		weekView.setMinDate(calendar);
 		weekView.setMaxDate(calendar);
-		weekView.goToHour(hour);
+		if(LocalDate.now().isEqual(date)) {
+			weekView.goToCurrentTime();
+		}
+		else {
+			weekView.goToHour(DayFragment.DEFAULT_HOUR);
+		}
+		weekView.setMonthChangeListener((startDate, endDate) -> {
+			final long date = this.date.toDateTimeAtStartOfDay().getMillis();
+			if(LocalDate.fromCalendarFields(startDate).toDateTimeAtStartOfDay().getMillis() <= date && date <= LocalDate.fromCalendarFields(endDate).toDateTimeAtStartOfDay().getMillis()) {
+				return lessons;
+			}
+
+			return new ArrayList<>();
+		});
 		weekView.setVisibility(View.VISIBLE);
 
 		// We hide the progress bar.
@@ -131,22 +136,12 @@ public class DayFragmentLoader extends AsyncTask<LocalDate, Void, List<? extends
 	}
 
 	/**
-	 * Returns the hour to display.
+	 * Returns the current date.
 	 *
-	 * @return The hour to display.
+	 * @return The current date.
 	 */
 
-	public double getHour() {
-		return hour;
-	}
-
-	/**
-	 * Sets the hour to display.
-	 *
-	 * @param hour The hour to display.
-	 */
-
-	public void setHour(final double hour) {
-		this.hour = hour;
+	public LocalDate getDate() {
+		return date;
 	}
 }

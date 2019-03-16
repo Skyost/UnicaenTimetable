@@ -14,10 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
+import com.alamkanak.weekview.EventClickListener;
+import com.alamkanak.weekview.EventLongPressListener;
+import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDate;
 
 import java.text.DateFormat;
@@ -32,17 +36,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
+import fr.skyost.timetable.lesson.Lesson;
+import fr.skyost.timetable.lesson.LessonModel;
+import fr.skyost.timetable.utils.SwipeListener;
 import fr.skyost.timetable.utils.Utils;
-import fr.skyost.timetable.utils.weekview.CustomWeekView;
 
 /**
  * The fragment that allows to show lessons.
  */
 
-public class DayFragment extends Fragment implements DateTimeInterpreter, CustomWeekView.EventClickListener, CustomWeekView.EventLongPressListener {
+public class DayFragment extends Fragment implements DateTimeInterpreter, EventLongPressListener<Lesson>, EventClickListener<Lesson> {
 
 	/**
 	 * The preference file that stores lesson colors.
@@ -60,7 +67,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	 * The default hour.
 	 */
 
-	static final double DEFAULT_HOUR = 7d;
+	static final int DEFAULT_HOUR = 7;
 
 	/**
 	 * The fragment date.
@@ -82,13 +89,13 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	}
 
 	@Override
-	public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+	public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.activity_main_day, menu);
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(final MenuItem item) {
+	public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 		final MainActivity activity = (MainActivity)getActivity();
 		if(activity == null) {
 			return super.onOptionsItemSelected(item);
@@ -97,7 +104,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		// We associate the correct action with its menu item.
 		switch(item.getItemId()) {
 		case R.id.day_menu_week:
-			new WeekPickerDisplayer().execute(this);
+			new WeekPickerDisplayer(ViewModelProviders.of(activity).get(LessonModel.class)).execute(this);
 			return true;
 		case R.id.day_menu_previous:
 			activity.previousDayFragment();
@@ -118,10 +125,15 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 			return view;
 		}
 
+		// We create the swipe listener.
+		final SwipeListener swipeListener = new SwipeListener(activity, activity::nextDayFragment, activity::previousDayFragment);
+
 		// We create our WeekView.
-		final CustomWeekView weekView = view.findViewById(R.id.main_day_weekview_day);
-		weekView.setSwipeLeftRunnable(activity::nextDayFragment);
-		weekView.setSwipeRightRunnable(activity::previousDayFragment);
+		final WeekView<Lesson> weekView = view.findViewById(R.id.main_day_weekview_day);
+		weekView.setOnTouchListener((v, event) -> {
+			swipeListener.dispatchTouchEvent(event);
+			return false;
+		});
 		weekView.setDateTimeInterpreter(this);
 		weekView.setMonthChangeListener((newYear, newMonth) -> new ArrayList<>());
 		weekView.setHorizontalFlingEnabled(false);
@@ -143,36 +155,39 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 		super.onViewCreated(view, savedInstanceState);
 
 		// We load the View.
-		new DayFragmentLoader(this, view).execute(date);
+		new DayFragmentLoader(this, view, date).execute(ViewModelProviders.of(this).get(LessonModel.class));
 	}
 
+	@NonNull
 	@Override
-	public String interpretDate(final Calendar calendar) {
+	public String interpretDate(@NonNull final Calendar calendar) {
 		final Date date = calendar.getTime();
 		return new SimpleDateFormat("E", Locale.getDefault()).format(date) + " " + DATE_FORMAT.format(date);
 	}
 
+	@NotNull
 	@Override
-	public String interpretTime(final int hour, final int minutes) {
-		return Utils.addZeroIfNeeded(hour) + ":" + Utils.addZeroIfNeeded(minutes);
+	public String interpretTime(final int hour) {
+		return Utils.addZeroIfNeeded(hour) + ":00";
 	}
 
 	@Override
-	public void onEventClick(final WeekViewEvent event, final RectF eventRect) {
+	public void onEventClick(final Lesson lesson, @NotNull final RectF rectF) {
 		final MainActivity activity = (MainActivity)getActivity();
 		if(activity == null) {
 			return;
 		}
 
 		// We show a dialog that displays some info about the event.
+		final WeekViewEvent<Lesson> event = lesson.toWeekViewEvent();
 		new AlertDialog.Builder(activity)
-				.setMessage(event.getName() + "\n" + event.getLocation())
+				.setMessage(event.getTitle() + "\n" + event.getLocation())
 				.setNeutralButton(R.string.dialog_event_button_neutral, (dialog, which) -> {
 					try {
 						// We can start the alarm manager.
 						final Calendar start = event.getStartTime();
 						final Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-						intent.putExtra(AlarmClock.EXTRA_MESSAGE, event.getName());
+						intent.putExtra(AlarmClock.EXTRA_MESSAGE, event.getTitle());
 						intent.putExtra(AlarmClock.EXTRA_HOUR, start.get(Calendar.HOUR_OF_DAY));
 						intent.putExtra(AlarmClock.EXTRA_MINUTES, start.get(Calendar.MINUTE));
 						startActivity(intent);
@@ -185,7 +200,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 				.setNegativeButton(R.string.dialog_event_button_negative, (dialog, which) -> {
 					// The negative button allows to reset the event color.
 					final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
-					colorPreferences.edit().remove(event.getName()).apply();
+					colorPreferences.edit().remove(event.getTitle()).apply();
 					dialog.dismiss();
 					activity.showFragment(date);
 				})
@@ -200,7 +215,7 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 	}
 
 	@Override
-	public void onEventLongPress(final WeekViewEvent event, final RectF eventRect) {
+	public void onEventLongPress(final Lesson lesson, @NotNull final RectF rectF) {
 		final MainActivity activity = (MainActivity)getActivity();
 		if(activity == null) {
 			return;
@@ -213,14 +228,14 @@ public class DayFragment extends Fragment implements DateTimeInterpreter, Custom
 				.setPositiveButton(R.string.dialog_generic_button_positive, (dialog, selectedColor, allColors) -> {
 					// Pressing the positive button allows to change the event color.
 					final SharedPreferences colorPreferences = activity.getSharedPreferences(COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
-					colorPreferences.edit().putInt(event.getName(), selectedColor).commit();
+					colorPreferences.edit().putInt(lesson.getSummary(), selectedColor).commit();
 					activity.showFragment(date);
 				})
 				.setNegativeButton(R.string.dialog_generic_button_cancel, (dialog, which) -> dialog.dismiss());
 
 		// If the event already has a custom color, we set it in our builder.
-		if(event.getColor() != ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)) {
-			builder.initialColor(event.getColor());
+		if(lesson.getColor() != ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault)) {
+			builder.initialColor(lesson.getColor());
 		}
 		builder.build().show();
 	}

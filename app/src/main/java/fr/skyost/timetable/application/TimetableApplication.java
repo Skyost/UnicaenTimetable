@@ -1,7 +1,9 @@
 package fr.skyost.timetable.application;
 
 import android.app.Application;
+import android.content.Context;
 
+import androidx.multidex.MultiDex;
 import androidx.room.Room;
 import fr.skyost.timetable.lesson.database.AppDatabase;
 
@@ -31,6 +33,12 @@ public class TimetableApplication extends Application {
 		database = Room.databaseBuilder(this, AppDatabase.class, DATABASE)
 				//.allowMainThreadQueries()
 				.build();
+	}
+
+	@Override
+	protected void attachBaseContext(Context base) {
+		super.attachBaseContext(base);
+		MultiDex.install(this);
 	}
 
 	/**

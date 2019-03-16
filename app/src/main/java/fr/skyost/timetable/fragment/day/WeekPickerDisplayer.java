@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.lifecycle.ViewModelProviders;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.LessonModel;
@@ -20,6 +19,22 @@ import fr.skyost.timetable.lesson.LessonModel;
 
 public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialog.Builder> {
 
+	/**
+	 * The lesson model.
+	 */
+
+	private final LessonModel model;
+
+	/**
+	 * Creates a new week picker displayer instance.
+	 *
+	 * @param model The lesson model.
+	 */
+
+	public WeekPickerDisplayer(final LessonModel model) {
+		this.model = model;
+	}
+
 	@Override
 	protected AlertDialog.Builder doInBackground(final DayFragment... fragments) {
 		final DayFragment fragment = fragments[0];
@@ -28,7 +43,6 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 			return null;
 		}
 
-		final LessonModel model = ViewModelProviders.of(activity).get(LessonModel.class);
 		final List<LocalDate> availableWeeks = model.getAvailableWeeks();
 
 		// If there is no available week, we tell the user.
@@ -64,6 +78,16 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 		if(builder != null) {
 			builder.show();
 		}
+	}
+
+	/**
+	 * Returns the current lesson model.
+	 *
+	 * @return The current lesson model.
+	 */
+
+	public LessonModel getModel() {
+		return model;
 	}
 
 }
