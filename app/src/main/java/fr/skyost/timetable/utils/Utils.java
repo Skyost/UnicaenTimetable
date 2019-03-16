@@ -5,10 +5,7 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -30,7 +27,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import fr.skyost.timetable.R;
 
@@ -224,28 +220,6 @@ public class Utils {
 			ex.printStackTrace();
 		}
 		return value;
-	}
-
-	/**
-	 * Creates a Bitmap from a Drawable.
-	 *
-	 * @param context The context.
-	 * @param drawableId ID of the Drawable.
-	 *
-	 * @return The Bitmap.
-	 */
-
-	public static Bitmap drawableToBitmap(final Context context, final int drawableId) {
-		final Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
-		if(drawable == null) {
-			return null;
-		}
-
-		final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap);
-		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-		drawable.draw(canvas);
-		return bitmap;
 	}
 
 	/**

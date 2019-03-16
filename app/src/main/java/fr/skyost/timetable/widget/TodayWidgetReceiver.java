@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.text.format.DateFormat;
 import android.widget.RemoteViews;
 
@@ -22,7 +21,6 @@ import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.application.TimetableApplication;
 import fr.skyost.timetable.lesson.database.LessonDao;
-import fr.skyost.timetable.utils.Utils;
 
 /**
  * The today's widget provider.
@@ -108,16 +106,9 @@ public class TodayWidgetReceiver extends AppWidgetProvider {
 
 	public void updateDrawables(final Context context, final RemoteViews views, final TodayWidgetDateManager dateManager) {
 		// We set the drawables (according to the current API).
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			views.setImageViewResource(R.id.widget_today_refresh, R.drawable.widget_today_refresh_drawable);
-			views.setImageViewResource(R.id.widget_today_back, R.drawable.widget_today_back_drawable);
-			views.setImageViewResource(R.id.widget_today_next, R.drawable.widget_today_next_drawable);
-		}
-		else {
-			views.setImageViewBitmap(R.id.widget_today_refresh, Utils.drawableToBitmap(context, R.drawable.widget_today_refresh_drawable));
-			views.setImageViewBitmap(R.id.widget_today_back, Utils.drawableToBitmap(context, R.drawable.widget_today_back_drawable));
-			views.setImageViewBitmap(R.id.widget_today_next, Utils.drawableToBitmap(context, R.drawable.widget_today_next_drawable));
-		}
+		views.setImageViewResource(R.id.widget_today_refresh, R.drawable.widget_today_refresh_drawable);
+		views.setImageViewResource(R.id.widget_today_back, R.drawable.widget_today_back_drawable);
+		views.setImageViewResource(R.id.widget_today_next, R.drawable.widget_today_next_drawable);
 
 		// If there is no previous day, we "disable" the previous button.
 		if(dateManager.getRelativeDay() <= 0) {

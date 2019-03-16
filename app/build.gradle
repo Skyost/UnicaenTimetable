@@ -17,7 +17,6 @@ android {
         targetSdkVersion 28
         versionCode 50
         versionName 'v2.1.1'
-        vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -68,7 +67,7 @@ dependencies {
     implementation 'joda-time:joda-time:2.10.1'
     implementation 'com.github.thellmund:Android-Week-View:3.2.1'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
-    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.matecode:Snacky:1.1.4'
     implementation 'com.google.android.gms:play-services-ads:17.2.0'
 }
