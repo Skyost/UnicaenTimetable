@@ -95,7 +95,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 * The username.
 	 */
 
-	private final String username;
+	private String username;
 
 	/**
 	 * The password.
@@ -138,12 +138,18 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 			}
 
 			// Same here for HTTP response codes.
-			final int code = buildClient().newCall(buildRequest(activity, username, password)).execute().code();
-			if(code == HttpURLConnection.HTTP_NOT_FOUND) {
-				return new AuthenticationResponse(NOT_FOUND);
+			int code = buildClient().newCall(buildRequest(activity, username, password)).execute().code();
+			if(code == HttpURLConnection.HTTP_UNAUTHORIZED && !username.endsWith("@etu.unicaen.fr")) {
+				username += "@etu.unicaen.fr";
+				code = buildClient().newCall(buildRequest(activity, username, password)).execute().code();
 			}
+
 			if(code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				return new AuthenticationResponse(UNAUTHORIZED);
+			}
+
+			if(code == HttpURLConnection.HTTP_NOT_FOUND) {
+				return new AuthenticationResponse(NOT_FOUND);
 			}
 
 			// If nothing occurred, it's good, we return a success !
