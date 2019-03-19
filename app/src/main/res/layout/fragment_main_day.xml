@@ -27,6 +27,8 @@
         app:eventTextSize="14sp"
         app:timeColumnTextColor="#8f000000"
         app:timeColumnBackgroundColor="#ffffffff"
-        app:timeColumnPadding="8dp" />
+        app:timeColumnPadding="8dp"
+        app:showNowLine="true"
+        app:nowLineColor="#2980b9"/>
 
 </RelativeLayout>

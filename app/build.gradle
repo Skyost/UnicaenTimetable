@@ -15,8 +15,8 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 51
-        versionName 'v2.1.2'
+        versionCode 53
+        versionName 'v2.1.4'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -65,7 +65,7 @@ dependencies {
     implementation 'com.github.AppIntro:AppIntro:v5.1.0'
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
     implementation 'joda-time:joda-time:2.10.1'
-    implementation 'com.github.Skyost:Android-Week-View:3.3'
+    implementation project(':android-week-view')
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.matecode:Snacky:1.1.4'
