@@ -3,6 +3,7 @@ package fr.skyost.timetable.widget;
 import android.content.Context;
 import android.os.Build;
 import android.text.Html;
+import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -54,17 +55,17 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 
 	@Override
 	public int getCount() {
-		return items.size();
+		return items == null ? 0 : items.size();
 	}
 
 	@Override
 	public RemoteViews getViewAt(final int i) {
-		// We update the TextView text according to the SDK version.
 		final RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.widget_today_row);
-		if(i <= 0 || i >= items.size()) {
+		if(i == AdapterView.INVALID_POSITION || i < 0 || i >= items.size()) {
 			return row;
 		}
 
+		// We update the TextView text according to the SDK version.
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			row.setTextViewText(R.id.widget_today_row, Html.fromHtml(items.get(i), Html.FROM_HTML_MODE_COMPACT));
 		}
@@ -86,43 +87,49 @@ public class TodayWidgetViewsFactory implements RemoteViewsService.RemoteViewsFa
 
 	@Override
 	public void onDestroy() {
-		items.clear();
-		database.close();
+		if(items != null) {
+			items.clear();
+		}
 	}
 
 	@Override
 	public void onDataSetChanged() {
-		items.clear();
 		try {
+			if(items == null) {
+				return;
+			}
+
+			items.clear();
+
 			final DateTime date = TodayWidgetDateManager.getInstance().getAbsoluteDay().toDateTimeAtStartOfDay();
 			final List<Lesson> lessons = database.getLessonDao().getLessons(date, date.plusDays(1).withTimeAtStartOfDay());
-			if(lessons.size() == 0) {
+			if(lessons.isEmpty()) {
 				// If there is nothing today, we show a message.
 				items.add("<i>" + context.getResources().getString(R.string.widget_today_nothing) + "</i>");
+				return;
 			}
-			else {
-				final DateTime now = DateTime.now();
-				Lesson nextLesson = null;
-				for(final Lesson lesson : lessons) {
-					if(!now.isAfter(lesson.getEndDate())) {
-						// If the lesson is not passed, we add it to the items list.
-						String content = "<b>" + lesson.getSummary() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStartDate().getHourOfDay()) + ":" + Utils.addZeroIfNeeded(lesson.getStartDate().getMinuteOfHour()) + " - " + Utils.addZeroIfNeeded(lesson.getEndDate().getHourOfDay()) + ":" + Utils.addZeroIfNeeded(lesson.getEndDate().getMinuteOfHour());
-						if(lesson.getLocation() != null) {
-							content += "<br/>" + "<i>" + lesson.getLocation() + "</i>";
-						}
-						items.add(content);
 
-						// We keep a reference to the next lesson.
-						if(nextLesson == null || lesson.getEndDate().isBefore(nextLesson.getEndDate())) {
-							nextLesson = lesson;
-						}
+			final DateTime now = DateTime.now();
+			Lesson nextLesson = null;
+			for(final Lesson lesson : lessons) {
+				if(!now.isAfter(lesson.getEndDate())) {
+					// If the lesson is not passed, we add it to the items list.
+					String content = "<b>" + lesson.getSummary() + "</b> :<br/>" + Utils.addZeroIfNeeded(lesson.getStartDate().getHourOfDay()) + ":" + Utils.addZeroIfNeeded(lesson.getStartDate().getMinuteOfHour()) + " - " + Utils.addZeroIfNeeded(lesson.getEndDate().getHourOfDay()) + ":" + Utils.addZeroIfNeeded(lesson.getEndDate().getMinuteOfHour());
+					if(lesson.getLocation() != null) {
+						content += "<br/>" + "<i>" + lesson.getLocation() + "</i>";
+					}
+					items.add(content);
+
+					// We keep a reference to the next lesson.
+					if(nextLesson == null || lesson.getEndDate().isBefore(nextLesson.getEndDate())) {
+						nextLesson = lesson;
 					}
 				}
+			}
 
-				if(nextLesson == null) {
-					// If there is nothing remaining, we also show a message.
-					items.add("<i>" + context.getResources().getString(R.string.widget_today_nothingremaining) + "</i>");
-				}
+			if(nextLesson == null) {
+				// If there is nothing remaining, we also show a message.
+				items.add("<i>" + context.getResources().getString(R.string.widget_today_nothingremaining) + "</i>");
 			}
 		}
 		catch(final Exception ex) {
