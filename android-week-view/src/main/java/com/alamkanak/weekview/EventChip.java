@@ -106,6 +106,19 @@ class EventChip<T> {
             return;
         }
 
+        // Prepare the name of the event.
+        final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        if (event.getTitle() != null) {
+            stringBuilder.append(event.getTitle());
+            stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, stringBuilder.length(), 0);
+        }
+
+        // Prepare the location of the event.
+        if (event.getLocation() != null) {
+            stringBuilder.append(' ');
+            stringBuilder.append(event.getLocation());
+        }
+
         final int availableHeight = (int) (rect.bottom - rect.top - config.eventPadding * 2);
         final int availableWidth = (int) (rect.right - rect.left - config.eventPadding * 2);
 
@@ -114,54 +127,59 @@ class EventChip<T> {
 
         textPaint.setColor(event.getTextColorOrDefault(config));
 
-        StaticLayout textLayout = new StaticLayout(event.getLocation(),
+        StaticLayout textLayout = new StaticLayout(stringBuilder,
                 textPaint, availableWidth, ALIGN_NORMAL, 1.0f, 0.0f, false);
 
         final int lineHeight = textLayout.getHeight() / textLayout.getLineCount();
+        stringBuilder.clear();
 
         if (availableHeight >= lineHeight) {
             // Calculate available number of line counts.
             int availableLineCount = availableHeight / lineHeight;
 
             // Ellipsize text to fit into event rect.
-            String[] lines = textLayout.getText().toString().split("\\r?\\n");
-            for(int i = 0; i != lines.length; i++) {
-                lines[i] = TextUtils.ellipsize(lines[i], textPaint, availableWidth, TextUtils.TruncateAt.END).toString();
-            }
+            String[] lines = event.getLocation() == null ? null : event.getLocation().split("\\r?\\n");
 
-            // We create a whole new text.
-            if(lines.length > availableLineCount && !lines[availableLineCount - 1].endsWith("…")) {
-                if(TextUtils.isEmpty(lines[availableLineCount - 1])) {
-                    lines[availableLineCount - 1] = "…";
+            if(lines != null) {
+                for(int i = 0; i != lines.length; i++) {
+                    lines[i] = TextUtils.ellipsize(lines[i], textPaint, availableWidth, TextUtils.TruncateAt.END).toString();
                 }
-                else {
-                    String last = lines[availableLineCount - 1];
-                    if(last.length() + 2 < availableWidth) {
-                        lines[availableLineCount - 1] = last + "…";
+
+                // We create a whole new text.
+                if(lines.length > availableLineCount && !lines[availableLineCount - 1].endsWith("…")) {
+                    if(TextUtils.isEmpty(lines[availableLineCount - 1])) {
+                        lines[availableLineCount - 1] = "…";
                     }
                     else {
-                        lines[availableLineCount - 1] = last.substring(0, last.length() - 2) + "…";
+                        String last = lines[availableLineCount - 1];
+                        if(last.length() + 2 < availableWidth) {
+                            lines[availableLineCount - 1] = last + "…";
+                        }
+                        else {
+                            lines[availableLineCount - 1] = last.substring(0, last.length() - 2) + "…";
+                        }
                     }
                 }
+                lines = Arrays.copyOfRange(lines, 0, Math.min(lines.length, availableLineCount));
             }
-            lines = Arrays.copyOfRange(lines, 0, Math.min(lines.length, availableLineCount));
 
             // Prepare the location of the event.
-            final SpannableStringBuilder content = new SpannableStringBuilder();
-            content.append(event.getTitle());
-            content.setSpan(new StyleSpan(Typeface.BOLD), 0, content.length(), 0);
+            if(event.getTitle() != null) {
+                stringBuilder.append(event.getTitle());
+                stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, stringBuilder.length(), 0);
+            }
 
             if (lines != null && lines.length != 0) {
-            	content.append(' ');
+                stringBuilder.append(' ');
                 for(int i = 0; i < lines.length; i++) {
-                    content.append(lines[i]);
+                    stringBuilder.append(lines[i]);
                     if(i != lines.length - 1) {
-                        content.append('\n');
+                        stringBuilder.append('\n');
                     }
                 }
             }
 
-            textLayout = new StaticLayout(content, textPaint, availableWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+            textLayout = new StaticLayout(stringBuilder, textPaint, availableWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 
             // Draw text.
             drawEventTitle(config, textLayout, canvas);
