@@ -4,15 +4,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.MotionEvent;
-
-import java.util.Arrays;
 
 import androidx.annotation.Nullable;
 
@@ -107,10 +104,12 @@ class EventChip<T> {
         }
 
         // Prepare the name of the event.
-        final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+		int titleLength = -1;
+		final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         if (event.getTitle() != null) {
+			titleLength = event.getTitle().length();
             stringBuilder.append(event.getTitle());
-            stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, stringBuilder.length(), 0);
+            stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, titleLength, 0);
         }
 
         // Prepare the location of the event.
@@ -131,55 +130,53 @@ class EventChip<T> {
                 textPaint, availableWidth, ALIGN_NORMAL, 1.0f, 0.0f, false);
 
         final int lineHeight = textLayout.getHeight() / textLayout.getLineCount();
-        stringBuilder.clear();
 
         if (availableHeight >= lineHeight) {
-            // Calculate available number of line counts.
             int availableLineCount = availableHeight / lineHeight;
+            int actualLines = textLayout.getLineCount();
 
-            // Ellipsize text to fit into event rect.
-            String[] lines = event.getLocation() == null ? null : event.getLocation().split("\\r?\\n");
-
-            if(lines != null) {
-                for(int i = 0; i != lines.length; i++) {
-                    lines[i] = TextUtils.ellipsize(lines[i], textPaint, availableWidth, TextUtils.TruncateAt.END).toString();
+            do {
+                // TODO: Don't truncate
+                if(availableLineCount < 0) {
+                    /*System.out.println("Cancelled " + event.getTitle());
+                    System.out.println(availableLineCount);*/
+                    return;
                 }
 
-                // We create a whole new text.
-                if(lines.length > availableLineCount && !lines[availableLineCount - 1].endsWith("…")) {
-                    if(TextUtils.isEmpty(lines[availableLineCount - 1])) {
-                        lines[availableLineCount - 1] = "…";
+                // Ellipsize text to fit into event rect.
+                int start = textLayout.getLineStart(availableLineCount);
+                int end = textLayout.getLineEnd(availableLineCount);
+
+                stringBuilder.delete(end, stringBuilder.length());
+                end = stringBuilder.length();
+
+                CharSequence lastLine = stringBuilder.subSequence(start, end);
+                stringBuilder.delete(start, end);
+
+                if(availableLineCount < actualLines - 1) {
+                    if(lastLine.toString().replace("\r\n", "").replace("\n", "").trim().isEmpty()) {
+                        stringBuilder.append("…");
                     }
                     else {
-                        String last = lines[availableLineCount - 1];
-                        if(last.length() + 2 < availableWidth) {
-                            lines[availableLineCount - 1] = last + "…";
-                        }
-                        else {
-                            lines[availableLineCount - 1] = last.substring(0, last.length() - 2) + "…";
-                        }
+                        final CharSequence ellipsize = TextUtils.ellipsize(lastLine, textPaint, availableWidth, TextUtils.TruncateAt.END);
+                        stringBuilder.append(ellipsize);
+                        if(lastLine.equals(ellipsize)) {
+                            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+                            stringBuilder.append('…');
+
+                            if(end >= titleLength && titleLength != -1) {
+								stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, Math.min(end, titleLength), 0);
+							}
+						}
                     }
                 }
-                lines = Arrays.copyOfRange(lines, 0, Math.min(lines.length, availableLineCount));
-            }
 
-            // Prepare the location of the event.
-            if(event.getTitle() != null) {
-                stringBuilder.append(event.getTitle());
-                stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, stringBuilder.length(), 0);
-            }
+                textLayout = new StaticLayout(stringBuilder,
+                        textPaint, availableWidth, ALIGN_NORMAL, 1.0f, 0.0f, false);
 
-            if (lines != null && lines.length != 0) {
-                stringBuilder.append(' ');
-                for(int i = 0; i < lines.length; i++) {
-                    stringBuilder.append(lines[i]);
-                    if(i != lines.length - 1) {
-                        stringBuilder.append('\n');
-                    }
-                }
-            }
-
-            textLayout = new StaticLayout(stringBuilder, textPaint, availableWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+                // Repeat until text is short enough.
+                availableLineCount--;
+            } while (textLayout.getHeight() > availableHeight);
 
             // Draw text.
             drawEventTitle(config, textLayout, canvas);

@@ -482,7 +482,7 @@ public final class WeekView<T> extends View
     }
 
     public void setHeaderRowTextColor(int headerRowTextColor) {
-        config.headerRowTextColor = headerRowTextColor;
+        config.setHeaderRowTextColor(headerRowTextColor);
         invalidate();
     }
 
@@ -491,7 +491,7 @@ public final class WeekView<T> extends View
     }
 
     public void setHeaderRowTextSize(int textSize) {
-        config.headerRowTextSize = textSize;
+        config.setHeaderRowTextSize(textSize);
         invalidate();
     }
 
