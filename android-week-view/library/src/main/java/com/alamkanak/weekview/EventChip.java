@@ -135,51 +135,51 @@ class EventChip<T> {
             int availableLineCount = availableHeight / lineHeight;
             int actualLines = textLayout.getLineCount();
 
-            do {
-                // TODO: Don't truncate
-                if(availableLineCount < 0) {
-                    /*System.out.println("Cancelled " + event.getTitle());
-                    System.out.println(availableLineCount);*/
-                    return;
+            try {
+                while(textLayout.getHeight() > availableHeight && availableLineCount > 0) {
+                    // TODO: Don't truncate
+                    // Ellipsize text to fit into event rect.
+
+                    int start = textLayout.getLineStart(availableLineCount);
+                    int end = textLayout.getLineEnd(availableLineCount);
+
+                    stringBuilder.delete(end, stringBuilder.length());
+                    end = stringBuilder.length();
+
+                    CharSequence lastLine = stringBuilder.subSequence(start, end);
+                    stringBuilder.delete(start, end);
+
+                    if(availableLineCount < actualLines - 1) {
+                        if(lastLine.toString().replace("\r\n", "").replace("\n", "").trim().isEmpty()) {
+                            stringBuilder.append("…");
+                        }
+                        else {
+                            final CharSequence ellipsize = TextUtils.ellipsize(lastLine, textPaint, availableWidth, TextUtils.TruncateAt.END);
+                            stringBuilder.append(ellipsize);
+                            if(lastLine.equals(ellipsize)) {
+                                stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+                                stringBuilder.append('…');
+
+                                if(end >= titleLength && titleLength != -1) {
+                                    stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, Math.min(end, titleLength), 0);
+                                }
+                            }
+                        }
+                    }
+
+                    textLayout = new StaticLayout(stringBuilder,
+                            textPaint, availableWidth, ALIGN_NORMAL, 1.0f, 0.0f, false);
+
+                    // Repeat until text is short enough.
+                    availableLineCount--;
                 }
 
-                // Ellipsize text to fit into event rect.
-                int start = textLayout.getLineStart(availableLineCount);
-                int end = textLayout.getLineEnd(availableLineCount);
-
-                stringBuilder.delete(end, stringBuilder.length());
-                end = stringBuilder.length();
-
-                CharSequence lastLine = stringBuilder.subSequence(start, end);
-                stringBuilder.delete(start, end);
-
-                if(availableLineCount < actualLines - 1) {
-                    if(lastLine.toString().replace("\r\n", "").replace("\n", "").trim().isEmpty()) {
-                        stringBuilder.append("…");
-                    }
-                    else {
-                        final CharSequence ellipsize = TextUtils.ellipsize(lastLine, textPaint, availableWidth, TextUtils.TruncateAt.END);
-                        stringBuilder.append(ellipsize);
-                        if(lastLine.equals(ellipsize)) {
-                            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-                            stringBuilder.append('…');
-
-                            if(end >= titleLength && titleLength != -1) {
-								stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, Math.min(end, titleLength), 0);
-							}
-						}
-                    }
-                }
-
-                textLayout = new StaticLayout(stringBuilder,
-                        textPaint, availableWidth, ALIGN_NORMAL, 1.0f, 0.0f, false);
-
-                // Repeat until text is short enough.
-                availableLineCount--;
-            } while (textLayout.getHeight() > availableHeight);
-
-            // Draw text.
-            drawEventTitle(config, textLayout, canvas);
+                // Draw text.
+                drawEventTitle(config, textLayout, canvas);
+            }
+            catch(final Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

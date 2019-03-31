@@ -15,8 +15,8 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 56
-        versionName 'v2.1.7'
+        versionCode 57
+        versionName 'v2.1.8'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -51,14 +51,14 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'com.google.android.material:material:1.1.0-alpha05'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
 
-    implementation 'androidx.room:room-runtime:2.1.0-alpha05'
-    annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha05'
+    implementation 'androidx.room:room-runtime:2.1.0-alpha06'
+    annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha06'
     implementation 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5'
 
     implementation 'net.sf.biweekly:biweekly:0.6.3'
