@@ -91,7 +91,7 @@ public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekVie
 
 		// Let's create our list of lessons !
 		final SharedPreferences activityPreferences = activity.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		final SharedPreferences colorPreferences = activity.getSharedPreferences(DayFragment.COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
+		final SharedPreferences colorPreferences = activity.getSharedPreferences(DefaultEventListener.COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 		final int defaultColor = ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault);
 
 		final List<Lesson> lessons = models[0].getLessons(date.toDateTimeAtStartOfDay(), date.toDateTimeAtStartOfDay().plusDays(range));

@@ -178,12 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
 			// If anything has changed, we have to refresh our views, preferences and timetable.
-			if(currentFragment == -1) {
-				showDayFragment(currentDate);
-			}
-			else {
-				showFragment(currentFragment);
-			}
+			refreshCurrentFragment();
 
 			final SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 			if(preferences.getBoolean(SettingsActivity.PREFERENCES_CHANGED_ACCOUNT, false)) {
@@ -340,17 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
 		findViewById(R.id.main_fab).setOnClickListener(view -> refreshTimetable());
-		if(currentFragment == -1) {
-			showDayFragment(currentDate);
-		}
-		else {
-			currentDate = LocalDate.now();
-			if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY || currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
-				currentDate = currentDate.plusWeeks(1);
-			}
-
-			showFragment(currentFragment);
-		}
+		refreshCurrentFragment();
 
 		// We setup the navigation view.
 		final String name = accounts[0].name;
@@ -425,6 +410,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	/**
+	 * Refreshes the current fragment.
+	 */
+
+	public void refreshCurrentFragment() {
+		if(currentFragment == -1) {
+			showDayFragment(currentDate);
+		}
+		else {
+			currentDate = LocalDate.now();
+			if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY || currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				currentDate = currentDate.plusWeeks(1);
+			}
+
+			showFragment(currentFragment);
+		}
+	}
+
+	/**
 	 * Goes to the next day (MONDAY -> TUESDAY -> WEDNESDAY -> THURSDAY -> FRIDAY -> MONDAY -> ...).
 	 */
 
@@ -468,6 +471,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	public LocalDate getCurrentDate() {
 		return currentDate;
+	}
+
+	/**
+	 * Sets the current date.
+	 *
+	 * @param currentDate The current date.
+	 */
+
+	public void setCurrentDate(final LocalDate currentDate) {
+		this.currentDate = currentDate;
 	}
 
 }

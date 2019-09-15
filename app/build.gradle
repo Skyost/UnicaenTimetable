@@ -15,8 +15,8 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 57
-        versionName 'v2.1.8'
+        versionCode 58
+        versionName 'v2.2'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

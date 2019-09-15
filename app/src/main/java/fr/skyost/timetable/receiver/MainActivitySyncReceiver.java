@@ -60,7 +60,7 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		switch(intent.getIntExtra(INTENT_RESPONSE, AuthenticationTask.ERROR)) {
 		case AuthenticationTask.SUCCESS:
 			// If success, we reload the current fragment.
-			activity.showDayFragment(activity.getCurrentDate());
+			activity.refreshCurrentFragment();
 
 			// And we open a SnackBar message.
 			if(manualSync && !activity.isFinishing() && !activity.isDestroyed()) {

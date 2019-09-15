@@ -23,7 +23,6 @@
         app:headerRowBackgroundColor="#ffefefef"
         app:headerRowPadding="12dp"
         app:hourHeight="60dp"
-        app:numberOfVisibleDays="2"
         app:eventTextSize="14sp"
         app:timeColumnTextColor="#8f000000"
         app:timeColumnBackgroundColor="#ffffffff"

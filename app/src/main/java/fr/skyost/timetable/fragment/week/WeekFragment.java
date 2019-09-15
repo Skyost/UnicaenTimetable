@@ -1,5 +1,6 @@
 package fr.skyost.timetable.fragment.week;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,17 +23,33 @@ import java.util.ArrayList;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.fragment.day.DayFragmentLoader;
+import fr.skyost.timetable.fragment.day.DefaultEventListener;
+import fr.skyost.timetable.fragment.day.WeekPickerDisplayer;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.LessonModel;
 import fr.skyost.timetable.utils.DefaultDateInterpreter;
 
+/**
+ * A fragment that is able to display weeks.
+ */
+
 public class WeekFragment extends Fragment {
+
+	/**
+	 * The column count.
+	 */
+
+	private int columnCount = 2;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// We create our menu.
 		setHasOptionsMenu(true);
+
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			columnCount = 3;
+		}
 	}
 
 	@Override
@@ -50,7 +67,12 @@ public class WeekFragment extends Fragment {
 
 		// We associate the correct action with its menu item.
 		if(item.getItemId() == R.id.week_menu_week) {
-			//new WeekPickerDisplayer(ViewModelProviders.of(activity).get(LessonModel.class)).execute(this);
+			new WeekPickerDisplayer(ViewModelProviders.of(activity).get(LessonModel.class), selected -> {
+				activity.setCurrentDate(selected);
+				activity.showFragment(R.id.nav_timetable_week);
+				return null;
+			}).execute(activity);
+
 			return true;
 		}
 
@@ -61,12 +83,19 @@ public class WeekFragment extends Fragment {
 	public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		// We create our WeekView.
 		final View view = inflater.inflate(R.layout.fragment_main_week, container, false);
+		final MainActivity activity = (MainActivity)getActivity();
+		if(activity == null) {
+			return view;
+		}
+
+		final DefaultEventListener listener = new DefaultEventListener(activity);
 		final WeekView<Lesson> weekView = view.findViewById(R.id.main_week_weekview);
 		weekView.setDateTimeInterpreter(new DefaultDateInterpreter());
 		weekView.setMonthChangeListener((newYear, newMonth) -> new ArrayList<>());
 		weekView.setHorizontalFlingEnabled(false);
-		//weekView.setEventLongPressListener(this);
-		//weekView.setOnEventClickListener(this);
+		weekView.setNumberOfVisibleDays(columnCount);
+		weekView.setEventLongPressListener(listener);
+		weekView.setOnEventClickListener(listener);
 
 		return view;
 	}
