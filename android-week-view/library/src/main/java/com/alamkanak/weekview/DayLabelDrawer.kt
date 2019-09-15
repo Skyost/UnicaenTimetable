@@ -6,13 +6,11 @@ import android.os.Build.VERSION_CODES.M
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
-import java.util.*
+import org.threeten.bp.LocalDate
 
 internal class DayLabelDrawer(
-        private val config: WeekViewConfig
+        private val config: WeekViewConfigWrapper
 ) {
-
-    private val drawingConfig: WeekViewDrawingConfig = config.drawingConfig
 
     fun draw(drawingContext: DrawingContext, canvas: Canvas) {
         drawingContext
@@ -22,15 +20,14 @@ internal class DayLabelDrawer(
                 }
     }
 
-    private fun drawLabel(day: Calendar, startPixel: Float, canvas: Canvas) {
-        val dayLabel = drawingConfig.dateTimeInterpreter.interpretDate(day)
-
-        val x = startPixel + drawingConfig.widthPerDay / 2
+    private fun drawLabel(day: LocalDate, startPixel: Float, canvas: Canvas) {
+        val dayLabel = config.dateTimeInterpreter.interpretDate(day.toCalendar())
+        val x = startPixel + config.widthPerDay / 2
 
         val textPaint = if (day.isToday) {
-            drawingConfig.todayHeaderTextPaint
+            config.todayHeaderTextPaint
         } else {
-            drawingConfig.headerTextPaint
+            config.headerTextPaint
         }
 
         if (config.singleLineHeader) {
@@ -40,8 +37,8 @@ internal class DayLabelDrawer(
             val multiLineTextPaint = TextPaint(textPaint)
             val staticLayout = buildStaticLayout(dayLabel, multiLineTextPaint)
 
-            drawingConfig.headerTextHeight = staticLayout.height.toFloat()
-            drawingConfig.refreshHeaderHeight(config)
+            config.headerTextHeight = staticLayout.height.toFloat()
+            config.refreshHeaderHeight()
 
             canvas.save()
             canvas.translate(x, config.headerRowPadding.toFloat())

@@ -1,6 +1,5 @@
 package com.alamkanak.weekview
 
-import com.alamkanak.weekview.DateUtils.today
 import java.util.*
 
 /**
@@ -9,35 +8,28 @@ import java.util.*
  * an interface that can be implemented in one's actual data class and handles the conversion to a
  * [WeekViewEvent].
  */
-private class MonthLoader<T>(
+internal class MonthLoader<T>(
         var onMonthChangeListener: MonthChangeListener<T>?
 ) : WeekViewLoader<T> {
 
     override fun toPeriod(instance: Calendar): Period {
-        val month = instance.get(Calendar.MONTH)
-        val year = instance.get(Calendar.YEAR)
-        return Period(month, year)
+        return Period.fromDate(instance.toLocalDate())
     }
 
     override fun onLoad(period: Period): List<WeekViewEvent<T>> {
         val (month, year) = period
 
-        val startDate = today().withTimeAtStartOfDay().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        val maxDays = startDate.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-        val endDate = today().withTimeAtEndOfDay().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
-            set(Calendar.DAY_OF_MONTH, maxDays)
-        }
+        val startDate = today()
+                .withYear(year)
+                .withMonth(month)
+                .withDayOfMonth(1)
+        val maxDays = startDate.lengthOfMonth()
+        val endDate = startDate.withDayOfMonth(maxDays)
 
         val listener = onMonthChangeListener ?: return emptyList()
-        return listener.onMonthChange(startDate, endDate).map { it.toWeekViewEvent() }
+        return listener
+                .onMonthChange(startDate.toCalendar(), endDate.toCalendar())
+                .map { it.toWeekViewEvent() }
     }
 
 }

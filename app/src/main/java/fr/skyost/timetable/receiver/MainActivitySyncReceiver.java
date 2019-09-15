@@ -5,9 +5,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.appcompat.app.AlertDialog;
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.IntroActivity;
@@ -59,7 +60,7 @@ public class MainActivitySyncReceiver extends BroadcastReceiver {
 		switch(intent.getIntExtra(INTENT_RESPONSE, AuthenticationTask.ERROR)) {
 		case AuthenticationTask.SUCCESS:
 			// If success, we reload the current fragment.
-			activity.showFragment(activity.getCurrentDate());
+			activity.showDayFragment(activity.getCurrentDate());
 
 			// And we open a SnackBar message.
 			if(manualSync && !activity.isFinishing() && !activity.isDestroyed()) {

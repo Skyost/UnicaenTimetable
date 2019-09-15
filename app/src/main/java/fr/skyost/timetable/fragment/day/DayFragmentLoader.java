@@ -4,21 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
+import androidx.core.content.ContextCompat;
 
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 
 import org.joda.time.LocalDate;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
 
-import androidx.core.content.ContextCompat;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
+import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.LessonModel;
 
@@ -29,16 +33,16 @@ import fr.skyost.timetable.lesson.LessonModel;
 public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekViewDisplayable<Lesson>>> {
 
 	/**
-	 * The DayFragment.
+	 * The main activity.
 	 */
 
-	private final DayFragment fragment;
+	private final WeakReference<MainActivity> activity;
 
 	/**
-	 * An atomic reference to the fragment view.
+	 * An atomic reference to the week view.
 	 */
 
-	private final AtomicReference<View> view;
+	private final WeakReference<WeekView<Lesson>> weekView;
 
 	/**
 	 * The current date.
@@ -47,35 +51,54 @@ public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekVie
 	private final LocalDate date;
 
 	/**
-	 * Creates a new day fragment loader instance.
-	 *
-	 * @param fragment The fragment.
-	 * @param view The view.
+	 * The range to get.
 	 */
 
-	DayFragmentLoader(final DayFragment fragment, final View view, final LocalDate date) {
-		this.fragment = fragment;
-		this.view = new AtomicReference<>(view);
+	private final int range;
+
+	/**
+	 * Creates a new day fragment loader instance.
+	 *
+	 * @param activity The main activity.
+	 * @param weekView The week view.
+	 * @param date The date to load.
+	 */
+
+	DayFragmentLoader(final MainActivity activity, final WeekView<Lesson> weekView, final LocalDate date) {
+		this(activity, weekView, date, 1);
+	}
+
+	/**
+	 * Creates a new day fragment loader instance.
+	 *
+	 * @param activity The main activity.
+	 * @param weekView The week view.
+	 */
+
+	public DayFragmentLoader(final MainActivity activity, final WeekView<Lesson> weekView, final LocalDate date, final int range) {
+		this.activity = new WeakReference<>(activity);
+		this.weekView = new WeakReference<>(weekView);
 		this.date = date;
+		this.range = range;
 	}
 
 	@Override
 	protected List<WeekViewDisplayable<Lesson>> doInBackground(final LessonModel... models) {
-		final MainActivity activity = (MainActivity)fragment.getActivity();
+		final MainActivity activity = this.activity.get();
 		if(activity == null) {
 			return new ArrayList<>();
 		}
 
 		// Let's create our list of lessons !
-		final SharedPreferences activityPreferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		final SharedPreferences activityPreferences = activity.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 		final SharedPreferences colorPreferences = activity.getSharedPreferences(DayFragment.COLOR_PREFERENCES_FILE, Context.MODE_PRIVATE);
 		final int defaultColor = ContextCompat.getColor(activity, R.color.colorWeekViewEventDefault);
 
-		final List<Lesson> lessons = models[0].getLessons(date.toDateTimeAtStartOfDay(), date.toDateTimeAtStartOfDay().plusDays(1));
+		final List<Lesson> lessons = models[0].getLessons(date.toDateTimeAtStartOfDay(), date.toDateTimeAtStartOfDay().plusDays(range));
 		final List<WeekViewDisplayable<Lesson>> result = new ArrayList<>();
 
 		for(final Lesson lesson : lessons) {
-			lesson.loadColor(activityPreferences, colorPreferences, defaultColor);
+			lesson.loadColor(activity, activityPreferences, colorPreferences, defaultColor);
 			result.add(lesson);
 		}
 
@@ -84,17 +107,17 @@ public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekVie
 
 	@Override
 	protected void onPostExecute(final List<WeekViewDisplayable<Lesson>> lessons) {
-		final Calendar calendar = fragment.getDate().toDateTimeAtStartOfDay().toCalendar(Locale.getDefault());
-		final View view = this.view.get();
-		if(view == null) {
+		final Calendar min = date.toDateTimeAtStartOfDay().toCalendar(Locale.getDefault());
+		final Calendar max = date.plusDays(range - 1).toDateTimeAtStartOfDay().toCalendar(Locale.getDefault());
+		final WeekView<Lesson> weekView = this.weekView.get();
+		if(weekView == null) {
 			return;
 		}
 
 		// We create our WeekView and we make it visible.
-		final WeekView<Lesson> weekView = view.findViewById(R.id.main_day_weekview_day);
-		weekView.goToDate(calendar);
-		weekView.setMinDate(calendar);
-		weekView.setMaxDate(calendar);
+		weekView.goToDate(min);
+		weekView.setMinDate(min);
+		weekView.setMaxDate(max);
 		if(LocalDate.now().isEqual(date)) {
 			weekView.goToCurrentTime();
 		}
@@ -112,27 +135,35 @@ public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekVie
 		weekView.setVisibility(View.VISIBLE);
 
 		// We hide the progress bar.
-		view.findViewById(R.id.main_day_progressbar).setVisibility(View.GONE);
+		final ViewGroup parent = (ViewGroup)weekView.getParent();
+		int count = parent.getChildCount();
+		for (int i = 0; i < count; i++) {
+			View view = parent.getChildAt(i);
+			if (view instanceof ProgressBar) {
+				view.setVisibility(View.GONE);
+				return;
+			}
+		}
 	}
 
 	/**
-	 * Returns the fragment.
+	 * Returns the main activity.
 	 *
-	 * @return The fragment.
+	 * @return The main activity.
 	 */
 
-	public DayFragment getFragment() {
-		return fragment;
+	public MainActivity getActivity() {
+		return activity.get();
 	}
 
 	/**
-	 * Returns the view atomic reference.
+	 * Returns the week view.
 	 *
-	 * @return The view atomic reference.
+	 * @return The week view.
 	 */
 
-	public AtomicReference<View> getView() {
-		return view;
+	public WeekView<Lesson> getView() {
+		return weekView.get();
 	}
 
 	/**
@@ -143,5 +174,15 @@ public class DayFragmentLoader extends AsyncTask<LessonModel, Void, List<WeekVie
 
 	public LocalDate getDate() {
 		return date;
+	}
+
+	/**
+	 * Returns the range.
+	 *
+	 * @return The range.
+	 */
+
+	public int getRange() {
+		return range;
 	}
 }

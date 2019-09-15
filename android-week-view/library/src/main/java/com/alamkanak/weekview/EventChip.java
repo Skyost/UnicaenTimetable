@@ -52,14 +52,26 @@ class EventChip<T> {
         this.originalEvent = originalEvent;
     }
 
-    void draw(WeekViewConfig config, Canvas canvas) {
+    void draw(WeekViewConfigWrapper config, Canvas canvas) {
         draw(config, null, canvas);
     }
 
-    void draw(WeekViewConfig config, @Nullable StaticLayout textLayout, Canvas canvas) {
-        final float cornerRadius = config.eventCornerRadius;
-        final Paint backgroundPaint = getBackgroundPaint();
+    void draw(WeekViewConfigWrapper config, @Nullable StaticLayout textLayout, Canvas canvas) {
+        final float cornerRadius = config.getEventCornerRadius();
+        final Paint backgroundPaint = getBackgroundPaint(config);
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, backgroundPaint);
+
+        if (event.hasBorder()) {
+            final Paint borderPaint = getBorderPaint();
+            final int borderWidth = event.getBorderWidth();
+
+            final RectF adjustedRect = new RectF(
+                    rect.left + borderWidth / 2f,
+                    rect.top + borderWidth / 2f,
+                    rect.right - borderWidth / 2f,
+                    rect.bottom - borderWidth / 2f);
+            canvas.drawRoundRect(adjustedRect, cornerRadius, cornerRadius, borderPaint);
+        }
 
         if (event.isNotAllDay()) {
             drawCornersForMultiDayEvents(backgroundPaint, cornerRadius, canvas);
@@ -78,36 +90,66 @@ class EventChip<T> {
         if (event.startsOnEarlierDay(originalEvent)) {
             RectF topRect = new RectF(rect.left, rect.top, rect.right, rect.top + cornerRadius);
             canvas.drawRect(topRect, backgroundPaint);
-        } else if (event.endsOnLaterDay(originalEvent)) {
-            RectF bottomRect = new RectF(rect.left, rect.bottom - cornerRadius, rect.right, rect.bottom);
-            canvas.drawRect(bottomRect, backgroundPaint);
-        } else if (event.startsOnEarlierDayAndEndsOnLaterDay(originalEvent)) {
-            RectF topRect = new RectF(rect.left, rect.top, rect.right, rect.top + cornerRadius);
-            canvas.drawRect(topRect, backgroundPaint);
+        }
 
+        if (event.endsOnLaterDay(originalEvent)) {
             RectF bottomRect = new RectF(rect.left, rect.bottom - cornerRadius, rect.right, rect.bottom);
             canvas.drawRect(bottomRect, backgroundPaint);
         }
+
+        if (!event.hasBorder()) {
+            return;
+        }
+
+        final float borderWidth = event.getBorderWidth();
+        final float innerWidth = rect.width() - borderWidth * 2;
+
+        final float borderStartX = rect.left + borderWidth;
+        final float borderEndX = borderStartX + innerWidth;
+
+        if (event.startsOnEarlierDay(originalEvent)) {
+            // Remove top border stroke
+            final float borderStartY = rect.top;
+            final float borderEndY = borderStartY + borderWidth;
+            final RectF rect = new RectF(borderStartX, borderStartY, borderEndX, borderEndY);
+            canvas.drawRect(rect, backgroundPaint);
+        }
+
+        if (event.endsOnLaterDay(originalEvent)) {
+            // Remove bottom border stroke
+            final float borderEndY = rect.bottom;
+            final float borderStartY = borderEndY - borderWidth;
+            final RectF rect = new RectF(borderStartX, borderStartY, borderEndX, borderEndY);
+            canvas.drawRect(rect, backgroundPaint);
+        }
     }
 
-    private Paint getBackgroundPaint() {
+    private Paint getBackgroundPaint(WeekViewConfigWrapper config) {
         final Paint paint = new Paint();
-        paint.setColor(event.getColorOrDefault());
+        paint.setColor(event.getColorOrDefault(config));
         return paint;
     }
 
-    private void calculateTextHeightAndDrawTitle(WeekViewConfig config, Canvas canvas) {
-        final boolean negativeWidth = (rect.right - rect.left - config.eventPadding * 2) < 0;
-        final boolean negativeHeight = (rect.bottom - rect.top - config.eventPadding * 2) < 0;
+    private Paint getBorderPaint() {
+        final Paint paint = new Paint();
+        paint.setColor(event.getBorderColor());
+        paint.setStrokeWidth(event.getBorderWidth());
+        paint.setStyle(Paint.Style.STROKE);
+        return paint;
+    }
+
+    private void calculateTextHeightAndDrawTitle(WeekViewConfigWrapper config, Canvas canvas) {
+        final boolean negativeWidth = (rect.right - rect.left - config.getEventPadding() * 2) < 0;
+        final boolean negativeHeight = (rect.bottom - rect.top - config.getEventPadding() * 2) < 0;
         if (negativeWidth || negativeHeight) {
             return;
         }
 
         // Prepare the name of the event.
-		int titleLength = -1;
-		final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int titleLength = -1;
+        final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         if (event.getTitle() != null) {
-			titleLength = event.getTitle().length();
+            titleLength = event.getTitle().length();
             stringBuilder.append(event.getTitle());
             stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), 0, titleLength, 0);
         }
@@ -118,11 +160,11 @@ class EventChip<T> {
             stringBuilder.append(event.getLocation());
         }
 
-        final int availableHeight = (int) (rect.bottom - rect.top - config.eventPadding * 2);
-        final int availableWidth = (int) (rect.right - rect.left - config.eventPadding * 2);
+        final int availableHeight = (int) (rect.bottom - rect.top - config.getEventPadding() * 2);
+        final int availableWidth = (int) (rect.right - rect.left - config.getEventPadding() * 2);
 
         // Get text dimensions.
-        final TextPaint textPaint = config.drawingConfig.eventTextPaint;
+        final TextPaint textPaint = event.getTextPaint(config);
 
         textPaint.setColor(event.getTextColorOrDefault(config));
 
@@ -183,9 +225,9 @@ class EventChip<T> {
         }
     }
 
-    private void drawEventTitle(WeekViewConfig config, StaticLayout textLayout, Canvas canvas) {
+    private void drawEventTitle(WeekViewConfigWrapper config, StaticLayout textLayout, Canvas canvas) {
         canvas.save();
-        canvas.translate(rect.left + config.eventPadding, rect.top + config.eventPadding);
+        canvas.translate(rect.left + config.getEventPadding(), rect.top + config.getEventPadding());
         textLayout.draw(canvas);
         canvas.restore();
     }

@@ -1,39 +1,37 @@
 package com.alamkanak.weekview
 
+import org.threeten.bp.LocalDate
 import java.lang.Math.max
 import java.util.*
 
-internal class WeekViewViewState {
+internal class WeekViewViewState(
+        private val configWrapper: WeekViewConfigWrapper
+) {
 
-    var scrollToDay: Calendar? = null
+    var scrollToDay: LocalDate? = null
     var scrollToHour: Int? = null
 
     var isFirstDraw = true
-
-    @JvmField
     var areDimensionsInvalid = true
 
-    var firstVisibleDay: Calendar? = null
-    var lastVisibleDay: Calendar? = null
+    var firstVisibleDay: LocalDate? = null
+    var lastVisibleDay: LocalDate? = null
 
     var shouldRefreshEvents: Boolean = false
-
-    @JvmField
     var requiresPostInvalidateOnAnimation: Boolean = false
 
-    fun update(config: WeekViewConfig, listener: UpdateListener) {
-        val drawingConfig = config.drawingConfig
-        val totalHeaderHeight = drawingConfig.getTotalHeaderHeight(config)
+    fun update(listener: UpdateListener) {
+        val totalHeaderHeight = configWrapper.getTotalHeaderHeight()
 
         val totalHeight = WeekView.getViewHeight()
-        val dynamicHourHeight = ((totalHeight - totalHeaderHeight) / config.hoursPerDay).toInt()
+        val dynamicHourHeight = ((totalHeight - totalHeaderHeight) / configWrapper.hoursPerDay).toInt()
 
-        config.effectiveMinHourHeight = max(config.minHourHeight, dynamicHourHeight)
+        configWrapper.effectiveMinHourHeight = max(configWrapper.minHourHeight, dynamicHourHeight)
 
         areDimensionsInvalid = false
         scrollToDay?.let {
             isFirstDraw = false
-            listener.goToDate(it)
+            listener.goToDate(it.toCalendar())
         }
 
         areDimensionsInvalid = false

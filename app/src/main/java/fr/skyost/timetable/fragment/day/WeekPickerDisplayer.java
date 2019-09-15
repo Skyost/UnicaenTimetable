@@ -2,13 +2,14 @@ package fr.skyost.timetable.fragment.day;
 
 import android.os.AsyncTask;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AlertDialog;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.LessonModel;
@@ -65,7 +66,7 @@ public class WeekPickerDisplayer extends AsyncTask<DayFragment, Void, AlertDialo
 				.setSingleChoiceItems(formattedWeeks.toArray(new String[0]), availableWeeks.indexOf(fragment.getDate().withDayOfWeek(DateTimeConstants.MONDAY)), (dialog, id) -> {
 					// We show the fragment of the selected date.
 					final LocalDate selected = availableWeeks.get(id).withDayOfWeek(fragment.getDate().getDayOfWeek());
-					activity.showFragment(selected);
+					activity.showDayFragment(selected);
 					dialog.dismiss();
 				});
 	}

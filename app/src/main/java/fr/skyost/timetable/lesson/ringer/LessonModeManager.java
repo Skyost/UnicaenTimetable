@@ -13,16 +13,18 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
+import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.application.TimetableApplication;
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.utils.Utils;
@@ -170,7 +172,7 @@ public class LessonModeManager extends BroadcastReceiver {
 	 */
 
 	public static boolean isEnabled(final Context context) {
-		return !context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "0").equals("0");
+		return !context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(SettingsActivity.PREFERENCES_LESSONS_RINGER_MODE, "0").equals("0");
 	}
 
 	/**
@@ -318,7 +320,7 @@ public class LessonModeManager extends BroadcastReceiver {
 
 		// We read the preference value.
 		int mode = manager.getRingerMode();
-		switch(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1")) {
+		switch(context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(SettingsActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1")) {
 		case "1":
 			mode = AudioManager.RINGER_MODE_SILENT;
 			break;
@@ -354,7 +356,7 @@ public class LessonModeManager extends BroadcastReceiver {
 		final PendingIntent disableMode = PendingIntent.getService(context, 0, new Intent(context, NotificationAction.class), PendingIntent.FLAG_ONE_SHOT);
 
 		// And we create the message.
-		final int value = Integer.parseInt(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1"));
+		final int value = Integer.parseInt(context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(SettingsActivity.PREFERENCES_LESSONS_RINGER_MODE, "-1"));
 		final String message = context.getString(R.string.notification_lessonsringermode_message, context.getResources().getStringArray(R.array.preferences_application_lessonsringermode_keys)[value].toUpperCase());
 
 		// We build our notification.

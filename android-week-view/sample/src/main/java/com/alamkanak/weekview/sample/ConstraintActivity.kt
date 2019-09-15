@@ -2,12 +2,14 @@ package com.alamkanak.weekview.sample
 
 import android.graphics.RectF
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.SeekBar
 import android.widget.Toast
 import com.alamkanak.weekview.*
 import com.alamkanak.weekview.sample.apiclient.Event
 import com.alamkanak.weekview.sample.database.EventsDatabase
 import com.alamkanak.weekview.sample.database.FakeEventsDatabase
+import kotlinx.android.synthetic.main.activity_constraint.*
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -11,18 +11,24 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
+import org.threeten.bp.LocalDate;
+
+import java.util.Calendar;
+import java.util.List;
+
+import static com.alamkanak.weekview.Constants.UNINITIALIZED;
+import static com.alamkanak.weekview.DateUtils.toCalendar;
+import static com.alamkanak.weekview.DateUtils.toLocalDate;
 import static com.alamkanak.weekview.DateUtils.today;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
-import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR_OF_DAY;
 
 /**
@@ -35,10 +41,8 @@ public final class WeekView<T> extends View
     private static int width;
     private static int height;
 
-    private final WeekViewConfig config;
-    private final WeekViewDrawingConfig drawConfig;
+    private final WeekViewConfigWrapper configWrapper;
     private final WeekViewCache<T> cache;
-
     private final WeekViewViewState viewState;
     private final WeekViewGestureHandler<T> gestureHandler;
 
@@ -62,27 +66,28 @@ public final class WeekView<T> extends View
 
     public WeekView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        AndroidThreeTen.init(context);
 
-        config = new WeekViewConfig(context, attrs);
-        drawConfig = new WeekViewDrawingConfig(context, config);
-        config.drawingConfig = drawConfig;
+        WeekViewConfig config = new WeekViewConfig(context, attrs);
+        configWrapper = new WeekViewConfigWrapper(context, config);
 
-        cache = new WeekViewCache<>();
-        viewState = new WeekViewViewState();
+        WeekViewEventSplitter<T> eventSplitter = new WeekViewEventSplitter<>(configWrapper);
+        cache = new WeekViewCache<>(eventSplitter);
+        viewState = new WeekViewViewState(configWrapper);
 
-        gestureHandler = new WeekViewGestureHandler<>(context, this, config, cache);
+        gestureHandler = new WeekViewGestureHandler<>(context, this, configWrapper, cache);
 
-        eventsDrawer = new EventsDrawer<>(config);
-        timeColumnDrawer = new TimeColumnDrawer(config);
+        eventsDrawer = new EventsDrawer<>(configWrapper);
+        timeColumnDrawer = new TimeColumnDrawer(configWrapper);
 
-        headerRowDrawer = new HeaderRowDrawer<>(config, cache, viewState);
-        dayLabelDrawer = new DayLabelDrawer(config);
+        headerRowDrawer = new HeaderRowDrawer<>(configWrapper, cache, viewState);
+        dayLabelDrawer = new DayLabelDrawer(configWrapper);
 
-        dayBackgroundDrawer = new DayBackgroundDrawer(config);
-        backgroundGridDrawer = new BackgroundGridDrawer(config);
-        nowLineDrawer = new NowLineDrawer(config);
+        dayBackgroundDrawer = new DayBackgroundDrawer(configWrapper);
+        backgroundGridDrawer = new BackgroundGridDrawer(configWrapper);
+        nowLineDrawer = new NowLineDrawer(configWrapper);
 
-        eventChipsProvider = new EventChipsProvider<>(config, cache, viewState);
+        eventChipsProvider = new EventChipsProvider<>(configWrapper, cache, viewState);
         eventChipsProvider.setWeekViewLoader(getWeekViewLoader());
     }
 
@@ -97,27 +102,34 @@ public final class WeekView<T> extends View
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState, config.numberOfVisibleDays);
+        final int visibleDays = configWrapper.getNumberOfVisibleDays();
+        final LocalDate firstDate = viewState.getFirstVisibleDay();
+        return new SavedState(superState, visibleDays, firstDate);
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
-        config.setNumberOfVisibleDays(savedState.numberOfVisibleDays);
+
+        if (configWrapper.getRestoreNumberOfVisibleDays()) {
+            configWrapper.setNumberOfVisibleDays(savedState.numberOfVisibleDays);
+        }
+
+        Calendar firstVisibleDay = toCalendar(savedState.firstVisibleDate);
+        goToDate(firstVisibleDay);
     }
 
     @Override
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
-        viewState.areDimensionsInvalid = true;
+        viewState.setAreDimensionsInvalid(true);
 
         WeekView.width = width;
         WeekView.height = height;
 
-        if (config.showCompleteDay) {
-          config.hourHeight = (height - drawConfig.headerHeight) / config.getHoursPerDay();
-          drawConfig.newHourHeight = config.hourHeight;
+        if (configWrapper.getShowCompleteDay()) {
+            configWrapper.updateHourHeight(height);
         }
     }
 
@@ -127,22 +139,23 @@ public final class WeekView<T> extends View
         final boolean isFirstDraw = viewState.isFirstDraw();
 
         calculateWidthPerDay();
+        viewState.update(this);
 
-        viewState.update(config, this);
-
-        config.drawingConfig.refreshAfterZooming(config);
-        config.drawingConfig.updateVerticalOrigin(config);
+        configWrapper.refreshAfterZooming();
+        configWrapper.updateVerticalOrigin();
 
         notifyScrollListeners();
         prepareEventDrawing(canvas);
 
         if (viewState.isFirstDraw()) {
-            config.drawingConfig.moveCurrentOriginIfFirstDraw(config);
+            configWrapper.moveCurrentOriginIfFirstDraw();
             viewState.setFirstDraw(false);
         }
 
-        final DrawingContext drawingContext = DrawingContext.create(config);
-        eventChipsProvider.loadEventsIfNecessary(this, config, drawingContext.getDateRange());
+        final DrawingContext drawingContext = DrawingContext.create(configWrapper);
+        if (!isInEditMode()) {
+            eventChipsProvider.loadEventsIfNecessary();
+        }
 
         List<Pair<EventChip<T>, StaticLayout>> allDayEvents =
                 eventsDrawer.prepareDrawAllDayEvents(cache.getAllDayEventChips(), drawingContext);
@@ -164,60 +177,60 @@ public final class WeekView<T> extends View
             invalidate();
         }
 
-        if (viewState.requiresPostInvalidateOnAnimation) {
-            viewState.requiresPostInvalidateOnAnimation = false;
+        if (viewState.getRequiresPostInvalidateOnAnimation()) {
+            viewState.setRequiresPostInvalidateOnAnimation(false);
             ViewCompat.postInvalidateOnAnimation(this);
         }
     }
 
     private void notifyScrollListeners() {
-        // Iterate through each day.
-        final Calendar oldFirstVisibleDay = viewState.getFirstVisibleDay();
-        final Calendar today = today();
+        final LocalDate oldFirstVisibleDay = viewState.getFirstVisibleDay();
 
-        Calendar firstVisibleDay = (Calendar) today.clone();
-        Calendar lastVisibleDay = (Calendar) today.clone();
+        final float totalDayWidth = configWrapper.getTotalDayWidth();
+        final int visibleDays = configWrapper.getNumberOfVisibleDays();
+        final int delta = (int) round(ceil(configWrapper.getCurrentOrigin().x / totalDayWidth)) * -1;
 
-        final float totalDayWidth = config.getTotalDayWidth();
-        final int delta = (int) round(ceil(drawConfig.currentOrigin.x / totalDayWidth)) * -1;
-
-        firstVisibleDay.add(DATE, delta);
-        lastVisibleDay.add(DATE, config.numberOfVisibleDays - 1 + delta);
+        LocalDate firstVisibleDay = today().plusDays(delta);
+        LocalDate lastVisibleDay = firstVisibleDay.plusDays(visibleDays - 1);
 
         viewState.setFirstVisibleDay(firstVisibleDay);
         viewState.setLastVisibleDay(lastVisibleDay);
 
         final boolean hasFirstVisibleDayChanged = !firstVisibleDay.equals(oldFirstVisibleDay);
         if (hasFirstVisibleDayChanged && getScrollListener() != null) {
-            getScrollListener().onFirstVisibleDayChanged(firstVisibleDay, oldFirstVisibleDay);
+            notifyVisibleDayChanged(firstVisibleDay, oldFirstVisibleDay);
         }
     }
 
+    private void notifyVisibleDayChanged(LocalDate newLocalDate, @Nullable LocalDate oldLocalDate) {
+        Calendar newDate = toCalendar(newLocalDate);
+        Calendar oldDate = null;
+
+        if (oldLocalDate != null) {
+            oldDate = toCalendar(oldLocalDate);
+        }
+
+        getScrollListener().onFirstVisibleDayChanged(newDate, oldDate);
+    }
+
     private void prepareEventDrawing(Canvas canvas) {
-        // Clear the cache for event rectangles.
         cache.clearEventChipsCache();
         canvas.save();
         clipEventsRect(canvas);
     }
 
     private void calculateWidthPerDay() {
-        // Initialize drawConfig.timeColumnWidth at first call
-        if (drawConfig.timeColumnWidth == 0) {
-            drawConfig.timeColumnWidth = drawConfig.timeTextWidth + config.timeColumnPadding * 2;
+        if (configWrapper.getTimeColumnWidth() == UNINITIALIZED) {
+            configWrapper.calculateTimeColumnWidth();
         }
-        // Calculate the available width for each day
-        drawConfig.widthPerDay = getWidth()
-                - drawConfig.timeColumnWidth
-                - config.columnGap * (config.numberOfVisibleDays - 1);
-        drawConfig.widthPerDay = drawConfig.widthPerDay / config.numberOfVisibleDays;
+
+        configWrapper.calculateWidthPerDay(getWidth());
     }
 
     private void clipEventsRect(Canvas canvas) {
         final int width = WeekView.getViewWidth();
         final int height = WeekView.getViewHeight();
-
-        // Clip to paint events only.
-        canvas.clipRect(drawConfig.timeColumnWidth, drawConfig.headerHeight, width, height);
+        canvas.clipRect(configWrapper.getTimeColumnWidth(), configWrapper.getHeaderHeight(), width, height);
     }
 
     @Override
@@ -243,7 +256,7 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getFirstDayOfWeek() {
-        return config.firstDayOfWeek;
+        return configWrapper.getFirstDayOfWeek();
     }
 
     /**
@@ -260,7 +273,7 @@ public final class WeekView<T> extends View
      *                       {@link java.util.Calendar#FRIDAY}.
      */
     public void setFirstDayOfWeek(int firstDayOfWeek) {
-        config.firstDayOfWeek = firstDayOfWeek;
+        configWrapper.setFirstDayOfWeek(firstDayOfWeek);
         invalidate();
     }
 
@@ -270,7 +283,7 @@ public final class WeekView<T> extends View
      * @return The number of visible days in a week.
      */
     public int getNumberOfVisibleDays() {
-        return config.numberOfVisibleDays;
+        return configWrapper.getNumberOfVisibleDays();
     }
 
     /**
@@ -279,7 +292,7 @@ public final class WeekView<T> extends View
      * @param numberOfVisibleDays The number of visible days in a week.
      */
     public void setNumberOfVisibleDays(int numberOfVisibleDays) {
-        config.setNumberOfVisibleDays(numberOfVisibleDays);
+        configWrapper.setNumberOfVisibleDays(numberOfVisibleDays);
 
         DateTimeInterpreter interpreter = getDateTimeInterpreter();
         if (interpreter instanceof DefaultDateTimeInterpreter) {
@@ -288,7 +301,7 @@ public final class WeekView<T> extends View
             defaultInterpreter.setNumberOfDays(numberOfVisibleDays);
         }
 
-        Calendar firstVisibleDay = viewState.getFirstVisibleDay();
+        LocalDate firstVisibleDay = viewState.getFirstVisibleDay();
         if (firstVisibleDay != null) {
             viewState.setScrollToDay(firstVisibleDay);
         }
@@ -302,11 +315,11 @@ public final class WeekView<T> extends View
     }
 
     public boolean isShowFirstDayOfWeekFirst() {
-        return config.showFirstDayOfWeekFirst;
+        return configWrapper.getShowFirstDayOfWeekFirst();
     }
 
     public void setShowFirstDayOfWeekFirst(boolean show) {
-        config.showFirstDayOfWeekFirst = show;
+        configWrapper.setShowFirstDayOfWeekFirst(show);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,38 +329,38 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean getShowHeaderRowBottomLine() {
-        return config.showHeaderRowBottomLine;
+        return configWrapper.getShowHeaderRowBottomLine();
     }
 
-    public void setShowHeaderRowBottomLine(boolean showHeaderRowBottomLine) {
-        config.showHeaderRowBottomLine = showHeaderRowBottomLine;
+    public void setShowHeaderRowBottomLine(boolean show) {
+        configWrapper.setShowHeaderRowBottomLine(show);
         invalidate();
     }
 
     public int getHeaderRowBottomLineColor() {
-        return config.headerRowBottomLineColor;
+        return configWrapper.getHeaderRowBottomLinePaint().getColor();
     }
 
-    public void setHeaderRowBottomLineColor(int headerRowBottomLineColor) {
-        config.headerRowBottomLineColor = headerRowBottomLineColor;
+    public void setHeaderRowBottomLineColor(int color) {
+        configWrapper.getHeaderRowBottomLinePaint().setColor(color);
         invalidate();
     }
 
     public int getHeaderRowBottomLineWidth() {
-        return config.headerRowBottomLineWidth;
+        return (int) configWrapper.getHeaderRowBottomLinePaint().getStrokeWidth();
     }
 
-    public void setHeaderRowBottomLineWidth(int headerRowBottomLineWidth) {
-        config.headerRowBottomLineWidth= headerRowBottomLineWidth;
+    public void setHeaderRowBottomLineWidth(int width) {
+        configWrapper.getHeaderRowBottomLinePaint().setStrokeWidth(width);
         invalidate();
     }
 
     public int getTodayHeaderTextColor() {
-        return config.todayHeaderTextColor;
+        return configWrapper.getTodayHeaderTextColor();
     }
 
-    public void setTodayHeaderTextColor(int todayHeaderTextColor) {
-        config.setTodayHeaderTextColor(todayHeaderTextColor);
+    public void setTodayHeaderTextColor(int color) {
+        configWrapper.setTodayHeaderTextColor(color);
         invalidate();
     }
 
@@ -358,65 +371,65 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getTimeColumnPadding() {
-        return config.timeColumnPadding;
+        return configWrapper.getTimeColumnPadding();
     }
 
     public void setTimeColumnPadding(int timeColumnPadding) {
-        config.timeColumnPadding = timeColumnPadding;
+        configWrapper.setTimeColumnPadding(timeColumnPadding);
         invalidate();
     }
 
     public int getTimeColumnTextColor() {
-        return config.timeColumnTextColor;
+        return configWrapper.getTimeColumnTextColor();
     }
 
-    public void setTimeColumnTextColor(int timeColumnTextColor) {
-        config.setTimeColumnTextColor(timeColumnTextColor);
+    public void setTimeColumnTextColor(int color) {
+        configWrapper.setTimeColumnTextColor(color);
         invalidate();
     }
 
     public int getTimeColumnBackgroundColor() {
-        return config.timeColumnBackgroundColor;
+        return configWrapper.getTimeColumnBackgroundColor();
     }
 
-    public void setTimeColumnBackgroundColor(int timeColumnBackgroundColor) {
-        config.setTimeColumnBackgroundColor(timeColumnBackgroundColor);
+    public void setTimeColumnBackgroundColor(int color) {
+        configWrapper.setTimeColumnBackgroundColor(color);
         invalidate();
     }
 
-    public int getTimeColumTextSize() {
-        return config.timeColumnTextSize;
+    public int getTimeColumnTextSize() {
+        return configWrapper.getTimeColumnTextSize();
     }
 
     public void setTimeColumnTextSize(int textSize) {
-        config.setTimeColumnTextSize(textSize);
+        configWrapper.setTimeColumnTextSize(textSize);
         invalidate();
     }
 
     public boolean isShowMidnightHour() {
-        return config.showMidnightHour;
+        return configWrapper.getShowMidnightHour();
     }
 
-    public void setShowMidnightHour(boolean showMidnightHour) {
-        config.showMidnightHour = showMidnightHour;
+    public void setShowMidnightHour(boolean show) {
+        configWrapper.setShowMidnightHour(show);
         invalidate();
     }
 
     public boolean showTimeColumnHourSeparator() {
-        return config.showTimeColumnHourSeparator;
+        return configWrapper.getShowTimeColumnHourSeparator();
     }
 
     public void setShowTimeColumnHourSeparator(boolean show) {
-        config.showTimeColumnHourSeparator = show;
+        configWrapper.setShowTimeColumnHourSeparator(show);
         invalidate();
     }
 
     public int getTimeColumnHoursInterval() {
-        return config.timeColumnHoursInterval;
+        return configWrapper.getTimeColumnHoursInterval();
     }
 
     public void setTimeColumnHoursInterval(int interval) {
-        config.timeColumnHoursInterval = interval;
+        configWrapper.setTimeColumnHoursInterval(interval);
         invalidate();
     }
 
@@ -427,29 +440,29 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean getShowTimeColumnSeparator() {
-        return config.showTimeColumnSeparator;
+        return configWrapper.getShowTimeColumnSeparator();
     }
 
-    public void setShowTimeColumnSeparator(boolean showTimeColumnSeparator) {
-        config.showTimeColumnSeparator = showTimeColumnSeparator;
+    public void setShowTimeColumnSeparator(boolean show) {
+        configWrapper.setShowTimeColumnSeparator(show);
         invalidate();
     }
 
     public int getTimeColumnSeparatorColor() {
-        return config.timeColumnSeparatorColor;
+        return configWrapper.getTimeColumnSeparatorColor();
     }
 
-    public void setTimeColumnSeparatorColor(int timeColumnSeparatorColor) {
-        config.timeColumnSeparatorColor = timeColumnSeparatorColor;
+    public void setTimeColumnSeparatorColor(int color) {
+        configWrapper.setTimeColumnSeparatorColor(color);
         invalidate();
     }
 
     public int getTimeColumnSeparatorWidth() {
-        return config.timeColumnSeparatorStrokeWidth;
+        return configWrapper.getTimeColumnSeparatorStrokeWidth();
     }
 
-    public void setTimeColumnSeparatorWidth(int timeColumnSeparatorStrokeWidth) {
-        config.timeColumnSeparatorStrokeWidth = timeColumnSeparatorStrokeWidth;
+    public void setTimeColumnSeparatorWidth(int width) {
+        configWrapper.setTimeColumnSeparatorStrokeWidth(width);
         invalidate();
     }
 
@@ -460,38 +473,38 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getHeaderRowPadding() {
-        return config.headerRowPadding;
+        return configWrapper.getHeaderRowPadding();
     }
 
-    public void setHeaderRowPadding(int headerRowPadding) {
-        config.headerRowPadding = headerRowPadding;
+    public void setHeaderRowPadding(int padding) {
+        configWrapper.setHeaderRowPadding(padding);
         invalidate();
     }
 
     public int getHeaderRowBackgroundColor() {
-        return config.headerRowBackgroundColor;
+        return configWrapper.getHeaderRowBackgroundColor();
     }
 
-    public void setHeaderRowBackgroundColor(int headerRowBackgroundColor) {
-        config.setHeaderRowBackgroundColor(headerRowBackgroundColor);
+    public void setHeaderRowBackgroundColor(int color) {
+        configWrapper.setHeaderRowBackgroundColor(color);
         invalidate();
     }
 
     public int getHeaderRowTextColor() {
-        return config.headerRowTextColor;
+        return configWrapper.getHeaderRowTextColor();
     }
 
-    public void setHeaderRowTextColor(int headerRowTextColor) {
-        config.setHeaderRowTextColor(headerRowTextColor);
+    public void setHeaderRowTextColor(int color) {
+        configWrapper.setHeaderRowTextColor(color);
         invalidate();
     }
 
     public int getHeaderRowTextSize() {
-        return config.headerRowTextSize;
+        return configWrapper.getHeaderRowTextSize();
     }
 
     public void setHeaderRowTextSize(int textSize) {
-        config.setHeaderRowTextSize(textSize);
+        configWrapper.setHeaderRowTextSize(textSize);
         invalidate();
     }
 
@@ -502,60 +515,62 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getEventCornerRadius() {
-        return config.eventCornerRadius;
+        return configWrapper.getEventCornerRadius();
     }
 
     /**
      * Set corner radius for event rect.
      *
-     * @param eventCornerRadius the radius in px.
+     * @param radius the radius in px.
      */
-    public void setEventCornerRadius(int eventCornerRadius) {
-        config.eventCornerRadius = eventCornerRadius;
+    public void setEventCornerRadius(int radius) {
+        configWrapper.setEventCornerRadius(radius);
     }
 
     public int getEventTextSize() {
-        return config.eventTextSize;
+        return (int) configWrapper.getEventTextPaint().getTextSize();
     }
 
     public int getAllDayEventTextSize() {
-        return config.allDayEventTextSize;
+        return (int) configWrapper.getAllDayEventTextPaint().getTextSize();
     }
 
-    public void setEventTextSize(int eventTextSize) {
-        config.setEventTextSize(eventTextSize);
+    public void setEventTextSize(int size) {
+        configWrapper.getEventTextPaint().setTextSize(size);
+        //config.setEventTextSize(eventTextSize);
         invalidate();
     }
 
-    public void setAllDayEventTextSize(int allDayEventTextSize) {
-        config.setAllDayEventTextSize(allDayEventTextSize);
+    public void setAllDayEventTextSize(int size) {
+        configWrapper.getAllDayEventTextPaint().setTextSize(size);
+        //config.setAllDayEventTextSize(allDayEventTextSize);
         invalidate();
     }
 
     public int getEventTextColor() {
-        return config.eventTextColor;
+        return configWrapper.getEventTextPaint().getColor();
     }
 
-    public void setEventTextColor(int eventTextColor) {
-        config.setEventTextColor(eventTextColor);
+    public void setEventTextColor(int color) {
+        configWrapper.getEventTextPaint().setColor(color);
         invalidate();
     }
 
     public int getEventPadding() {
-        return config.eventPadding;
+        return configWrapper.getEventPadding();
     }
 
-    public void setEventPadding(int eventPadding) {
-        config.eventPadding = eventPadding;
+    public void setEventPadding(int padding) {
+        configWrapper.setEventPadding(padding);
         invalidate();
     }
 
     public int getDefaultEventColor() {
-        return config.defaultEventColor;
+        return configWrapper.getDefaultEventColor();
     }
 
-    public void setDefaultEventColor(int defaultEventColor) {
-        config.defaultEventColor = defaultEventColor;
+    public void setDefaultEventColor(int color) {
+        configWrapper.setDefaultEventColor(color);
         invalidate();
     }
 
@@ -566,40 +581,40 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getColumnGap() {
-        return config.columnGap;
+        return configWrapper.getColumnGap();
     }
 
-    public void setColumnGap(int columnGap) {
-        config.columnGap = columnGap;
+    public void setColumnGap(int gap) {
+        configWrapper.setColumnGap(gap);
         invalidate();
     }
 
     public int getOverlappingEventGap() {
-        return config.overlappingEventGap;
+        return configWrapper.getOverlappingEventGap();
     }
 
     /**
      * Set the gap between overlapping events.
      *
-     * @param overlappingEventGap The gap between overlapping events.
+     * @param gap The gap between overlapping events.
      */
-    public void setOverlappingEventGap(int overlappingEventGap) {
-        config.overlappingEventGap = overlappingEventGap;
+    public void setOverlappingEventGap(int gap) {
+        configWrapper.setOverlappingEventGap(gap);
         invalidate();
     }
 
     public int getEventMarginVertical() {
-        return config.eventMarginVertical;
+        return configWrapper.getEventMarginVertical();
     }
 
     /**
      * Set the top and bottom margin of the event. The event will release this margin from the top
      * and bottom edge. This margin is useful for differentiation consecutive events.
      *
-     * @param eventMarginVertical The top and bottom margin.
+     * @param margin The top and bottom margin.
      */
-    public void setEventMarginVertical(int eventMarginVertical) {
-        config.eventMarginVertical = eventMarginVertical;
+    public void setEventMarginVertical(int margin) {
+        configWrapper.setEventMarginVertical(margin);
         invalidate();
     }
 
@@ -607,15 +622,15 @@ public final class WeekView<T> extends View
      * Set the start and end margin of the event. The event will release this margin from the start
      * and end edge.
      *
-     * @param eventMarginHorizontal The start and end margin.
+     * @param margin The start and end margin.
      */
-    public void setEventMarginHorizontal(int eventMarginHorizontal) {
-        config.eventMarginHorizontal = eventMarginHorizontal;
+    public void setEventMarginHorizontal(int margin) {
+        configWrapper.setEventMarginHorizontal(margin);
         invalidate();
     }
 
     public int getEventMarginHorizontal() {
-        return config.eventMarginHorizontal;
+        return configWrapper.getEventMarginHorizontal();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -625,20 +640,20 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getDayBackgroundColor() {
-        return config.dayBackgroundColor;
+        return configWrapper.getDayBackgroundPaint().getColor();
     }
 
-    public void setDayBackgroundColor(int dayBackgroundColor) {
-        config.setDayBackgroundColor(dayBackgroundColor);
+    public void setDayBackgroundColor(int color) {
+        configWrapper.getDayBackgroundPaint().setColor(color);
         invalidate();
     }
 
     public int getTodayBackgroundColor() {
-        return config.todayBackgroundColor;
+        return configWrapper.getTodayBackgroundPaint().getColor();
     }
 
-    public void setTodayBackgroundColor(int todayBackgroundColor) {
-        config.setTodayBackgroundColor(todayBackgroundColor);
+    public void setTodayBackgroundColor(int color) {
+        configWrapper.getTodayBackgroundPaint().setColor(color);
         invalidate();
     }
 
@@ -650,7 +665,7 @@ public final class WeekView<T> extends View
      * @return True if weekends should have different background colors.
      */
     public boolean isShowDistinctWeekendColor() {
-        return config.showDistinctWeekendColor;
+        return configWrapper.getShowDistinctWeekendColor();
     }
 
     /**
@@ -658,10 +673,10 @@ public final class WeekView<T> extends View
      * color. The weekend background colors are defined by the attributes
      * `futureWeekendBackgroundColor` and `pastWeekendBackgroundColor`.
      *
-     * @param showDistinctWeekendColor True if weekends should have different background colors.
+     * @param show True if weekends should have different background colors.
      */
-    public void setShowDistinctWeekendColor(boolean showDistinctWeekendColor) {
-        config.showDistinctWeekendColor = showDistinctWeekendColor;
+    public void setShowDistinctWeekendColor(boolean show) {
+        configWrapper.setShowDistinctWeekendColor(show);
         invalidate();
     }
 
@@ -673,7 +688,7 @@ public final class WeekView<T> extends View
      * @return True if past and future days should have two different background colors.
      */
     public boolean isShowDistinctPastFutureColor() {
-        return config.showDistinctPastFutureColor;
+        return configWrapper.getShowDistinctPastFutureColor();
     }
 
     /**
@@ -681,11 +696,11 @@ public final class WeekView<T> extends View
      * color. The past and future day colors are defined by the attributes `futureBackgroundColor`
      * and `pastBackgroundColor`.
      *
-     * @param showDistinctPastFutureColor True if past and future should have two different
+     * @param color True if past and future should have two different
      *                                    background colors.
      */
-    public void setShowDistinctPastFutureColor(boolean showDistinctPastFutureColor) {
-        config.showDistinctPastFutureColor = showDistinctPastFutureColor;
+    public void setShowDistinctPastFutureColor(boolean color) {
+        configWrapper.setShowDistinctPastFutureColor(color);
         invalidate();
     }
 
@@ -698,38 +713,39 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public float getHourHeight() {
-        return config.hourHeight;
+        return configWrapper.getHourHeight();
     }
 
     public void setHourHeight(float hourHeight) {
-        config.drawingConfig.newHourHeight = hourHeight;
+        configWrapper.setNewHourHeight(hourHeight);
+        // config.drawingConfig.newHourHeight = hourHeight;
         invalidate();
     }
 
     public int getMinHourHeight() {
-        return config.minHourHeight;
+        return configWrapper.getMinHourHeight();
     }
 
-    public void setMinHourHeight(int minHourHeight) {
-        config.minHourHeight = minHourHeight;
+    public void setMinHourHeight(int height) {
+        configWrapper.setMinHourHeight(height);
         invalidate();
     }
 
     public int getMaxHourHeight() {
-        return config.maxHourHeight;
+        return configWrapper.getMaxHourHeight();
     }
 
-    public void setMaxHourHeight(int maxHourHeight) {
-        config.maxHourHeight = maxHourHeight;
+    public void setMaxHourHeight(int height) {
+        configWrapper.setMaxHourHeight(height);
         invalidate();
     }
 
     public boolean isShowCompleteDay() {
-        return config.showCompleteDay;
+        return configWrapper.getShowCompleteDay();
     }
 
-    public void setShowCompleteDay(boolean showCompleteDay) {
-        config.showCompleteDay = true;
+    public void setShowCompleteDay(boolean show) {
+        configWrapper.setShowCompleteDay(show);
         invalidate();
     }
 
@@ -746,17 +762,17 @@ public final class WeekView<T> extends View
      * @return True if "now" line should be displayed.
      */
     public boolean isShowNowLine() {
-        return config.showNowLine;
+        return configWrapper.getShowNowLine();
     }
 
     /**
      * Set whether "now" line should be displayed. "Now" line is defined by the attributes
      * `nowLineColor` and `nowLineStrokeWidth`.
      *
-     * @param showNowLine True if "now" line should be displayed.
+     * @param show True if "now" line should be displayed.
      */
-    public void setShowNowLine(boolean showNowLine) {
-        config.showNowLine = showNowLine;
+    public void setShowNowLine(boolean show) {
+        configWrapper.setShowNowLine(show);
         invalidate();
     }
 
@@ -766,16 +782,16 @@ public final class WeekView<T> extends View
      * @return The color of the "now" line.
      */
     public int getNowLineColor() {
-        return config.nowLineColor;
+        return configWrapper.getNowLinePaint().getColor();
     }
 
     /**
      * Set the "now" line color.
      *
-     * @param nowLineColor The color of the "now" line.
+     * @param color The color of the "now" line.
      */
-    public void setNowLineColor(int nowLineColor) {
-        config.nowLineColor = nowLineColor;
+    public void setNowLineColor(int color) {
+        configWrapper.getNowLinePaint().setColor(color);
         invalidate();
     }
 
@@ -785,16 +801,16 @@ public final class WeekView<T> extends View
      * @return The thickness of the "now" line.
      */
     public int getNowLineStrokeWidth() {
-        return config.nowLineStrokeWidth;
+        return (int) configWrapper.getNowLinePaint().getStrokeWidth();
     }
 
     /**
      * Set the "now" line thickness.
      *
-     * @param nowLineStrokeWidth The thickness of the "now" line.
+     * @param width The thickness of the "now" line.
      */
-    public void setNowLineStrokeWidth(int nowLineStrokeWidth) {
-        config.nowLineStrokeWidth = nowLineStrokeWidth;
+    public void setNowLineStrokeWidth(int width) {
+        configWrapper.getNowLinePaint().setStrokeWidth(width);
         invalidate();
     }
 
@@ -810,16 +826,16 @@ public final class WeekView<T> extends View
      * @return True if "now" line dot is be displayed.
      */
     public boolean isShowNowLineDot() {
-        return config.showNowLineDot;
+        return configWrapper.getShowNowLineDot();
     }
 
     /**
      * Set whether the dot on the left-hand side of the "now" line should be displayed
      *
-     * @param showNowLineDot True if "now" line dot should be displayed.
+     * @param show True if "now" line dot should be displayed.
      */
-    public void setShowNowLineDot(boolean showNowLineDot) {
-        config.showNowLineDot = showNowLineDot;
+    public void setShowNowLineDot(boolean show) {
+        configWrapper.setShowNowLineDot(show);
         invalidate();
     }
 
@@ -829,16 +845,16 @@ public final class WeekView<T> extends View
      * @return The color of the "now" line dot.
      */
     public int getNowLineDotColor() {
-        return config.nowLineDotColor;
+        return configWrapper.getNowDotPaint().getColor();
     }
 
     /**
      * Set the color of the dot on the left-hand side of the "now" line.
      *
-     * @param nowLineDotColor The color of the "now" line dot.
+     * @param color The color of the "now" line dot.
      */
-    public void setNowLineDotColor(int nowLineDotColor) {
-        config.nowLineDotColor = nowLineDotColor;
+    public void setNowLineDotColor(int color) {
+        configWrapper.getNowDotPaint().setColor(color);
         invalidate();
     }
 
@@ -848,16 +864,16 @@ public final class WeekView<T> extends View
      * @return The radius of the "now" line dot.
      */
     public int getNowLineDotRadius() {
-        return config.nowLineDotRadius;
+        return (int) configWrapper.getNowDotPaint().getStrokeWidth();
     }
 
     /**
      * Set the radius of the dot on the left-hand side of the "now" line.
      *
-     * @param nowLineDotRadius The radius of the "now" line dot.
+     * @param radius The radius of the "now" line dot.
      */
-    public void setNowLineDotRadius(int nowLineDotRadius) {
-        config.nowLineDotRadius = nowLineDotRadius;
+    public void setNowLineDotRadius(int radius) {
+        configWrapper.getNowDotPaint().setStrokeWidth(radius);
         invalidate();
     }
 
@@ -868,30 +884,29 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean showHourSeparators() {
-        return config.showHourSeparator;
+        return configWrapper.getShowHourSeparators();
     }
 
-    public void setShowHourSeparators(boolean showHourSeparators) {
-        config.showHourSeparator = showHourSeparators;
+    public void setShowHourSeparators(boolean show) {
+        configWrapper.setShowHourSeparators(show);
         invalidate();
     }
 
     public int getHourSeparatorColor() {
-        return config.hourSeparatorColor;
+        return configWrapper.getHourSeparatorPaint().getColor();
     }
 
-    public void setHourSeparatorColor(int hourSeparatorColor) {
-        config.hourSeparatorColor = hourSeparatorColor;
-        config.drawingConfig.hourSeparatorPaint.setColor(hourSeparatorColor);
+    public void setHourSeparatorColor(int color) {
+        configWrapper.getHourSeparatorPaint().setColor(color);
         invalidate();
     }
 
     public int getHourSeparatorStrokeWidth() {
-        return config.hourSeparatorStrokeWidth;
+        return (int) configWrapper.getHourSeparatorPaint().getStrokeWidth();
     }
 
-    public void setHourSeparatorStrokeWidth(int hourSeparatorWidth) {
-        config.setHourSeparatorStrokeWidth(hourSeparatorWidth);
+    public void setHourSeparatorStrokeWidth(int width) {
+        configWrapper.getHourSeparatorPaint().setStrokeWidth(width);
         invalidate();
     }
 
@@ -902,30 +917,29 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean showDaySeparators() {
-        return config.showDaySeparator;
+        return configWrapper.getShowDaySeparators();
     }
 
-    public void setShowDaySeparators(boolean showDaySeparators) {
-        config.showDaySeparator = showDaySeparators;
+    public void setShowDaySeparators(boolean show) {
+        configWrapper.setShowDaySeparators(show);
         invalidate();
     }
 
     public int getDaySeparatorColor() {
-        return config.daySeparatorColor;
+        return configWrapper.getDaySeparatorPaint().getColor();
     }
 
-    public void setDaySeparatorColor(int daySeparatorColor) {
-        config.daySeparatorColor = daySeparatorColor;
-        config.drawingConfig.daySeparatorPaint.setColor(daySeparatorColor);
+    public void setDaySeparatorColor(int color) {
+        configWrapper.getDaySeparatorPaint().setColor(color);
         invalidate();
     }
 
     public int getDaySeparatorStrokeWidth() {
-        return config.daySeparatorStrokeWidth;
+        return (int) configWrapper.getDaySeparatorPaint().getStrokeWidth();
     }
 
-    public void setDaySeparatorStrokeWidth(int daySeparatorWidth) {
-        config.daySeparatorStrokeWidth = daySeparatorWidth;
+    public void setDaySeparatorStrokeWidth(int width) {
+        configWrapper.getDaySeparatorPaint().setStrokeWidth(width);
         invalidate();
     }
 
@@ -937,29 +951,39 @@ public final class WeekView<T> extends View
 
     @Nullable
     public Calendar getMinDate() {
-        return config.minDate;
+        if (configWrapper.getMinDate() != null) {
+            return toCalendar(configWrapper.getMinDate());
+        } else {
+            return null;
+        }
     }
 
     public void setMinDate(Calendar minDate) {
-        if (config.maxDate != null && config.maxDate.before(minDate)) {
+        LocalDate minLocalDate = toLocalDate(minDate);
+        if (configWrapper.getMaxDate() != null && configWrapper.getMaxDate().isBefore(minLocalDate)) {
             throw new IllegalArgumentException("Can't set a minDate that's after maxDate");
         }
 
-        config.minDate = DateUtils.withTimeAtStartOfDay(minDate);
+        configWrapper.setMinDate(minLocalDate);
         invalidate();
     }
 
     @Nullable
     public Calendar getMaxDate() {
-        return config.maxDate;
+        if (configWrapper.getMaxDate() != null) {
+            return toCalendar(configWrapper.getMaxDate());
+        } else {
+            return null;
+        }
     }
 
     public void setMaxDate(Calendar maxDate) {
-        if (config.minDate != null && config.minDate.after(maxDate)) {
+        LocalDate maxLocalDate = toLocalDate(maxDate);
+        if (configWrapper.getMinDate() != null && configWrapper.getMinDate().isAfter(maxLocalDate)) {
             throw new IllegalArgumentException("Can't set a maxDate that's before minDate");
         }
 
-        config.maxDate = DateUtils.withTimeAtEndOfDay(maxDate);
+        configWrapper.setMaxDate(maxLocalDate);
         invalidate();
     }
 
@@ -970,28 +994,28 @@ public final class WeekView<T> extends View
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public int getMinHour() {
-        return config.minHour;
+        return configWrapper.getMinHour();
     }
 
     public void setMinHour(int minHour) {
-        if (minHour < 0 || minHour > config.maxHour) {
+        if (minHour < 0 || minHour > configWrapper.getMaxHour()) {
             throw new IllegalArgumentException("minHour must be larger than 0 and smaller than maxHour.");
         }
 
-        config.minHour = minHour;
+        configWrapper.setMinHour(minHour);
         invalidate();
     }
 
     public int getMaxHour() {
-        return config.maxHour;
+        return configWrapper.getMaxHour();
     }
 
     public void setMaxHour(int maxHour) {
-        if (maxHour > 24 || maxHour < config.minHour) {
+        if (maxHour > 24 || maxHour < configWrapper.getMinHour()) {
             throw new IllegalArgumentException("maxHour must be smaller than 24 and larger than minHour.");
         }
 
-        config.maxHour = maxHour;
+        configWrapper.setMaxHour(maxHour);
         invalidate();
     }
 
@@ -1007,16 +1031,16 @@ public final class WeekView<T> extends View
      * @return The speed factor in horizontal direction.
      */
     public float getXScrollingSpeed() {
-        return config.xScrollingSpeed;
+        return configWrapper.getXScrollingSpeed();
     }
 
     /**
      * Sets the speed for horizontal scrolling.
      *
-     * @param xScrollingSpeed The new horizontal scrolling speed.
+     * @param speed The new horizontal scrolling speed.
      */
-    public void setXScrollingSpeed(float xScrollingSpeed) {
-        config.xScrollingSpeed = xScrollingSpeed;
+    public void setXScrollingSpeed(float speed) {
+        configWrapper.setXScrollingSpeed(speed);
     }
 
     /**
@@ -1025,14 +1049,14 @@ public final class WeekView<T> extends View
      * @return True if the week view has horizontal fling enabled.
      */
     public boolean isHorizontalFlingEnabled() {
-        return config.horizontalFlingEnabled;
+        return configWrapper.getHorizontalFlingEnabled();
     }
 
     /**
      * Set whether the week view should fling horizontally.
      */
     public void setHorizontalFlingEnabled(boolean enabled) {
-        config.horizontalFlingEnabled = enabled;
+        configWrapper.setHorizontalFlingEnabled(enabled);
     }
 
     /**
@@ -1042,14 +1066,14 @@ public final class WeekView<T> extends View
      * @return True if horizontal scrolling is enabled. Default is true.
      */
     public boolean isHorizontalScrollingEnabled() {
-        return config.horizontalScrollingEnabled;
+        return configWrapper.getHorizontalScrollingEnabled();
     }
 
     /**
      * Sets whether the user can scroll horizontally.
      */
     public void setHorizontalScrollingEnabled(boolean enabled) {
-        config.horizontalScrollingEnabled = enabled;
+        configWrapper.setHorizontalScrollingEnabled(enabled);
     }
 
     /**
@@ -1058,14 +1082,14 @@ public final class WeekView<T> extends View
      * @return True if the week view has vertical fling enabled.
      */
     public boolean isVerticalFlingEnabled() {
-        return config.verticalFlingEnabled;
+        return configWrapper.getVerticalFlingEnabled();
     }
 
     /**
      * Set whether the week view should fling vertically.
      */
     public void setVerticalFlingEnabled(boolean enabled) {
-        config.verticalFlingEnabled = enabled;
+        configWrapper.setVerticalFlingEnabled(enabled);
     }
 
     /**
@@ -1074,14 +1098,14 @@ public final class WeekView<T> extends View
      * @return scroll duration
      */
     public int getScrollDuration() {
-        return config.scrollDuration;
+        return configWrapper.getScrollDuration();
     }
 
     /**
      * Set the scroll duration
      */
-    public void setScrollDuration(int scrollDuration) {
-        config.scrollDuration = scrollDuration;
+    public void setScrollDuration(int duration) {
+        configWrapper.setScrollDuration(duration);
     }
 
     /////////////////////////////////////////////////////////////////
@@ -1096,13 +1120,11 @@ public final class WeekView<T> extends View
         return gestureHandler.onTouchEvent(event);
     }
 
-
     @Override
     public void computeScroll() {
         super.computeScroll();
         gestureHandler.computeScroll();
     }
-
 
     /////////////////////////////////////////////////////////////////
     //
@@ -1116,7 +1138,12 @@ public final class WeekView<T> extends View
      * @return The first visible day in the week view.
      */
     public Calendar getFirstVisibleDay() {
-        return viewState.getFirstVisibleDay();
+        LocalDate firstVisibleDay = viewState.getFirstVisibleDay();
+        if (firstVisibleDay != null) {
+            return toCalendar(firstVisibleDay);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -1125,20 +1152,25 @@ public final class WeekView<T> extends View
      * @return The last visible day in the week view.
      */
     public Calendar getLastVisibleDay() {
-        return viewState.getLastVisibleDay();
+        LocalDate lastVisibleDay = viewState.getLastVisibleDay();
+        if (lastVisibleDay != null) {
+            return toCalendar(lastVisibleDay);
+        } else {
+            return null;
+        }
     }
 
     /**
      * Show today on the week view.
      */
     public void goToToday() {
-        goToDate(today());
+        goToDate(toCalendar(today()));
     }
 
     public void goToCurrentTime() {
-        final Calendar today = Calendar.getInstance();
-        final int hour = today.get(HOUR_OF_DAY);
-        goToDate(today);
+        final Calendar now = Calendar.getInstance();
+        final int hour = now.get(HOUR_OF_DAY);
+        goToDate(now);
         goToHour(hour);
     }
 
@@ -1148,32 +1180,37 @@ public final class WeekView<T> extends View
      * @param date The date to show.
      */
     public void goToDate(@NonNull Calendar date) {
-        Calendar modifiedDate = (Calendar) date.clone();
+        LocalDate modifiedDate = toLocalDate(date);
+
+        final LocalDate minDate = configWrapper.getMinDate();
+        final LocalDate maxDate = configWrapper.getMaxDate();
+
+        final int numberOfVisibleDays = configWrapper.getNumberOfVisibleDays();
+        final boolean showFirstDayOfWeekFirst = configWrapper.getShowFirstDayOfWeekFirst();
 
         // If a minimum or maximum date is set, don't allow to go beyond them.
-        if (config.minDate != null && modifiedDate.before(config.minDate)) {
-            modifiedDate = (Calendar) config.minDate.clone();
-        } else if (config.maxDate != null && modifiedDate.after(config.maxDate)) {
-            modifiedDate = (Calendar) config.maxDate.clone();
-            modifiedDate.add(Calendar.DAY_OF_YEAR, 1 - config.numberOfVisibleDays);
-        } else if (config.numberOfVisibleDays >= 7 && config.showFirstDayOfWeekFirst) {
-            final int diff = config.drawingConfig.computeDifferenceWithFirstDayOfWeek(config, date);
-            modifiedDate.add(Calendar.DAY_OF_YEAR, (-1) * diff);
+        if (minDate != null && modifiedDate.isBefore(minDate)) {
+            modifiedDate = minDate;
+        } else if (maxDate != null && modifiedDate.isAfter(maxDate)) {
+            modifiedDate = maxDate.plusDays(1 - numberOfVisibleDays);
+        } else if (numberOfVisibleDays >= 7 && showFirstDayOfWeekFirst) {
+            final int diff = configWrapper.computeDifferenceWithFirstDayOfWeek(modifiedDate);
+            modifiedDate = modifiedDate.minusDays(diff);
         }
 
         gestureHandler.forceScrollFinished();
 
-        if (viewState.areDimensionsInvalid) {
+        if (viewState.getAreDimensionsInvalid()) {
             viewState.setScrollToDay(modifiedDate);
             return;
         }
 
         viewState.setShouldRefreshEvents(true);
 
-        int diff = DateUtils.getDaysUntilDate(modifiedDate);
+        final int diff = DateUtils.getDaysFromToday(modifiedDate);
 
-        config.drawingConfig.currentOrigin.x = diff * (-1) * config.getTotalDayWidth();
-        viewState.requiresPostInvalidateOnAnimation = true;
+        configWrapper.getCurrentOrigin().x = diff * (-1) * configWrapper.getTotalDayWidth();
+        viewState.setRequiresPostInvalidateOnAnimation(true);
         invalidate();
     }
 
@@ -1191,21 +1228,21 @@ public final class WeekView<T> extends View
      * @param hour The hour to scroll to in 24-hour format. Supported values are 0-24.
      */
     public void goToHour(int hour) {
-        if (viewState.areDimensionsInvalid) {
+        if (viewState.getAreDimensionsInvalid()) {
             viewState.setScrollToHour(hour);
             return;
         }
 
-        hour = min(hour, config.getHoursPerDay());
-        float verticalOffset = config.hourHeight * hour;
+        hour = min(hour, configWrapper.getHoursPerDay());
+        float verticalOffset = configWrapper.getHourHeight() * hour;
 
-        final float dayHeight = config.getTotalDayHeight();
+        final float dayHeight = configWrapper.getTotalDayHeight();
         final double viewHeight = getHeight();
 
         final double desiredOffset = dayHeight - viewHeight;
-        verticalOffset = min((float)desiredOffset, verticalOffset);
+        verticalOffset = min((float) desiredOffset, verticalOffset);
 
-        config.drawingConfig.currentOrigin.y = -verticalOffset;
+        configWrapper.getCurrentOrigin().y = -verticalOffset;
         invalidate();
     }
 
@@ -1215,7 +1252,7 @@ public final class WeekView<T> extends View
      * @return The first hour that is visible.
      */
     public double getFirstVisibleHour() {
-        return (config.drawingConfig.currentOrigin.y * -1) / config.hourHeight;
+        return (configWrapper.getCurrentOrigin().y * -1) / configWrapper.getHourHeight();
     }
 
     /////////////////////////////////////////////////////////////////
@@ -1307,7 +1344,7 @@ public final class WeekView<T> extends View
      * @return The date, time interpreter.
      */
     public DateTimeInterpreter getDateTimeInterpreter() {
-        return config.drawingConfig.getDateTimeInterpreter(getContext(), config);
+        return configWrapper.getDateTimeInterpreter(); // getDateTimeInterpreter(getContext());
     }
 
     /**
@@ -1316,27 +1353,32 @@ public final class WeekView<T> extends View
      * @param dateTimeInterpreter The date, time interpreter.
      */
     public void setDateTimeInterpreter(DateTimeInterpreter dateTimeInterpreter) {
-        config.drawingConfig.setDateTimeInterpreter(dateTimeInterpreter, getContext(), config);
+        configWrapper.setDateTimeInterpreter(dateTimeInterpreter);
     }
 
     protected static class SavedState extends BaseSavedState {
 
         private final int numberOfVisibleDays;
+        private final LocalDate firstVisibleDate;
 
-        private SavedState(Parcelable superState, int numberOfVisibleDays) {
+        private SavedState(Parcelable superState,
+                           int numberOfVisibleDays, LocalDate firstVisibleDate) {
             super(superState);
             this.numberOfVisibleDays = numberOfVisibleDays;
+            this.firstVisibleDate = firstVisibleDate;
         }
 
         private SavedState(Parcel in) {
             super(in);
             numberOfVisibleDays = in.readInt();
+            firstVisibleDate = (LocalDate) in.readSerializable();
         }
 
         @Override
         public void writeToParcel(Parcel destination, int flags) {
             super.writeToParcel(destination, flags);
             destination.writeInt(numberOfVisibleDays);
+            destination.writeSerializable(firstVisibleDate);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {

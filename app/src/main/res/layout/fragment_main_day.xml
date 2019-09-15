@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"/>
 
     <com.alamkanak.weekview.WeekView
-        android:id="@+id/main_day_weekview_day"
+        android:id="@+id/main_day_weekview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"

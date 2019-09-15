@@ -9,8 +9,8 @@ import android.os.AsyncTask;
 
 import org.joda.time.DateTime;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import fr.skyost.timetable.lesson.Lesson;
 import fr.skyost.timetable.lesson.database.LessonDao;
@@ -26,7 +26,7 @@ public class TodayWidgetUpdateScheduler extends AsyncTask<LessonDao, Void, DateT
 	 * A context atomic reference.
 	 */
 
-	private final AtomicReference<Context> context;
+	private final WeakReference<Context> context;
 
 	/**
 	 * Creates a new today's widget update scheduler task.
@@ -35,7 +35,7 @@ public class TodayWidgetUpdateScheduler extends AsyncTask<LessonDao, Void, DateT
 	 */
 
 	TodayWidgetUpdateScheduler(final Context context) {
-		this.context = new AtomicReference<>(context);
+		this.context = new WeakReference<>(context);
 	}
 
 	@Override
@@ -70,13 +70,13 @@ public class TodayWidgetUpdateScheduler extends AsyncTask<LessonDao, Void, DateT
 	}
 
 	/**
-	 * Returns the context reference.
+	 * Returns the context.
 	 *
-	 * @return The context reference.
+	 * @return The context.
 	 */
 
-	public AtomicReference<Context> getContext() {
-		return context;
+	public Context getContext() {
+		return context.get();
 	}
 
 }

@@ -1,21 +1,19 @@
 package com.alamkanak.weekview
 
+import org.threeten.bp.LocalDate
 import java.lang.Math.ceil
-import java.util.*
 
-class DrawingContext(
-        val dateRange: List<Calendar>,
+internal class DrawingContext(
+        val dateRange: List<LocalDate>,
         val startPixel: Float
 ) {
 
-    fun getDateRangeWithStartPixels(config: WeekViewConfig): List<Pair<Calendar, Float>> {
+    fun getDateRangeWithStartPixels(config: WeekViewConfigWrapper): List<Pair<LocalDate, Float>> {
         return dateRange.zip(getStartPixels(config))
     }
 
-    fun getStartPixels(config: WeekViewConfig): List<Float> {
-        val results = mutableListOf<Float>()
-        results.add(startPixel)
-
+    fun getStartPixels(config: WeekViewConfigWrapper): List<Float> {
+        val results = mutableListOf(startPixel)
         var currentStartPixel = startPixel
 
         for (day in dateRange) {
@@ -36,23 +34,22 @@ class DrawingContext(
     companion object {
 
         @JvmStatic
-        fun create(config: WeekViewConfig): DrawingContext {
-            val drawConfig = config.drawingConfig
+        fun create(config: WeekViewConfigWrapper): DrawingContext {
             val totalDayWidth = config.totalDayWidth
-            val leftDaysWithGaps = (ceil((drawConfig.currentOrigin.x / totalDayWidth).toDouble()) * -1).toInt()
-            val startPixel = (drawConfig.currentOrigin.x
+            val leftDaysWithGaps = (ceil((config.currentOrigin.x / totalDayWidth).toDouble()) * -1).toInt()
+            val startPixel = (config.currentOrigin.x
                     + totalDayWidth * leftDaysWithGaps
-                    + drawConfig.timeColumnWidth)
+                    + config.timeColumnWidth)
 
             val start = leftDaysWithGaps + 1
             val end = start + config.numberOfVisibleDays
 
             // If the user is scrolling, a new view becomes partially visible, so we must add an
             // additional date to the date range
-            val isNotScrolling = config.drawingConfig.currentOrigin.x % config.totalDayWidth == 0f
+            val isNotScrolling = config.currentOrigin.x % config.totalDayWidth == 0f
             val modifiedEnd = if (isNotScrolling) end - 1 else end
 
-            val dayRange = DateUtils.getDateRange(start, modifiedEnd)
+            val dayRange = getDateRange(start, modifiedEnd)
             return DrawingContext(dayRange, startPixel)
         }
     }

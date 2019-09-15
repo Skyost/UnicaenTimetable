@@ -2,28 +2,27 @@ package com.alamkanak.weekview
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import org.threeten.bp.LocalDate
 import java.util.*
 import java.util.Calendar.HOUR_OF_DAY
 import java.util.Calendar.MINUTE
 import kotlin.math.max
 
 internal class DayBackgroundDrawer(
-        private val config: WeekViewConfig
+        private val config: WeekViewConfigWrapper
 ) {
-
-    private val drawConfig: WeekViewDrawingConfig = config.drawingConfig
 
     fun draw(drawingContext: DrawingContext, canvas: Canvas) {
         drawingContext
                 .getDateRangeWithStartPixels(config)
                 .forEach { (date, startPixel) ->
-                    val startX = max(startPixel, drawConfig.timeColumnWidth)
+                    val startX = max(startPixel, config.timeColumnWidth)
                     drawDayBackground(date, startX, startPixel, canvas)
                 }
     }
 
-    private fun drawDayBackground(day: Calendar, startX: Float, startPixel: Float, canvas: Canvas) {
-        if (drawConfig.widthPerDay + startPixel - startX <= 0) {
+    private fun drawDayBackground(day: LocalDate, startX: Float, startPixel: Float, canvas: Canvas) {
+        if (config.widthPerDay + startPixel - startX <= 0) {
             return
         }
 
@@ -31,11 +30,11 @@ internal class DayBackgroundDrawer(
 
         if (config.showDistinctPastFutureColor) {
             val useWeekendColor = day.isWeekend && config.showDistinctWeekendColor
-            val pastPaint = drawConfig.getPastBackgroundPaint(useWeekendColor)
-            val futurePaint = drawConfig.getFutureBackgroundPaint(useWeekendColor)
+            val pastPaint = config.getPastBackgroundPaint(useWeekendColor)
+            val futurePaint = config.getFutureBackgroundPaint(useWeekendColor)
 
-            val startY = drawConfig.headerHeight + drawConfig.currentOrigin.y
-            val endX = startPixel + drawConfig.widthPerDay
+            val startY = config.headerHeight + config.currentOrigin.y
+            val endX = startPixel + config.widthPerDay
 
             when {
                 day.isToday -> drawPastAndFutureRect(startX, startY, endX, pastPaint, futurePaint, height, canvas)
@@ -43,9 +42,9 @@ internal class DayBackgroundDrawer(
                 else -> canvas.drawRect(startX, startY, endX, height, futurePaint)
             }
         } else {
-            val todayPaint = drawConfig.getTodayBackgroundPaint(day.isToday)
-            val right = startPixel + drawConfig.widthPerDay
-            canvas.drawRect(startX, drawConfig.headerHeight, right, height, todayPaint)
+            val todayPaint = config.getTodayBackgroundPaint(day.isToday)
+            val right = startPixel + config.widthPerDay
+            canvas.drawRect(startX, config.headerHeight, right, height, todayPaint)
         }
     }
 

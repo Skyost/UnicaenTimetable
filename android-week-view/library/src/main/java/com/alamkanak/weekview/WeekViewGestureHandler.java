@@ -8,14 +8,19 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 
-import java.util.Calendar;
-import java.util.List;
-
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 
+import org.threeten.bp.ZonedDateTime;
+
+import java.util.List;
+
 import static android.view.KeyEvent.ACTION_UP;
+import static com.alamkanak.weekview.DateUtils.toCalendar;
+import static com.alamkanak.weekview.Preconditions.checkState;
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureListener {
@@ -27,8 +32,7 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
     private final Listener listener;
 
     private final WeekViewCache<T> cache;
-    private final WeekViewConfig config;
-    private final WeekViewDrawingConfig drawingConfig;
+    private final WeekViewConfigWrapper config;
 
     private final WeekViewTouchHandler touchHandler;
 
@@ -53,12 +57,11 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
     private ScrollListener scrollListener;
 
     WeekViewGestureHandler(Context context, View view,
-                           WeekViewConfig config, WeekViewCache<T> cache) {
+                           WeekViewConfigWrapper config, WeekViewCache<T> cache) {
         this.listener = (Listener) view;
 
         this.cache = cache;
         this.config = config;
-        this.drawingConfig = config.drawingConfig;
 
         touchHandler = new WeekViewTouchHandler(config);
         gestureDetector = new GestureDetector(context, this);
@@ -82,8 +85,8 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
 
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                float hourHeight = WeekViewGestureHandler.this.config.hourHeight;
-                drawingConfig.newHourHeight = hourHeight * detector.getScaleFactor();
+                float hourHeight = WeekViewGestureHandler.this.config.getHourHeight();
+                WeekViewGestureHandler.this.config.setNewHourHeight(hourHeight * detector.getScaleFactor());
                 listener.onScaled();
                 return true;
             }
@@ -111,7 +114,7 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
         final float absDistanceX = Math.abs(distanceX);
         final float absDistanceY = Math.abs(distanceY);
 
-        final boolean canScrollHorizontally = config.horizontalScrollingEnabled;
+        final boolean canScrollHorizontally = config.getHorizontalScrollingEnabled();
 
         switch (currentScrollDirection) {
             case NONE: {
@@ -147,17 +150,18 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
         switch (currentScrollDirection) {
             case LEFT:
             case RIGHT:
-                drawingConfig.currentOrigin.x -= distanceX * config.xScrollingSpeed;
+                config.getCurrentOrigin().x -= distanceX * config.getXScrollingSpeed();
 
                 float minX = config.getMinX();
                 float maxX = config.getMaxX();
-                drawingConfig.currentOrigin.x = Math.min(drawingConfig.currentOrigin.x,maxX);
-                drawingConfig.currentOrigin.x = Math.max(drawingConfig.currentOrigin.x,minX);
+
+                config.getCurrentOrigin().x = min(config.getCurrentOrigin().x, maxX);
+                config.getCurrentOrigin().x = max(config.getCurrentOrigin().x, minX);
 
                 listener.onScrolled();
                 break;
             case VERTICAL:
-                drawingConfig.currentOrigin.y -= distanceY;
+                config.getCurrentOrigin().y -= distanceY;
                 listener.onScrolled();
                 break;
         }
@@ -170,9 +174,9 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
             return true;
         }
 
-        if ((currentFlingDirection == Direction.LEFT && !config.horizontalFlingEnabled) ||
-                (currentFlingDirection == Direction.RIGHT && !config.horizontalFlingEnabled) ||
-                (currentFlingDirection == Direction.VERTICAL && !config.verticalFlingEnabled)) {
+        if ((currentFlingDirection == Direction.LEFT && !config.getHorizontalScrollingEnabled()) ||
+                (currentFlingDirection == Direction.RIGHT && !config.getHorizontalFlingEnabled()) ||
+                (currentFlingDirection == Direction.VERTICAL && !config.getVerticalFlingEnabled())) {
             return true;
         }
 
@@ -194,27 +198,27 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
     }
 
     private void onFlingHorizontal(float originalVelocityX) {
-        final int startX = (int) drawingConfig.currentOrigin.x;
-        final int startY = (int) drawingConfig.currentOrigin.y;
+        final int startX = (int) config.getCurrentOrigin().x;
+        final int startY = (int) config.getCurrentOrigin().y;
 
-        final int velocityX = (int) (originalVelocityX * config.xScrollingSpeed);
+        final int velocityX = (int) (originalVelocityX * config.getXScrollingSpeed());
         final int velocityY = 0;
 
         final int minX = (int) config.getMinX();
         final int maxX = (int) config.getMaxX();
 
-        final float dayHeight = config.hourHeight * config.getHoursPerDay();
+        final float dayHeight = config.getHourHeight() * config.getHoursPerDay();
         final int viewHeight = WeekView.getViewHeight();
 
-        final int minY = (int) (dayHeight + drawingConfig.headerHeight - viewHeight) * (-1);
+        final int minY = (int) (dayHeight + config.getHeaderHeight() - viewHeight) * (-1);
         final int maxY = 0;
 
         scroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
     }
 
     private void onFlingVertical(float originalVelocityY) {
-        final int startX = (int) drawingConfig.currentOrigin.x;
-        final int startY = (int) drawingConfig.currentOrigin.y;
+        final int startX = (int) config.getCurrentOrigin().x;
+        final int startY = (int) config.getCurrentOrigin().y;
 
         final int velocityX = 0;
         final int velocityY = (int) originalVelocityY;
@@ -222,10 +226,10 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
         final int minX = Integer.MIN_VALUE;
         final int maxX = Integer.MAX_VALUE;
 
-        final float dayHeight = config.hourHeight * config.getHoursPerDay();
+        final float dayHeight = config.getHourHeight() * config.getHoursPerDay();
         final int viewHeight = WeekView.getViewHeight();
 
-        final int minY = (int) (dayHeight + drawingConfig.headerHeight - viewHeight) * (-1);
+        final int minY = (int) (dayHeight + config.getHeaderHeight() - viewHeight) * (-1);
         final int maxY = 0;
 
         scroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
@@ -236,24 +240,20 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
         final EventChip<T> eventChip = findHitEvent(e);
         if (eventChip != null && eventClickListener != null) {
             T data = eventChip.event.getData();
-            if (data != null) {
-                eventClickListener.onEventClick(data, eventChip.rect);
-            } else {
-                throw new IllegalStateException("No data to show. Did you pass the original " +
-                        "object into the constructor of WeekViewEvent?");
-            }
-
+            checkState(data != null, "No data to show. Did you pass the " +
+                    "original object into the constructor of WeekViewEvent?");
+            eventClickListener.onEventClick(data, eventChip.rect);
             return super.onSingleTapConfirmed(e);
         }
 
         // If the tap was on in an empty space, then trigger the callback.
-        final float timeColumnWidth = drawingConfig.timeColumnWidth;
+        final float timeColumnWidth = config.getTimeColumnWidth();
 
         if (emptyViewClickListener != null
-                && e.getX() > timeColumnWidth && e.getY() > drawingConfig.headerHeight) {
-            final Calendar selectedTime = touchHandler.getTimeFromPoint(e);
+                && e.getX() > timeColumnWidth && e.getY() > config.getHeaderHeight()) {
+            final ZonedDateTime selectedTime = touchHandler.getTimeFromPoint(e);
             if (selectedTime != null) {
-                emptyViewClickListener.onEmptyViewClicked(selectedTime);
+                emptyViewClickListener.onEmptyViewClicked(toCalendar(selectedTime));
             }
         }
 
@@ -267,22 +267,19 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
         final EventChip<T> eventChip = findHitEvent(e);
         if (eventChip != null && eventLongPressListener != null) {
             final T data = eventChip.originalEvent.getData();
-            if (data != null) {
-                eventLongPressListener.onEventLongPress(data, eventChip.rect);
-            } else {
-                throw new IllegalStateException("No data to show. Did you pass the original " +
-                        "object into the constructor of WeekViewEvent?");
-            }
+            checkState(data != null, "No data to show. Did you pass the " +
+                    "original object into the constructor of WeekViewEvent?");
+            eventLongPressListener.onEventLongPress(data, eventChip.rect);
         }
 
-        final float timeColumnWidth = drawingConfig.timeColumnWidth;
+        final float timeColumnWidth = config.getTimeColumnWidth();
 
         // If the tap was on in an empty space, then trigger the callback.
         if (emptyViewLongPressListener != null
-                && e.getX() > timeColumnWidth && e.getY() > drawingConfig.headerHeight) {
-            final Calendar selectedTime = touchHandler.getTimeFromPoint(e);
+                && e.getX() > timeColumnWidth && e.getY() > config.getHeaderHeight()) {
+            final ZonedDateTime selectedTime = touchHandler.getTimeFromPoint(e);
             if (selectedTime != null) {
-                emptyViewLongPressListener.onEmptyViewLongPress(selectedTime);
+                emptyViewLongPressListener.onEmptyViewLongPress(toCalendar(selectedTime));
             }
         }
     }
@@ -353,7 +350,7 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
 
     private void goToNearestOrigin() {
         final float totalDayWidth = config.getTotalDayWidth();
-        double leftDays = drawingConfig.currentOrigin.x / totalDayWidth;
+        double leftDays = config.getCurrentOrigin().x / totalDayWidth;
 
         if (currentFlingDirection != Direction.NONE) {
             // snap to nearest day
@@ -369,21 +366,21 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
             leftDays = round(leftDays);
         }
 
-        final int nearestOrigin = (int) (drawingConfig.currentOrigin.x - leftDays * totalDayWidth);
+        final int nearestOrigin = (int) (config.getCurrentOrigin().x - leftDays * totalDayWidth);
 
         if (nearestOrigin != 0) {
             // Stop current animation
             scroller.forceFinished(true);
 
             // Snap to date
-            final int startX = (int) drawingConfig.currentOrigin.x;
-            final int startY = (int) drawingConfig.currentOrigin.y;
+            final int startX = (int) config.getCurrentOrigin().x;
+            final int startY = (int) config.getCurrentOrigin().y;
 
             final int distanceX = -nearestOrigin;
             final int distanceY = 0;
 
-            final float daysScrolled = Math.abs(nearestOrigin) / drawingConfig.widthPerDay;
-            final int duration = (int) (daysScrolled * config.scrollDuration);
+            final float daysScrolled = Math.abs(nearestOrigin) / config.getWidthPerDay();
+            final int duration = (int) (daysScrolled * config.getScrollDuration());
 
             scroller.startScroll(startX, startY, distanceX, distanceY, duration);
             listener.onScrolled();
@@ -414,25 +411,27 @@ final class WeekViewGestureHandler<T> extends GestureDetector.SimpleOnGestureLis
     }
 
     void computeScroll() {
-        if (scroller.isFinished() && currentFlingDirection != Direction.NONE) {
+        final boolean isFinished = scroller.isFinished();
+        final boolean isFlinging = currentFlingDirection != Direction.NONE;
+        final boolean isScrolling = currentScrollDirection != Direction.NONE;
+
+        if (isFinished && isFlinging) {
             // Snap to day after fling is finished
             goToNearestOrigin();
+        } else if (isFinished & !isScrolling) {
+            // Snap to day after scrolling is finished
+            goToNearestOrigin();
         } else {
-            if (currentFlingDirection != Direction.NONE && shouldForceFinishScroll()) {
+            if (isFlinging && shouldForceFinishScroll()) {
                 goToNearestOrigin();
             } else if (scroller.computeScrollOffset()) {
-                drawingConfig.currentOrigin.y = scroller.getCurrY();
-                drawingConfig.currentOrigin.x = scroller.getCurrX();
+                config.getCurrentOrigin().y = scroller.getCurrY();
+                config.getCurrentOrigin().x = scroller.getCurrX();
                 listener.onScrolled();
             }
         }
     }
 
-    /**
-     * Check if scrolling should be stopped.
-     *
-     * @return true if scrolling should be stopped before reaching the end of animation.
-     */
     private boolean shouldForceFinishScroll() {
         return scroller.getCurrVelocity() <= minimumFlingVelocity;
     }

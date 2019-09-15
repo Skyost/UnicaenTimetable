@@ -69,6 +69,7 @@
     <string name="main_nav_home_home">Home</string>
 
     <string name="main_nav_timetable">Timetable</string>
+    <string name="main_nav_timetable_week">Week view</string>
     <string name="main_nav_timetable_monday">Monday</string>
     <string name="main_nav_timetable_tuesday">Tuesday</string>
     <string name="main_nav_timetable_wednesday">Wednesday</string>
@@ -122,7 +123,7 @@
     <string name="preferences_application_todayautomatically">Automatically open today\'s page</string>
 
     <string name="preferences_application_enableads_title">Enable ads</string>
-    <string name="preferences_application_enableads_description">You have the choice to enable ads. But you have to know that it is only a little banner on the home page.</string>
+    <string name="preferences_application_enableads_description">You have the choice to enable ads. But you have to know that it is only a little banner on the home page and this is the only income I get from this application.</string>
     <string name="preferences_application_enableads_restart">Please restart the app to see the changes.</string>
 
     <string name="settings_default" formatted="false">Default : %1$s</string>

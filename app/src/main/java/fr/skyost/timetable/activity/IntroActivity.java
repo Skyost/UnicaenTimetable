@@ -12,15 +12,17 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.paolorotolo.appintro.AppIntro2;
-
-import java.io.File;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.github.paolorotolo.appintro.AppIntro2;
+
+import java.io.File;
+
 import fr.skyost.timetable.R;
+import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.fragment.intro.FirstSlideFragment;
 import fr.skyost.timetable.fragment.intro.IntroFragment;
 import fr.skyost.timetable.fragment.intro.SecondSlideFragment;
@@ -203,10 +205,8 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 			// If success, we add our account.
 			final Runnable ifSuccess = () -> {
-				System.out.println("Account size : " + manager.getAccountsByType(getString(R.string.account_type_authority)).length);
 				final Account account = new Account(response.getUsername(), getString(R.string.account_type_authority));
 				if(manager.addAccountExplicitly(account, Utils.base64Encode(this, response.getPassword()), null)) {
-					System.out.println("Added an account !");
 					Utils.makeAccountSyncable(this, account);
 				}
 				accountChanged = true;
@@ -318,10 +318,10 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 		// And we add the preferences to the views.
 		if(serverEditText != null && calendarEditText != null && additionalParametersEditText != null) {
-			final SharedPreferences preferences = getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-			serverEditText.setText(preferences.getString(MainActivity.PREFERENCES_SERVER, getString(R.string.settings_default_server)));
-			calendarEditText.setText(preferences.getString(MainActivity.PREFERENCES_CALENDAR, getString(R.string.settings_default_calendarname)));
-			additionalParametersEditText.setText(preferences.getString(MainActivity.PREFERENCES_ADDITIONAL_PARAMETERS, getString(R.string.settings_default_parameters)));
+			final SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			serverEditText.setText(preferences.getString(SettingsActivity.PREFERENCES_SERVER, getString(R.string.settings_default_server)));
+			calendarEditText.setText(preferences.getString(SettingsActivity.PREFERENCES_CALENDAR, getString(R.string.settings_default_calendarname)));
+			additionalParametersEditText.setText(preferences.getString(SettingsActivity.PREFERENCES_ADDITIONAL_PARAMETERS, getString(R.string.settings_default_parameters)));
 		}
 
 		// We set the title.
@@ -332,10 +332,10 @@ public class IntroActivity extends AppIntro2 implements AuthenticationListener {
 
 			// If the user changed something to the views, we have to save those changes.
 			if(serverEditText != null && calendarEditText != null && additionalParametersEditText != null) {
-				final SharedPreferences.Editor editor = getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit();
-				editor.putString(MainActivity.PREFERENCES_SERVER, serverEditText.getText().toString());
-				editor.putString(MainActivity.PREFERENCES_CALENDAR, calendarEditText.getText().toString());
-				editor.putString(MainActivity.PREFERENCES_ADDITIONAL_PARAMETERS, additionalParametersEditText.getText().toString());
+				final SharedPreferences.Editor editor = getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit();
+				editor.putString(SettingsActivity.PREFERENCES_SERVER, serverEditText.getText().toString());
+				editor.putString(SettingsActivity.PREFERENCES_CALENDAR, calendarEditText.getText().toString());
+				editor.putString(SettingsActivity.PREFERENCES_ADDITIONAL_PARAMETERS, additionalParametersEditText.getText().toString());
 				editor.commit(); // But we have to apply those changes immediately as our task will use them.
 			}
 			new AuthenticationTask(this, usernameEditText.getText().toString(), passwordEditText.getText().toString(), this).execute();

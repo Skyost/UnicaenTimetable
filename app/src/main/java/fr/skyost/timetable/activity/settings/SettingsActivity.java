@@ -13,14 +13,14 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.ActionBar;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
 import java.util.List;
 
-import androidx.appcompat.app.ActionBar;
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.fragment.settings.AccountPreferenceFragment;
 import fr.skyost.timetable.fragment.settings.AppPreferenceFragment;
 import fr.skyost.timetable.fragment.settings.ServerPreferenceFragment;
@@ -31,6 +31,84 @@ import fr.skyost.timetable.utils.AppCompatPreferenceActivity;
  */
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+	/**
+	 * Activity's preferences title.
+	 */
+
+	public static final String PREFERENCES_TITLE = "preferences";
+
+	/**
+	 * The server preference key.
+	 */
+
+	public static final String PREFERENCES_SERVER = "server";
+
+	/**
+	 * The calendar preference key.
+	 */
+
+	public static final String PREFERENCES_CALENDAR = "calendar-nohtml";
+
+	/**
+	 * The additional parameters preference key.
+	 */
+
+	public static final String PREFERENCES_ADDITIONAL_PARAMETERS = "additional-parameters";
+
+	/**
+	 * The timetable refresh interval preference key.
+	 */
+
+	public static final String PREFERENCES_CALENDAR_INTERVAL = "calendar-interval";
+
+	/**
+	 * The automatic coloring of lessons preference key.
+	 */
+
+	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
+
+	/**
+	 * The open today page preference key.
+	 */
+
+	public static final String PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE = "today-automatically";
+
+	/**
+	 * The lessons ringer mode preference key.
+	 */
+
+	public static final String PREFERENCES_LESSONS_RINGER_MODE = "lessons-ringer-mode";
+
+	/**
+	 * The "pinch to zoom" tip preference key.
+	 */
+
+	public static final String PREFERENCES_TIP_SHOW_PINCHTOZOOM = "tip-show-pinchtozoom";
+
+	/**
+	 * The "change color" tip preference key.
+	 */
+
+	public static final String PREFERENCES_TIP_SHOW_CHANGECOLOR = "tip-show-changecolor";
+
+	/**
+	 * The account changed preference key.
+	 */
+
+	public static final String PREFERENCES_CHANGED_ACCOUNT = "changed-account";
+
+	/**
+	 * The interval changed preference key.
+	 */
+
+	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
+
+	/**
+	 * The ads preference key.
+	 */
+
+	public static final String PREFERENCES_ADS = "ads";
 
 	/**
 	 * The request code for the IntroActivity.
@@ -62,7 +140,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		switch(requestCode) {
 		case INTRO_ACTIVITY_RESULT:
 			// We immediately commit the changes (because MainActivity will use it after).
-			getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_ACCOUNT, true).commit();
+			getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(SettingsActivity.PREFERENCES_CHANGED_ACCOUNT, true).commit();
 			onBackPressed();
 			break;
 		}
@@ -118,7 +196,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 	public static void setDefaultPreferencesFile(final PreferenceFragment fragment) {
 		final PreferenceManager manager = fragment.getPreferenceManager();
-		manager.setSharedPreferencesName(MainActivity.PREFERENCES_TITLE);
+		manager.setSharedPreferencesName(SettingsActivity.PREFERENCES_TITLE);
 		manager.setSharedPreferencesMode(Context.MODE_PRIVATE);
 	}
 
@@ -143,7 +221,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	 */
 
 	public static DateTime getMinStartDate(final Context context) {
-		return getMinStartDate(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0"));
+		return getMinStartDate(context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(SettingsActivity.PREFERENCES_CALENDAR_INTERVAL, "0"));
 	}
 
 	/**
@@ -185,7 +263,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	 */
 
 	public static DateTime getMaxEndDate(final Context context) {
-		return getMaxEndDate(context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(MainActivity.PREFERENCES_CALENDAR_INTERVAL, "0"));
+		return getMaxEndDate(context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getString(SettingsActivity.PREFERENCES_CALENDAR_INTERVAL, "0"));
 	}
 
 	/**

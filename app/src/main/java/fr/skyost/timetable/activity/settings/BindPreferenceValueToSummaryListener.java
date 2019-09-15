@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import java.text.DateFormat;
 
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.lesson.ringer.LessonModeManager;
 
 /**
@@ -59,22 +58,22 @@ public class BindPreferenceValueToSummaryListener implements Preference.OnPrefer
 	public boolean notifyPreferenceChange(final Preference preference, final Object value, final boolean saveChangedIntervalPreference) {
 		final String string = value.toString();
 		switch(preference.getKey().toLowerCase()) {
-		case MainActivity.PREFERENCES_SERVER:
+		case SettingsActivity.PREFERENCES_SERVER:
 			// It's pretty simple here, we put two lines of summary : first the value, second the default value.
 			preference.setSummary(TextUtils.isEmpty(string) ? activity.getString(R.string.settings_default_server) : string);
 			preference.setSummary(preference.getSummary() + "\n" + activity.getString(R.string.settings_default, activity.getString(R.string.settings_default_server)));
 			break;
-		case MainActivity.PREFERENCES_CALENDAR:
+		case SettingsActivity.PREFERENCES_CALENDAR:
 			// Same here.
 			preference.setSummary(TextUtils.isEmpty(string) ? activity.getString(R.string.settings_default_calendarname) : string);
 			preference.setSummary(preference.getSummary() + "\n" + activity.getString(R.string.settings_default, activity.getString(R.string.settings_default_calendarname)));
 			break;
-		case MainActivity.PREFERENCES_ADDITIONAL_PARAMETERS:
+		case SettingsActivity.PREFERENCES_ADDITIONAL_PARAMETERS:
 			// Same here.
 			preference.setSummary(TextUtils.isEmpty(string) ? activity.getString(R.string.preferences_server_parameters) : string);
 			preference.setSummary(preference.getSummary() + "\n" + activity.getString(R.string.settings_default, activity.getString(R.string.settings_default_parameters)));
 			break;
-		case MainActivity.PREFERENCES_CALENDAR_INTERVAL:
+		case SettingsActivity.PREFERENCES_CALENDAR_INTERVAL:
 			// We store the min and max date in a variable.
 			final DateTime inf = SettingsActivity.getMinStartDate(string);
 			final DateTime sup = SettingsActivity.getMaxEndDate(string);
@@ -91,10 +90,10 @@ public class BindPreferenceValueToSummaryListener implements Preference.OnPrefer
 
 			// And we don't forget to save the "changed interval" preference.
 			if(saveChangedIntervalPreference) {
-				preference.getContext().getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
+				preference.getContext().getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).edit().putBoolean(SettingsActivity.PREFERENCES_CHANGED_INTERVAL, true).apply();
 			}
 			break;
-		case MainActivity.PREFERENCES_LESSONS_RINGER_MODE:
+		case SettingsActivity.PREFERENCES_LESSONS_RINGER_MODE:
 			final int mode = TextUtils.isEmpty(string) ? 0 : Integer.parseInt(string);
 			preference.getSharedPreferences().edit().putString(preference.getKey(), string).commit(); // We have to immediately apply the preference because it is going to be used in LessonModeManager.
 

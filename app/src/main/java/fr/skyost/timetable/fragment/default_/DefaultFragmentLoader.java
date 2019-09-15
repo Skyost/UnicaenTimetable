@@ -8,16 +8,17 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-
-import java.text.DateFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
+
+import org.joda.time.DateTime;
+
+import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.lesson.LessonModel;
 
@@ -37,7 +38,7 @@ public class DefaultFragmentLoader extends AsyncTask<LessonModel, Void, DateTime
 	 * The view reference.
 	 */
 
-	private AtomicReference<View> view;
+	private WeakReference<View> view;
 
 	/**
 	 * Creates a new default fragment loader instance.
@@ -48,7 +49,7 @@ public class DefaultFragmentLoader extends AsyncTask<LessonModel, Void, DateTime
 
 	DefaultFragmentLoader(final DefaultFragment fragment, final View view) {
 		this.fragment = fragment;
-		this.view = new AtomicReference<>(view);
+		this.view = new WeakReference<>(view);
 	}
 
 	@Override
@@ -121,13 +122,13 @@ public class DefaultFragmentLoader extends AsyncTask<LessonModel, Void, DateTime
 	}
 
 	/**
-	 * Returns the view atomic reference.
+	 * Returns the view reference.
 	 *
-	 * @return The view atomic reference.
+	 * @return The view reference.
 	 */
 
-	public AtomicReference<View> getView() {
-		return view;
+	public View getView() {
+		return view.get();
 	}
 
 	/**

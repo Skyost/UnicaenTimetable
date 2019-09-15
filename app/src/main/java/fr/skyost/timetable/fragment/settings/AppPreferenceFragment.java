@@ -15,7 +15,6 @@ import android.view.MenuItem;
 
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
 
 /**
@@ -36,14 +35,14 @@ public class AppPreferenceFragment extends PreferenceFragment {
 
 		// We add the preference listeners.
 		final Activity activity = getActivity();
-		final SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		((SwitchPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
+		final SharedPreferences preferences = activity.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		((SwitchPreference)findPreference(SettingsActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS)).setChecked(preferences.getBoolean(SettingsActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false));
 
-		final Preference automaticallyToggleSilentMode = findPreference(MainActivity.PREFERENCES_LESSONS_RINGER_MODE);
+		final Preference automaticallyToggleSilentMode = findPreference(SettingsActivity.PREFERENCES_LESSONS_RINGER_MODE);
 		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, automaticallyToggleSilentMode);
 
-		((SwitchPreference)findPreference(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE)).setChecked(preferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false));
-		findPreference(MainActivity.PREFERENCES_ADS).setOnPreferenceChangeListener((preference, newValue) -> {
+		((SwitchPreference)findPreference(SettingsActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE)).setChecked(preferences.getBoolean(SettingsActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false));
+		findPreference(SettingsActivity.PREFERENCES_ADS).setOnPreferenceChangeListener((preference, newValue) -> {
 			Snacky.builder().setActivity(activity).setText(R.string.preferences_application_enableads_restart).info().show();
 			return true;
 		});

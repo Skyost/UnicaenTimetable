@@ -1,6 +1,13 @@
 package fr.skyost.timetable.lesson;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.alamkanak.weekview.WeekViewEvent;
@@ -11,12 +18,8 @@ import org.joda.time.DateTime;
 import java.util.Locale;
 import java.util.Random;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 import biweekly.component.VEvent;
-import fr.skyost.timetable.activity.MainActivity;
+import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.utils.Utils;
 
 /**
@@ -78,6 +81,13 @@ public class Lesson implements WeekViewDisplayable<Lesson>, Comparable<Lesson> {
 	private Integer color;
 
 	/**
+	 * The current text color.
+	 */
+
+	@Ignore
+	private Integer textColor;
+
+	/**
 	 * Creates a lesson.
 	 *
 	 * @param event The biweekly event.
@@ -108,8 +118,9 @@ public class Lesson implements WeekViewDisplayable<Lesson>, Comparable<Lesson> {
 	 * @return The unique id of this lesson.
 	 */
 
+	@NonNull
 	public String getId() {
-		return String.valueOf(id);
+		return id;
 	}
 
 	/**
@@ -165,24 +176,27 @@ public class Lesson implements WeekViewDisplayable<Lesson>, Comparable<Lesson> {
 	/**
 	 * Loads the lesson color.
 	 *
+	 * @param context The context.
 	 * @param activityPreferences The activity preferences.
 	 * @param colorPreferences The color preferences.
 	 * @param defaultColor The default color.
 	 */
 
-	public void loadColor(final SharedPreferences activityPreferences, final SharedPreferences colorPreferences, final int defaultColor) {
+	public void loadColor(final Context context, final SharedPreferences activityPreferences, final SharedPreferences colorPreferences, final int defaultColor) {
 		if(colorPreferences.contains(summary)) {
 			// If our event has a custom color, we return it.
 			this.color = colorPreferences.getInt(summary, defaultColor);
-			return;
 		}
-		else if(activityPreferences.getBoolean(MainActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false)) {
+		else if(activityPreferences.getBoolean(SettingsActivity.PREFERENCES_AUTOMATICALLY_COLOR_LESSONS, false)) {
 			// Else if the automatic lessons color are enabled, we return a random color (based on the event name).
 			this.color = Utils.randomColor(150, Utils.splitEqually(summary, 3));
-			return;
 		}
-		// Otherwise we return the default color.
-		this.color = defaultColor;
+		else {
+			// Otherwise we return the default color.
+			this.color = defaultColor;
+		}
+
+		this.textColor = ContextCompat.getColor(context, Utils.isColorDark(this.color) ? android.R.color.white : android.R.color.black);
 	}
 
 	/**
@@ -216,16 +230,21 @@ public class Lesson implements WeekViewDisplayable<Lesson>, Comparable<Lesson> {
 			id = new Random().nextLong();
 		}
 
-		return new WeekViewEvent<>(
-				id,
-				summary,
-				startDate.toCalendar(Locale.getDefault()),
-				endDate.toCalendar(Locale.getDefault()),
-				Utils.addZeroIfNeeded(startDate.getHourOfDay()) + ":" + Utils.addZeroIfNeeded(startDate.getMinuteOfHour()) + " - " + Utils.addZeroIfNeeded(endDate.getHourOfDay()) + ":" + Utils.addZeroIfNeeded(endDate.getMinuteOfHour()) + (description == null ? "" : "\n\n" + description),
-				color,
-				false,
-				this
-		);
+		return new WeekViewEvent.Builder<Lesson>()
+				.setId(id)
+				.setTitle(summary)
+				.setStartTime(startDate.toCalendar(Locale.getDefault()))
+				.setEndTime(endDate.toCalendar(Locale.getDefault()))
+				.setLocation(Utils.addZeroIfNeeded(startDate.getHourOfDay()) + ":" + Utils.addZeroIfNeeded(startDate.getMinuteOfHour()) + " - " + Utils.addZeroIfNeeded(endDate.getHourOfDay()) + ":" + Utils.addZeroIfNeeded(endDate.getMinuteOfHour()) + (description == null ? "" : "\n\n" + description))
+				.setStyle(
+						new WeekViewEvent.Style.Builder()
+							.setBackgroundColor(color)
+							.setTextColor(textColor)
+							.build()
+				)
+				.setAllDay(false)
+				.setData(this)
+				.build();
 	}
 
 }

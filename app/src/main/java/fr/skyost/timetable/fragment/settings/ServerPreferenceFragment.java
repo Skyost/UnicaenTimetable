@@ -11,7 +11,6 @@ import android.preference.PreferenceFragment;
 import android.view.MenuItem;
 
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
 
 /**
@@ -32,11 +31,11 @@ public class ServerPreferenceFragment extends PreferenceFragment {
 
 		// And we add the preference listeners.
 		final Activity activity = getActivity();
-		final SharedPreferences preferences = activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(MainActivity.PREFERENCES_SERVER));
-		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(MainActivity.PREFERENCES_CALENDAR));
-		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(MainActivity.PREFERENCES_ADDITIONAL_PARAMETERS));
-		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(MainActivity.PREFERENCES_CALENDAR_INTERVAL));
+		final SharedPreferences preferences = activity.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(SettingsActivity.PREFERENCES_SERVER));
+		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(SettingsActivity.PREFERENCES_CALENDAR));
+		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(SettingsActivity.PREFERENCES_ADDITIONAL_PARAMETERS));
+		SettingsActivity.bindPreferenceValueToSummary(activity, preferences, findPreference(SettingsActivity.PREFERENCES_CALENDAR_INTERVAL));
 	}
 
 	@Override

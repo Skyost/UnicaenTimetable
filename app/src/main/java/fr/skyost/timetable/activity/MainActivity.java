@@ -13,6 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,18 +30,12 @@ import com.kobakei.ratethisapp.RateThisApp;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
 import de.mateware.snacky.Snacky;
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.fragment.day.DayFragment;
 import fr.skyost.timetable.fragment.default_.DefaultFragment;
+import fr.skyost.timetable.fragment.week.WeekFragment;
 import fr.skyost.timetable.receiver.MainActivitySyncReceiver;
 import fr.skyost.timetable.sync.TimetableSyncService;
 import fr.skyost.timetable.utils.Utils;
@@ -56,84 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private static final int SETTINGS_ACTIVITY_RESULT = 200;
 
 	/**
-	 * Activity's preferences title.
-	 */
-
-	public static final String PREFERENCES_TITLE = "preferences";
-
-	/**
-	 * The server preference key.
-	 */
-
-	public static final String PREFERENCES_SERVER = "server";
-
-	/**
-	 * The calendar preference key.
-	 */
-
-	public static final String PREFERENCES_CALENDAR = "calendar-nohtml";
-
-	/**
-	 * The additional parameters preference key.
-	 */
-
-	public static final String PREFERENCES_ADDITIONAL_PARAMETERS = "additional-parameters";
-
-	/**
-	 * The timetable refresh interval preference key.
-	 */
-
-	public static final String PREFERENCES_CALENDAR_INTERVAL = "calendar-interval";
-
-	/**
-	 * The automatic coloring of lessons preference key.
-	 */
-
-	public static final String PREFERENCES_AUTOMATICALLY_COLOR_LESSONS = "color-lessons-automatically";
-
-	/**
-	 * The open today page preference key.
-	 */
-
-	public static final String PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE = "today-automatically";
-
-	/**
-	 * The lessons ringer mode preference key.
-	 */
-
-	public static final String PREFERENCES_LESSONS_RINGER_MODE = "lessons-ringer-mode";
-
-	/**
-	 * The "pinch to zoom" tip preference key.
-	 */
-
-	public static final String PREFERENCES_TIP_SHOW_PINCHTOZOOM = "tip-show-pinchtozoom";
-
-	/**
-	 * The "change color" tip preference key.
-	 */
-
-	public static final String PREFERENCES_TIP_SHOW_CHANGECOLOR = "tip-show-changecolor";
-
-	/**
-	 * The account changed preference key.
-	 */
-
-	public static final String PREFERENCES_CHANGED_ACCOUNT = "changed-account";
-
-	/**
-	 * The interval changed preference key.
-	 */
-
-	public static final String PREFERENCES_CHANGED_INTERVAL = "changed-interval";
-
-	/**
-	 * The ads preference key.
-	 */
-
-	public static final String PREFERENCES_ADS = "ads";
-
-	/**
 	 * The refresh timetable intent key.
 	 */
 
@@ -146,10 +71,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public static final String INTENT_DATE = "date";
 
 	/**
-	 * The current displayed date (SATURDAY = main screen).
+	 * The current fragment intent key.
+	 */
+
+	public static final String INTENT_CURRENT_FRAGMENT = "current-fragment";
+
+	/**
+	 * The current displayed date.
 	 */
 
 	private LocalDate currentDate;
+
+	/**
+	 * The current displayed fragment.
+	 */
+	
+	@IdRes
+	private int currentFragment = R.id.nav_home_home;
 
 	/**
 	 * The sync receiver.
@@ -166,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
 
 		// We try to get the current date by any mean.
-		if(currentDate == null && getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false)) {
+		if(currentDate == null && getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(SettingsActivity.PREFERENCES_AUTOMATICALLY_OPEN_TODAY_PAGE, false)) {
 			final int dayOfWeek = LocalDate.now().getDayOfWeek();
 			currentDate = dayOfWeek == DateTimeConstants.SATURDAY || dayOfWeek == DateTimeConstants.SUNDAY ? LocalDate.now().withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1) : LocalDate.now();
 		}
@@ -176,6 +114,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if(getIntent().hasExtra(INTENT_DATE)) {
 			currentDate = LocalDate.parse(getIntent().getStringExtra(INTENT_DATE));
 			getIntent().removeExtra(INTENT_DATE);
+		}
+
+		// And we try to get the previous fragment.
+		if(savedInstanceState != null && savedInstanceState.containsKey(INTENT_CURRENT_FRAGMENT)) {
+			currentFragment = savedInstanceState.getInt(INTENT_CURRENT_FRAGMENT, -1);
 		}
 
 		// We load our activity.
@@ -193,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if(currentDate != null) {
 			outState.putString(INTENT_DATE, currentDate.toString("yyyy-MM-dd"));
 		}
+		outState.putInt(INTENT_CURRENT_FRAGMENT, currentFragment);
 	}
 
 	@Override
@@ -213,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	@Override
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
 		// We first get our accounts and as always, we check if we have at least one account.
 		final Account[] accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type_authority));
 		if(accounts.length == 0) {
@@ -232,19 +178,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
 			// If anything has changed, we have to refresh our views, preferences and timetable.
-			final SharedPreferences preferences = getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
-			if(preferences.getBoolean(PREFERENCES_CHANGED_ACCOUNT, false)) {
+			final SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+			if(preferences.getBoolean(SettingsActivity.PREFERENCES_CHANGED_ACCOUNT, false)) {
 				refreshTimetable();
 				final NavigationView navigationView = findViewById(R.id.main_nav_view);
 				if(navigationView == null) {
 					break;
 				}
 				((TextView)navigationView.getHeaderView(0).findViewById(R.id.main_nav_header_textview_email)).setText(getString(R.string.main_nav_email, accounts[0].name));
-				preferences.edit().putBoolean(MainActivity.PREFERENCES_CHANGED_ACCOUNT, false).apply();
+				preferences.edit().putBoolean(SettingsActivity.PREFERENCES_CHANGED_ACCOUNT, false).apply();
 			}
-			if(preferences.getBoolean(PREFERENCES_CHANGED_INTERVAL, false)) {
+			if(preferences.getBoolean(SettingsActivity.PREFERENCES_CHANGED_INTERVAL, false)) {
 				refreshTimetable();
-				preferences.edit().putBoolean(MainActivity.PREFERENCES_CHANGED_INTERVAL, false).apply();
+				preferences.edit().putBoolean(SettingsActivity.PREFERENCES_CHANGED_INTERVAL, false).apply();
 			}
 			break;
 		}
@@ -267,22 +213,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// The switch statement is pretty easy : if the user clicks on home, we shows a "Saturday" fragment (allows to keep the selected week in memory). Otherwise we shows the corresponding fragment (or activity).
 		switch(item.getItemId()) {
 		case R.id.nav_home_home:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.SATURDAY));
+		case R.id.nav_timetable_week:
+			showFragment(item.getItemId());
 			break;
 		case R.id.nav_timetable_monday:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.MONDAY));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.MONDAY));
 			break;
 		case R.id.nav_timetable_tuesday:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.TUESDAY));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.TUESDAY));
 			break;
 		case R.id.nav_timetable_wednesday:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.WEDNESDAY));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.WEDNESDAY));
 			break;
 		case R.id.nav_timetable_thursday:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.THURSDAY));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.THURSDAY));
 			break;
 		case R.id.nav_timetable_friday:
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.FRIDAY));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.FRIDAY));
 			break;
 		case R.id.nav_others_settings:
 			startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_ACTIVITY_RESULT);
@@ -301,19 +248,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	/**
 	 * Shows a fragment.
 	 *
+	 * @param fragment The menu ID of the fragment to show.
+	 */
+
+	public void showFragment(@IdRes final int fragment) {
+		currentFragment = fragment;
+
+		final NavigationView navigationView = findViewById(R.id.main_nav_view);
+		navigationView.setCheckedItem(currentFragment);
+		getSupportFragmentManager()
+				.beginTransaction()
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.main_fragment_container_layout, fragment == R.id.nav_home_home ? new DefaultFragment() : new WeekFragment())
+				.commitAllowingStateLoss();
+	}
+
+	/**
+	 * Shows a day fragment.
+	 *
 	 * @param date The day to show.
 	 */
 
-	public void showFragment(LocalDate date) {
-		if(date == null) {
-			final int dayOfWeek = LocalDate.now().getDayOfWeek();
-			date = LocalDate.now().withDayOfWeek(DateTimeConstants.SATURDAY).plusWeeks(dayOfWeek == DateTimeConstants.SATURDAY || dayOfWeek == DateTimeConstants.SUNDAY ? 1 : 0);
-		}
-
-		final NavigationView navigationView = findViewById(R.id.main_nav_view);
-		boolean isDay = true;
-
+	public void showDayFragment(LocalDate date) {
 		// We check which day has been selected.
+		final NavigationView navigationView = findViewById(R.id.main_nav_view);
 		switch(date.getDayOfWeek()) {
 		case DateTimeConstants.MONDAY:
 			navigationView.setCheckedItem(R.id.nav_timetable_monday);
@@ -330,14 +288,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		case DateTimeConstants.FRIDAY:
 			navigationView.setCheckedItem(R.id.nav_timetable_friday);
 			break;
-		default:
-			navigationView.setCheckedItem(R.id.nav_home_home);
-			isDay = false;
-			break;
 		}
 
 		// We keep it in memory.
 		currentDate = date;
+		currentFragment = -1;
 
 		// And if it's possible, we show the new fragment.
 		if(isFinishing() || isDestroyed()) {
@@ -347,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		getSupportFragmentManager()
 				.beginTransaction()
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-				.replace(R.id.main_fragment_container_layout, isDay ? DayFragment.newInstance(date) : new DefaultFragment(), date.toString("yyyy-MM-dd"))
+				.replace(R.id.main_fragment_container_layout, DayFragment.newInstance(date), date.toString("yyyy-MM-dd"))
 				.commitAllowingStateLoss();
 	}
 
@@ -378,7 +333,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
 		findViewById(R.id.main_fab).setOnClickListener(view -> refreshTimetable());
-		showFragment(currentDate);
+		if(currentFragment == -1) {
+			showDayFragment(currentDate);
+		}
+		else {
+			currentDate = LocalDate.now();
+			if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY || currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				currentDate = currentDate.plusWeeks(1);
+			}
+
+			showFragment(currentFragment);
+		}
 
 		// We setup the navigation view.
 		final String name = accounts[0].name;
@@ -464,12 +429,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		// Otherwise, if we're on friday, we have to go to monday and add one week.
 		if(currentDate.getDayOfWeek() == DateTimeConstants.FRIDAY) {
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1));
 			return;
 		}
 
 		// Else, we just have to add one day.
-		showFragment(currentDate.plusDays(1));
+		showDayFragment(currentDate.plusDays(1));
 	}
 
 	/**
@@ -482,10 +447,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			return;
 		}
 		if(currentDate.getDayOfWeek() == DateTimeConstants.MONDAY) {
-			showFragment(currentDate.withDayOfWeek(DateTimeConstants.FRIDAY).minusWeeks(1));
+			showDayFragment(currentDate.withDayOfWeek(DateTimeConstants.FRIDAY).minusWeeks(1));
 			return;
 		}
-		showFragment(currentDate.minusDays(1));
+		showDayFragment(currentDate.minusDays(1));
 	}
 
 	/**

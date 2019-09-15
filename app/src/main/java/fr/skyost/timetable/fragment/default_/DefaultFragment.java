@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import fr.skyost.timetable.R;
 import fr.skyost.timetable.activity.MainActivity;
+import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.lesson.LessonModel;
 
 /**
@@ -34,7 +36,7 @@ public class DefaultFragment extends Fragment {
 
 		// And we toggle ads if needed.
 		final AdView adView = view.findViewById(R.id.main_default_adview);
-		if(activity.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_ADS, true)) {
+		if(activity.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE).getBoolean(SettingsActivity.PREFERENCES_ADS, true)) {
 			adView.loadAd(new AdRequest.Builder().build());
 		}
 		else {

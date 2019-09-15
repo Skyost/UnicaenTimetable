@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.joda.time.DateTime;
@@ -26,8 +30,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import fr.skyost.timetable.R;
 
 /**
@@ -247,6 +249,18 @@ public class Utils {
 		else {
 			snackbar.setCallback(callback);
 		}
+	}
+
+	/**
+	 * Returns whether a given color is dark.
+	 *
+	 * @param color The color.
+	 *
+	 * @return Whether the given color is dark.
+	 */
+
+	public static boolean isColorDark(final int color) {
+		return ColorUtils.calculateLuminance(color) < 0.6;
 	}
 
 }

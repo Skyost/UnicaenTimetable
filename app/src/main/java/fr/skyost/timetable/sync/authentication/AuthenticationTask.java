@@ -7,15 +7,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.joda.time.DateTime;
 
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import androidx.appcompat.app.AppCompatActivity;
 import fr.skyost.timetable.R;
-import fr.skyost.timetable.activity.MainActivity;
 import fr.skyost.timetable.activity.settings.SettingsActivity;
 import fr.skyost.timetable.utils.Utils;
 import okhttp3.Credentials;
@@ -35,7 +35,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	public static final int SUCCESS = 100;
 
 	/**
-	 * Returned if the user don't have an account.
+	 * Returned if the user doesn't have an account.
 	 */
 
 	public static final int NO_ACCOUNT = 200;
@@ -83,7 +83,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 * The activity reference.
 	 */
 
-	private final AtomicReference<AppCompatActivity> activity;
+	private final WeakReference<AppCompatActivity> activity;
 
 	/**
 	 * The authentication listener.
@@ -113,7 +113,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 */
 
 	public AuthenticationTask(final AppCompatActivity activity, final String username, final String password, final AuthenticationListener listener) {
-		this.activity = new AtomicReference<>(activity);
+		this.activity = new WeakReference<>(activity);
 		this.username = username;
 		this.password = password;
 		this.listener = listener;
@@ -206,23 +206,23 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	 */
 
 	private static String getCalendarAddress(final Context context, final String account) {
-		final SharedPreferences preferences = context.getSharedPreferences(MainActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
+		final SharedPreferences preferences = context.getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 
 		// We get the two bounds.
 		final DateTime minDate = SettingsActivity.getMinStartDate(context);
 		final DateTime maxDate = SettingsActivity.getMaxEndDate(context);
 
 		// We get the additional parameters.
-		final String additionalParameters = preferences.getString(MainActivity.PREFERENCES_ADDITIONAL_PARAMETERS, context.getString(R.string.settings_default_parameters));
+		final String additionalParameters = preferences.getString(SettingsActivity.PREFERENCES_ADDITIONAL_PARAMETERS, context.getString(R.string.settings_default_parameters));
 		boolean addAnd = !additionalParameters.isEmpty();
 
 		// Then we can build our request !
 		final StringBuilder request = new StringBuilder()
-				.append(preferences.getString(MainActivity.PREFERENCES_SERVER, context.getString(R.string.settings_default_server)))
+				.append(preferences.getString(SettingsActivity.PREFERENCES_SERVER, context.getString(R.string.settings_default_server)))
 				.append("/home/")
 				.append(account)
 				.append("/")
-				.append(Uri.encode(preferences.getString(MainActivity.PREFERENCES_CALENDAR, context.getString(R.string.settings_default_calendarname))))
+				.append(Uri.encode(preferences.getString(SettingsActivity.PREFERENCES_CALENDAR, context.getString(R.string.settings_default_calendarname))))
 				.append("?")
 				.append(additionalParameters);
 
@@ -248,13 +248,13 @@ public class AuthenticationTask extends AsyncTask<Void, Void, AuthenticationResp
 	}
 
 	/**
-	 * Returns a reference to the activity.
+	 * Returns the activity.
 	 *
-	 * @return A reference to the activity.
+	 * @return The activity.
 	 */
 
-	public AtomicReference<AppCompatActivity> getActivity() {
-		return activity;
+	public AppCompatActivity getActivity() {
+		return activity.get();
 	}
 
 	/**
