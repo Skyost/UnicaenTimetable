@@ -335,7 +335,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
 		findViewById(R.id.main_fab).setOnClickListener(view -> refreshTimetable());
-		refreshCurrentFragment();
+		if(currentDate == null) {
+			refreshCurrentFragment();
+		}
+		else {
+			showDayFragment(currentDate);
+		}
 
 		// We setup the navigation view.
 		final String name = accounts[0].name;
@@ -418,9 +423,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			showDayFragment(currentDate);
 		}
 		else {
-			currentDate = LocalDate.now();
-			if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY || currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
-				currentDate = currentDate.plusWeeks(1);
+			if(currentDate == null) {
+				currentDate = LocalDate.now();
+				if(currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY || currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+					currentDate = currentDate.plusWeeks(1);
+				}
 			}
 
 			showFragment(currentFragment);
