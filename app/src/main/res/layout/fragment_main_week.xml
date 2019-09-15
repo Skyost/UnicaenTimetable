@@ -1,0 +1,34 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".fragment.day.DayFragment">
+
+    <ProgressBar
+        android:id="@+id/main_week_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/main_week_weekview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        app:columnGap="8dp"
+        app:dayBackgroundColor="#05000000"
+        app:todayBackgroundColor="#1848adff"
+        app:eventTextColor="@android:color/white"
+        app:headerRowBackgroundColor="#ffefefef"
+        app:headerRowPadding="12dp"
+        app:hourHeight="60dp"
+        app:numberOfVisibleDays="2"
+        app:eventTextSize="14sp"
+        app:timeColumnTextColor="#8f000000"
+        app:timeColumnBackgroundColor="#ffffffff"
+        app:timeColumnPadding="8dp"
+        app:showNowLine="true"
+        app:nowLineColor="#2980b9"/>
+
+</RelativeLayout>

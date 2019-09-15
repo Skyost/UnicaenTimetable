@@ -178,6 +178,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			break;
 		case SETTINGS_ACTIVITY_RESULT:
 			// If anything has changed, we have to refresh our views, preferences and timetable.
+			if(currentFragment == -1) {
+				showDayFragment(currentDate);
+			}
+			else {
+				showFragment(currentFragment);
+			}
+
 			final SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES_TITLE, Context.MODE_PRIVATE);
 			if(preferences.getBoolean(SettingsActivity.PREFERENCES_CHANGED_ACCOUNT, false)) {
 				refreshTimetable();
