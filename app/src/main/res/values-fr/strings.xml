@@ -79,10 +79,14 @@
     <string name="main_nav_others_settings">Paramètres</string>
     <string name="main_nav_others_about">À propos</string>
 
+    <string name="notification_lessonringermode_channel">Mode cours</string>
     <string name="notification_lessonsringermode_title">Mode cours activé</string>
     <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
     <string name="notification_lessonsringermode_exception" formatted="false">Impossible de changer le mode de sonnerie. Veuillez être sûr que l\'application a toujours la permission de changer le mode de sonnerie.</string>
     <string name="notification_lessonsringermode_button">Désactiver</string>
+
+    <string name="notification_sync_channel">Synchronisation</string>
+    <string name="notification_sync_title">Synchronisation en cours…</string>
 
     <string name="preferences_account">Compte</string>
     <string name="preferences_account_account">Changer de compte</string>

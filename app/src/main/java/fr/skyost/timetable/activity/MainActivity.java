@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	private void onTimetableFirstLoaded() {
 		// We start the service (if not done before).
-		startService(new Intent(this, TimetableSyncService.class));
+		ContextCompat.startForegroundService(this, new Intent(this, TimetableSyncService.class));
 
 		// We set the required views.
 		final Toolbar toolbar = findViewById(R.id.main_toolbar);

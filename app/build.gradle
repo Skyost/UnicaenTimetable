@@ -15,8 +15,8 @@ android {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 58
-        versionName 'v2.2'
+        versionCode 59
+        versionName 'v2.2.1'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -25,6 +25,7 @@ android {
         }
         resValue "string", "ADMOB_APP_ID", getLocalProperty("admob.appId")
         resValue "string", "ADMOB_HOME_SCREEN_BANNER", getLocalProperty("admob.homeScreenBanner")
+        resConfigs "en", "fr"
     }
     buildTypes {
         release {

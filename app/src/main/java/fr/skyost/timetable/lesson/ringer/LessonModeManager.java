@@ -2,6 +2,8 @@ package fr.skyost.timetable.lesson.ringer;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -14,6 +16,7 @@ import android.os.Build;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import org.joda.time.DateTime;
@@ -333,6 +336,25 @@ public class LessonModeManager extends BroadcastReceiver {
 
 		// And we return the corresponding mode.
 		return mode;
+	}
+
+	/**
+	 * Creates the notification channel.
+	 *
+	 * @param context The context.
+	 */
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public static void createChannel(final Context context) {
+		// We create a channel.
+		final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, context.getString(R.string.notification_lessonringermode_channel), NotificationManager.IMPORTANCE_DEFAULT);
+		channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+		// And we add it to the notification manager.
+		final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if(manager != null) {
+			manager.createNotificationChannel(channel);
+		}
 	}
 
 	/**

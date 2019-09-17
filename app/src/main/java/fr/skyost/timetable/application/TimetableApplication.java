@@ -2,10 +2,14 @@ package fr.skyost.timetable.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.multidex.MultiDex;
 import androidx.room.Room;
+
 import fr.skyost.timetable.lesson.database.AppDatabase;
+import fr.skyost.timetable.lesson.ringer.LessonModeManager;
+import fr.skyost.timetable.sync.TimetableSyncService;
 
 /**
  * The Application class.
@@ -33,6 +37,12 @@ public class TimetableApplication extends Application {
 		database = Room.databaseBuilder(this, AppDatabase.class, DATABASE)
 				//.allowMainThreadQueries()
 				.build();
+
+		// Setups the notifications.
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			LessonModeManager.createChannel(this);
+			TimetableSyncService.createChannel(this);
+		}
 	}
 
 	@Override
