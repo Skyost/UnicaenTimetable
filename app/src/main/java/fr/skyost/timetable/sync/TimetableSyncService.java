@@ -33,12 +33,6 @@ public class TimetableSyncService extends Service {
 	private static final int SERVICE_ID = 0;
 
 	/**
-	 * The notification id.
-	 */
-
-	private static final int NOTIFICATION_ID = 3;
-
-	/**
 	 * The synchronization adapter lock.
 	 */
 
@@ -51,15 +45,15 @@ public class TimetableSyncService extends Service {
 	private static TimetableSyncAdapter syncAdapter = null;
 
 	@Override
+	public int onStartCommand(final Intent intent, final int flags, final int startId) {
+		sendStartForegroundSignal();
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	@Override
 	public void onCreate() {
 		// Creates a synchronized synchronization adapter.
-		startForeground(SERVICE_ID, new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-				.setContentTitle(getString(R.string.notification_sync_title))
-				.setOngoing(true)
-				.setProgress(0, 100, true)
-				.build()
-		);
-
+		sendStartForegroundSignal();
 		synchronized(syncAdapterLock) {
 			if(syncAdapter == null) {
 				syncAdapter = new TimetableSyncAdapter(getApplicationContext());
@@ -90,6 +84,19 @@ public class TimetableSyncService extends Service {
 		if(manager != null) {
 			manager.createNotificationChannel(channel);
 		}
+	}
+
+	/**
+	 * Sends the start foreground signal.
+	 */
+
+	private void sendStartForegroundSignal() {
+		startForeground(SERVICE_ID, new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+				.setContentTitle(getString(R.string.notification_sync_title))
+				.setOngoing(true)
+				.setProgress(0, 100, true)
+				.build()
+		);
 	}
 
 }
