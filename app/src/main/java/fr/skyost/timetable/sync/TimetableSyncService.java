@@ -44,16 +44,16 @@ public class TimetableSyncService extends Service {
 
 	private static TimetableSyncAdapter syncAdapter = null;
 
-	@Override
+	/*@Override
 	public int onStartCommand(final Intent intent, final int flags, final int startId) {
 		sendStartForegroundSignal();
 		return super.onStartCommand(intent, flags, startId);
-	}
+	}*/
 
 	@Override
 	public void onCreate() {
 		// Creates a synchronized synchronization adapter.
-		sendStartForegroundSignal();
+		// sendStartForegroundSignal();
 		synchronized(syncAdapterLock) {
 			if(syncAdapter == null) {
 				syncAdapter = new TimetableSyncAdapter(getApplicationContext());
