@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -315,9 +314,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	private void onTimetableFirstLoaded() {
 		// We start the service (if not done before).
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+		try {
 			startService(new Intent(this, TimetableSyncService.class));
 		}
+		catch(final Exception ex) {}
 
 		// We set the required views.
 		final Toolbar toolbar = findViewById(R.id.main_toolbar);
