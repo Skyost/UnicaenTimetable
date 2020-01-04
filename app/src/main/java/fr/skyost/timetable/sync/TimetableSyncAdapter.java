@@ -67,6 +67,9 @@ public class TimetableSyncAdapter extends AbstractThreadedSyncAdapter {
 		final Intent intent = new Intent(MainActivitySyncReceiver.INTENT_ACTION);
 		intent.putExtra(MainActivitySyncReceiver.INTENT_RESPONSE, response);
 		intent.putExtra(ContentResolver.SYNC_EXTRAS_MANUAL, manualSync);
+		if(manualSync) {
+			intent.putExtra(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+		}
 		context.sendBroadcast(intent);
 	}
 

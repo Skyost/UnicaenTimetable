@@ -53,7 +53,11 @@ public class TimetableSyncService extends Service {
 	@Override
 	public void onCreate() {
 		// Creates a synchronized synchronization adapter.
-		// sendStartForegroundSignal();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			sendStartForegroundSignal();
+		}
+
 		synchronized(syncAdapterLock) {
 			if(syncAdapter == null) {
 				syncAdapter = new TimetableSyncAdapter(getApplicationContext());

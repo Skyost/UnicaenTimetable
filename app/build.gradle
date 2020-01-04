@@ -5,7 +5,7 @@ configurations {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
     packagingOptions {
@@ -14,9 +14,9 @@ android {
     defaultConfig {
         applicationId 'fr.skyost.timetable'
         minSdkVersion 17
-        targetSdkVersion 28
-        versionCode 62
-        versionName 'v2.2.4'
+        targetSdkVersion 29
+        versionCode 63
+        versionName 'v2.2.5'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -31,12 +31,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue 'string', 'account_type_authority', '"fr.skyost.timetable"'
+            resValue 'string', 'account_type_authority', 'fr.skyost.timetable'
         }
         debug {
             applicationIdSuffix = '.dev'
             versionNameSuffix '-dev'
-            resValue 'string', 'account_type_authority', '"fr.skyost.timetable.dev"'
+            resValue 'string', 'account_type_authority', 'fr.skyost.timetable.dev'
             resValue "string", "ADMOB_HOME_SCREEN_BANNER", "ca-app-pub-3940256099942544/6300978111"
         }
     }
@@ -52,14 +52,14 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
 
-    implementation 'androidx.room:room-runtime:2.2.0-rc01'
-    annotationProcessor 'androidx.room:room-compiler:2.2.0-rc01'
+    implementation 'androidx.room:room-runtime:2.2.3'
+    annotationProcessor 'androidx.room:room-compiler:2.2.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0'
 
     implementation 'net.sf.biweekly:biweekly:0.6.3'
@@ -71,7 +71,7 @@ dependencies {
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.matecode:Snacky:1.1.4'
-    implementation 'com.google.android.gms:play-services-ads:18.2.0'
+    implementation 'com.google.android.gms:play-services-ads:18.3.0'
 }
 
 def getLocalProperty(String name) {

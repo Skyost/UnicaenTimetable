@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -315,7 +316,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private void onTimetableFirstLoaded() {
 		// We start the service (if not done before).
 		try {
-			startService(new Intent(this, TimetableSyncService.class));
+			final Intent intent = new Intent(this, TimetableSyncService.class);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				startForegroundService(intent);
+			}
+
+			startService(intent);
 		}
 		catch(final Exception ex) {}
 
@@ -338,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// We hive the progress bar, register click events and show the good fragment.
 		findViewById(R.id.main_progressbar).setVisibility(View.GONE);
 		findViewById(R.id.main_fab).setOnClickListener(view -> refreshTimetable());
-		if(currentDate == null) {
+		if(currentDate == null || currentFragment != -1) {
 			refreshCurrentFragment();
 		}
 		else {
