@@ -121,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if(savedInstanceState != null && savedInstanceState.containsKey(INTENT_CURRENT_FRAGMENT)) {
 			currentFragment = savedInstanceState.getInt(INTENT_CURRENT_FRAGMENT, -1);
 		}
+		else {
+			currentFragment = currentDate == null ? R.id.nav_home_home : -1;
+		}
 
 		// We load our activity.
 		onTimetableFirstLoaded();
