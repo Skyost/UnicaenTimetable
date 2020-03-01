@@ -1,0 +1,13 @@
+https://pub.dev/packages/workmanager
+https://pub.dev/packages/background_fetch
+
+Clic sur le widget devrait ouvrir l'app sur le jour affiché sur le widget
+
+Id�e pour faire un widget :
+Tranquillou il est possible de faire un "text to show" formatt� en HTML, l'appli Android irait ensuite lire le fichier correspondant aux jours.
+
+Pour le mode cours, je crois qu'il faut passer par WorkManager et pas l'activer pour iOS.
+
++ share feature
++ dark theme
++ pull to refresh

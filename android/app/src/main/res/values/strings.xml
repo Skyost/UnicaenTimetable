@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Unicaen Timetable</string>
+
+    <string name="alarm_permission_granted">Permission granted.</string>
+    <string name="alarm_permission_denied">Permission denied.</string>
+
+    <string name="notification_lessonringermode_channel">Lesson mode</string>
+    <string name="notification_lessonsringermode_title">Lessons mode activated</string>
+    <string name="notification_lessonsringermode_message" formatted="false">The ringer mode has been set to %1$s. You can disable this option for this lesson by clicking on the button below.</string>
+    <string name="notification_lessonsringermode_exception" formatted="false">Unable to change the ringer mode. Please be sure that the application still has the permission to change the ringer mode.</string>
+    <string name="notification_lessonsringermode_button">Disable</string>
+
+    <string-array name="notification_lessonsringermode">
+        <item>No change</item>
+        <item>Silent</item>
+        <item>Vibrate</item>
+    </string-array>
+
+    <string name="toast_enable_silent">Please tick "Unicaen Timetable".</string>
+
+    <string name="widget_today_title">Today</string>
+    <string name="widget_today_nothing">Nothing for this day. If you think there should be something, please refresh your timetable.</string>
+    <string name="widget_today_nothingremaining">There\'s nothing remaining today.</string>
+    <string name="widget_today_error">Failed to load your timetable.</string>
+    <string name="widget_refresh">Refresh</string>
+    <string name="widget_back">Back</string>
+    <string name="widget_next">Next</string>
+</resources>
