@@ -92,7 +92,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
       builder: (_) => AlertDialog(
         title: Text(lesson.name),
         content: SingleChildScrollView(
-          child: Text(lesson.start.hour.withLeadingZero + ':' + lesson.start.minute.withLeadingZero + ' — ' + lesson.end.hour.withLeadingZero + ':' + lesson.end.minute.withLeadingZero + '\n\n' + lesson.description + '\n\n' + lesson.location),
+          child: Text(lesson.start.hour.withLeadingZero + ':' + lesson.start.minute.withLeadingZero + ' — ' + lesson.end.hour.withLeadingZero + ':' + lesson.end.minute.withLeadingZero + '\n\n' + lesson.description),
         ),
         actions: [
           Wrap(

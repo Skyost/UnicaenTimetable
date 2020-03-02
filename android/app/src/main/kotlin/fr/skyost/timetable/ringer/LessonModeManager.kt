@@ -25,11 +25,18 @@ import org.joda.time.LocalDate
  */
 @SuppressLint("ApplySharedPref")
 class LessonModeManager : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) { // If it's not enabled, we can exit right now.
-        if (!isEnabled(context)) {
-            return
-        }
+    override fun onReceive(context: Context, intent: Intent) {
+        // If it's not enabled, we can exit right now.
         AsyncTask.execute {
+            if (!isEnabled(context)) {
+                cancel(context)
+                if (inLesson(context)) {
+                    disable(context)
+                }
+
+                return@execute
+            }
+
             if (inLesson(context)) {
                 enable(context)
             } else {
@@ -43,7 +50,8 @@ class LessonModeManager : BroadcastReceiver() {
      * The disable notification action.
      */
     class NotificationAction : IntentService(NotificationAction::class.java.simpleName) {
-        override fun onHandleIntent(intent: Intent?) { // Disables the lesson mode.
+        override fun onHandleIntent(intent: Intent?) {
+            // Disables the lesson mode.
             disable(this)
         }
     }
@@ -52,27 +60,39 @@ class LessonModeManager : BroadcastReceiver() {
         /**
          * The notification channel ID.
          */
-        private const val NOTIFICATION_CHANNEL_ID = "timetable_ringer_channel"
+        private const val NOTIFICATION_CHANNEL_ID: String = "timetable_ringer_channel"
         /**
          * The notification tag.
          */
-        private const val NOTIFICATION_TAG = "timetable_ringer"
+        private const val NOTIFICATION_TAG: String = "timetable_ringer"
         /**
          * The mode notification ID.
          */
-        private const val MODE_NOTIFICATION_ID = 1
+        private const val MODE_NOTIFICATION_ID: Int = 1
         /**
          * The exception notification ID.
          */
-        private const val EXCEPTION_NOTIFICATION_ID = 2
+        private const val EXCEPTION_NOTIFICATION_ID: Int = 2
         /**
          * The ringer preference file.
          */
-        private const val RINGER_FILE = "ringer"
+        private const val RINGER_FILE: String = "ringer"
         /**
          * The ringer mode preference key.
          */
-        private const val RINGER_MODE = "mode"
+        private const val RINGER_MODE: String = "mode"
+        /**
+         * Disabled value.
+         */
+        const val VALUE_DISABLED: Int = -1
+        /**
+         * Silent value.
+         */
+        private const val VALUE_SILENT: Int = 0
+        /**
+         * Vibrate value.
+         */
+        private const val VALUE_VIBRATE: Int = 1
 
         /**
          * Turns on lesson mode, even if disabled in the config.
@@ -86,9 +106,9 @@ class LessonModeManager : BroadcastReceiver() {
                 // If it's possible, we save the current ringer mode.
                 if (!preferences.contains(RINGER_MODE)) {
                     val editor = preferences.edit()
-                    val mode = manager.ringerMode
-                    manager.ringerMode = getPreferenceMode(context)
-                    editor.putInt(RINGER_MODE, mode)
+                    val currentMode = manager.ringerMode
+                    manager.ringerMode = readModeFromPreferences(context)
+                    editor.putInt(RINGER_MODE, currentMode)
                     editor.commit()
                 }
                 // And we display the notification.
@@ -96,10 +116,11 @@ class LessonModeManager : BroadcastReceiver() {
             } catch (ex: SecurityException) {
                 // If the user has disabled the application in its settings, this exception will be thrown.
                 val message = context.getString(R.string.notification_lessonsringermode_exception)
-                val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.drawable.notification_ringer_small_drawable)
                         .setContentTitle(context.getString(R.string.notification_lessonsringermode_title))
                         .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setContentText(message)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
@@ -120,14 +141,16 @@ class LessonModeManager : BroadcastReceiver() {
             val preferences = getSharedPreferences(context)
             val manager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
             // We try to recover the ringer mode.
-            if (getPreferenceMode(context) == manager.ringerMode) {
-                val mode = preferences.getInt(RINGER_MODE, -1)
-                preferences.edit().clear().commit() // We need to clear them immediately as RingerModeStateChangeReceiver will be triggered.
-                if (mode != -1) {
+            if (readModeFromPreferences(context) == manager.ringerMode) {
+                val mode = preferences.getInt(RINGER_MODE, VALUE_DISABLED)
+                // We need to clear them immediately as RingerModeStateChangeReceiver will be triggered.
+                preferences.edit().clear().commit()
+                if (mode != VALUE_DISABLED) {
                     manager.ringerMode = mode
                 }
             } else {
-                preferences.edit().clear().commit() // Same here.
+                // Same here.
+                preferences.edit().clear().commit()
             }
             // And we close the notification.
             closeNotification(context)
@@ -141,7 +164,7 @@ class LessonModeManager : BroadcastReceiver() {
          * @return Whether the lesson mode is enabled.
          */
         fun isEnabled(context: Context): Boolean {
-            return context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, 0) != 0
+            return context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, VALUE_DISABLED) != VALUE_DISABLED
         }
 
         /**
@@ -227,7 +250,7 @@ class LessonModeManager : BroadcastReceiver() {
          *
          * @return The next schedule time of this receiver. -1 if it should be tomorrow midnight.
          */
-        fun getScheduleTime(context: Context): Long {
+        private fun getScheduleTime(context: Context): Long {
             val repository = LessonRepository()
             repository.load(context)
 
@@ -240,8 +263,8 @@ class LessonModeManager : BroadcastReceiver() {
             val next = lessons[0]
             return if (DateTime.now().isBefore(next.start)) {
                 next.start.millis + 1000L
+                // Otherwise, we return the end date (+1 sec).
             } else next.end.millis + 1000L
-            // Otherwise, we return the end date (+1 sec).
         }
 
         /**
@@ -262,13 +285,13 @@ class LessonModeManager : BroadcastReceiver() {
          *
          * @return The ringer mode sets in preferences.
          */
-        fun getPreferenceMode(context: Context): Int {
+        fun readModeFromPreferences(context: Context): Int {
             val manager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
             // We read the preference value.
             var mode = manager.ringerMode
-            when (context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, -1)) {
-                1 -> mode = AudioManager.RINGER_MODE_SILENT
-                2 -> mode = AudioManager.RINGER_MODE_VIBRATE
+            when (context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, VALUE_DISABLED)) {
+                VALUE_SILENT -> mode = AudioManager.RINGER_MODE_SILENT
+                VALUE_VIBRATE -> mode = AudioManager.RINGER_MODE_VIBRATE
             }
             // And we return the corresponding mode.
             return mode
@@ -280,20 +303,24 @@ class LessonModeManager : BroadcastReceiver() {
          * @param context The context.
          */
         @RequiresApi(api = Build.VERSION_CODES.O)
-        fun createChannel(context: Context) { // We create a channel.
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, context.getString(R.string.notification_lessonringermode_channel), NotificationManager.IMPORTANCE_DEFAULT)
+        fun createChannel(context: Context) {
+            // We create a channel.
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, context.getString(R.string.notification_lessonringermode_channel), NotificationManager.IMPORTANCE_HIGH)
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            channel.setBypassDnd(true)
             // And we add it to the notification manager.
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
         }
+
 
         /**
          * Displays the lesson mode notification.
          *
          * @param context The context.
          */
-        private fun displayNotification(context: Context) { // If we are saturday or sunday (it should not be possible), we go to the next monday.
+        private fun displayNotification(context: Context) {
+            // If we are saturday or sunday (it should not be possible), we go to the next monday.
             var date = LocalDate.now()
             if (date.dayOfWeek == DateTimeConstants.SATURDAY || date.dayOfWeek == DateTimeConstants.SUNDAY) {
                 date = date.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1)
@@ -304,16 +331,18 @@ class LessonModeManager : BroadcastReceiver() {
             // The disable intent.
             val disableMode = PendingIntent.getService(context, 0, Intent(context, NotificationAction::class.java), PendingIntent.FLAG_ONE_SHOT)
             // And we create the message.
-            val value = context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, -1)
+            val value = context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, VALUE_DISABLED)
             val message = context.getString(R.string.notification_lessonsringermode_message, context.resources.getStringArray(R.array.notification_lessonsringermode)[value].toUpperCase())
             // We build our notification.
-            val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
                     .setSmallIcon(R.drawable.notification_ringer_small_drawable)
                     .setContentTitle(context.getString(R.string.notification_lessonsringermode_title))
                     .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                     .setContentText(message)
                     .addAction(R.drawable.notification_ringer_block_drawable, context.getString(R.string.notification_lessonsringermode_button), disableMode)
                     .setOngoing(true)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             // And we send it !

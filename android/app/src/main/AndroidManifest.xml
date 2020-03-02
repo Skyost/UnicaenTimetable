@@ -48,6 +48,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
         </service>
+        <service android:name=".ringer.LessonModeManager$NotificationAction"/>
         <receiver android:name=".receiver.NeedUpdateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

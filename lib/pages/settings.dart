@@ -79,7 +79,7 @@ class _SettingsEntryWidget extends StatelessWidget {
             child: DropdownButton(
               isExpanded: true,
               onChanged: (value) async {
-                bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('ringer_mode.changed', {'value': value});
+                bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.ringer_mode_changed', {'value': value});
                 if (result) {
                   entry.value = value;
                   await entry.flush();
@@ -88,15 +88,15 @@ class _SettingsEntryWidget extends StatelessWidget {
               items: [
                 DropdownMenuItem<int>(
                   child: Text(EzLocalization.of(context).get('other.ringer_mode.disabled')),
-                  value: 0,
+                  value: -1,
                 ),
                 DropdownMenuItem<int>(
                   child: Text(EzLocalization.of(context).get('other.ringer_mode.silent')),
-                  value: 1,
+                  value: 0,
                 ),
                 DropdownMenuItem<int>(
                   child: Text(EzLocalization.of(context).get('other.ringer_mode.vibrate')),
-                  value: 2,
+                  value: 1,
                 ),
               ],
               value: entry.value,

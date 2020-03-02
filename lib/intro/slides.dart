@@ -31,7 +31,7 @@ class Slide extends StatelessWidget {
         ),
         Text(
           EzLocalization.of(context).get('intro.slides.${slideId}.message'),
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
       ];

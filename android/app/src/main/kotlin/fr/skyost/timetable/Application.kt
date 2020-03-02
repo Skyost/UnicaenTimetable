@@ -9,7 +9,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.AsyncTask
 import android.os.Build
 import android.provider.AlarmClock
 import android.provider.Settings
@@ -82,36 +81,23 @@ class Application : FlutterApplication() {
                     context.sendBroadcast(updateIntent)
                     result.success(null)
                 }
-                "ringer_mode.changed" -> {
+                "activity.ringer_mode_changed" -> {
                     val mode: Int = call.argument<Int>("value")!!
                     context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE).edit().putInt(PREFERENCES_LESSONS_RINGER_MODE, mode).commit()
-                    if (mode == 0) { // If mode = 0 (i.e. disabled), we cancel and disable the LessonModeManager.
-                        AsyncTask.execute {
-                            LessonModeManager.cancel(context)
-                            if (LessonModeManager.inLesson(context)) {
-                                LessonModeManager.disable(context)
-                            }
-                        }
-                    } else { // If mode = 1 (i.e. silent), we have to request the required permissions.
-                        if (mode == 1) {
-                            val manager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted && context is Activity) {
-                                Toast.makeText(context, R.string.toast_enable_silent, Toast.LENGTH_LONG).show()
-                                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                                context.startActivityForResult(intent, 0)
-                                result.success(false)
-                                return
-                            }
-                        }
-
-                        // And we can enable the LessonModeManager.
-                        AsyncTask.execute {
-                            LessonModeManager.schedule(context)
-                            if (LessonModeManager.inLesson(context)) {
-                                LessonModeManager.enable(context)
-                            }
+                    if (mode != LessonModeManager.VALUE_DISABLED) {
+                        val manager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted && context is Activity) {
+                            Toast.makeText(context, R.string.toast_enable_silent, Toast.LENGTH_LONG).show()
+                            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                            context.startActivityForResult(intent, 0)
+                            result.success(false)
+                            return
                         }
                     }
+
+                    // And we can enable the LessonModeManager.
+                    val intent = Intent(context, LessonModeManager::class.java)
+                    context.sendBroadcast(intent)
                     result.success(true)
                 }
                 "activity.set_alarm" -> {
@@ -141,7 +127,7 @@ class Application : FlutterApplication() {
                     }
 
                     val activity: MainActivity = context
-                    if(activity.shouldRefreshTimeTable) {
+                    if (activity.shouldRefreshTimeTable) {
                         activity.shouldRefreshTimeTable = false
                         result.success(true)
                         return
@@ -155,7 +141,7 @@ class Application : FlutterApplication() {
                     }
 
                     val activity: MainActivity = context
-                    if(activity.date != null) {
+                    if (activity.date != null) {
                         activity.date = null
                         result.success(activity.date)
                         return
@@ -170,5 +156,9 @@ class Application : FlutterApplication() {
     override fun onCreate() {
         super.onCreate()
         HeadlessTask.onInitialized { engine -> MethodChannel(engine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result -> handleMethod(call, result, applicationContext) } }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LessonModeManager.createChannel(this);
+        }
     }
 }

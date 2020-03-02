@@ -136,7 +136,7 @@ class ApplicationSettingsCategory extends SettingsCategory {
     addEntry(SettingsEntry<int>(
       keyPrefix: key,
       key: 'lessons_ringer_mode',
-      value: 0,
+      value: -1,
       enabled: Platform.isAndroid,
     ));
     addEntry(SettingsEntry<bool>(

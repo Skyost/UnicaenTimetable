@@ -11,7 +11,7 @@ class RingerModeStateChangeReceiver : BroadcastReceiver() {
         AsyncTask.execute {
             if (LessonModeManager.isEnabled(context) && LessonModeManager.inLesson(context)) {
                 val manager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                if (manager == null || LessonModeManager.getPreferenceMode(context) === manager.ringerMode) {
+                if (LessonModeManager.readModeFromPreferences(context) == manager.ringerMode) {
                     return@execute
                 }
                 LessonModeManager.disable(context)
