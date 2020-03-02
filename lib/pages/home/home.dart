@@ -122,6 +122,11 @@ class _MainStack extends StatelessWidget {
       return child;
     }
 
+    AdmobBanner banner = adMobSettingsEntry.createBannerAd();
+    if(banner == null) {
+      return child;
+    }
+
     return Stack(
       children: [
         Padding(
@@ -133,7 +138,7 @@ class _MainStack extends StatelessWidget {
           right: 0,
           bottom: 0,
           height: paddingBottom,
-          child: adMobSettingsEntry.createBannerAd(),
+          child: banner,
         ),
       ],
     );

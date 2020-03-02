@@ -72,7 +72,7 @@ class Lesson extends HiveObject with Comparable<Lesson> {
   String toString([BuildContext context]) {
     String hour;
     if(context == null) {
-      start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero;
+      hour = start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero;
     }
     else {
       String locale = EzLocalization.of(context).locale.languageCode;

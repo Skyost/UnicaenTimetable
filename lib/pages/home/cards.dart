@@ -95,7 +95,7 @@ abstract class _RemainingLessonsCard extends MaterialCard {
   Widget build(BuildContext context) {
     LessonModel lessonModel = Provider.of<LessonModel>(context);
     return FutureProvider<List<Lesson>>(
-      create: (_) => lessonModel.remainingLessons,
+      create: (_) => lessonModel.remainingLessons.then((lessons) => lessons..sort()),
       child: Builder(builder: (context) => super.build(context)),
     );
   }
@@ -146,7 +146,9 @@ class CurrentLessonCard extends _RemainingLessonsCard {
   @override
   String buildSubtitle(BuildContext context) {
     List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context) ?? [];
-    return remainingLessons.isEmpty ? EzLocalization.of(context).get('home.current_lesson.nothing') : remainingLessons.first.toString(context);
+    DateTime now = DateTime.now();
+    Lesson lesson = remainingLessons.firstWhere((lesson) => lesson.start.isBefore(now), orElse: () => null);
+    return lesson?.toString(context) ?? EzLocalization.of(context).get('home.current_lesson.nothing');
   }
 
   @override
@@ -173,10 +175,10 @@ class NextLessonCard extends _RemainingLessonsCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    DateTime now = DateTime.now();
     List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context) ?? [];
-    Lesson lesson = remainingLessons.firstWhere((lesson) => lesson.start.isBefore(now), orElse: () => null);
-    return lesson == null ? EzLocalization.of(context).get('home.next_lesson.nothing') : lesson.toString(context);
+    DateTime now = DateTime.now();
+    Lesson lesson = remainingLessons.firstWhere((lesson) => now.isBefore(lesson.start), orElse: () => null);
+    return lesson?.toString(context) ?? EzLocalization.of(context).get('home.next_lesson.nothing');
   }
 
   @override
