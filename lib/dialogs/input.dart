@@ -25,8 +25,8 @@ abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
         contentPadding: widget.contentPadding,
         content: buildForm(context),
         actions: [
-          createCancelButton(context),
           createOkButton(context),
+          createCancelButton(context),
         ],
       );
 

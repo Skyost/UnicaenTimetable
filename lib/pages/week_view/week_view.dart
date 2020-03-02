@@ -63,15 +63,15 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
   double calculateDayViewWidth(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    if (width > 600) {
+    if (width > 450) {
       return width / 3;
     }
 
-    if (width > 400) {
+    if (width > 300) {
       return width / 2;
     }
 
-    return width;
+    return width - 60;
   }
 
   DayView buildDayView(BuildContext context, WeekView weekView, DateTime date, DayViewController controller, AppTheme theme) => DayView(

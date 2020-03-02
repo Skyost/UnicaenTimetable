@@ -83,7 +83,7 @@
         },
         "lesson_info": {
             "reset_color": "Default color",
-            "set_alarm": "Alarm"
+            "set_alarm": "Set alarm"
         },
         "lesson_color": {
             "title": "Lesson color"

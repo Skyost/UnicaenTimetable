@@ -3,10 +3,12 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/main.dart';
@@ -67,8 +69,18 @@ class Lesson extends HiveObject with Comparable<Lesson> {
   }
 
   @override
-  String toString() {
-    return start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero + ' ' + name + ' (' + location + ')';
+  String toString([BuildContext context]) {
+    String hour;
+    if(context == null) {
+      start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero;
+    }
+    else {
+      String locale = EzLocalization.of(context).locale.languageCode;
+      DateFormat formatter = DateFormat.Hm(locale);
+      hour = formatter.format(start) + '-' + formatter.format(end);
+    }
+
+    return hour + ' ' + name + ' (' + location + ')';
   }
 
   @override
@@ -113,11 +125,10 @@ class LessonModel extends AppModel {
   Future<List<Lesson>> get remainingLessons async {
     DateTime now = DateTime.now();
     List<Lesson> result = await getLessonsForDate(now);
-    for (Lesson lesson in List.of(result)) {
-      if (!now.isAfter(lesson.end)) {
-        continue;
+    for (Lesson lesson in List<Lesson>.of(result, growable: false)) {
+      if (now.isAfter(lesson.end)) {
+        result.remove(lesson);
       }
-      result.remove(lesson);
     }
 
     return result..sort();

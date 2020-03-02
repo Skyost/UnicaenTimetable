@@ -10,7 +10,7 @@ class SettingsModel extends AppModel {
   static const String HIVE_BOX = 'settings';
   final List<SettingsCategory> _categories = [];
 
-  List<SettingsCategory> get categories => List.of(_categories, growable: false);
+  List<SettingsCategory> get categories => List<SettingsCategory>.of(_categories, growable: false);
 
   @override
   Future<void> initialize() async {
@@ -90,7 +90,7 @@ abstract class SettingsCategory extends ChangeNotifier {
     }
   }
 
-  List<SettingsEntry> get entries => List.of(_entries);
+  List<SettingsEntry> get entries => List<SettingsEntry>.of(_entries, growable: false);
 
   void addEntry(SettingsEntry entry) {
     if (getEntryByKey(entry.key) == null) {

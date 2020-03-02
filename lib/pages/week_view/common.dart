@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
@@ -59,7 +61,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   void onEventTap(BuildContext context, Lesson lesson, LessonModel lessonModel) {
     List<Widget> actions = [
       FlatButton(
-        child: Text(EzLocalization.of(context).get('lesson_info.reset_color').toUpperCase()),
+        child: Text(EzLocalization.of(context).get('dialogs.lesson_info.reset_color').toUpperCase()),
         onPressed: () {
           lessonModel.resetLessonColor(lesson);
           Navigator.of(context).pop();
@@ -71,17 +73,19 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
       ),
     ];
 
-    actions.insert(
-      1,
-      FlatButton(
-        child: Text(EzLocalization.of(context).get('lesson_info.set_alarm').toUpperCase()),
-        onPressed: () => UnicaenTimetableApp.CHANNEL.invokeMethod('activity.set_alarm', {
-          'title': lesson.name,
-          'hour': lesson.start.hour,
-          'minute': lesson.start.minute,
-        }),
-      ),
-    );
+    if (Platform.isAndroid) {
+      actions.insert(
+        0,
+        FlatButton(
+          child: Text(EzLocalization.of(context).get('dialogs.lesson_info.set_alarm').toUpperCase()),
+          onPressed: () => UnicaenTimetableApp.CHANNEL.invokeMethod('activity.set_alarm', {
+            'title': lesson.name,
+            'hour': lesson.start.hour,
+            'minute': lesson.start.minute,
+          }),
+        ),
+      );
+    }
 
     showDialog(
       context: context,
@@ -120,7 +124,7 @@ class WeekPickerButton extends StatelessWidget {
           initialValue: date.value,
         );
 
-        if(selectedDate != null) {
+        if (selectedDate != null) {
           date.value = selectedDate;
         }
       },

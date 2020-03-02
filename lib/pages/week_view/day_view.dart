@@ -64,8 +64,8 @@ class DayViewPage extends Page {
           DateTime date = resolveDate(context, listen: false);
           LessonModel lessonModel = Provider.of<LessonModel>(context, listen: false);
           List<Lesson> lessons = await lessonModel.getLessonsForDate(date)..sort();
-          builder.write(DateFormat.yMd().format(date) + ' :\n\n');
-          lessons.forEach((lesson) => builder.write(lesson.toString() + '\n'));
+          builder.write(DateFormat.yMd(EzLocalization.of(context).locale.languageCode).format(date) + ' :\n\n');
+          lessons.forEach((lesson) => builder.write(lesson.toString(context) + '\n'));
           String content = builder.toString();
           await Share.share(content.substring(0, content.lastIndexOf('\n')));
         },

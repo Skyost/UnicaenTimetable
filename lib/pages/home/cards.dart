@@ -86,8 +86,8 @@ abstract class MaterialCard extends StatelessWidget {
   ValueKey get cardKey => ValueKey(cardId);
 }
 
-abstract class _TodayLessonsCard extends MaterialCard {
-  const _TodayLessonsCard({
+abstract class _RemainingLessonsCard extends MaterialCard {
+  const _RemainingLessonsCard({
     @required String cardId,
   }) : super(cardId: cardId);
 
@@ -115,7 +115,7 @@ class SynchronizationStatusCard extends MaterialCard {
   @override
   String buildSubtitle(BuildContext context) {
     LessonModel lessonModel = Provider.of<LessonModel>(context);
-    String date = lessonModel.lastModificationTime == null ? EzLocalization.of(context).get('home.synchronization_status.never') : DateFormat.yMd().add_Hms().format(lessonModel.lastModificationTime);
+    String date = lessonModel.lastModificationTime == null ? EzLocalization.of(context).get('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context).locale.languageCode).add_Hms().format(lessonModel.lastModificationTime);
     return date + '\n' + EzLocalization.of(context).get('home.synchronization_status.' + (isBad(context) ? 'bad' : 'good'));
   }
 
@@ -132,7 +132,7 @@ class SynchronizationStatusCard extends MaterialCard {
   }
 }
 
-class CurrentLessonCard extends _TodayLessonsCard {
+class CurrentLessonCard extends _RemainingLessonsCard {
   static const String ID = 'current_lesson';
 
   const CurrentLessonCard() : super(cardId: ID);
@@ -146,7 +146,7 @@ class CurrentLessonCard extends _TodayLessonsCard {
   @override
   String buildSubtitle(BuildContext context) {
     List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context) ?? [];
-    return remainingLessons.isEmpty ? EzLocalization.of(context).get('home.current_lesson.nothing') : remainingLessons.first.toString();
+    return remainingLessons.isEmpty ? EzLocalization.of(context).get('home.current_lesson.nothing') : remainingLessons.first.toString(context);
   }
 
   @override
@@ -160,7 +160,7 @@ class CurrentLessonCard extends _TodayLessonsCard {
   }
 }
 
-class NextLessonCard extends _TodayLessonsCard {
+class NextLessonCard extends _RemainingLessonsCard {
   static const String ID = 'next_lesson';
 
   const NextLessonCard() : super(cardId: ID);
@@ -176,7 +176,7 @@ class NextLessonCard extends _TodayLessonsCard {
     DateTime now = DateTime.now();
     List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context) ?? [];
     Lesson lesson = remainingLessons.firstWhere((lesson) => lesson.start.isBefore(now), orElse: () => null);
-    return lesson == null ? EzLocalization.of(context).get('home.next_lesson.nothing') : lesson.toString();
+    return lesson == null ? EzLocalization.of(context).get('home.next_lesson.nothing') : lesson.toString(context);
   }
 
   @override

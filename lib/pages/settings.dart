@@ -190,10 +190,12 @@ class _SettingsEntryWidget extends StatelessWidget {
         initialValue: entry.value,
       );
 
-      if (value != null && value != entry.value) {
-        entry.value = value;
-        unawaited(entry.flush());
+      if (value == null || value == entry.value) {
+        return;
       }
+
+      entry.value = value;
+      unawaited(entry.flush());
     }
 
     unawaited(afterOnTap(context));
