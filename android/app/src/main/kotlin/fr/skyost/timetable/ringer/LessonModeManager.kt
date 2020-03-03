@@ -332,7 +332,7 @@ class LessonModeManager : BroadcastReceiver() {
             val disableMode = PendingIntent.getService(context, 0, Intent(context, NotificationAction::class.java), PendingIntent.FLAG_ONE_SHOT)
             // And we create the message.
             val value = context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSONS_RINGER_MODE, VALUE_DISABLED)
-            val message = context.getString(R.string.notification_lessonsringermode_message, context.resources.getStringArray(R.array.notification_lessonsringermode)[value].toUpperCase())
+            val message = context.getString(R.string.notification_lessonsringermode_message, context.resources.getStringArray(R.array.notification_lessonsringermode)[value + 1].toUpperCase())
             // We build our notification.
             val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
                     .setSmallIcon(R.drawable.notification_ringer_small_drawable)
