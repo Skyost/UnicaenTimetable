@@ -14,19 +14,21 @@ import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/main_widget.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// Hello world !
 void main() async {
   await Hive.initFlutter();
   runApp(UnicaenTimetableApp());
   unawaited(BackgroundFetch.registerHeadlessTask(headlessSyncTask));
 }
 
+/// The headless synchronization task.
 void headlessSyncTask(String taskId) async {
   await Hive.initFlutter();
 
   UserRepository userRepository = UserRepository();
   await userRepository.initialize();
 
-  User user = await userRepository.get();
+  User user = await userRepository.getUser();
   if (user != null) {
     LessonModel lessonModel = LessonModel();
     SettingsModel settingsModel = SettingsModel();
@@ -43,18 +45,27 @@ void headlessSyncTask(String taskId) async {
   BackgroundFetch.finish(taskId);
 }
 
+/// The app first widget.
 class UnicaenTimetableApp extends StatefulWidget {
+  /// The communication channel.
   static const MethodChannel CHANNEL = MethodChannel('fr.skyost.timetable');
 
   @override
   State<StatefulWidget> createState() => _UnicaenTimetableAppState();
 }
 
+/// The app first widget state.
 class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
+  /// EzLocalization delegate.
   final EzLocalizationDelegate ezLocalization = const EzLocalizationDelegate(supportedLocales: [Locale('en'), Locale('fr')]);
 
+  /// The lesson model.
   LessonModel lessonModel;
+
+  /// The user repository.
   UserRepository userRepository;
+
+  /// The settings model.
   SettingsModel settingsModel;
 
   @override
@@ -77,7 +88,7 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
         requiredNetworkType: NetworkType.ANY,
       ),
       (String taskId) async {
-        await lessonModel.synchronizeFromZimbra(settingsModel: settingsModel, user: await userRepository.get());
+        await lessonModel.synchronizeFromZimbra(settingsModel: settingsModel, user: await userRepository.getUser());
         BackgroundFetch.finish(taskId);
       },
     );

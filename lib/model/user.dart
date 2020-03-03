@@ -9,43 +9,51 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:steel_crypt/steel_crypt.dart';
 import 'package:unicaen_timetable/main.dart';
-import 'package:unicaen_timetable/model/app_model.dart';
-import 'package:unicaen_timetable/model/http_client.dart';
+import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/http_client.dart';
 
 part 'user.g.dart';
 
+/// Represents an user with an username and a password.
 @HiveType(typeId: 0)
 class User extends HiveObject {
+  /// The username.
   @HiveField(0)
   String username;
+
+  /// The password.
   @HiveField(1)
   String password;
 
+  /// Creates a new username instance.
   User({
     @required this.username,
     @required this.password,
   });
 
+  /// Returns the username without the @.
   String get usernameWithoutAt => username.split('@').first;
 
+  /// Returns whether this is the test user.
   Future<bool> get isTestUser async {
     Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/test_data.json'));
     return data['username'] == username && data['password'] == password;
   }
 
+  /// Requests the calendar according to the specified settings model.
   Future<Response> requestCalendar(SettingsModel model) async {
     UnicaenTimetableHttpClient client = const UnicaenTimetableHttpClient();
-    Response response = await client.connect(await getCalendarAddressFromSettings(model), this);
+    Response response = await client.connect(model.getCalendarAddressFromSettings(this), this);
     if (response?.statusCode == 401 || response?.statusCode == 404) {
       username = username.endsWith('@etu.unicaen.fr') ? username.substring(0, username.lastIndexOf('@etu.unicaen.fr')) : (username + '@etu.unicaen.fr');
-      response = await client.connect(await getCalendarAddressFromSettings(model), this);
+      response = await client.connect(model.getCalendarAddressFromSettings(this), this);
     }
 
     return response;
   }
 
+  /// Tries to login this user.
   Future<LoginResult> login(SettingsModel model) async {
     if (await isTestUser) {
       return LoginResult.SUCCESS;
@@ -54,33 +62,7 @@ class User extends HiveObject {
     return getLoginResultFromResponse(await requestCalendar(model));
   }
 
-  Future<Uri> getCalendarAddressFromSettings(SettingsModel model) async {
-    String url = (await model.getEntryByKey('server.server')).value;
-    url += '/home/';
-    url += username;
-    url += '/';
-    url += Uri.encodeFull((await model.getEntryByKey('server.calendar')).value);
-    url += '?auth=ba&fmt=json';
-
-    String additionalParameters = (await model.getEntryByKey('server.additional_parameters')).value;
-    if (additionalParameters.isNotEmpty) {
-      url += '&';
-      url += additionalParameters;
-    }
-
-    int interval = (await model.getEntryByKey('server.interval')).value;
-    if (interval > 0) {
-      DateTime now = DateTime.now().atMonday.yearMonthDay;
-      DateTime min = now.subtract(Duration(days: interval * 7));
-      DateTime max = now.add(Duration(days: interval * 7)).add(Duration(days: DateTime.friday));
-
-      url += '&start=' + min.year.toString() + '/' + min.month.withLeadingZero + '/' + min.day.withLeadingZero;
-      url += '&end=' + max.year.toString() + '/' + max.month.withLeadingZero + '/' + max.day.withLeadingZero;
-    }
-
-    return Uri.parse(url);
-  }
-
+  /// Returns the login result corresponding to the given response.
   static LoginResult getLoginResultFromResponse(Response response) {
     if (response == null) {
       return LoginResult.GENERIC_ERROR;
@@ -99,22 +81,37 @@ class User extends HiveObject {
   }
 }
 
+/// Represents a login result.
 enum LoginResult {
+  /// Login success.
   SUCCESS,
+
+  /// Calendar not found.
   NOT_FOUND,
+
+  /// Unauthorized.
   UNAUTHORIZED,
+
+  /// Generic error (no connection, catch error, ...).
   GENERIC_ERROR,
 }
 
-abstract class UserRepository<K> extends AppModel {
+/// The user repository.
+abstract class UserRepository<K> extends UnicaenTimetableModel {
+  /// The password encryption key.
   K _encryptionKey;
+
+  /// The cached user.
   User _cachedUser;
 
+  /// Creates a new user repository according to the platform.
   factory UserRepository() => Platform.isAndroid ? AndroidUserRepository() : IOSUserRepository();
 
+  /// The internal constructor.
   UserRepository._internal();
 
-  Future<User> get() async {
+  /// Returns the user.
+  Future<User> getUser() async {
     if (_cachedUser == null) {
       _cachedUser = await _read();
       notifyListeners();
@@ -123,15 +120,19 @@ abstract class UserRepository<K> extends AppModel {
     return _cachedUser;
   }
 
-  Future<User> _read();
-
+  /// Updates the user.
   @mustCallSuper
-  Future<void> update(User user) async {
+  Future<void> updateUser(User user) async {
     _cachedUser = user;
   }
+
+  /// Reads the user.
+  Future<User> _read();
 }
 
+/// The android user repository.
 class AndroidUserRepository extends UserRepository<String> {
+  /// Creates a new android user repository.
   AndroidUserRepository() : super._internal();
 
   @override
@@ -159,7 +160,7 @@ class AndroidUserRepository extends UserRepository<String> {
     }
 
     if (response['base64_encoded']) {
-      await update(User(
+      await updateUser(User(
         username: response['username'],
         password: response['password'],
       ));
@@ -173,8 +174,8 @@ class AndroidUserRepository extends UserRepository<String> {
   }
 
   @override
-  Future<void> update(User user) async {
-    await super.update(user);
+  Future<void> updateUser(User user) async {
+    await super.updateUser(user);
 
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
@@ -186,9 +187,12 @@ class AndroidUserRepository extends UserRepository<String> {
   }
 }
 
+/// The iOS user repository.
 class IOSUserRepository extends UserRepository<List<int>> {
+  /// The user hive box.
   static const String _HIVE_BOX = 'user';
 
+  /// Creates a new iOS user repository.
   IOSUserRepository() : super._internal();
 
   @override
@@ -218,8 +222,8 @@ class IOSUserRepository extends UserRepository<List<int>> {
   }
 
   @override
-  Future<void> update(User user) async {
-    await super.update(user);
+  Future<void> updateUser(User user) async {
+    await super.updateUser(user);
 
     Box<User> box = await Hive.openBox<User>(_HIVE_BOX, encryptionCipher: HiveAesCipher(_encryptionKey));
     await box.putAt(0, user);

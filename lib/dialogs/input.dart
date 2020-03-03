@@ -6,11 +6,18 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// A dialog that allows to prompt the user for a value.
 abstract class _InputDialog<T> extends StatefulWidget {
+  /// The title text key.
   final String titleKey;
+
+  /// The initial value.
   final T initialValue;
+
+  /// The dialog content padding.
   final EdgeInsets contentPadding;
 
+  /// Creates a new input dialog instance.
   const _InputDialog({
     this.titleKey,
     this.initialValue,
@@ -18,6 +25,7 @@ abstract class _InputDialog<T> extends StatefulWidget {
   });
 }
 
+/// The input dialog state.
 abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
   @override
   Widget build(BuildContext context) => AlertDialog(
@@ -30,23 +38,29 @@ abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
         ],
       );
 
+  /// Builds the dialog form.
   Widget buildForm(BuildContext context);
 
+  /// Returns the current value.
   T get value;
 
+  /// Creates the "Ok" button.
   Widget createOkButton(BuildContext context) => FlatButton(
         onPressed: () => Navigator.of(context).pop(),
         child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
       );
 
+  /// Creates the "Cancel" button.
   Widget createCancelButton(BuildContext context) => FlatButton(
         onPressed: () => Navigator.of(context).pop(value),
         child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
       );
 }
 
+/// A text input dialog.
 class TextInputDialog extends _InputDialog<String> {
-  TextInputDialog({
+  /// Creates a new text input dialog instance.
+  const TextInputDialog({
     String titleKey,
     String initialValue,
   }) : super(
@@ -57,6 +71,7 @@ class TextInputDialog extends _InputDialog<String> {
   @override
   State<StatefulWidget> createState() => _TextInputDialogState();
 
+  /// Prompts the user for a text value.
   static Future<String> getValue(
     BuildContext context, {
     String titleKey,
@@ -71,7 +86,9 @@ class TextInputDialog extends _InputDialog<String> {
       );
 }
 
+/// The text input dialog state.
 class _TextInputDialogState extends _InputDialogState<String> {
+  /// The current text editing controller.
   TextEditingController textEditingController;
 
   @override
@@ -93,12 +110,19 @@ class _TextInputDialogState extends _InputDialogState<String> {
   String get value => textEditingController.text;
 }
 
+/// An integer input dialog.
 class IntInputDialog extends _InputDialog<int> {
+  /// Min int value.
   final int min;
+
+  /// Max int value.
   final int max;
+
+  /// Divisions count.
   final int divisions;
 
-  IntInputDialog({
+  /// Creates a new integer input dialog.
+  const IntInputDialog({
     String titleKey,
     int initialValue,
     @required this.min,
@@ -112,6 +136,7 @@ class IntInputDialog extends _InputDialog<int> {
   @override
   State<StatefulWidget> createState() => _IntInputDialogState();
 
+  /// Prompts the user for an integer value.
   static Future<int> getValue(
     BuildContext context, {
     String titleKey,
@@ -132,7 +157,9 @@ class IntInputDialog extends _InputDialog<int> {
       );
 }
 
+/// The integer input dialog state.
 class _IntInputDialogState extends _InputDialogState<int> {
+  /// The current value.
   int currentValue;
 
   @override
@@ -162,12 +189,19 @@ class _IntInputDialogState extends _InputDialogState<int> {
   int get value => currentValue;
 }
 
+/// A boolean input dialog.
 class BoolInputDialog extends _InputDialog<bool> {
+  /// The message key.
   final String messageKey;
+
+  /// The yes button key.
   final String yesButtonKey;
+
+  /// The no button key.
   final String noButtonKey;
 
-  BoolInputDialog({
+  /// Creates a new boolean input dialog.
+  const BoolInputDialog({
     String titleKey,
     @required this.messageKey,
     @required this.yesButtonKey,
@@ -180,6 +214,7 @@ class BoolInputDialog extends _InputDialog<bool> {
   @override
   State<StatefulWidget> createState() => _BoolInputDialogState();
 
+  /// Prompts the user for a boolean value.
   static Future<bool> getValue(
     BuildContext context, {
     String titleKey,
@@ -198,6 +233,7 @@ class BoolInputDialog extends _InputDialog<bool> {
       );
 }
 
+/// The boolean input dialog state.
 class _BoolInputDialogState extends _InputDialogState<bool> {
   @override
   Widget buildForm(BuildContext context) => SingleChildScrollView(
@@ -220,8 +256,10 @@ class _BoolInputDialogState extends _InputDialogState<bool> {
   bool get value => null;
 }
 
+/// A color input dialog.
 class ColorInputDialog extends _InputDialog<Color> {
-  ColorInputDialog({
+  /// Creates a new color input dialog.
+  const ColorInputDialog({
     String titleKey,
     Color initialValue,
   }) : super(
@@ -232,6 +270,7 @@ class ColorInputDialog extends _InputDialog<Color> {
   @override
   State<StatefulWidget> createState() => _ColorInputDialogState();
 
+  /// Prompts the user for a color value.
   static Future<Color> getValue(
     BuildContext context, {
     String titleKey,
@@ -246,7 +285,9 @@ class ColorInputDialog extends _InputDialog<Color> {
       );
 }
 
+/// The color input dialog state.
 class _ColorInputDialogState extends _InputDialogState<Color> {
+  /// The current color.
   Color currentColor;
 
   @override
@@ -268,8 +309,10 @@ class _ColorInputDialogState extends _InputDialogState<Color> {
   Color get value => currentColor;
 }
 
+/// An available week input dialog.
 class AvailableWeekInputDialog extends _InputDialog<DateTime> {
-  AvailableWeekInputDialog({
+  /// Creates a new available week input dialog.
+  const AvailableWeekInputDialog({
     String titleKey,
     DateTime initialValue,
   }) : super(
@@ -281,6 +324,7 @@ class AvailableWeekInputDialog extends _InputDialog<DateTime> {
   @override
   State<StatefulWidget> createState() => _AvailableWeekInputDialogState();
 
+  /// Prompts the user for an available week value.
   static Future<DateTime> getValue(
     BuildContext context, {
     String titleKey,
@@ -295,8 +339,12 @@ class AvailableWeekInputDialog extends _InputDialog<DateTime> {
       );
 }
 
+/// The available week input dialog state.
 class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
+  /// Available weeks (got from a model).
   List<DateTime> weeks;
+
+  /// The currently selected week.
   DateTime currentWeek;
 
   @override
@@ -348,6 +396,7 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
   @override
   DateTime get value => currentWeek;
 
+  /// Handles on tap event.
   void onTap(DateTime monday) => setState(() {
         currentWeek = monday;
       });

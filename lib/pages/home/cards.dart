@@ -21,7 +21,7 @@ abstract class MaterialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     Color color = buildColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -211,10 +211,10 @@ class ThemeCard extends MaterialCard {
   @override
   void onTap(BuildContext context) {
     SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
-    SettingsEntry<AppTheme> themeEntry = settingsModel.getEntryByKey('application.theme');
+    SettingsEntry<UnicaenTimetableTheme> themeEntry = settingsModel.getEntryByKey('application.theme');
     themeEntry.value = themeEntry.value.opposite;
     themeEntry.flush();
   }
 
-  bool isDarkMode(BuildContext context) => Provider.of<SettingsModel>(context).theme is DarkAppTheme;
+  bool isDarkMode(BuildContext context) => Provider.of<SettingsModel>(context).theme is DarkTheme;
 }

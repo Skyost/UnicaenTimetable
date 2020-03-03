@@ -7,9 +7,12 @@ import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// The user login dialog.
 class LoginDialog extends StatefulWidget {
+  /// Whether the timetable should be synchronized after login.
   final bool synchronizeAfterLogin;
 
+  /// Creates a new login dialog instance.
   const LoginDialog({
     @required this.synchronizeAfterLogin,
   });
@@ -17,19 +20,31 @@ class LoginDialog extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LoginDialogState();
 
-  static Future<bool> show(BuildContext context, {bool synchronizeAfterLogin = false}) => showDialog(
-        context: context,
-        builder: (_) => LoginDialog(synchronizeAfterLogin: synchronizeAfterLogin),
-      );
+  /// Shows the login dialog and returns the result.
+  static Future<bool> show(BuildContext context, {bool synchronizeAfterLogin = false}) async {
+    bool result = await showDialog(
+      context: context,
+      builder: (_) => LoginDialog(synchronizeAfterLogin: synchronizeAfterLogin),
+    );
+    return result ?? false;
+  }
 }
 
+/// The login dialog state.
 class _LoginDialogState extends State<LoginDialog> {
+  /// The current form key.
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  /// The current focus node.
   FocusNode focusNode = FocusNode();
 
+  /// The username text controller.
   TextEditingController usernameController;
+
+  /// The password text controller.
   TextEditingController passwordController;
 
+  /// The current login result.
   LoginResult loginResult;
 
   @override
@@ -40,10 +55,12 @@ class _LoginDialogState extends State<LoginDialog> {
     passwordController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      User user = await Provider.of<UserRepository>(context, listen: false).get();
+      User user = await Provider.of<UserRepository>(context, listen: false).getUser();
       if (user != null) {
-        usernameController.text = user.username;
-        passwordController.text = user.password;
+        setState(() {
+          usernameController.text = user.username;
+          passwordController.text = user.password;
+        });
       }
     });
   }
@@ -99,40 +116,13 @@ class _LoginDialogState extends State<LoginDialog> {
         ),
         FlatButton(
           child: Text(EzLocalization.of(context).get('dialogs.login.login').toUpperCase()),
-          onPressed: () async {
-            if (!formKey.currentState.validate()) {
-              return;
-            }
-
-            unawaited(ProgressDialog.show(context));
-
-            SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
-            User user = User(username: usernameController.text.trim(), password: passwordController.text.trim());
-            LoginResult loginResult = await user.login(settingsModel);
-
-            if (loginResult != LoginResult.SUCCESS) {
-              await Navigator.pop(context);
-              setState(() => this.loginResult = loginResult);
-              return;
-            }
-
-            UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
-            await userRepository.update(user);
-            await Navigator.pop(context);
-            Navigator.pop(context, true);
-
-            if (widget.synchronizeAfterLogin) {
-              unawaited(Provider.of<LessonModel>(context, listen: false).synchronizeFromZimbra(
-                settingsModel: settingsModel,
-                user: user,
-              ));
-            }
-          },
+          onPressed: () => onLoginButtonPressed(context),
         ),
       ],
     );
   }
 
+  /// Creates the error message widget.
   Widget createErrorMessage() => Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Text(
@@ -140,4 +130,35 @@ class _LoginDialogState extends State<LoginDialog> {
           style: TextStyle(color: Colors.red[700]),
         ),
       );
+
+  /// Triggered when the login button has been pressed.
+  void onLoginButtonPressed(BuildContext context) async {
+    if (!formKey.currentState.validate()) {
+      return;
+    }
+
+    unawaited(ProgressDialog.show(context));
+
+    SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
+    User user = User(username: usernameController.text.trim(), password: passwordController.text.trim());
+    LoginResult loginResult = await user.login(settingsModel);
+
+    if (loginResult != LoginResult.SUCCESS) {
+      await Navigator.pop(context);
+      setState(() => this.loginResult = loginResult);
+      return;
+    }
+
+    UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
+    await userRepository.updateUser(user);
+    await Navigator.pop(context);
+    Navigator.pop(context, true);
+
+    if (widget.synchronizeAfterLogin) {
+      unawaited(Provider.of<LessonModel>(context, listen: false).synchronizeFromZimbra(
+        settingsModel: settingsModel,
+        user: user,
+      ));
+    }
+  }
 }

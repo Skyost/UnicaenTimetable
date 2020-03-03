@@ -12,30 +12,37 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/main.dart';
-import 'package:unicaen_timetable/model/app_model.dart';
+import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 part 'lesson.g.dart';
 
+/// Represents a lesson with a name, a description, a location, a start and an end.
 @HiveType(typeId: 1)
 class Lesson extends HiveObject with Comparable<Lesson> {
+  /// The lesson name.
   @HiveField(0)
   String name;
 
+  /// The lesson description.
   @HiveField(1)
   String description;
 
+  /// The lesson location.
   @HiveField(2)
   String location;
 
+  /// The lesson start.
   @HiveField(3)
   DateTime start;
 
+  /// The lesson end.
   @HiveField(4)
   DateTime end;
 
+  /// Creates a new lesson instance.
   Lesson({
     this.name,
     this.description,
@@ -44,6 +51,7 @@ class Lesson extends HiveObject with Comparable<Lesson> {
     this.end,
   });
 
+  /// Creates a new lesson instance from a Zimbra JSON map.
   Lesson.fromJson(Map<String, dynamic> inv) {
     Map<String, dynamic> comp = inv['comp'].first;
     name = comp['name'];
@@ -57,6 +65,7 @@ class Lesson extends HiveObject with Comparable<Lesson> {
     end = DateTime.fromMillisecondsSinceEpoch(comp['e'].first['u']);
   }
 
+  /// Creates a new lesson instance from a test JSON calendar.
   Lesson.fromTestJson(DateTime date, Map<String, dynamic> json) {
     List<dynamic> startParts = json['start'].split(':').map(int.parse).toList();
     List<dynamic> endParts = json['end'].split(':').map(int.parse).toList();
@@ -71,10 +80,9 @@ class Lesson extends HiveObject with Comparable<Lesson> {
   @override
   String toString([BuildContext context]) {
     String hour;
-    if(context == null) {
+    if (context == null) {
       hour = start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero;
-    }
-    else {
+    } else {
       String locale = EzLocalization.of(context).locale.languageCode;
       DateFormat formatter = DateFormat.Hm(locale);
       hour = formatter.format(start) + '-' + formatter.format(end);
@@ -87,11 +95,18 @@ class Lesson extends HiveObject with Comparable<Lesson> {
   int compareTo(Lesson other) => start.compareTo(other.start);
 }
 
-class LessonModel extends AppModel {
+/// The lesson model.
+class LessonModel extends UnicaenTimetableModel {
+  /// The lessons Hive box name.
   static const String _LESSONS_HIVE_BOX = 'lessons';
+
+  /// The lessons colors Hive box name.
   static const String _LESSONS_COLORS_HIVE_BOX = 'lessons_colors';
 
+  /// The lessons Hive box.
   LazyBox<List> _lessonsBox;
+
+  /// The lessons colors Hive box.
   Box<int> _lessonsColorsBox;
 
   @override
@@ -107,11 +122,13 @@ class LessonModel extends AppModel {
     markInitialized();
   }
 
+  /// Returns the lessons of a date.
   Future<List<Lesson>> getLessonsForDate(DateTime date) async {
     List result = await _lessonsBox.get(date.yearMonthDay.toString(), defaultValue: []);
     return List<Lesson>.from(result);
   }
 
+  /// Selects the lessons available between two dates.
   Future<List<Lesson>> selectLessons([DateTime min, DateTime max]) async {
     List<Lesson> result = [];
     DateTime date = min;
@@ -122,6 +139,7 @@ class LessonModel extends AppModel {
     return result;
   }
 
+  /// Returns the remaining today's lessons.
   Future<List<Lesson>> get remainingLessons async {
     DateTime now = DateTime.now();
     List<Lesson> result = await getLessonsForDate(now);
@@ -134,26 +152,13 @@ class LessonModel extends AppModel {
     return result..sort();
   }
 
+  /// Clears all lessons.
   Future<void> clearLessons() async {
     await _lessonsBox.clear();
     notifyListeners();
   }
 
-  Color getLessonColor(Lesson lesson) {
-    int value = _lessonsColorsBox.get(lesson.name);
-    return value == null ? null : Color(value);
-  }
-
-  Future<void> setLessonColor(Lesson lesson, Color color) async {
-    await _lessonsColorsBox.put(lesson.name, color.value);
-    notifyListeners();
-  }
-
-  Future<void> resetLessonColor(Lesson lesson) async {
-    await _lessonsColorsBox.delete(lesson.name);
-    notifyListeners();
-  }
-
+  /// Returns all weeks handled.
   Future<List<DateTime>> get availableWeeks async {
     Set<DateTime> result = HashSet();
     for (String date in _lessonsBox.keys) {
@@ -165,6 +170,7 @@ class LessonModel extends AppModel {
     return result.toList()..sort();
   }
 
+  /// Synchronizes the app with Zimbra.
   Future<dynamic> synchronizeFromZimbra({
     @required SettingsModel settingsModel,
     @required User user,
@@ -175,7 +181,7 @@ class LessonModel extends AppModel {
         await _lessonsBox.clear();
 
         DateTime now = DateTime.now();
-        if(now.weekday == DateTime.saturday || now.weekday == DateTime.sunday) {
+        if (now.weekday == DateTime.saturday || now.weekday == DateTime.sunday) {
           now = now.add(const Duration(days: 7));
         }
         DateTime monday = now.yearMonthDay.atMonday;
@@ -232,6 +238,7 @@ class LessonModel extends AppModel {
     }
   }
 
+  /// Decodes the specified day from the test calendar.
   List<Lesson> _decodeDay(DateTime date, Map<String, dynamic> calendar, String day) {
     List<Lesson> result = [];
     List<dynamic> lessons = calendar[day];
@@ -241,21 +248,50 @@ class LessonModel extends AppModel {
     return result;
   }
 
+  /// Returns the last modification time.
   DateTime get lastModificationTime => File(_lessonsBox.path).lastModifiedSync();
+
+  /// Returns the color of a lesson (depends on the name).
+  Color getLessonColor(Lesson lesson) {
+    int value = _lessonsColorsBox.get(lesson.name);
+    return value == null ? null : Color(value);
+  }
+
+  /// Sets the lesson color according to its name.
+  Future<void> setLessonColor(Lesson lesson, Color color) async {
+    await _lessonsColorsBox.put(lesson.name, color.value);
+    notifyListeners();
+  }
+
+  /// Resets the lesson color according to its name.
+  Future<void> resetLessonColor(Lesson lesson) async {
+    await _lessonsColorsBox.delete(lesson.name);
+    notifyListeners();
+  }
 }
 
+/// Represents a JSON lesson.
 class _JsonLesson {
+  /// The lesson name.
   final String name;
+
+  /// The lesson start timestamp.
   final int start;
+
+  /// The lesson end timestamp.
   final int end;
+
+  /// The lesson location.
   final String location;
 
+  /// Creates a new JSON lesson instance from a lesson.
   _JsonLesson.fromLesson(Lesson lesson)
       : name = lesson.name,
         start = lesson.start.millisecondsSinceEpoch,
         end = lesson.end.millisecondsSinceEpoch,
         location = lesson.location;
 
+  /// Converts this lesson to a JSON map.
   Map<String, dynamic> toJson() => {
         'name': name,
         'start': start,

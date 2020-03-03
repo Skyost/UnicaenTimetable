@@ -41,7 +41,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
       return const CenteredCircularProgressIndicator();
     }
 
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return WeekView(
       dates: widget.resolveDates(context),
       dayViewWidth: calculateDayViewWidth(context),
@@ -74,7 +74,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
     return width - 60;
   }
 
-  DayView buildDayView(BuildContext context, WeekView weekView, DateTime date, DayViewController controller, AppTheme theme) => DayView(
+  DayView buildDayView(BuildContext context, WeekView weekView, DateTime date, DayViewController controller, UnicaenTimetableTheme theme) => DayView(
         date: date,
         events: weekView.events,
         hoursColumnWidth: 0,

@@ -5,13 +5,17 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:unicaen_timetable/model/user.dart';
 
+/// The app http client.
 class UnicaenTimetableHttpClient {
+  /// The app user agent.
   final String userAgent;
 
+  /// Creates a new app http client.
   const UnicaenTimetableHttpClient({
     this.userAgent = 'Unicaen Timetable',
   });
 
+  /// Connects to the specified url (using the specified credentials).
   Future<Response> connect(Uri url, [User user]) async {
     try {
       Map<String, String> headers = HashMap();

@@ -41,7 +41,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return Column(
       children: [
         ListTile(
@@ -121,7 +121,7 @@ class _SettingsEntryWidget extends StatelessWidget {
 
     if (entry.key == 'account.account') {
       UserRepository userRepository = Provider.of<UserRepository>(context);
-      Future<User> user = userRepository.get();
+      Future<User> user = userRepository.getUser();
       return FutureProvider<User>.value(
         value: user,
         child: Consumer<User>(
@@ -141,9 +141,9 @@ class _SettingsEntryWidget extends StatelessWidget {
       );
     }
 
-    if (entry.value is AppTheme) {
+    if (entry.value is UnicaenTimetableTheme) {
       return Switch(
-        value: entry.value is DarkAppTheme,
+        value: entry.value is DarkTheme,
         onChanged: (_) => onTap(context),
       );
     }
@@ -178,7 +178,7 @@ class _SettingsEntryWidget extends StatelessWidget {
       unawaited(entry.flush());
     }
 
-    if (entry.value is AppTheme) {
+    if (entry.value is UnicaenTimetableTheme) {
       entry.value = entry.value.opposite;
       unawaited(entry.flush());
     }

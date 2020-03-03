@@ -5,17 +5,35 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 
+/// An intro slide widget.
 class Slide extends StatelessWidget {
+  /// The slide id.
   final String slideId;
+
+  /// The image asset.
   final String asset;
+
+  /// Whether to the next slide button should be enabled by default.
   final bool automaticallyAllowNextSlide;
 
+  /// Creates a new slide instance.
   const Slide({
     @required this.slideId,
     this.asset,
     this.automaticallyAllowNextSlide = true,
   });
 
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 36),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
+          children: createChildren(context),
+          shrinkWrap: true,
+        ),
+      );
+
+  /// Creates the list view children.
   List<Widget> createChildren(BuildContext context) => [
         Text(
           EzLocalization.of(context).get('intro.slides.${slideId}.title'),
@@ -35,19 +53,11 @@ class Slide extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ];
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 36),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
-          children: createChildren(context),
-          shrinkWrap: true,
-        ),
-      );
 }
 
+/// The first intro slide.
 class FirstSlide extends Slide {
+  /// Creates a new first intro slide instance.
   const FirstSlide()
       : super(
           slideId: 'main',
@@ -55,7 +65,9 @@ class FirstSlide extends Slide {
         );
 }
 
+/// The second intro slide.
 class SecondSlide extends Slide {
+  /// Creates a new second intro slide instance.
   const SecondSlide()
       : super(
           slideId: 'login',
@@ -72,10 +84,7 @@ class SecondSlide extends Slide {
         child: FlatButton(
           textColor: Colors.white,
           onPressed: () async {
-            if (await LoginDialog.show(
-              context,
-              synchronizeAfterLogin: true,
-            )) {
+            if (await LoginDialog.show(context, synchronizeAfterLogin: true)) {
               Provider.of<IntroScaffoldBodyModel>(context, listen: false).goToNextSlide(context);
             }
           },
@@ -90,6 +99,8 @@ class SecondSlide extends Slide {
   }
 }
 
+/// The third intro slide.
 class ThirdSlide extends Slide {
+  /// Creates a new third intro slide instance.
   const ThirdSlide() : super(slideId: 'finished');
 }

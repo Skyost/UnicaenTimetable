@@ -1,11 +1,14 @@
 import 'package:hive/hive.dart';
-import 'package:unicaen_timetable/model/app_model.dart';
+import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/pages/home/cards.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-class HomeCardsModel extends AppModel {
+/// The home cards model.
+class HomeCardsModel extends UnicaenTimetableModel {
+  /// The hive box.
   static const String _HIVE_BOX = 'home_cards';
 
+  /// The home cards box.
   Box<String> _homeCardsBox;
 
   @override
@@ -18,25 +21,30 @@ class HomeCardsModel extends AppModel {
     markInitialized();
   }
 
+  /// Adds a card to this model.
   Future<void> addCard(String id) async {
     await _homeCardsBox.add(id);
     notifyListeners();
   }
 
+  /// Removes a card from this model.
   Future<void> removeCard(String id) async {
     await _homeCardsBox.delete(_homeCardsBox.toMap().getByValue(id));
     notifyListeners();
   }
 
+  /// Returns whether this model has the specified card.
   bool hasCard(String id) => _homeCardsBox.values.contains(id);
 
+  /// Reorders the cards.
   Future<void> reorder(List<MaterialCard> cards) async {
     await _homeCardsBox.clear();
     await _homeCardsBox.addAll(cards.map((card) => card.cardId).toList());
     notifyListeners();
   }
 
-  List<MaterialCard> get cardsList {
+  /// Returns all added cards, in order.
+  List<MaterialCard> get cards {
     List<MaterialCard> cardsList = [];
     for (String cardId in _homeCardsBox.values) {
       MaterialCard card = createCardById(cardId);
@@ -47,6 +55,7 @@ class HomeCardsModel extends AppModel {
     return cardsList;
   }
 
+  /// Creates a card instance by its id.
   MaterialCard createCardById(String cardId) {
     switch (cardId) {
       case SynchronizationStatusCard.ID:

@@ -26,7 +26,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
       UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
       SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
 
-      User user = await userRepository.get();
+      User user = await userRepository.getUser();
       if (user == null) {
         unawaited(Navigator.of(context).pushReplacementNamed('/intro'));
         return;

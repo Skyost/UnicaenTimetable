@@ -6,25 +6,27 @@ import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-class AppThemeSettingsEntry extends SettingsEntry<AppTheme> {
+/// The app theme settings entry that controls the app look and feel.
+class AppThemeSettingsEntry extends SettingsEntry<UnicaenTimetableTheme> {
+  /// Creates a new app theme settings entry instance.
   AppThemeSettingsEntry({
     String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'theme',
-          value: const DarkAppTheme(),
+          value: const DarkTheme(),
         );
 
   @override
-  Future<AppTheme> load([Box settingsBox]) async {
+  Future<UnicaenTimetableTheme> load([Box settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    AppTheme theme = box.get(key, defaultValue: false) ? const DarkAppTheme() : const LightAppTheme();
+    UnicaenTimetableTheme theme = box.get(key, defaultValue: false) ? const DarkTheme() : const LightTheme();
     unawaited(theme.updateNavigationBarColor());
     return theme;
   }
 
   @override
-  set value(AppTheme value) {
+  set value(UnicaenTimetableTheme value) {
     super.value = value;
     unawaited(value.updateNavigationBarColor());
   }
@@ -32,11 +34,12 @@ class AppThemeSettingsEntry extends SettingsEntry<AppTheme> {
   @override
   Future<void> flush([Box settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    await box.put(key, value is DarkAppTheme);
+    await box.put(key, value is DarkTheme);
   }
 }
 
-abstract class AppTheme {
+/// Represents an app theme.
+abstract class UnicaenTimetableTheme {
   /// The primary color.
   final Color primaryColor;
 
@@ -79,7 +82,8 @@ abstract class AppTheme {
   /// The about header background color.
   final Color aboutHeaderBackgroundColor;
 
-  const AppTheme({
+  /// Creates a new app theme.
+  const UnicaenTimetableTheme({
     @required this.primaryColor,
     @required this.actionBarColor,
     this.scaffoldBackgroundColor,
@@ -96,6 +100,7 @@ abstract class AppTheme {
     @required this.aboutHeaderBackgroundColor,
   });
 
+  /// Converts this class values to its corresponding Flutter theme data.
   ThemeData get themeData => ThemeData(
         primaryColor: primaryColor,
         scaffoldBackgroundColor: scaffoldBackgroundColor,
@@ -125,15 +130,20 @@ abstract class AppTheme {
         ),
       );
 
+  /// Updates the current navigation bar color.
   Future<void> updateNavigationBarColor() => FlutterStatusbarcolor.setNavigationBarColor(actionBarColor);
 
-  AppTheme get opposite;
+  /// Returns the opposite app theme.
+  UnicaenTimetableTheme get opposite;
 
+  /// Creates the Flutter Week View events column background painter.
   EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date);
 }
 
-class LightAppTheme extends AppTheme {
-  const LightAppTheme()
+/// The light theme.
+class LightTheme extends UnicaenTimetableTheme {
+  /// Creates a new light theme instance.
+  const LightTheme()
       : super(
           primaryColor: Colors.indigo,
           actionBarColor: Colors.indigo,
@@ -148,14 +158,16 @@ class LightAppTheme extends AppTheme {
         );
 
   @override
-  AppTheme get opposite => const DarkAppTheme();
+  UnicaenTimetableTheme get opposite => const DarkTheme();
 
   @override
   EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date) => null;
 }
 
-class DarkAppTheme extends AppTheme {
-  const DarkAppTheme()
+/// The dark theme.
+class DarkTheme extends UnicaenTimetableTheme {
+  /// Creates a new dark theme instance.
+  const DarkTheme()
       : super(
           primaryColor: const Color(0xFF253341),
           scaffoldBackgroundColor: const Color(0xFF15202B),
@@ -172,7 +184,7 @@ class DarkAppTheme extends AppTheme {
         );
 
   @override
-  AppTheme get opposite => const LightAppTheme();
+  UnicaenTimetableTheme get opposite => const LightTheme();
 
   @override
   EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date) => EventsColumnBackgroundPainter(

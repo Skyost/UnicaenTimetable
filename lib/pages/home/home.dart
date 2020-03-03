@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       return const CenteredCircularProgressIndicator();
     }
 
-    List<MaterialCard> items = homeCardsModel.cardsList;
+    List<MaterialCard> items = homeCardsModel.cards;
     if (items.isEmpty) {
       return _MainStack(
         child: Center(

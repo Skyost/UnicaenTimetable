@@ -9,10 +9,15 @@ import 'package:hive/hive.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 
+/// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
+  /// The AdMob app identifier.
   String appId;
+
+  /// The AdMob banner identifier.
   String bannerId;
 
+  /// Creates a new AdMob settings entry instance.
   AdMobSettingsEntry({
     String keyPrefix,
   }) : super(
@@ -36,6 +41,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     _setAdMobEnabled(value);
   }
 
+  /// Sets AdMob enabled (and loads it if needed).
   Future<void> _setAdMobEnabled(bool enabled) async {
     if (enabled) {
       Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
@@ -44,6 +50,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     }
   }
 
+  /// Creates the AdMob banner ad widget.
   AdmobBanner createBannerAd([Function(AdmobBannerController controller) onBannerCreated]) {
     if (bannerId == null || !value) {
       return null;
@@ -56,6 +63,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     );
   }
 
+  /// Calculates the padding bottom.
   double calculatePaddingBottom(BuildContext context) {
     if (!value) {
       return 0;

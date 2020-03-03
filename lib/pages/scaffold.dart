@@ -92,7 +92,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
       );
 
   Widget createDrawerHeader(BuildContext context) => FutureProvider<User>(
-        create: (_) => Provider.of<UserRepository>(context).get(),
+        create: (_) => Provider.of<UserRepository>(context).getUser(),
         child: _DrawerHeader(),
       );
 
@@ -117,7 +117,7 @@ class SynchronizeFloatingButton extends StatefulWidget {
       color: Theme.of(context).primaryColor,
     );
 
-    User user = await Provider.of<UserRepository>(context, listen: false).get();
+    User user = await Provider.of<UserRepository>(context, listen: false).getUser();
 
     LessonModel lessonModel = Provider.of<LessonModel>(context, listen: false);
     dynamic result = await lessonModel.synchronizeFromZimbra(settingsModel: Provider.of<SettingsModel>(context, listen: false), user: user);
@@ -233,7 +233,7 @@ class _DrawerHeader extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return UserAccountsDrawerHeader(
       accountName: Text(user.usernameWithoutAt),
       accountEmail: Text(user.username.contains('@') ? user.username : (user.username + '@etu.unicaen.fr')),
@@ -252,7 +252,7 @@ class _DrawerSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return ListTile(
       title: Text(
         EzLocalization.of(context).get('scaffold.drawer.${titleKey}'),
@@ -272,7 +272,7 @@ class _PageListTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     ValueNotifier<Page> currentPage = Provider.of<ValueNotifier<Page>>(context);
     bool isCurrentPage = page == currentPage.value;
     return Material(
