@@ -6,9 +6,11 @@ import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 
+/// A widget that allows to show a week's lessons.
 class WeekViewPage extends StaticTitlePage {
+  /// Creates a new week view page instance.
   WeekViewPage()
       : super(
           titleKey: 'week_view.title',
@@ -21,6 +23,7 @@ class WeekViewPage extends StaticTitlePage {
   @override
   List<Widget> buildActions(BuildContext context) => [WeekPickerButton()];
 
+  /// Resolves the page dates from a given context.
   List<DateTime> resolveDates(BuildContext context) {
     DateTime monday = Provider.of<ValueNotifier<DateTime>>(context).value;
     return [
@@ -33,6 +36,7 @@ class WeekViewPage extends StaticTitlePage {
   }
 }
 
+/// The week view page state.
 class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
   @override
   Widget buildChild(BuildContext context) {
@@ -60,6 +64,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
     return (await lessonModel.selectLessons(dates.first, dates.last)).map((lesson) => createEvent(lesson, lessonModel, settingsModel)).toList();
   }
 
+  /// Calculates a day view width.
   double calculateDayViewWidth(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
@@ -74,6 +79,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
     return width - 60;
   }
 
+  /// Builds a day view.
   DayView buildDayView(BuildContext context, WeekView weekView, DateTime date, DayViewController controller, UnicaenTimetableTheme theme) => DayView(
         date: date,
         events: weekView.events,

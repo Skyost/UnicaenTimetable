@@ -4,7 +4,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// A dialog that allows to prompt the user for a value.
 abstract class _InputDialog<T> extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/progress_dialog.dart';
 
 /// The user login dialog.
 class LoginDialog extends StatefulWidget {

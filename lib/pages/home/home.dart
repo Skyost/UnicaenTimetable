@@ -10,8 +10,11 @@ import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/pages/home/cards.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 
+/// The home page widget.
 class HomePage extends StaticTitlePage {
+  /// Creates a new home page widget instance.
   const HomePage()
       : super(
           titleKey: 'home.title',
@@ -51,9 +54,8 @@ class HomePage extends StaticTitlePage {
       ];
 }
 
+/// The home page state.
 class _HomePageState extends State<HomePage> {
-  AdmobBannerController admobBannerController;
-
   @override
   Widget build(BuildContext context) {
     HomeCardsModel homeCardsModel = Provider.of<HomeCardsModel>(context);
@@ -98,18 +100,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  void dispose() {
-    admobBannerController?.dispose();
-    super.dispose();
-  }
-
+  /// Returns the list padding.
   EdgeInsetsGeometry get listPadding => const EdgeInsets.all(20);
 }
 
+/// The home page stack that shows a banner ad at the bottom.
 class _MainStack extends StatelessWidget {
+  /// The stack child (the list).
   final Widget child;
 
+  /// Creates a new main stack instance.
   const _MainStack({
     this.child,
   });
@@ -123,7 +123,7 @@ class _MainStack extends StatelessWidget {
     }
 
     AdmobBanner banner = adMobSettingsEntry.createBannerAd();
-    if(banner == null) {
+    if (banner == null) {
       return child;
     }
 

@@ -19,11 +19,13 @@ import 'package:unicaen_timetable/pages/week_view/day_view.dart';
 import 'package:unicaen_timetable/pages/week_view/week_view.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// The app scaffold, containing the drawer and the shown page.
 class AppScaffold extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AppScaffoldState();
 }
 
+/// The app scaffold state.
 class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
   @override
   void initState() {
@@ -91,24 +93,28 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
         ),
       );
 
+  /// Creates the drawer header widget.
   Widget createDrawerHeader(BuildContext context) => FutureProvider<User>(
         create: (_) => Provider.of<UserRepository>(context).getUser(),
         child: _DrawerHeader(),
       );
 
+  /// Goes to the date (if found in the app channel).
   void goToDateIfNeeded() => WidgetsBinding.instance.addPostFrameCallback((_) async {
-    String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
-    if (rawDate != null) {
-      DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
-      Provider.of<ValueNotifier<DateTime>>(context, listen: false).value = date;
-    }
-  });
+        String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
+        if (rawDate != null) {
+          DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
+          Provider.of<ValueNotifier<DateTime>>(context, listen: false).value = date;
+        }
+      });
 }
 
+/// The floating button that allows to synchronize the app.
 class SynchronizeFloatingButton extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SynchronizeFloatingButtonState();
 
+  /// Triggered when the floating button has been pressed.
   static Future<void> onPressed(BuildContext context) async {
     Utils.showSnackBar(
       context: context,
@@ -172,6 +178,7 @@ class SynchronizeFloatingButton extends StatefulWidget {
   }
 }
 
+/// The synchronize floating button state.
 class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> with WidgetsBindingObserver {
   @override
   void initState() {
@@ -199,7 +206,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
     );
 
     double paddingBottom = Provider.of<SettingsModel>(context).adMobEntry.calculatePaddingBottom(context);
-    if(paddingBottom == 0 || Provider.of<ValueNotifier<Page>>(context).value is! HomePage) {
+    if (paddingBottom == 0 || Provider.of<ValueNotifier<Page>>(context).value is! HomePage) {
       return button;
     }
 
@@ -215,6 +222,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
     super.dispose();
   }
 
+  /// Synchronize the app (if found in the app channel).
   void syncIfNeeded() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       bool shouldSync = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_should_sync');
@@ -225,6 +233,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
   }
 }
 
+/// The drawer header.
 class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -243,9 +252,12 @@ class _DrawerHeader extends StatelessWidget {
   }
 }
 
+/// A drawer section title.
 class _DrawerSectionTitle extends StatelessWidget {
+  /// The title string key.
   final String titleKey;
 
+  /// Creates a new drawer section title instance.
   const _DrawerSectionTitle({
     @required this.titleKey,
   });
@@ -263,9 +275,12 @@ class _DrawerSectionTitle extends StatelessWidget {
   }
 }
 
+/// Allows to show a page in the drawer (with its icon and its title).
 class _PageListTitle extends StatelessWidget {
+  /// The page.
   final Page page;
 
+  /// Creates a new page list title instance.
   const _PageListTitle({
     @required this.page,
   });

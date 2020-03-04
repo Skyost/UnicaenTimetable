@@ -12,11 +12,13 @@ import 'package:unicaen_timetable/pages/scaffold.dart';
 import 'package:unicaen_timetable/pages/week_view/day_view.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// The app main widget that creates the Scaffold with a page and a date.
 class AppMainWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AppMainWidgetState();
 }
 
+/// The app main widget state.
 class _AppMainWidgetState extends State<AppMainWidget> {
   @override
   void initState() {
@@ -89,6 +91,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
     );
   }
 
+  /// Returns monday of the current week.
   DateTime get _mondayOfCurrentWeek {
     DateTime date = DateTime.now().yearMonthDay;
     if (date.weekday == DateTime.saturday || date.weekday == DateTime.sunday) {

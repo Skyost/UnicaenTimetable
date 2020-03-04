@@ -9,7 +9,9 @@ import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// The about page that shows info about the app.
 class AboutPage extends StaticTitlePage {
+  /// Creates a new about page instance.
   const AboutPage()
       : super(
           titleKey: 'about.title',
@@ -20,6 +22,7 @@ class AboutPage extends StaticTitlePage {
   State<StatefulWidget> createState() => _AboutPageState();
 }
 
+/// The about page state.
 class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) => ListView(
@@ -31,6 +34,7 @@ class _AboutPageState extends State<AboutPage> {
       );
 }
 
+/// The about page list header.
 class _ListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
@@ -60,6 +64,7 @@ class _ListHeader extends StatelessWidget {
       );
 }
 
+/// The about page list body.
 class _ListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
@@ -85,6 +90,7 @@ class _ListBody extends StatelessWidget {
       );
 }
 
+/// The about page list footer.
 class _ListFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
@@ -125,6 +131,7 @@ class _ListFooter extends StatelessWidget {
       );
 }
 
+/// Paints a little but cool symbol between the two paragraphs.
 class _SymbolPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

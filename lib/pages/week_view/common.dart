@@ -10,6 +10,7 @@ import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// A widget that shows a FlutterWeekView widget.
 abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   @override
   Widget build(BuildContext context) {
@@ -26,24 +27,25 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   }
 
   FlutterWeekViewEvent createEvent(Lesson lesson, LessonModel lessonModel, SettingsModel settingsModel) {
-    List<Color> colors = computeColors(lessonModel, settingsModel, lesson);
+    Pair<Color, Color> colors = computeColors(lessonModel, settingsModel, lesson);
     return FlutterWeekViewEvent(
       title: lesson.name,
       description: lesson.description,
       start: lesson.start,
       end: lesson.end,
-      backgroundColor: colors[0],
-      onLongPress: () => onEventLongPress(context, lesson, lessonModel, colors[0]),
+      backgroundColor: colors.first,
+      onLongPress: () => onEventLongPress(context, lesson, lessonModel, colors.first),
       onTap: () => onEventTap(context, lesson, lessonModel),
-      textStyle: TextStyle(color: colors[1]),
+      textStyle: TextStyle(color: colors.second),
     );
   }
 
-  List<Color> computeColors(LessonModel lessonModel, SettingsModel settingsModel, Lesson lesson) {
+  /// Computes lesson
+  Pair<Color, Color> computeColors(LessonModel lessonModel, SettingsModel settingsModel, Lesson lesson) {
     Color backgroundColor = lessonModel.getLessonColor(lesson);
     backgroundColor ??= settingsModel.getEntryByKey('application.color_lessons_automatically').value ? Utils.randomColor(150, lesson.name.splitEqually(3)) : const Color(0xCC2196F3).withAlpha(150);
     Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
-    return [backgroundColor, textColor];
+    return Pair<Color, Color>(backgroundColor, textColor);
   }
 
   Future<void> onEventLongPress(BuildContext context, Lesson lesson, LessonModel lessonModel, Color initialValue) async {

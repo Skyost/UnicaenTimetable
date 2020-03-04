@@ -11,7 +11,9 @@ import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/scaffold.dart';
 
+/// The page that allows to configure the app.
 class SettingsPage extends StaticTitlePage {
+  /// Creates a new settings page instance.
   const SettingsPage()
       : super(
           titleKey: 'settings.title',
@@ -22,6 +24,7 @@ class SettingsPage extends StaticTitlePage {
   State<StatefulWidget> createState() => _SettingsPageState();
 }
 
+/// The settings page state.
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) => Consumer<SettingsModel>(
@@ -32,9 +35,12 @@ class _SettingsPageState extends State<SettingsPage> {
       );
 }
 
+/// A widget that shows a settings category.
 class _SettingsCategoryWidget extends StatelessWidget {
+  /// The settings category.
   final SettingsCategory category;
 
+  /// Creates a new settings category widget.
   const _SettingsCategoryWidget({
     @required this.category,
   });
@@ -60,9 +66,12 @@ class _SettingsCategoryWidget extends StatelessWidget {
   }
 }
 
+/// A widget that shows a settings entry.
 class _SettingsEntryWidget extends StatelessWidget {
+  /// The settings entry.
   final SettingsEntry entry;
 
+  /// Creates a new settings entry widget instance.
   const _SettingsEntryWidget({
     @required this.entry,
   });
@@ -114,6 +123,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     );
   }
 
+  /// Creates the subtitle widget.
   Widget createSubtitle(BuildContext context) {
     if (entry.value is String) {
       return Text(entry.value);
@@ -133,6 +143,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     return null;
   }
 
+  /// Creates the controller widget.
   Widget createController(BuildContext context) {
     if (entry.value is bool) {
       return Switch(
@@ -151,6 +162,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     return null;
   }
 
+  /// Triggered before running the "on tap" action.
   Future<bool> beforeOnTap(BuildContext context) async {
     switch (entry.key) {
       case 'application.enable_ads':
@@ -167,6 +179,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     }
   }
 
+  /// Triggered when the user has tapped the controller.
   Future<void> onTap(BuildContext context) async {
     bool result = await beforeOnTap(context);
     if (!result) {
@@ -201,6 +214,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     unawaited(afterOnTap(context));
   }
 
+  /// Triggered after the user has tapped the controller.
   Future<void> afterOnTap(BuildContext context) async {
     switch (entry.key) {
       case 'account.account':
@@ -235,6 +249,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     }
   }
 
+  /// Synchronizes the app.
   void synchronize(BuildContext context) async {
     unawaited(SynchronizeFloatingButton.onPressed(context));
   }

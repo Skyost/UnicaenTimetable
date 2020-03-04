@@ -12,9 +12,12 @@ import 'package:unicaen_timetable/pages/scaffold.dart';
 import 'package:unicaen_timetable/pages/week_view/day_view.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// A home material card, draggable and with an id.
 abstract class MaterialCard extends StatelessWidget {
+  /// The card identifier.
   final String cardId;
 
+  /// Creates a new material card instance.
   const MaterialCard({
     @required this.cardId,
   });
@@ -73,20 +76,28 @@ abstract class MaterialCard extends StatelessWidget {
     );
   }
 
+  /// Builds the icon widget.
   IconData buildIcon(BuildContext context);
 
+  /// Builds the card color.
   Color buildColor(BuildContext context);
 
+  /// Builds the card title.
   String buildTitle(BuildContext context) => EzLocalization.of(context).get('home.${cardId}.title');
 
+  /// Builds the card subtitle.
   String buildSubtitle(BuildContext context);
 
+  /// Triggered when the user taps on the card.
   void onTap(BuildContext context);
 
+  /// The card widget key.
   ValueKey get cardKey => ValueKey(cardId);
 }
 
+/// A card that uses remaining lessons of the day.
 abstract class _RemainingLessonsCard extends MaterialCard {
+  /// Creates the remaining lessons card.
   const _RemainingLessonsCard({
     @required String cardId,
   }) : super(cardId: cardId);
@@ -101,9 +112,12 @@ abstract class _RemainingLessonsCard extends MaterialCard {
   }
 }
 
+/// A card that shows the synchronization status.
 class SynchronizationStatusCard extends MaterialCard {
+  /// The card id.
   static const String ID = 'synchronization_status';
 
+  /// Creates the synchronization status card.
   const SynchronizationStatusCard() : super(cardId: ID);
 
   @override
@@ -132,9 +146,12 @@ class SynchronizationStatusCard extends MaterialCard {
   }
 }
 
+/// A card that allows to show the current lesson.
 class CurrentLessonCard extends _RemainingLessonsCard {
+  /// The card id.
   static const String ID = 'current_lesson';
 
+  /// Creates a new current lesson card instance.
   const CurrentLessonCard() : super(cardId: ID);
 
   @override
@@ -162,9 +179,12 @@ class CurrentLessonCard extends _RemainingLessonsCard {
   }
 }
 
+/// A card that allows to show the next lesson of today.
 class NextLessonCard extends _RemainingLessonsCard {
+  /// The card id.
   static const String ID = 'next_lesson';
 
+  /// Creates a new next lesson card instance.
   const NextLessonCard() : super(cardId: ID);
 
   @override
@@ -192,9 +212,12 @@ class NextLessonCard extends _RemainingLessonsCard {
   }
 }
 
+/// A card that allows to change the app theme.
 class ThemeCard extends MaterialCard {
+  /// The card id.
   static const String ID = 'current_theme';
 
+  /// Creates a new theme card instance.
   const ThemeCard() : super(cardId: ID);
 
   @override
@@ -216,5 +239,6 @@ class ThemeCard extends MaterialCard {
     themeEntry.flush();
   }
 
+  /// Returns whether the app is in dark mode.
   bool isDarkMode(BuildContext context) => Provider.of<SettingsModel>(context).theme is DarkTheme;
 }

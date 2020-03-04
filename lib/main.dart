@@ -12,7 +12,7 @@ import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/main_widget.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// Hello world !
 void main() async {

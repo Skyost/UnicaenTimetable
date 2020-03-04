@@ -12,10 +12,14 @@ import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 
+/// The page that allows to show a day's lessons.
 class DayViewPage extends Page {
+  /// The week day.
   final int weekDay;
 
+  /// Creates a new day view page instance.
   DayViewPage({
     @required this.weekDay,
   }) : super(icon: null);
@@ -73,6 +77,7 @@ class DayViewPage extends Page {
     ];
   }
 
+  /// Goes to the previous day.
   void previousDay(BuildContext context) {
     int weekDay = this.weekDay;
     if (weekDay == DateTime.monday) {
@@ -86,6 +91,7 @@ class DayViewPage extends Page {
     Provider.of<ValueNotifier<Page>>(context, listen: false).value = DayViewPage(weekDay: weekDay);
   }
 
+  /// Goes to the next day.
   void nextDay(BuildContext context) {
     int weekDay = this.weekDay;
     if (weekDay == DateTime.friday) {
@@ -99,12 +105,14 @@ class DayViewPage extends Page {
     Provider.of<ValueNotifier<Page>>(context, listen: false).value = DayViewPage(weekDay: weekDay);
   }
 
+  /// Resolves the date from the given context.
   DateTime resolveDate(BuildContext context, {bool listen = true}) {
     DateTime monday = Provider.of<ValueNotifier<DateTime>>(context, listen: listen).value;
     return monday.add(Duration(days: weekDay - 1));
   }
 }
 
+/// The day view page state.
 class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
   @override
   Widget buildChild(BuildContext context) {
