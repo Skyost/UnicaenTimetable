@@ -26,7 +26,7 @@ abstract class MaterialCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Handle(
-        delay: const Duration(milliseconds: 500),
+        delay: const Duration(milliseconds: 900),
         child: Material(
           elevation: 1,
           borderRadius: BorderRadius.circular(15),

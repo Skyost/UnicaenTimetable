@@ -142,8 +142,9 @@ class Application : FlutterApplication() {
 
                     val activity: MainActivity = context
                     if (activity.date != null) {
+                        val date: String = activity.date!!
                         activity.date = null
-                        result.success(activity.date)
+                        result.success(date)
                         return
                     }
                     result.success(null)
