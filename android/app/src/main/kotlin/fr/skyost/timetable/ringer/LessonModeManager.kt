@@ -28,21 +28,20 @@ class LessonModeManager : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         // If it's not enabled, we can exit right now.
         AsyncTask.execute {
-            if (!isEnabled(context)) {
+            if (isEnabled(context)) {
+                if (inLesson(context)) {
+                    enable(context)
+                } else {
+                    disable(context)
+                }
+                schedule(context)
+            }
+            else {
                 cancel(context)
                 if (inLesson(context)) {
                     disable(context)
                 }
-
-                return@execute
             }
-
-            if (inLesson(context)) {
-                enable(context)
-            } else {
-                disable(context)
-            }
-            schedule(context)
         }
     }
 

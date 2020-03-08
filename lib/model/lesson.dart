@@ -201,7 +201,7 @@ class LessonModel extends UnicaenTimetableModel {
           return response;
         }
 
-        Map<String, dynamic> body = jsonDecode(response.body);
+        Map<String, dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
         await _lessonsBox.clear();
 
         if (body.isNotEmpty) {
