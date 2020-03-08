@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +78,9 @@ class _ListBody extends StatelessWidget {
                 height: 50,
                 width: 50,
                 child: CustomPaint(
-                  painter: _SymbolPainter(),
+                  painter: _SymbolPainter(
+                    color: Provider.of<SettingsModel>(context).theme.textColor ?? Colors.black54,
+                  ),
                   willChange: false,
                 ),
               ),
@@ -107,6 +108,7 @@ class _ListFooter extends StatelessWidget {
               icon: SvgPicture.asset(
                 'assets/about/github.svg',
                 height: 40,
+                color: (Provider.of<SettingsModel>(context).theme.textColor ?? Colors.black).withAlpha(255),
               ),
               onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),
@@ -125,11 +127,19 @@ class _ListFooter extends StatelessWidget {
 
 /// Paints a little but cool symbol between the two paragraphs.
 class _SymbolPainter extends CustomPainter {
+  /// The symbol color.
+  final Color color;
+
+  /// Creates a new symbol painter instance.
+  const _SymbolPainter({
+    this.color,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     paint.strokeWidth = 2;
-    paint.color = Colors.black54;
+    paint.color = color;
     paint.style = PaintingStyle.stroke;
     paint.strokeCap = StrokeCap.butt;
     paint.isAntiAlias = true;
@@ -146,5 +156,5 @@ class _SymbolPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SymbolPainter oldDelegate) => false;
+  bool shouldRepaint(_SymbolPainter oldDelegate) => oldDelegate.color != color;
 }

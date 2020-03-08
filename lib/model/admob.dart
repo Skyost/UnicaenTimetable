@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:admob_flutter/admob_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:pedantic/pedantic.dart';

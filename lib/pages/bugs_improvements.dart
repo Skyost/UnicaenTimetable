@@ -9,6 +9,7 @@ import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
+/// A page that allows the user to contact me in case of any bug occurred / improvements needed.
 class BugsImprovementsPage extends StaticTitlePage {
   /// Creates a new bugs / improvements page instance.
   const BugsImprovementsPage()
@@ -21,6 +22,7 @@ class BugsImprovementsPage extends StaticTitlePage {
   State<StatefulWidget> createState() => _BugsImprovementsPageState();
 }
 
+/// The bugs / improvements page state.
 class _BugsImprovementsPageState extends State<BugsImprovementsPage> {
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,7 @@ class _BugsImprovementsPageState extends State<BugsImprovementsPage> {
     );
   }
 
+  /// Creates a paragraph with an end link "here".
   Widget createTextWidgetWithLink(UnicaenTimetableTheme theme, String textKey, String link) => RichText(
         text: TextSpan(
           children: [
