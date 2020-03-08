@@ -1,6 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/pages/home/cards.dart';
+import 'package:unicaen_timetable/pages/home/cards/card.dart';
+import 'package:unicaen_timetable/pages/home/cards/current_lesson.dart';
+import 'package:unicaen_timetable/pages/home/cards/info.dart';
+import 'package:unicaen_timetable/pages/home/cards/next_lesson.dart';
+import 'package:unicaen_timetable/pages/home/cards/synchronization_status.dart';
+import 'package:unicaen_timetable/pages/home/cards/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The home cards model.
@@ -66,6 +71,8 @@ class HomeCardsModel extends UnicaenTimetableModel {
         return const NextLessonCard();
       case ThemeCard.ID:
         return const ThemeCard();
+      case InfoCard.ID:
+        return const InfoCard();
       default:
         return null;
     }

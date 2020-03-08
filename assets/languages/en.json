@@ -18,6 +18,7 @@
     "home": {
         "title": "Home",
         "no_card": "The application home page feels a bit empty. Feel free to add some widgets using the upper-right button.",
+        "loading": "Loading…",
         "synchronization_status": {
             "name": "Synchronization status",
             "title": "Last synchronization :",
@@ -40,6 +41,10 @@
             "title": "Current theme :",
             "light": "Light mode.",
             "dark": "Dark mode."
+        },
+        "info": {
+            "name": "Device & app info",
+            "title": "Info :"
         }
     },
     "week_view": {

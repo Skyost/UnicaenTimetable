@@ -7,7 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/admob.dart';
 import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/pages/home/cards.dart';
+import 'package:unicaen_timetable/pages/home/cards/card.dart';
+import 'package:unicaen_timetable/pages/home/cards/current_lesson.dart';
+import 'package:unicaen_timetable/pages/home/cards/info.dart';
+import 'package:unicaen_timetable/pages/home/cards/next_lesson.dart';
+import 'package:unicaen_timetable/pages/home/cards/synchronization_status.dart';
+import 'package:unicaen_timetable/pages/home/cards/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
@@ -28,7 +33,7 @@ class HomePage extends StaticTitlePage {
   List<Widget> buildActions(BuildContext context) => [
         PopupMenuButton<String>(
           icon: Icon(Icons.add),
-          itemBuilder: (context) => [SynchronizationStatusCard.ID, CurrentLessonCard.ID, NextLessonCard.ID, ThemeCard.ID]
+          itemBuilder: (context) => [SynchronizationStatusCard.ID, CurrentLessonCard.ID, NextLessonCard.ID, ThemeCard.ID, InfoCard.ID]
               .map(
                 (id) => PopupMenuItem<String>(
                   child: Text(EzLocalization.of(context).get('home.${id}.name')),
