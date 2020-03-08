@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Contains some useful methods.
 extension StringUtils on String {
@@ -65,6 +66,13 @@ extension MapUtils<K, V> on Map<K, V> {
 
 /// Contains some useful methods.
 class Utils {
+  /// Opens an url, if possible.
+  static Future<void> openUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+  }
+
   /// Creates a random color by using a seed for each value (rgb).
   static Color randomColor(int alpha, List<String> seeds) {
     if (seeds.length < 3) {

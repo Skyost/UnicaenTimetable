@@ -12,6 +12,7 @@ import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/about.dart';
+import 'package:unicaen_timetable/pages/bugs_improvements.dart';
 import 'package:unicaen_timetable/pages/home/home.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/settings.dart';
@@ -88,6 +89,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
             const Divider(),
             const _DrawerSectionTitle(titleKey: 'others'),
             const _PageListTitle(page: SettingsPage()),
+            const _PageListTitle(page: BugsImprovementsPage()),
             const _PageListTitle(page: AboutPage()),
           ],
         ),

@@ -67,6 +67,13 @@
             "interval": "Number of weeks to download"
         }
     },
+    "bugs_improvements": {
+        "title": "Bugs / Improvements",
+        "message": {
+            "github": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available",
+            "website": "You can also send me an email via the form which is available"
+        }
+    },
     "about": {
         "title": "About",
         "paragraphs": {
@@ -150,6 +157,7 @@
             "silent": "Silent",
             "vibrate": "Vibrate"
         },
-        "please_wait": "Please wait…"
+        "please_wait": "Please wait…",
+        "here": "here"
     }
 }

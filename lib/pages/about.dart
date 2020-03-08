@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The about page that shows info about the app.
 class AboutPage extends StaticTitlePage {
@@ -108,11 +108,7 @@ class _ListFooter extends StatelessWidget {
                 'assets/about/github.svg',
                 height: 40,
               ),
-              onPressed: () async {
-                if (await canLaunch('https://github.com/Skyost/UnicaenTimetable')) {
-                  await launch('https://github.com/Skyost/UnicaenTimetable');
-                }
-              },
+              onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),
             IconButton(
               iconSize: 40,
@@ -120,11 +116,7 @@ class _ListFooter extends StatelessWidget {
                 backgroundImage: AssetImage('assets/about/skyost.png'),
                 radius: 20,
               ),
-              onPressed: () async {
-                if (await canLaunch('https://www.skyost.eu')) {
-                  await launch('https://www.skyost.eu');
-                }
-              },
+              onPressed: () => Utils.openUrl('https://www.skyost.eu'),
             ),
           ],
         ),
