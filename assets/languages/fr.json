@@ -158,6 +158,7 @@
             "vibrate": "Vibreur"
         },
         "please_wait": "Veuillez patienter…",
-        "here": "ici"
+        "here": "ici",
+        "empty": "Vide"
     }
 }

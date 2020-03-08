@@ -126,7 +126,7 @@ class _SettingsEntryWidget extends StatelessWidget {
   /// Creates the subtitle widget.
   Widget createSubtitle(BuildContext context) {
     if (entry.value is String) {
-      return Text(entry.value);
+      return Text(entry.value == null || entry.value.isEmpty ? EzLocalization.of(context).get('other.empty') : entry.value);
     }
 
     if (entry.key == 'account.account') {
