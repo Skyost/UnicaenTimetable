@@ -60,6 +60,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".notification.LessonNotificationModeManager"/>
+        <!--
         <service
             android:name=".notification.LessonNotificationListener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -67,6 +68,7 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        -->
         <service
             android:name=".widget.TodayWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>

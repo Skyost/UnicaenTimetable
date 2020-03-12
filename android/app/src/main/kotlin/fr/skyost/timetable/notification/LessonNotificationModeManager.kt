@@ -83,11 +83,6 @@ class LessonNotificationModeManager : BroadcastReceiver() {
         private const val VALUE_FILTER_ALARMS: Int = 0
 
         /**
-         * None filter value.
-         */
-        //private const val VALUE_FILTER_NONE: Int = 1
-
-        /**
          * Turns on lesson mode, even if disabled in the config.
          *
          * @param context The context.
@@ -241,7 +236,6 @@ class LessonNotificationModeManager : BroadcastReceiver() {
 
             when (mode) {
                 VALUE_FILTER_ALARMS -> return NotificationManager.INTERRUPTION_FILTER_ALARMS
-                //VALUE_FILTER_NONE -> return NotificationManager.INTERRUPTION_FILTER_NONE
             }
 
             return VALUE_DISABLED
