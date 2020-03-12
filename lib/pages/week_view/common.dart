@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/input.dart';
 import 'package:unicaen_timetable/main.dart';
@@ -26,6 +27,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     );
   }
 
+  /// Creates an event.
   FlutterWeekViewEvent createEvent(Lesson lesson, LessonModel lessonModel, SettingsModel settingsModel) {
     Pair<Color, Color> colors = computeColors(lessonModel, settingsModel, lesson);
     return FlutterWeekViewEvent(
@@ -40,7 +42,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     );
   }
 
-  /// Computes lesson
+  /// Computes lesson colors.
   Pair<Color, Color> computeColors(LessonModel lessonModel, SettingsModel settingsModel, Lesson lesson) {
     Color backgroundColor = lessonModel.getLessonColor(lesson);
     backgroundColor ??= settingsModel.getEntryByKey('application.color_lessons_automatically').value ? Utils.randomColor(150, lesson.name.splitEqually(3)) : const Color(0xCC2196F3).withAlpha(150);
@@ -48,6 +50,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     return Pair<Color, Color>(backgroundColor, textColor);
   }
 
+  /// Triggered when the user long press on an event.
   Future<void> onEventLongPress(BuildContext context, Lesson lesson, LessonModel lessonModel, Color initialValue) async {
     Color color = await ColorInputDialog.getValue(
       context,
@@ -60,6 +63,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     }
   }
 
+  /// Triggered when the user taps on an event.
   void onEventTap(BuildContext context, Lesson lesson, LessonModel lessonModel) {
     List<Widget> actions = [
       FlatButton(
@@ -108,11 +112,17 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     );
   }
 
+  /// Formats a date.
+  String formatDate(int year, int month, int day) => DateFormat.yMMMMEEEEd(EzLocalization.of(context).locale.languageCode).format(DateTime(year, month, day));
+
+  /// Builds the widget child.
   Widget buildChild(BuildContext context);
 
+  /// Creates the events.
   Future<List<FlutterWeekViewEvent>> createEvents(BuildContext context, LessonModel lessonModel, SettingsModel settingsModel);
 }
 
+/// A button that allows to show the week picker.
 class WeekPickerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

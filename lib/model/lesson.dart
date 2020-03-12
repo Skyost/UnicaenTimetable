@@ -5,9 +5,7 @@ import 'dart:io';
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
@@ -176,56 +174,25 @@ class LessonModel extends UnicaenTimetableModel {
     @required User user,
   }) async {
     try {
-      Map<String, List<_JsonLesson>> jsonContent = HashMap();
-      if (await user.isTestUser) {
-        await _lessonsBox.clear();
+      dynamic result = await user.synchronizeFromZimbra(
+        lessonsBox: _lessonsBox,
+        settingsModel: settingsModel,
+      );
 
-        DateTime now = DateTime.now();
-        if (now.weekday == DateTime.saturday || now.weekday == DateTime.sunday) {
-          now = now.add(const Duration(days: 7));
-        }
-        DateTime monday = now.yearMonthDay.atMonday;
-
-        Map<String, dynamic> calendar = jsonDecode(await rootBundle.loadString('assets/test_data.json'))['calendar'];
-        List<String> days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-        for (int i = 0; i < days.length; i++) {
-          DateTime date = monday.add(Duration(days: i));
-          List<Lesson> lessons = _decodeDay(date, calendar, days[i]);
-
-          await _lessonsBox.put(date.toString(), lessons);
-          jsonContent[date.millisecondsSinceEpoch.toString()] = lessons.map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
-        }
-      } else {
-        Response response = await user.requestCalendar(settingsModel);
-        if (response.statusCode != 200) {
-          return response;
-        }
-
-        Map<String, dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
-        await _lessonsBox.clear();
-
-        if (body.isNotEmpty) {
-          List<dynamic> appt = body['appt'];
-          for (dynamic jsonData in appt) {
-            if (!jsonData.containsKey('inv')) {
-              continue;
-            }
-
-            Lesson lesson = Lesson.fromJson(jsonData['inv'].first);
-            DateTime start = lesson.start.yearMonthDay;
-            await _lessonsBox.put(start.toString(), (await getLessonsForDate(start))..add(lesson));
-
-            String key = start.millisecondsSinceEpoch.toString();
-            List<_JsonLesson> jsonLessons = jsonContent[key] ?? [];
-            jsonLessons.add(_JsonLesson.fromLesson(lesson));
-            jsonContent[key] = jsonLessons;
-          }
-        }
+      if(result != null) {
+        return result;
       }
 
       if (Platform.isAndroid) {
+        Map<String, List<_JsonLesson>> jsonContent = HashMap();
+        for(String boxKey in _lessonsBox.keys) {
+          DateTime date = DateTime.parse(boxKey);
+          String key = date.millisecondsSinceEpoch.toString();
+          jsonContent[key] = (await _lessonsBox.get(boxKey)).map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
+        }
+
         Directory directory = await getApplicationDocumentsDirectory();
-        File('${directory.path}/android_lessons.json').writeAsStringSync(jsonEncode(jsonContent));
+        File('${directory.path}/android_lessons.json').writeAsStringSync(jsonEncode(jsonContent), flush: true);
         unawaited(UnicaenTimetableApp.CHANNEL.invokeMethod('sync.finished'));
       }
 
@@ -236,16 +203,6 @@ class LessonModel extends UnicaenTimetableModel {
       print(stacktrace);
       return false;
     }
-  }
-
-  /// Decodes the specified day from the test calendar.
-  List<Lesson> _decodeDay(DateTime date, Map<String, dynamic> calendar, String day) {
-    List<Lesson> result = [];
-    List<dynamic> lessons = calendar[day];
-    for (dynamic lesson in lessons) {
-      result.add(Lesson.fromTestJson(date, lesson));
-    }
-    return result;
   }
 
   /// Returns the last modification time.

@@ -4,16 +4,16 @@
     <string name="alarm_permission_granted">Permission granted.</string>
     <string name="alarm_permission_denied">Permission denied.</string>
 
-    <string name="notification_lessonringermode_channel">Lesson mode</string>
-    <string name="notification_lessonsringermode_title">Lessons mode activated</string>
-    <string name="notification_lessonsringermode_message" formatted="false">The ringer mode has been set to %1$s. You can disable this option for this lesson by clicking on the button below.</string>
-    <string name="notification_lessonsringermode_exception" formatted="false">Unable to change the ringer mode. Please be sure that the application still has the permission to change the ringer mode.</string>
-    <string name="notification_lessonsringermode_button">Disable</string>
+    <string name="notification_lessonmodenotification_channel">Lesson mode</string>
+    <string name="notification_lessonmodenotification_title">Lessons mode activated</string>
+    <string name="notification_lessonmodenotification_message" formatted="false">The notification mode has been set to %1$s. You can disable this option for this lesson by clicking on the button below.</string>
+    <string name="notification_lessonmodenotification_exception" formatted="false">Unable to change the notification mode. Please be sure that the application still has the permission to change the notification mode.</string>
+    <string name="notification_lessonmodenotification_button">Disable</string>
 
-    <string-array name="notification_lessonsringermode">
+    <string-array name="notification_lessonmodenotification">
         <item>No change</item>
-        <item>Silent</item>
-        <item>Vibrate</item>
+        <item>Alarms only</item>
+        <item>No notification</item>
     </string-array>
 
     <string name="toast_enable_silent">Please tick "Unicaen Timetable".</string>

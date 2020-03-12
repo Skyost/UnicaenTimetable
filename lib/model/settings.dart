@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
 import 'package:unicaen_timetable/model/admob.dart';
 import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/model/user.dart';
+import 'package:unicaen_timetable/utils/http_client.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The settings model.
@@ -110,6 +112,21 @@ class SettingsModel extends UnicaenTimetableModel {
 
     return Uri.parse(url);
   }
+
+  /// Requests the calendar according to the specified settings model.
+  Future<Response> requestCalendar(User user) async {
+    UnicaenTimetableHttpClient client = const UnicaenTimetableHttpClient();
+    Response response = await client.connect(getCalendarAddressFromSettings(user), user);
+    if (response?.statusCode == 401 || response?.statusCode == 404) {
+      user.username = user.username.endsWith('@etu.unicaen.fr') ? user.username.substring(0, user.username.lastIndexOf('@etu.unicaen.fr')) : (user.username + '@etu.unicaen.fr');
+      if (user.isInBox) {
+        await user.save();
+      }
+      response = await client.connect(getCalendarAddressFromSettings(user), user);
+    }
+
+    return response;
+  }
 }
 
 /// A settings category.
@@ -186,7 +203,7 @@ class ApplicationSettingsCategory extends SettingsCategory {
     ));
     addEntry(SettingsEntry<int>(
       keyPrefix: key,
-      key: 'lessons_ringer_mode',
+      key: 'lesson_notification_mode',
       value: -1,
       enabled: Platform.isAndroid,
     ));

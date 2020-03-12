@@ -56,7 +56,7 @@
             "title": "Application",
             "theme": "Mode sombre",
             "color_lessons_automatically": "Colorer automatiquement les cours",
-            "lessons_ringer_mode": "Mode de sonnerie pendant les cours",
+            "lesson_notification_mode": "Mode de notification pendant les cours",
             "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
             "enable_ads": "Activer les publicités"
         },
@@ -82,7 +82,7 @@
     "about": {
         "title": "À propos",
         "paragraphs": {
-            "first": "Cette application a été créée par Skyost et est disponible sous licence GNU GPL v3. Elle utilise Flutter et a été écrite en Dart en utilisant certaines technologies. Vous pouvez consulter tout ça en cliquant sur les liens disponibles en-dessous.",
+            "first": "Cette application a été créée par Skyost et est disponible sous licence GNU GPL v3. Elle utilise Flutter et a été écrite en Dart en utilisant certaines technologies. Vous pouvez consulter tout ça en cliquant sur les liens disponibles ci-dessous.",
             "second": "Avertissement : Cette application n'a en aucun cas été conçue par un employé de l'Université. Par conséquent, il est inutile de s'adresser à l'Université en cas de problème avec l'application. De plus, il faut préciser que cette application a besoin de votre numéro d'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l'Université pour récupérer votre emploi du temps. Si vous n'êtes pas convaincu du fonctionnement de l'application, le code source est disponible via le lien \"Github\" ci-dessous."
         }
     },
@@ -157,10 +157,9 @@
     },
     "other": {
         "field_empty": "Ce champ ne peut être vide.",
-        "ringer_mode": {
+        "lesson_notification_mode": {
             "disabled": "Désactivé",
-            "silent": "Silencieux",
-            "vibrate": "Vibreur"
+            "alarms_only": "Alarmes seulement"
         },
         "please_wait": "Veuillez patienter…",
         "here": "ici",

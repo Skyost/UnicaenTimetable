@@ -56,7 +56,7 @@
             "title": "Application",
             "theme": "Dark mode",
             "color_lessons_automatically": "Automatically color lessons",
-            "lessons_ringer_mode": "Ringer mode during class",
+            "lesson_notification_mode": "Notification mode during class",
             "open_today_automatically": "Open today's page at launch",
             "enable_ads": "Enable ads"
         },
@@ -112,7 +112,7 @@
             "password_hint": "Your password",
             "login": "Login",
             "errors": {
-                "not_found": "Calendrier not found : it can be caused by holidays, an unavailable timetable on Zimbra or a bad username. Another reason may be a maintenance so please try again later.",
+                "not_found": "Calendar not found : it can be caused by holidays, an unavailable timetable on Zimbra or a bad username. Another reason may be a maintenance so please try again later.",
                 "unauthorized": "Bad username / bad password.",
                 "generic_error": "An error occurred. Please try again later."
             }
@@ -157,10 +157,9 @@
     },
     "other": {
         "field_empty": "This field cannot be empty.",
-        "ringer_mode": {
+        "lesson_notification_mode": {
             "disabled": "Disabled",
-            "silent": "Silent",
-            "vibrate": "Vibrate"
+            "alarms_only": "Alarms only"
         },
         "please_wait": "Please wait…",
         "here": "here",

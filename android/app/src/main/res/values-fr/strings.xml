@@ -4,16 +4,16 @@
     <string name="alarm_permission_granted">Permission accordée.</string>
     <string name="alarm_permission_denied">Permission non-accordée.</string>
 
-    <string name="notification_lessonringermode_channel">Mode cours</string>
-    <string name="notification_lessonsringermode_title">Mode cours activé</string>
-    <string name="notification_lessonsringermode_message" formatted="false">Le mode de sonnerie a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
-    <string name="notification_lessonsringermode_exception" formatted="false">Impossible de changer le mode de sonnerie. Veuillez être sûr que l\'application a toujours la permission de changer le mode de sonnerie.</string>
-    <string name="notification_lessonsringermode_button">Désactiver</string>
+    <string name="notification_lessonmodenotification_channel">Mode cours</string>
+    <string name="notification_lessonmodenotification_title">Mode cours activé</string>
+    <string name="notification_lessonmodenotification_message" formatted="false">Le mode de notification a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
+    <string name="notification_lessonmodenotification_exception" formatted="false">Impossible de changer le mode de notification. Veuillez être sûr que l\'application a toujours la permission de changer le mode de notification.</string>
+    <string name="notification_lessonmodenotification_button">Désactiver</string>
 
-    <string-array name="notification_lessonsringermode">
+    <string-array name="notification_lessonmodenotification">
         <item>Aucun changement</item>
-        <item>Silencieux</item>
-        <item>Vibreur</item>
+        <item>Alarmes seulement</item>
+        <item>Aucune notification</item>
     </string-array>
 
     <string name="toast_enable_silent">Veuillez cocher "Emploi du temps Unicaen".</string>

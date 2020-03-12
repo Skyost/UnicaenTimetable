@@ -44,7 +44,7 @@ class Slide extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 50),
           child: SvgPicture.asset(
             asset ?? 'assets/intro/${slideId}.svg',
-            width: MediaQuery.of(context).size.width - 100,
+            width: MediaQuery.of(context).size.width - 200,
           ),
         ),
         Text(

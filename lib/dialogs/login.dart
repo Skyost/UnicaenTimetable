@@ -140,7 +140,13 @@ class _LoginDialogState extends State<LoginDialog> {
     unawaited(ProgressDialog.show(context));
 
     SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
+    UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
+
     User user = User(username: usernameController.text.trim(), password: passwordController.text.trim());
+    if (await userRepository.isTestUser(user)) {
+      user = TestUser(user);
+    }
+
     LoginResult loginResult = await user.login(settingsModel);
 
     if (loginResult != LoginResult.SUCCESS) {
@@ -149,7 +155,6 @@ class _LoginDialogState extends State<LoginDialog> {
       return;
     }
 
-    UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
     await userRepository.updateUser(user);
     await Navigator.pop(context);
     Navigator.pop(context, true);

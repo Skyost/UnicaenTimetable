@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.transistorsoft.flutter.backgroundfetch.HeadlessTask
-import fr.skyost.timetable.ringer.LessonModeManager
+import fr.skyost.timetable.notification.LessonNotificationModeManager
 import fr.skyost.timetable.utils.Utils
 import fr.skyost.timetable.widget.TodayWidgetReceiver
 import io.flutter.app.FlutterApplication
@@ -24,13 +24,12 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.apache.commons.codec.binary.Base64
 
-
 class Application : FlutterApplication() {
     companion object {
         const val CHANNEL = "fr.skyost.timetable"
 
         const val PREFERENCES_FILE = "preferences"
-        const val PREFERENCES_LESSONS_RINGER_MODE = "ringer-mode"
+        const val PREFERENCES_LESSON_NOTIFICATION_MODE = "lesson-notification-mode"
 
         fun handleMethod(call: MethodCall, result: MethodChannel.Result, context: Context) {
             when (call.method) {
@@ -81,10 +80,14 @@ class Application : FlutterApplication() {
                     context.sendBroadcast(updateIntent)
                     result.success(null)
                 }
-                "activity.ringer_mode_changed" -> {
+                "activity.lesson_notification_mode_changed" -> {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                        return
+                    }
+
                     val mode: Int = call.argument<Int>("value")!!
-                    context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE).edit().putInt(PREFERENCES_LESSONS_RINGER_MODE, mode).commit()
-                    if (mode != LessonModeManager.VALUE_DISABLED) {
+                    context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE).edit().putInt(PREFERENCES_LESSON_NOTIFICATION_MODE, mode).commit()
+                    if (mode != LessonNotificationModeManager.VALUE_DISABLED) {
                         val manager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !manager.isNotificationPolicyAccessGranted && context is Activity) {
                             Toast.makeText(context, R.string.toast_enable_silent, Toast.LENGTH_LONG).show()
@@ -95,8 +98,8 @@ class Application : FlutterApplication() {
                         }
                     }
 
-                    // And we can enable the LessonModeManager.
-                    val intent = Intent(context, LessonModeManager::class.java)
+                    // And we can enable the lesson notification mode manager.
+                    val intent = Intent(context, LessonNotificationModeManager::class.java)
                     context.sendBroadcast(intent)
                     result.success(true)
                 }
@@ -159,7 +162,7 @@ class Application : FlutterApplication() {
         HeadlessTask.onInitialized { engine -> MethodChannel(engine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result -> handleMethod(call, result, applicationContext) } }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LessonModeManager.createChannel(this);
+            LessonNotificationModeManager.createChannel(this);
         }
     }
 }

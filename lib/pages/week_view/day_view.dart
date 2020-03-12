@@ -136,6 +136,8 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
       child: DayView(
         date: date,
         events: events,
+        initialHour: 7,
+        dateFormatter: formatDate,
         eventsColumnBackgroundPainter: theme.createEventsColumnBackgroundPainter(date),
         dayBarTextStyle: TextStyle(color: theme.dayBarTextColor ?? theme.textColor),
         dayBarBackgroundColor: theme.dayBarBackgroundColor,

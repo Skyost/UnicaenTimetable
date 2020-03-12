@@ -48,8 +48,10 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
     UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return WeekView(
       dates: widget.resolveDates(context),
-      dayViewWidth: calculateDayViewWidth(context),
       events: events,
+      initialHour: 7,
+      dateFormatter: formatDate,
+      dayViewWidth: calculateDayViewWidth(context),
       dayViewBuilder: (context, weekView, date, controller) => buildDayView(context, weekView, date, controller, theme),
       dayBarTextStyle: TextStyle(color: theme.dayBarTextColor ?? theme.textColor),
       dayBarBackgroundColor: theme.dayBarBackgroundColor,

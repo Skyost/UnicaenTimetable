@@ -1,7 +1,6 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
@@ -137,45 +136,41 @@ class SynchronizeFloatingButton extends StatefulWidget {
         textKey: 'success',
         color: Colors.green[700],
       );
+      return;
+    }
+
+    LoginResult loginResult = result is bool ? LoginResult.GENERIC_ERROR : LoginResult.fromResponse(result);
+    if (loginResult == LoginResult.NOT_FOUND) {
+      unawaited(showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(EzLocalization.of(context).get('calendar_not_found.title')),
+          content: SingleChildScrollView(
+            child: Text(EzLocalization.of(context).get('calendar_not_found.message')),
+          ),
+          actions: [
+            FlatButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+            )
+          ],
+        ),
+      ));
+    } else if (loginResult == LoginResult.UNAUTHORIZED) {
+      Utils.showSnackBar(
+        context: context,
+        icon: Icons.error_outline,
+        textKey: 'unauthorized',
+        color: Colors.amber[800],
+        onVisible: () => LoginDialog.show(context),
+      );
     } else {
-      LoginResult loginResult = result is bool ? LoginResult.GENERIC_ERROR : User.getLoginResultFromResponse(result);
-      switch (loginResult) {
-        case LoginResult.NOT_FOUND:
-          unawaited(showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(EzLocalization.of(context).get('calendar_not_found.title')),
-              content: SingleChildScrollView(
-                child: Text(EzLocalization.of(context).get('calendar_not_found.message')),
-              ),
-              actions: [
-                FlatButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-                )
-              ],
-            ),
-          ));
-          break;
-        case LoginResult.UNAUTHORIZED:
-          print((result as Response).headers);
-          Utils.showSnackBar(
-            context: context,
-            icon: Icons.error_outline,
-            textKey: 'unauthorized',
-            color: Colors.amber[800],
-            onVisible: () => LoginDialog.show(context),
-          );
-          break;
-        default:
-          Utils.showSnackBar(
-            context: context,
-            icon: Icons.error_outline,
-            textKey: 'error',
-            color: Colors.red[800],
-          );
-          break;
-      }
+      Utils.showSnackBar(
+        context: context,
+        icon: Icons.error_outline,
+        textKey: 'error',
+        color: Colors.red[800],
+      );
     }
   }
 }

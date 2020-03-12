@@ -78,7 +78,7 @@ class _SettingsEntryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (entry.key == 'application.lessons_ringer_mode') {
+    if (entry.key == 'application.lesson_notification_mode') {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: ListTile(
@@ -88,7 +88,7 @@ class _SettingsEntryWidget extends StatelessWidget {
             child: DropdownButton(
               isExpanded: true,
               onChanged: (value) async {
-                bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.ringer_mode_changed', {'value': value});
+                bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.lesson_notification_mode_changed', {'value': value});
                 if (result) {
                   entry.value = value;
                   await entry.flush();
@@ -96,16 +96,12 @@ class _SettingsEntryWidget extends StatelessWidget {
               },
               items: [
                 DropdownMenuItem<int>(
-                  child: Text(EzLocalization.of(context).get('other.ringer_mode.disabled')),
+                  child: Text(EzLocalization.of(context).get('other.lesson_notification_mode.disabled')),
                   value: -1,
                 ),
                 DropdownMenuItem<int>(
-                  child: Text(EzLocalization.of(context).get('other.ringer_mode.silent')),
+                  child: Text(EzLocalization.of(context).get('other.lesson_notification_mode.alarms_only')),
                   value: 0,
-                ),
-                DropdownMenuItem<int>(
-                  child: Text(EzLocalization.of(context).get('other.ringer_mode.vibrate')),
-                  value: 1,
                 ),
               ],
               value: entry.value,

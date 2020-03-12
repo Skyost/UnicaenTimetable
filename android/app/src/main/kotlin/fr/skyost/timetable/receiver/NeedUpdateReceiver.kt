@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import fr.skyost.timetable.ringer.LessonModeManager
+import fr.skyost.timetable.notification.LessonNotificationModeManager
 import fr.skyost.timetable.widget.TodayWidgetReceiver
 
 /**
@@ -19,7 +19,7 @@ class NeedUpdateReceiver : BroadcastReceiver() {
         context.sendBroadcast(updateIntent)
 
         // And toggles the lesson mode according to the update.
-        val lessonModeManagerIntent = Intent(context, LessonModeManager::class.java)
+        val lessonModeManagerIntent = Intent(context, LessonNotificationModeManager::class.java)
         context.sendBroadcast(lessonModeManagerIntent)
     }
 }
