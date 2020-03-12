@@ -184,7 +184,7 @@ packages:
       name: device_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.1+5"
+    version: "0.4.2+1"
   ez_localization:
     dependency: "direct main"
     description:
@@ -276,7 +276,7 @@ packages:
       name: flutter_week_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+5"
+    version: "0.2.1+6"
   glob:
     dependency: transitive
     description:
@@ -570,7 +570,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.6+2"
+    version: "0.5.6+3"
   shared_preferences_macos:
     dependency: transitive
     description:
@@ -760,4 +760,4 @@ packages:
     version: "2.2.0"
 sdks:
   dart: ">=2.7.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.4 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

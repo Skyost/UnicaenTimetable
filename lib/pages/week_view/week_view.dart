@@ -32,6 +32,7 @@ class WeekViewPage extends StaticTitlePage {
       monday.add(const Duration(days: 2)),
       monday.add(const Duration(days: 3)),
       monday.add(const Duration(days: 4)),
+      monday.add(const Duration(days: 5)),
     ];
   }
 }

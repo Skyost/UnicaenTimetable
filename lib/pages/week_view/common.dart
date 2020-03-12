@@ -113,7 +113,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   }
 
   /// Formats a date.
-  String formatDate(int year, int month, int day) => DateFormat.yMMMMEEEEd(EzLocalization.of(context).locale.languageCode).format(DateTime(year, month, day));
+  String formatDate(int year, int month, int day) => DateFormat.yMMMMEEEEd(EzLocalization.of(context).locale.languageCode).format(DateTime(year, month, day)).capitalize();
 
   /// Builds the widget child.
   Widget buildChild(BuildContext context);

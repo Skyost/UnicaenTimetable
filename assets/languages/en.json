@@ -159,7 +159,7 @@
         "field_empty": "This field cannot be empty.",
         "lesson_notification_mode": {
             "disabled": "Disabled",
-            "alarms_only": "Alarms only"
+            "alarms_only": "Silent (alarms only)"
         },
         "please_wait": "Please wait…",
         "here": "here",

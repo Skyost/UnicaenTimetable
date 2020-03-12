@@ -159,7 +159,7 @@
         "field_empty": "Ce champ ne peut être vide.",
         "lesson_notification_mode": {
             "disabled": "Désactivé",
-            "alarms_only": "Alarmes seulement"
+            "alarms_only": "Mode silencieux (alarmes seulement)"
         },
         "please_wait": "Veuillez patienter…",
         "here": "ici",
