@@ -74,6 +74,11 @@ android {
             resValue 'string', 'account_type_authority', 'fr.skyost.timetable.dev'
         }
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 flutter {
