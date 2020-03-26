@@ -67,7 +67,8 @@ class DayViewPage extends Page {
           StringBuffer builder = StringBuffer();
           DateTime date = resolveDate(context, listen: false);
           LessonModel lessonModel = Provider.of<LessonModel>(context, listen: false);
-          List<Lesson> lessons = await lessonModel.getLessonsForDate(date)..sort();
+          List<Lesson> lessons = await lessonModel.getLessonsForDate(date)
+            ..sort();
           builder.write(DateFormat.yMd(EzLocalization.of(context).locale.languageCode).format(date) + ' :\n\n');
           lessons.forEach((lesson) => builder.write(lesson.toString(context) + '\n'));
           String content = builder.toString();
@@ -125,11 +126,11 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
     UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return GestureDetector(
       onHorizontalDragEnd: (details) {
-        if(details.primaryVelocity > 0) {
+        if (details.primaryVelocity > 0) {
           widget.previousDay(context);
         }
 
-        if(details.primaryVelocity < 0) {
+        if (details.primaryVelocity < 0) {
           widget.nextDay(context);
         }
       },
@@ -139,7 +140,10 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
         initialHour: 7,
         dateFormatter: formatDate,
         eventsColumnBackgroundPainter: theme.createEventsColumnBackgroundPainter(date),
-        dayBarTextStyle: TextStyle(color: theme.dayBarTextColor ?? theme.textColor),
+        dayBarTextStyle: TextStyle(
+          color: theme.dayBarTextColor ?? theme.textColor,
+          fontWeight: FontWeight.bold,
+        ),
         dayBarBackgroundColor: theme.dayBarBackgroundColor,
         hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
         hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,

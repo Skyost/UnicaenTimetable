@@ -9,7 +9,7 @@
 .history
 .svn/
 assets/admob.json
-android/google-services.json
+android/app/google-services.json
 android/key.properties
 ios/Runner/GoogleService-Info.plist
 

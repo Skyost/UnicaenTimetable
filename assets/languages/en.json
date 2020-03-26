@@ -157,6 +157,7 @@
     },
     "other": {
         "field_empty": "This field cannot be empty.",
+        "weeks": "{interval} week(s)",
         "lesson_notification_mode": {
             "disabled": "Disabled",
             "alarms_only": "Silent (alarms only)"

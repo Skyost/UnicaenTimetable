@@ -157,6 +157,7 @@
     },
     "other": {
         "field_empty": "Ce champ ne peut être vide.",
+        "weeks": "{interval} semaine(s)",
         "lesson_notification_mode": {
             "disabled": "Désactivé",
             "alarms_only": "Mode silencieux (alarmes seulement)"

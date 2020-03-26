@@ -125,6 +125,10 @@ class _SettingsEntryWidget extends StatelessWidget {
       return Text(entry.value == null || entry.value.isEmpty ? EzLocalization.of(context).get('other.empty') : entry.value);
     }
 
+    if (entry.key == 'server.interval') {
+      return Text(EzLocalization.of(context).get('other.weeks', {'interval': entry.value}));
+    }
+
     if (entry.key == 'account.account') {
       UserRepository userRepository = Provider.of<UserRepository>(context);
       Future<User> user = userRepository.getUser();

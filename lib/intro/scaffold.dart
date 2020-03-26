@@ -12,7 +12,7 @@ class IntroScaffold extends StatelessWidget {
           textTheme: TextTheme(
             title: TextStyle(
               color: Colors.white,
-              fontSize: 44,
+              fontSize: 38,
               fontWeight: FontWeight.w100,
               height: 1,
             ),

@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:admob_flutter/admob_flutter.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_options.dart';
 import 'package:hive/hive.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/theme.dart';
 
 /// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
@@ -15,7 +18,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
   String appId;
 
   /// The AdMob banner identifier.
-  String bannerId;
+  String adUnitId;
 
   /// Creates a new AdMob settings entry instance.
   AdMobSettingsEntry({
@@ -43,23 +46,48 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
 
   /// Sets AdMob enabled (and loads it if needed).
   Future<void> _setAdMobEnabled(bool enabled) async {
-    if (enabled) {
+    if (enabled && adUnitId == null) {
       Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
-      bannerId = foundation.kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : data['banner_id'];
-      Admob.initialize(data['app_id']);
+      adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/2247696110' : data['ad_unit'];
     }
   }
 
   /// Creates the AdMob banner ad widget.
-  AdmobBanner createBannerAd([Function(AdmobBannerController controller) onBannerCreated]) {
-    if (bannerId == null || !value) {
+  NativeAdmob createBannerAd(BuildContext context) {
+    if (adUnitId == null || !value) {
       return null;
     }
 
-    return AdmobBanner(
-      adUnitId: bannerId,
-      adSize: AdmobBannerSize.SMART_BANNER,
-      onBannerCreated: onBannerCreated,
+    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context, listen: false).theme;
+    return NativeAdmob(
+      adUnitID: adUnitId,
+      options: NativeAdmobOptions(
+        headlineTextStyle: NativeTextStyle(
+          fontSize: 16,
+          color: theme.textColor ?? Colors.black,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        advertiserTextStyle: NativeTextStyle(
+          fontSize: 14,
+          color: theme.textColor ?? Colors.black,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        bodyTextStyle: NativeTextStyle(
+          fontSize: 12,
+          color: theme.textColor ?? Colors.grey,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        storeTextStyle: NativeTextStyle(
+          fontSize: 12,
+          color: theme.textColor ?? Colors.black,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        priceTextStyle: NativeTextStyle(
+          fontSize: 12,
+          color: theme.textColor ?? Colors.black,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+      ),
     );
   }
 
@@ -78,6 +106,6 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
       return 90;
     }
 
-    return 50;
+    return 100;
   }
 }

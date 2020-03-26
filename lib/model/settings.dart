@@ -241,6 +241,11 @@ class ServerSettingsCategory extends SettingsCategory {
           key: 'server',
           icon: Icons.wifi,
         ) {
+    addEntry(SettingsEntry<int>(
+      keyPrefix: key,
+      key: 'interval',
+      value: 2,
+    ));
     addEntry(SettingsEntry<String>(
       keyPrefix: key,
       key: 'server',
@@ -255,11 +260,6 @@ class ServerSettingsCategory extends SettingsCategory {
       keyPrefix: key,
       key: 'additional_parameters',
       value: '',
-    ));
-    addEntry(SettingsEntry<int>(
-      keyPrefix: key,
-      key: 'interval',
-      value: 2,
     ));
   }
 }

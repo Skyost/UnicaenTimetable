@@ -1,6 +1,6 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
@@ -127,7 +127,7 @@ class _MainStack extends StatelessWidget {
       return child;
     }
 
-    AdmobBanner banner = adMobSettingsEntry.createBannerAd();
+    NativeAdmob banner = adMobSettingsEntry.createBannerAd(context);
     if (banner == null) {
       return child;
     }

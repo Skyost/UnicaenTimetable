@@ -1,8 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 
@@ -344,18 +347,21 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
   /// Available weeks (got from a model).
   List<DateTime> weeks;
 
-  /// The currently selected week.
-  DateTime currentWeek;
+  /// The currently selected week index.
+  int currentWeekIndex;
+
+  /// The scroll controller.
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    currentWeek = widget.initialValue;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       List<DateTime> availableWeeks = await Provider.of<LessonModel>(context, listen: false).availableWeeks;
       setState(() {
         weeks = availableWeeks;
+        currentWeekIndex = weeks.indexOf(widget.initialValue);
       });
     });
   }
@@ -374,30 +380,30 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: ListView.builder(
+      child: ScrollablePositionedList.builder(
         itemBuilder: (_, position) {
           DateTime monday = weeks[position];
           return ListTile(
             title: Text(formatter.format(monday) + ' — ' + formatter.format(monday.add(Duration(days: DateTime.friday - 1)))),
             trailing: Radio<bool>(
-              value: currentWeek == monday,
+              value: position == currentWeekIndex,
               groupValue: true,
-              onChanged: (_) => onTap(monday),
+              onChanged: (_) => onTap(position),
             ),
-            onTap: () => onTap(monday),
+            onTap: () => onTap(position),
           );
         },
         itemCount: weeks.length,
-        shrinkWrap: true,
+        initialScrollIndex: math.max(0, currentWeekIndex),
       ),
     );
   }
 
   @override
-  DateTime get value => currentWeek;
+  DateTime get value => currentWeekIndex < 0 || currentWeekIndex >= weeks.length ? null : weeks[currentWeekIndex];
 
   /// Handles on tap event.
-  void onTap(DateTime monday) => setState(() {
-        currentWeek = monday;
+  void onTap(int position) => setState(() {
+        currentWeekIndex = position;
       });
 }

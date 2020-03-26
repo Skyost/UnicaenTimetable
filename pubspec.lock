@@ -8,15 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
-  admob_flutter:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "97b0000a98b7f13cdc1348177ff494c3c1f206f0"
-      url: "https://github.com/kmcgill88/admob_flutter.git"
-    source: git
-    version: "1.0.0-beta"
   analyzer:
     dependency: transitive
     description:
@@ -30,7 +21,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.3"
+    version: "1.6.0"
   asn1lib:
     dependency: transitive
     description:
@@ -44,14 +35,14 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   background_fetch:
     dependency: "direct main"
     description:
       name: background_fetch
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.4"
+    version: "0.5.5"
   build:
     dependency: transitive
     description:
@@ -93,7 +84,7 @@ packages:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.5.2"
+    version: "4.5.3"
   built_collection:
     dependency: transitive
     description:
@@ -192,34 +183,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.1+1"
-  firebase:
-    dependency: transitive
-    description:
-      name: firebase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.2.1"
-  firebase_core:
-    dependency: "direct main"
-    description:
-      name: firebase_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.4+2"
-  firebase_core_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_core_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
-  firebase_core_web:
-    dependency: transitive
-    description:
-      name: firebase_core_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1+2"
   fixnum:
     dependency: transitive
     description:
@@ -244,6 +207,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_native_admob:
+    dependency: "direct main"
+    description:
+      name: flutter_native_admob
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+3"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -276,7 +246,7 @@ packages:
       name: flutter_week_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+6"
+    version: "0.2.1+7"
   glob:
     dependency: transitive
     description:
@@ -339,14 +309,14 @@ packages:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.4"
   implicitly_animated_reorderable_list:
     dependency: "direct main"
     description:
       name: implicitly_animated_reorderable_list
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   intl:
     dependency: "direct main"
     description:
@@ -430,14 +400,14 @@ packages:
       name: package_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.1"
+    version: "1.9.2"
   package_info:
     dependency: "direct main"
     description:
       name: package_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0+14"
+    version: "0.4.0+16"
   package_resolver:
     dependency: transitive
     description:
@@ -535,7 +505,7 @@ packages:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.3"
+    version: "1.4.4"
   pubspec_parse:
     dependency: transitive
     description:
@@ -557,6 +527,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0+2"
+  scrollable_positioned_list:
+    dependency: "direct main"
+    description:
+      name: scrollable_positioned_list
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   share:
     dependency: "direct main"
     description:
@@ -631,7 +608,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.0"
+    version: "1.7.0"
   stack_trace:
     dependency: transitive
     description:

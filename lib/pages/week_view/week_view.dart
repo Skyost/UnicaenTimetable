@@ -32,7 +32,6 @@ class WeekViewPage extends StaticTitlePage {
       monday.add(const Duration(days: 2)),
       monday.add(const Duration(days: 3)),
       monday.add(const Duration(days: 4)),
-      monday.add(const Duration(days: 5)),
     ];
   }
 }
@@ -54,7 +53,10 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
       dateFormatter: formatDate,
       dayViewWidth: calculateDayViewWidth(context),
       dayViewBuilder: (context, weekView, date, controller) => buildDayView(context, weekView, date, controller, theme),
-      dayBarTextStyle: TextStyle(color: theme.dayBarTextColor ?? theme.textColor),
+      dayBarTextStyle: TextStyle(
+        color: theme.dayBarTextColor ?? theme.textColor,
+        fontWeight: FontWeight.bold,
+      ),
       dayBarBackgroundColor: theme.dayBarBackgroundColor,
       hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
       hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
@@ -64,7 +66,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
   @override
   Future<List<FlutterWeekViewEvent>> createEvents(BuildContext context, LessonModel lessonModel, SettingsModel settingsModel) async {
     List<DateTime> dates = widget.resolveDates(context);
-    return (await lessonModel.selectLessons(dates.first, dates.last)).map((lesson) => createEvent(lesson, lessonModel, settingsModel)).toList();
+    return (await lessonModel.selectLessons(dates.first, dates.last..add(const Duration(days: 1)))).map((lesson) => createEvent(lesson, lessonModel, settingsModel)).toList();
   }
 
   /// Calculates a day view width.

@@ -29,6 +29,9 @@ class LessonNotificationModeManager : BroadcastReceiver() {
                 if (inLesson(context)) {
                     enable(context)
                 }
+                else {
+                    disable(context);
+                }
                 schedule(context)
             } else {
                 if (inLesson(context)) {

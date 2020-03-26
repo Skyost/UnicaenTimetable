@@ -44,12 +44,11 @@ class Slide extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 50),
           child: SvgPicture.asset(
             asset ?? 'assets/intro/${slideId}.svg',
-            width: MediaQuery.of(context).size.width - 200,
+            width: MediaQuery.of(context).size.width - 160,
           ),
         ),
         Text(
           EzLocalization.of(context).get('intro.slides.${slideId}.message'),
-          style: const TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
       ];
