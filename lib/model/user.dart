@@ -210,6 +210,9 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
 
 /// The android user repository.
 class AndroidUserRepository extends UserRepository<String> {
+  /// The version.
+  static const int _VERSION = 0;
+
   /// Creates a new android user repository.
   AndroidUserRepository() : super._internal();
 
@@ -237,17 +240,17 @@ class AndroidUserRepository extends UserRepository<String> {
       return null;
     }
 
-    if (response['base64_encoded']) {
+    if (response['need_update']) {
       await updateUser(User(
         username: response['username'],
-        password: response['password'],
+        password: response['password'].substring(accountVersionPrefix.length),
       ));
       return _read();
     }
 
     return User(
       username: response['username'],
-      password: await AesCrypt(_encryptionKey, 'ofb-64', 'pkcs7').decrypt(response['password']),
+      password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length)),
     );
   }
 
@@ -258,11 +261,17 @@ class AndroidUserRepository extends UserRepository<String> {
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
       'username': user.username,
-      'password': await AesCrypt(_encryptionKey, 'ofb-64', 'pkcs7').encrypt(user.password),
-    });
+      'password': accountVersionPrefix + crypter.encrypt(user.password),
+  });
 
     notifyListeners();
   }
+
+  /// Allows to encrypt strings using the AES algorithm.
+  AesCrypt get crypter => AesCrypt(_encryptionKey, 'ofb-64', 'pkcs7');
+
+  /// Returns the account version prefix.
+  String get accountVersionPrefix => '{$_VERSION}';
 }
 
 /// The iOS user repository.
