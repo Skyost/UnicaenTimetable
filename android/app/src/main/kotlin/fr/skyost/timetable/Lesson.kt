@@ -18,7 +18,12 @@ class LessonRepository {
             return
         }
 
-        val json : JsonObject = JsonParser.`object`().from(File(filesDir, "android_lessons.json").readText())
+        val file = File(filesDir, "android_lessons.json")
+        if(!file.exists()) {
+            return
+        }
+
+        val json : JsonObject = JsonParser.`object`().from(file.readText())
         for(key: String in json.keys) {
             val lessons: ArrayList<Lesson> = ArrayList()
             val jsonLessons : JsonArray = json.getArray(key)

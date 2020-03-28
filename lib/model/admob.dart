@@ -66,7 +66,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
       return 90;
     }
 
-    return 100;
+    return 50;
   }
 
   /// Creates the banner ad.

@@ -69,30 +69,34 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  Widget createDrawer(BuildContext context) => Container(
-        color: Provider.of<SettingsModel>(context).theme.scaffoldBackgroundColor,
-        child: ListView(
-          padding: const EdgeInsets.all(0),
-          children: [
-            createDrawerHeader(context),
-            const _DrawerSectionTitle(titleKey: 'home'),
-            const _PageListTitle(page: HomePage()),
-            const Divider(),
-            const _DrawerSectionTitle(titleKey: 'timetable'),
-            _PageListTitle(page: WeekViewPage()),
-            _PageListTitle(page: DayViewPage(weekDay: DateTime.monday)),
-            _PageListTitle(page: DayViewPage(weekDay: DateTime.tuesday)),
-            _PageListTitle(page: DayViewPage(weekDay: DateTime.wednesday)),
-            _PageListTitle(page: DayViewPage(weekDay: DateTime.thursday)),
-            _PageListTitle(page: DayViewPage(weekDay: DateTime.friday)),
-            const Divider(),
-            const _DrawerSectionTitle(titleKey: 'others'),
-            const _PageListTitle(page: SettingsPage()),
-            const _PageListTitle(page: BugsImprovementsPage()),
-            const _PageListTitle(page: AboutPage()),
-          ],
-        ),
-      );
+  Widget createDrawer(BuildContext context) {
+    SettingsModel settingsModel = Provider.of<SettingsModel>(context);
+    Page currentPage = Provider.of<ValueNotifier<Page>>(context).value;
+    return Container(
+      color: settingsModel.theme.scaffoldBackgroundColor,
+      child: ListView(
+        padding: EdgeInsets.only(bottom: currentPage is HomePage ? settingsModel.adMobEntry.calculatePaddingBottom(context) : 0),
+        children: [
+          createDrawerHeader(context),
+          const _DrawerSectionTitle(titleKey: 'home'),
+          const _PageListTitle(page: HomePage()),
+          const Divider(),
+          const _DrawerSectionTitle(titleKey: 'timetable'),
+          _PageListTitle(page: WeekViewPage()),
+          _PageListTitle(page: DayViewPage(weekDay: DateTime.monday)),
+          _PageListTitle(page: DayViewPage(weekDay: DateTime.tuesday)),
+          _PageListTitle(page: DayViewPage(weekDay: DateTime.wednesday)),
+          _PageListTitle(page: DayViewPage(weekDay: DateTime.thursday)),
+          _PageListTitle(page: DayViewPage(weekDay: DateTime.friday)),
+          const Divider(),
+          const _DrawerSectionTitle(titleKey: 'others'),
+          const _PageListTitle(page: SettingsPage()),
+          const _PageListTitle(page: BugsImprovementsPage()),
+          const _PageListTitle(page: AboutPage()),
+        ],
+      ),
+    );
+  }
 
   /// Creates the drawer header widget.
   Widget createDrawerHeader(BuildContext context) => FutureProvider<User>(

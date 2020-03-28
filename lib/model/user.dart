@@ -148,15 +148,15 @@ class LoginResult {
 
   @override
   String toString() {
-    if(httpCode == SUCCESS.httpCode) {
+    if (httpCode == SUCCESS.httpCode) {
       return 'SUCCESS';
     }
 
-    if(httpCode == NOT_FOUND.httpCode) {
+    if (httpCode == NOT_FOUND.httpCode) {
       return 'NOT_FOUND';
     }
 
-    if(httpCode == UNAUTHORIZED.httpCode) {
+    if (httpCode == UNAUTHORIZED.httpCode) {
       return 'UNAUTHORIZED';
     }
 
@@ -243,7 +243,7 @@ class AndroidUserRepository extends UserRepository<String> {
     if (response['need_update']) {
       await updateUser(User(
         username: response['username'],
-        password: response['password'].substring(accountVersionPrefix.length),
+        password: response['password'],
       ));
       return _read();
     }
@@ -262,7 +262,7 @@ class AndroidUserRepository extends UserRepository<String> {
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
       'username': user.username,
       'password': accountVersionPrefix + crypter.encrypt(user.password),
-  });
+    });
 
     notifyListeners();
   }
