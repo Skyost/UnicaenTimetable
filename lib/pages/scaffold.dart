@@ -71,11 +71,10 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
 
   Widget createDrawer(BuildContext context) {
     SettingsModel settingsModel = Provider.of<SettingsModel>(context);
-    Page currentPage = Provider.of<ValueNotifier<Page>>(context).value;
     return Container(
       color: settingsModel.theme.scaffoldBackgroundColor,
       child: ListView(
-        padding: EdgeInsets.only(bottom: currentPage is HomePage ? settingsModel.adMobEntry.calculatePaddingBottom(context) : 0),
+        padding: EdgeInsets.zero,
         children: [
           createDrawerHeader(context),
           const _DrawerSectionTitle(titleKey: 'home'),

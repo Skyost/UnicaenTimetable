@@ -1,5 +1,5 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:ez_localization/ez_localization.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:pedantic/pedantic.dart';
@@ -61,26 +61,6 @@ class HomePage extends StaticTitlePage {
 
 /// The home page state.
 class _HomePageState extends State<HomePage> {
-  /// The currently shown banner ad.
-  BannerAd bannerAd;
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context, listen: false).adMobEntry;
-      bannerAd = adMobSettingsEntry.createBannerAd((event) {
-        if(!mounted) {
-          bannerAd?.dispose();
-        }
-      });
-      if(bannerAd != null) {
-        bannerAd..load()..show();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     HomeCardsModel homeCardsModel = Provider.of<HomeCardsModel>(context);
@@ -88,7 +68,6 @@ class _HomePageState extends State<HomePage> {
       return const CenteredCircularProgressIndicator();
     }
 
-    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context, listen: false).adMobEntry;
     List<MaterialCard> items = homeCardsModel.cards;
     if (items.isEmpty) {
       return _MainStack(
@@ -105,7 +84,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        paddingBottom: adMobSettingsEntry.calculatePaddingBottom(context),
       );
     }
 
@@ -124,14 +102,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      paddingBottom: adMobSettingsEntry.calculatePaddingBottom(context),
     );
-  }
-
-  @override
-  void dispose() {
-    bannerAd?.dispose();
-    super.dispose();
   }
 
   /// Returns the list padding.
@@ -143,18 +114,18 @@ class _MainStack extends StatelessWidget {
   /// The stack child (the list).
   final Widget child;
 
-  /// The banner ad.
-  final double paddingBottom;
-
   /// Creates a new main stack instance.
   const _MainStack({
     @required this.child,
-    @required this.paddingBottom,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (paddingBottom == 0) {
+    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context, listen: false).adMobEntry;
+
+    double paddingBottom = adMobSettingsEntry.calculatePaddingBottom(context);
+    AdmobBanner banner = adMobSettingsEntry.createBanner();
+    if (adMobSettingsEntry.calculatePaddingBottom(context) == 0 || banner == null) {
       return child;
     }
 
@@ -169,7 +140,7 @@ class _MainStack extends StatelessWidget {
           right: 0,
           bottom: 0,
           height: paddingBottom,
-          child: Container(),
+          child: banner,
         ),
       ],
     );

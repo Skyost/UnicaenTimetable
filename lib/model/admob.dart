@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_admob/firebase_admob.dart';
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,8 +46,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     if (enabled && adUnitId == null) {
       Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
       appId = data['app_id'];
-      adUnitId = kDebugMode ? BannerAd.testAdUnitId : data['ad_unit'];
-      await FirebaseAdMob.instance.initialize(appId: appId);
+      adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : data['ad_unit'];
     }
   }
 
@@ -70,9 +69,8 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
   }
 
   /// Creates the banner ad.
-  BannerAd createBannerAd([MobileAdListener listener]) => !value || adUnitId == null ? null : BannerAd(
+  AdmobBanner createBanner() => !value || adUnitId == null ? null : AdmobBanner(
     adUnitId: adUnitId,
-    size: AdSize.smartBanner,
-    listener: listener,
+    adSize: AdmobBannerSize.SMART_BANNER,
   );
 }
