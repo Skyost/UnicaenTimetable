@@ -83,7 +83,7 @@ class _IntroScaffoldBody extends StatelessWidget {
               child: Text((model.currentSlideIndex + 1).toString() + '/' + model.slides.length.toString()),
             ),
             FlatButton(
-              child: Text(EzLocalization.of(context).get('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
+              child: Text(context.getString('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
               textColor: Colors.white,
               disabledTextColor: Colors.white54,
               onPressed: model.allowNextSlide ? () => model.goToNextSlide(context) : null,

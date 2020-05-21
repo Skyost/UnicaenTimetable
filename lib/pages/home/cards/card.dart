@@ -78,7 +78,7 @@ abstract class MaterialCard extends StatelessWidget {
   Color buildColor(BuildContext context);
 
   /// Builds the card title.
-  String buildTitle(BuildContext context) => EzLocalization.of(context).get('home.${cardId}.title');
+  String buildTitle(BuildContext context) => context.getString('home.${cardId}.title');
 
   /// Builds the card subtitle.
   String buildSubtitle(BuildContext context);

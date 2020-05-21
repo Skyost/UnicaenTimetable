@@ -128,7 +128,7 @@
         },
         "rate": {
             "title": "Noter l'application",
-            "message": "Pardons de vous déranger mais on a une petite requête…\nSi vous aimez cette application, il serait gentil de votre part de lui laisser une note sur le Store. Cela ne devrait pas vous prendre plus d'une minute.",
+            "message": "Pardons de vous déranger mais on a une petite requête…\nSi vous aimez cette application, il serait gentil de votre part de lui laisser une note sur la fiche de l'application. Cela ne devrait pas vous prendre plus d'une minute.",
             "button_rate": "Noter l'application",
             "button_later": "Plus tard",
             "button_no": "Non"

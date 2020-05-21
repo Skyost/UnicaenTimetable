@@ -103,7 +103,7 @@ class Utils {
               child: Padding(
                 padding: const EdgeInsets.only(left: 6),
                 child: Text(
-                  EzLocalization.of(context).get('scaffold.snack_bar.${textKey}'),
+                  context.getString('scaffold.snack_bar.${textKey}'),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

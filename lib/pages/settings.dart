@@ -53,7 +53,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
         ListTile(
           leading: Icon(category.icon, color: theme.listHeaderTextColor),
           title: Text(
-            EzLocalization.of(context).get('settings.${category.key}.title'),
+            context.getString('settings.${category.key}.title'),
             style: TextStyle(color: theme.listHeaderTextColor),
           ),
           enabled: false,
@@ -82,7 +82,7 @@ class _SettingsEntryWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: ListTile(
-          title: Text(EzLocalization.of(context).get('settings.${entry.key}')),
+          title: Text(context.getString('settings.${entry.key}')),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 5),
             child: DropdownButton(
@@ -96,11 +96,11 @@ class _SettingsEntryWidget extends StatelessWidget {
               },
               items: [
                 DropdownMenuItem<int>(
-                  child: Text(EzLocalization.of(context).get('other.lesson_notification_mode.disabled')),
+                  child: Text(context.getString('other.lesson_notification_mode.disabled')),
                   value: -1,
                 ),
                 DropdownMenuItem<int>(
-                  child: Text(EzLocalization.of(context).get('other.lesson_notification_mode.alarms_only')),
+                  child: Text(context.getString('other.lesson_notification_mode.alarms_only')),
                   value: 0,
                 ),
               ],
@@ -113,7 +113,7 @@ class _SettingsEntryWidget extends StatelessWidget {
 
     return ListTile(
       onTap: () => onTap(context),
-      title: Text(EzLocalization.of(context).get('settings.${entry.key}')),
+      title: Text(context.getString('settings.${entry.key}')),
       subtitle: createSubtitle(context),
       trailing: createController(context),
     );
@@ -122,11 +122,11 @@ class _SettingsEntryWidget extends StatelessWidget {
   /// Creates the subtitle widget.
   Widget createSubtitle(BuildContext context) {
     if (entry.value is String) {
-      return Text(entry.value == null || entry.value.isEmpty ? EzLocalization.of(context).get('other.empty') : entry.value);
+      return Text(entry.value == null || entry.value.isEmpty ? context.getString('other.empty') : entry.value);
     }
 
     if (entry.key == 'server.interval') {
-      return Text(EzLocalization.of(context).get('other.weeks', {'interval': entry.value}));
+      return Text(context.getString('other.weeks', {'interval': entry.value}));
     }
 
     if (entry.key == 'account.account') {

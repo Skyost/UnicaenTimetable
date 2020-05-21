@@ -13,7 +13,7 @@ class ProgressDialog extends StatelessWidget {
           padding: EdgeInsets.only(top: 10, bottom: 30),
           child: CircularProgressIndicator(),
         ),
-        Text(EzLocalization.of(context).get('other.please_wait')),
+        Text(context.getString('other.please_wait')),
       ],
     ),
   );

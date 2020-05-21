@@ -67,7 +67,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   void onEventTap(BuildContext context, Lesson lesson, LessonModel lessonModel) {
     List<Widget> actions = [
       FlatButton(
-        child: Text(EzLocalization.of(context).get('dialogs.lesson_info.reset_color').toUpperCase()),
+        child: Text(context.getString('dialogs.lesson_info.reset_color').toUpperCase()),
         onPressed: () {
           lessonModel.resetLessonColor(lesson);
           Navigator.of(context).pop();
@@ -83,7 +83,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
       actions.insert(
         0,
         FlatButton(
-          child: Text(EzLocalization.of(context).get('dialogs.lesson_info.set_alarm').toUpperCase()),
+          child: Text(context.getString('dialogs.lesson_info.set_alarm').toUpperCase()),
           onPressed: () => UnicaenTimetableApp.CHANNEL.invokeMethod('activity.set_alarm', {
             'title': lesson.name,
             'hour': lesson.start.hour,
@@ -100,14 +100,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
         content: SingleChildScrollView(
           child: Text(lesson.start.hour.withLeadingZero + ':' + lesson.start.minute.withLeadingZero + ' — ' + lesson.end.hour.withLeadingZero + ':' + lesson.end.minute.withLeadingZero + '\n\n' + lesson.description),
         ),
-        actions: [
-          Wrap(
-            direction: Axis.vertical,
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.end,
-            children: actions,
-          ),
-        ],
+        actions: actions,
       ),
     );
   }

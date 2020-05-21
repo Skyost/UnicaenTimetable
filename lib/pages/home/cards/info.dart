@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:device_info/device_info.dart';
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:package_info/package_info.dart';
@@ -41,7 +40,7 @@ class InfoCard extends MaterialCard {
     _AppInfo appInfo = Provider.of<_AppInfo>(context);
     _DeviceInfo deviceInfo = Provider.of<_DeviceInfo>(context);
     if (appInfo == null || deviceInfo == null) {
-      return EzLocalization.of(context).get('home.loading');
+      return context.getString('home.loading');
     }
 
     return appInfo.toString() + '\n' + deviceInfo.toString();
@@ -62,7 +61,7 @@ class _AppInfo {
   /// Initializes this class.
   Future<_AppInfo> initialize(BuildContext context) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    name = EzLocalization.of(context).get('app_name');
+    name = context.getString('app_name');
     version = 'v' + packageInfo.version;
     return this;
   }

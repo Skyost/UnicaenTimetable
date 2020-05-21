@@ -194,9 +194,7 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
 
   /// Updates the user.
   @mustCallSuper
-  Future<void> updateUser(User user) async {
-    _cachedUser = user;
-  }
+  Future<void> updateUser(User user) async => _cachedUser = user;
 
   /// Reads the user.
   Future<User> _read();
@@ -211,7 +209,10 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
 /// The android user repository.
 class AndroidUserRepository extends UserRepository<String> {
   /// The version.
-  static const int _VERSION = 0;
+  static const int _VERSION = 1;
+
+  /// The initialization vector.
+  String _initializationVector;
 
   /// Creates a new android user repository.
   AndroidUserRepository() : super._internal();
@@ -224,12 +225,26 @@ class AndroidUserRepository extends UserRepository<String> {
 
     FlutterSecureStorage storage = const FlutterSecureStorage();
     String encryptionKey = await storage.read(key: 'encryption_key');
+    String initializationVector = await storage.read(key: 'initialization_vector');
+
+    if (!_testValidity(encryptionKey, initializationVector)) {
+      await removeUser();
+      encryptionKey = null;
+      initializationVector = null;
+    }
+
     if (encryptionKey == null) {
       encryptionKey = await CryptKey().genFortuna();
       await storage.write(key: 'encryption_key', value: encryptionKey);
     }
 
+    if (initializationVector == null) {
+      initializationVector = await CryptKey().genDart();
+      await storage.write(key: 'initialization_vector', value: initializationVector);
+    }
+
     _encryptionKey = encryptionKey;
+    _initializationVector = initializationVector;
     markInitialized();
   }
 
@@ -250,7 +265,7 @@ class AndroidUserRepository extends UserRepository<String> {
 
     return User(
       username: response['username'],
-      password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length)),
+      password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
     );
   }
 
@@ -258,17 +273,38 @@ class AndroidUserRepository extends UserRepository<String> {
   Future<void> updateUser(User user) async {
     await super.updateUser(user);
 
-    await UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
+    await removeUser();
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
       'username': user.username,
-      'password': accountVersionPrefix + crypter.encrypt(user.password),
+      'password': accountVersionPrefix + crypter.encrypt(user.password, iv: _initializationVector),
     });
 
     notifyListeners();
   }
 
+  /// Removes the current user.
+  Future<void> removeUser() => UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
+
+  /// Tests the data validity.
+  bool _testValidity(String encryptionKey, String initializationVector) {
+    try {
+      if (encryptionKey != null) {
+        base64.decode(encryptionKey);
+      }
+      if (initializationVector != null) {
+        base64.decode(initializationVector);
+      }
+      return true;
+    } catch (_) {}
+    return false;
+  }
+
   /// Allows to encrypt strings using the AES algorithm.
-  AesCrypt get crypter => AesCrypt(_encryptionKey, 'ofb-64', 'pkcs7');
+  AesCrypt get crypter => AesCrypt(
+        key: _encryptionKey,
+        mode: ModeAES.ofb64,
+        padding: PaddingAES.pkcs7,
+      );
 
   /// Returns the account version prefix.
   String get accountVersionPrefix => '{$_VERSION}';

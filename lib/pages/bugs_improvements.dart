@@ -53,10 +53,10 @@ class _BugsImprovementsPageState extends State<BugsImprovementsPage> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: EzLocalization.of(context).get('bugs_improvements.message.${textKey}') + ' ',
+              text: context.getString('bugs_improvements.message.${textKey}') + ' ',
             ),
             TextSpan(
-              text: EzLocalization.of(context).get('other.here'),
+              text: context.getString('other.here'),
               style: TextStyle(
                 color: Colors.blue[800],
                 decoration: TextDecoration.underline,

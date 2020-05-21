@@ -11,7 +11,7 @@ import 'package:unicaen_timetable/utils/widgets.dart';
 /// A widget that allows to show a week's lessons.
 class WeekViewPage extends StaticTitlePage {
   /// Creates a new week view page instance.
-  WeekViewPage()
+  const WeekViewPage()
       : super(
           titleKey: 'week_view.title',
           icon: Icons.view_array,
@@ -32,6 +32,8 @@ class WeekViewPage extends StaticTitlePage {
       monday.add(const Duration(days: 2)),
       monday.add(const Duration(days: 3)),
       monday.add(const Duration(days: 4)),
+      monday.add(const Duration(days: 5)),
+      monday.add(const Duration(days: 6)),
     ];
   }
 }
@@ -49,17 +51,19 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
     return WeekView(
       dates: widget.resolveDates(context),
       events: events,
-      initialHour: 7,
-      dateFormatter: formatDate,
-      dayViewWidth: calculateDayViewWidth(context),
-      dayViewBuilder: (context, weekView, date, controller) => buildDayView(context, weekView, date, controller, theme),
-      dayBarTextStyle: TextStyle(
-        color: theme.dayBarTextColor ?? theme.textColor,
-        fontWeight: FontWeight.bold,
+      initialTime: const HourMinute(hour: 7),
+      style: WeekViewStyle(
+        dayBarTextStyle: TextStyle(
+          color: theme.dayBarTextColor ?? theme.textColor,
+          fontWeight: FontWeight.bold,
+        ),
+        dayBarBackgroundColor: theme.dayBarBackgroundColor,
+        hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
+        hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
+        dateFormatter: formatDate,
+        dayViewWidth: calculateDayViewWidth(context),
       ),
-      dayBarBackgroundColor: theme.dayBarBackgroundColor,
-      hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
-      hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
+      dayViewStyleBuilder: theme.createDayViewStyle,
     );
   }
 
@@ -83,17 +87,4 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
 
     return width - 60;
   }
-
-  /// Builds a day view.
-  DayView buildDayView(BuildContext context, WeekView weekView, DateTime date, DayViewController controller, UnicaenTimetableTheme theme) => DayView(
-        date: date,
-        events: weekView.events,
-        hoursColumnWidth: 0,
-        controller: controller,
-        eventsColumnBackgroundPainter: theme.createEventsColumnBackgroundPainter(date),
-        inScrollableWidget: false,
-        dayBarHeight: 0,
-        userZoomable: false,
-        scrollToCurrentTime: false,
-      );
 }

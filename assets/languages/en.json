@@ -128,7 +128,7 @@
         },
         "rate": {
             "title": "Rate the app",
-            "message": "Pardon to interrupt yourself but we have a little request…\nIf you like this app, it would be very kind from you to leave a rating on the Store. It shouldn't take you more than one minute.",
+            "message": "Pardon to interrupt yourself but we have a little request…\nIf you like this app, it would be very kind from you to leave a rating on the app page. It shouldn't take you more than one minute.",
             "button_rate": "Rate the app",
             "button_later": "Maybe later",
             "button_no": "No"

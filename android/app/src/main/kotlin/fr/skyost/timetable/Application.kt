@@ -27,7 +27,7 @@ class Application : FlutterApplication() {
     companion object {
         const val CHANNEL = "fr.skyost.timetable"
 
-        const val ACCOUNT_VERSION = 0;
+        const val ACCOUNT_VERSION = 1;
         const val PREFERENCES_FILE = "preferences"
         const val PREFERENCES_LESSON_NOTIFICATION_MODE = "lesson-notification-mode"
 

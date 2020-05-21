@@ -36,7 +36,7 @@ abstract class StaticTitlePage extends Page {
   }) : super(icon: icon);
 
   @override
-  String buildTitle(BuildContext context) => EzLocalization.of(context).get(titleKey);
+  String buildTitle(BuildContext context) => context.getString(titleKey);
 
   @override
   bool operator ==(Object other) => super == other && other is StaticTitlePage && titleKey == other.titleKey;

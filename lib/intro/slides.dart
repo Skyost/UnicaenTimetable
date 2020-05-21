@@ -36,8 +36,8 @@ class Slide extends StatelessWidget {
   /// Creates the list view children.
   List<Widget> createChildren(BuildContext context) => [
         Text(
-          EzLocalization.of(context).get('intro.slides.${slideId}.title'),
-          style: Theme.of(context).textTheme.title,
+          context.getString('intro.slides.${slideId}.title'),
+          style: Theme.of(context).textTheme.headline6,
           textAlign: TextAlign.center,
         ),
         Padding(
@@ -48,7 +48,7 @@ class Slide extends StatelessWidget {
           ),
         ),
         Text(
-          EzLocalization.of(context).get('intro.slides.${slideId}.message'),
+          context.getString('intro.slides.${slideId}.message'),
           textAlign: TextAlign.center,
         ),
       ];
@@ -87,7 +87,7 @@ class SecondSlide extends Slide {
               Provider.of<IntroScaffoldBodyModel>(context, listen: false).goToNextSlide(context);
             }
           },
-          child: Text(EzLocalization.of(context).get('intro.slides.login.login_button').toUpperCase()),
+          child: Text(context.getString('intro.slides.login.login_button').toUpperCase()),
           color: const Color(0xFF1F2B38),
           highlightColor: Colors.black12,
           splashColor: Colors.black26,

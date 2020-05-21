@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ class DayViewPage extends Page {
   final int weekDay;
 
   /// Creates a new day view page instance.
-  DayViewPage({
+  const DayViewPage({
     @required this.weekDay,
   }) : super(icon: null);
 
@@ -137,16 +137,17 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
       child: DayView(
         date: date,
         events: events,
-        initialHour: 7,
-        dateFormatter: formatDate,
-        eventsColumnBackgroundPainter: theme.createEventsColumnBackgroundPainter(date),
-        dayBarTextStyle: TextStyle(
-          color: theme.dayBarTextColor ?? theme.textColor,
-          fontWeight: FontWeight.bold,
-        ),
-        dayBarBackgroundColor: theme.dayBarBackgroundColor,
-        hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
-        hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
+        initialTime: const HourMinute(hour: 7),
+        style: theme.createDayViewStyle(date).copyWith(
+              dayBarTextStyle: TextStyle(
+                color: theme.dayBarTextColor ?? theme.textColor,
+                fontWeight: FontWeight.bold,
+              ),
+              dayBarBackgroundColor: theme.dayBarBackgroundColor,
+              hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
+              hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
+              dateFormatter: formatDate,
+            ),
       ),
     );
   }

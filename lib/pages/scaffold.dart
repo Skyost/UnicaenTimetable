@@ -1,11 +1,12 @@
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
 import 'package:unicaen_timetable/main.dart';
+import 'package:unicaen_timetable/model/admob.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/theme.dart';
@@ -81,12 +82,12 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
           const _PageListTitle(page: HomePage()),
           const Divider(),
           const _DrawerSectionTitle(titleKey: 'timetable'),
-          _PageListTitle(page: WeekViewPage()),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.monday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.tuesday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.wednesday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.thursday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.friday)),
+          const _PageListTitle(page: WeekViewPage()),
+          const _PageListTitle(page: DayViewPage(weekDay: DateTime.monday)),
+          const _PageListTitle(page: DayViewPage(weekDay: DateTime.tuesday)),
+          const _PageListTitle(page: DayViewPage(weekDay: DateTime.wednesday)),
+          const _PageListTitle(page: DayViewPage(weekDay: DateTime.thursday)),
+          const _PageListTitle(page: DayViewPage(weekDay: DateTime.friday)),
           const Divider(),
           const _DrawerSectionTitle(titleKey: 'others'),
           const _PageListTitle(page: SettingsPage()),
@@ -147,9 +148,9 @@ class SynchronizeFloatingButton extends StatefulWidget {
       unawaited(showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(EzLocalization.of(context).get('calendar_not_found.title')),
+          title: Text(context.getString('calendar_not_found.title')),
           content: SingleChildScrollView(
-            child: Text(EzLocalization.of(context).get('calendar_not_found.message')),
+            child: Text(context.getString('calendar_not_found.message')),
           ),
           actions: [
             FlatButton(
@@ -201,18 +202,22 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
   Widget build(BuildContext context) {
     Widget button = FloatingActionButton(
       onPressed: () => SynchronizeFloatingButton.onPressed(context),
-      tooltip: EzLocalization.of(context).get('scaffold.floating_button_tooltip'),
+      tooltip: context.getString('scaffold.floating_button_tooltip'),
       child: Icon(Icons.sync),
     );
 
-    double paddingBottom = Provider.of<SettingsModel>(context).adMobEntry.calculatePaddingBottom(context);
-    if (paddingBottom == 0 || Provider.of<ValueNotifier<Page>>(context).value is! HomePage) {
+    if (Provider.of<ValueNotifier<Page>>(context).value is! HomePage) {
       return button;
     }
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: paddingBottom),
-      child: button,
+    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context).adMobEntry;
+    return FutureBuilder<Size>(
+      initialData: Size.zero,
+      future: adMobSettingsEntry.calculateSize(context),
+      builder: (context, sizeSnapshot) => Padding(
+        padding: EdgeInsets.only(bottom: sizeSnapshot.data.height),
+        child: button,
+      ),
     );
   }
 
@@ -267,7 +272,7 @@ class _DrawerSectionTitle extends StatelessWidget {
     UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
     return ListTile(
       title: Text(
-        EzLocalization.of(context).get('scaffold.drawer.${titleKey}'),
+        context.getString('scaffold.drawer.${titleKey}'),
         style: TextStyle(color: theme.listHeaderTextColor),
       ),
       enabled: false,

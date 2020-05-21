@@ -36,7 +36,7 @@ class HomePage extends StaticTitlePage {
           itemBuilder: (context) => [SynchronizationStatusCard.ID, CurrentLessonCard.ID, NextLessonCard.ID, ThemeCard.ID, InfoCard.ID]
               .map(
                 (id) => PopupMenuItem<String>(
-                  child: Text(EzLocalization.of(context).get('home.${id}.name')),
+                  child: Text(context.getString('home.${id}.name')),
                   value: id,
                 ),
               )
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              EzLocalization.of(context).get('home.no_card'),
+              context.getString('home.no_card'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
@@ -96,9 +96,7 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, itemAnimation, card, position) {
           return Reorderable(
             key: card.cardKey,
-            builder: (context, dragAnimation, inDrag) {
-              return card;
-            },
+            child: card,
           );
         },
       ),
@@ -121,28 +119,29 @@ class _MainStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context, listen: false).adMobEntry;
-
-    double paddingBottom = adMobSettingsEntry.calculatePaddingBottom(context);
-    AdmobBanner banner = adMobSettingsEntry.createBanner();
-    if (adMobSettingsEntry.calculatePaddingBottom(context) == 0 || banner == null) {
+    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context).adMobEntry;
+    AdmobBanner banner = adMobSettingsEntry.createBanner(context);
+    if (banner == null) {
       return child;
     }
 
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: paddingBottom),
-          child: child,
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: paddingBottom,
-          child: banner,
-        ),
-      ],
+    return FutureBuilder<Size>(
+      initialData: Size.zero,
+      future: adMobSettingsEntry.calculateSize(context),
+      builder: (context, sizeSnapshot) => Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: sizeSnapshot.data.height),
+            child: child,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: banner,
+          ),
+        ],
+      ),
     );
   }
 }

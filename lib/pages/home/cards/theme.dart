@@ -21,14 +21,14 @@ class ThemeCard extends MaterialCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    return EzLocalization.of(context).get('home.current_theme.' + (isDarkMode(context) ? 'dark' : 'light'));
+    return context.getString('home.current_theme.' + (isDarkMode(context) ? 'dark' : 'light'));
   }
 
   @override
   void onTap(BuildContext context) {
     SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
-    SettingsEntry<UnicaenTimetableTheme> themeEntry = settingsModel.getEntryByKey('application.theme');
-    themeEntry.value = themeEntry.value.opposite;
+    AppThemeSettingsEntry themeEntry = settingsModel.getEntryByKey('application.theme');
+    themeEntry.toggleDarkMode();
     themeEntry.flush();
   }
 

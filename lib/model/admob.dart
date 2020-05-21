@@ -11,9 +11,6 @@ import 'package:unicaen_timetable/model/settings.dart';
 
 /// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
-  /// The AdMob app identifier.
-  String appId;
-
   /// The AdMob banner identifier.
   String adUnitId;
 
@@ -41,36 +38,30 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     _setAdMobEnabled(value);
   }
 
+  /// Returns the AdMob app id.
+  static Future<String> getAdMobAppId() async => (await _decodeAdMobData())['app_id'];
+
   /// Sets AdMob enabled (and loads it if needed).
   Future<void> _setAdMobEnabled(bool enabled) async {
     if (enabled && adUnitId == null) {
-      Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
-      appId = data['app_id'];
+      Map<String, dynamic> data = await _decodeAdMobData();
       adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : data['ad_unit'];
     }
   }
 
-  /// Calculates the padding bottom.
-  double calculatePaddingBottom(BuildContext context) {
-    if (!value) {
-      return 0;
-    }
-
-    MediaQueryData mediaScreen = MediaQuery.of(context);
-    double dpHeight = mediaScreen.orientation == Orientation.portrait ? mediaScreen.size.height : mediaScreen.size.width;
-    if (dpHeight <= 400) {
-      return 32;
-    }
-    if (dpHeight > 720) {
-      return 90;
-    }
-
-    return 50;
-  }
+  static Future<Map<String, dynamic>> _decodeAdMobData() async => jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
 
   /// Creates the banner ad.
-  AdmobBanner createBanner() => !value || adUnitId == null ? null : AdmobBanner(
-    adUnitId: adUnitId,
-    adSize: AdmobBannerSize.SMART_BANNER,
-  );
+  AdmobBanner createBanner(BuildContext context) => !value || adUnitId == null
+      ? null
+      : AdmobBanner(
+          adUnitId: adUnitId,
+          adSize: _getAdMobBannerSize(context),
+        );
+
+  /// Calculates the banner size.
+  Future<Size> calculateSize(BuildContext context) => !value || adUnitId == null ? Future<Size>.value(Size.zero) : Admob.bannerSize(_getAdMobBannerSize(context));
+
+  /// Returns the AdMob banner size.
+  AdmobBannerSize _getAdMobBannerSize(BuildContext context) => AdmobBannerSize.ADAPTIVE_BANNER(width: MediaQuery.of(context).size.width.ceil());
 }

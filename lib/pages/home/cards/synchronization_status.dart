@@ -24,8 +24,8 @@ class SynchronizationStatusCard extends MaterialCard {
   @override
   String buildSubtitle(BuildContext context) {
     LessonModel lessonModel = Provider.of<LessonModel>(context);
-    String date = lessonModel.lastModificationTime == null ? EzLocalization.of(context).get('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context).locale.languageCode).add_Hms().format(lessonModel.lastModificationTime);
-    return date + '\n' + EzLocalization.of(context).get('home.synchronization_status.' + (isBad(context) ? 'bad' : 'good'));
+    String date = lessonModel.lastModificationTime == null ? context.getString('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context).locale.languageCode).add_Hms().format(lessonModel.lastModificationTime);
+    return date + '\n' + context.getString('home.synchronization_status.' + (isBad(context) ? 'bad' : 'good'));
   }
 
   @override

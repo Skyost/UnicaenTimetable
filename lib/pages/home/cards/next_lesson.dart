@@ -1,5 +1,5 @@
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/pages/home/cards/card.dart';
@@ -25,12 +25,12 @@ class NextLessonCard extends RemainingLessonsCard {
   String buildSubtitle(BuildContext context) {
     List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context);
     if(remainingLessons == null) {
-      return EzLocalization.of(context).get('home.loading');
+      return context.getString('home.loading');
     }
 
     DateTime now = DateTime.now();
     Lesson lesson = remainingLessons.firstWhere((lesson) => now.isBefore(lesson.start), orElse: () => null);
-    return lesson?.toString(context) ?? EzLocalization.of(context).get('home.next_lesson.nothing');
+    return lesson?.toString(context) ?? context.getString('home.next_lesson.nothing');
   }
 
   @override

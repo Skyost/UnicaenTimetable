@@ -1,5 +1,5 @@
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
@@ -38,10 +38,10 @@ class _AppMainWidgetState extends State<AppMainWidget> {
       if (loginResult == LoginResult.UNAUTHORIZED) {
         await showDialog(
           context: context,
-          builder: (_) => AlertDialog(
-            title: Text(EzLocalization.of(context).get('dialogs.unauthorized.title')),
+          builder: (context) => AlertDialog(
+            title: Text(context.getString('dialogs.unauthorized.title')),
             content: SingleChildScrollView(
-              child: Text(EzLocalization.of(context).get('dialogs.unauthorized.message')),
+              child: Text(context.getString('dialogs.unauthorized.message')),
             ),
             actions: [
               FlatButton(
@@ -49,7 +49,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
                   await Navigator.pop(context);
                   unawaited(LoginDialog.show(context));
                 },
-                child: Text(EzLocalization.of(context).get('dialogs.unauthorized.button_login').toUpperCase()),
+                child: Text(context.getString('dialogs.unauthorized.button_login').toUpperCase()),
               ),
               FlatButton(
                 onPressed: () => Navigator.pop(context),

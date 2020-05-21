@@ -68,25 +68,25 @@ class _LoginDialogState extends State<LoginDialog> {
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [
-      Text(EzLocalization.of(context).get('dialogs.login.username')),
+      Text(context.getString('dialogs.login.username')),
       TextFormField(
-        decoration: InputDecoration(hintText: EzLocalization.of(context).get('dialogs.login.username_hint')),
+        decoration: InputDecoration(hintText: context.getString('dialogs.login.username_hint')),
         autocorrect: false,
-        validator: (value) => value == null || value.isEmpty ? EzLocalization.of(context).get('other.field_empty') : null,
+        validator: (value) => value == null || value.isEmpty ? context.getString('other.field_empty') : null,
         controller: usernameController,
         textInputAction: TextInputAction.next,
         onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(focusNode),
       ),
       Padding(
         padding: const EdgeInsets.only(top: 20),
-        child: Text(EzLocalization.of(context).get('dialogs.login.password')),
+        child: Text(context.getString('dialogs.login.password')),
       ),
       TextFormField(
-        decoration: InputDecoration(hintText: EzLocalization.of(context).get('dialogs.login.password_hint')),
+        decoration: InputDecoration(hintText: context.getString('dialogs.login.password_hint')),
         autocorrect: false,
         obscureText: true,
         keyboardType: TextInputType.visiblePassword,
-        validator: (value) => value == null || value.isEmpty ? EzLocalization.of(context).get('other.field_empty') : null,
+        validator: (value) => value == null || value.isEmpty ? context.getString('other.field_empty') : null,
         controller: passwordController,
         textInputAction: TextInputAction.done,
         focusNode: focusNode,
@@ -98,7 +98,7 @@ class _LoginDialogState extends State<LoginDialog> {
     }
 
     return AlertDialog(
-      title: Text(EzLocalization.of(context).get('dialogs.login.title')),
+      title: Text(context.getString('dialogs.login.title')),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -115,7 +115,7 @@ class _LoginDialogState extends State<LoginDialog> {
           onPressed: () => Navigator.pop(context, false),
         ),
         FlatButton(
-          child: Text(EzLocalization.of(context).get('dialogs.login.login').toUpperCase()),
+          child: Text(context.getString('dialogs.login.login').toUpperCase()),
           onPressed: () => onLoginButtonPressed(context),
         ),
       ],
@@ -126,7 +126,7 @@ class _LoginDialogState extends State<LoginDialog> {
   Widget createErrorMessage() => Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Text(
-          EzLocalization.of(context).get('dialogs.login.errors.${loginResult.toString().toLowerCase()}'),
+          context.getString('dialogs.login.errors.${loginResult.toString().toLowerCase()}'),
           style: TextStyle(color: Colors.red[700]),
         ),
       );

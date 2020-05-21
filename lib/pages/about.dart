@@ -49,7 +49,7 @@ class _ListHeader extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Text(
-                EzLocalization.of(context).get('app_name'),
+                context.getString('app_name'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -71,7 +71,7 @@ class _ListBody extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(EzLocalization.of(context).get('about.paragraphs.first')),
+            Text(context.getString('about.paragraphs.first')),
             Padding(
               padding: const EdgeInsets.all(6),
               child: SizedBox(
@@ -85,7 +85,7 @@ class _ListBody extends StatelessWidget {
                 ),
               ),
             ),
-            Text(EzLocalization.of(context).get('about.paragraphs.second')),
+            Text(context.getString('about.paragraphs.second')),
           ],
         ),
       );

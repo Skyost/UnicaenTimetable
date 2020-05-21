@@ -36,6 +36,8 @@ class AppThemeSettingsEntry extends SettingsEntry<UnicaenTimetableTheme> {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
     await box.put(key, value is DarkTheme);
   }
+
+  void toggleDarkMode() => value = value is DarkTheme ? const LightTheme() : const DarkTheme();
 }
 
 /// Represents an app theme.
@@ -107,17 +109,18 @@ abstract class UnicaenTimetableTheme {
         dialogBackgroundColor: scaffoldBackgroundColor,
         appBarTheme: AppBarTheme(color: actionBarColor),
         textTheme: TextTheme(
-          display4: TextStyle(color: textColor),
-          display3: TextStyle(color: textColor),
-          display2: TextStyle(color: textColor),
-          display1: TextStyle(color: textColor),
-          headline: TextStyle(color: textColor),
-          title: TextStyle(color: textColor),
-          subhead: TextStyle(color: textColor),
-          body2: TextStyle(color: textColor),
-          body1: TextStyle(color: textColor),
+          headline1: TextStyle(color: textColor),
+          headline2: TextStyle(color: textColor),
+          headline3: TextStyle(color: textColor),
+          headline4: TextStyle(color: textColor),
+          headline5: TextStyle(color: textColor),
+          headline6: TextStyle(color: textColor),
+          subtitle1: TextStyle(color: textColor),
+          subtitle2: TextStyle(color: textColor),
+          bodyText1: TextStyle(color: textColor),
+          bodyText2: TextStyle(color: textColor),
           caption: TextStyle(color: textColor),
-          subtitle: TextStyle(color: textColor),
+          //button: TextStyle(color: textColor),
           overline: TextStyle(color: textColor),
         ),
         popupMenuTheme: PopupMenuThemeData(color: scaffoldBackgroundColor),
@@ -133,11 +136,8 @@ abstract class UnicaenTimetableTheme {
   /// Updates the current navigation bar color.
   Future<void> updateNavigationBarColor() => FlutterStatusbarcolor.setNavigationBarColor(actionBarColor);
 
-  /// Returns the opposite app theme.
-  UnicaenTimetableTheme get opposite;
-
-  /// Creates the Flutter Week View events column background painter.
-  EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date);
+  /// Creates the Flutter Week View day view style.
+  DayViewStyle createDayViewStyle(DateTime date) => const DayViewStyle();
 }
 
 /// The light theme.
@@ -156,12 +156,6 @@ class LightTheme extends UnicaenTimetableTheme {
           hoursColumnTextColor: Colors.black54,
           aboutHeaderBackgroundColor: const Color(0xFF7986CB),
         );
-
-  @override
-  UnicaenTimetableTheme get opposite => const DarkTheme();
-
-  @override
-  EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date) => null;
 }
 
 /// The dark theme.
@@ -184,11 +178,8 @@ class DarkTheme extends UnicaenTimetableTheme {
         );
 
   @override
-  UnicaenTimetableTheme get opposite => const LightTheme();
-
-  @override
-  EventsColumnBackgroundPainter createEventsColumnBackgroundPainter(DateTime date) => EventsColumnBackgroundPainter(
+  DayViewStyle createDayViewStyle(DateTime date) => DayViewStyle(
         backgroundColor: date.yearMonthDay.difference(DateTime.now().yearMonthDay).inDays == 0 ? primaryColor : scaffoldBackgroundColor,
-        rulesColor: Colors.white12,
+        backgroundRulesColor: Colors.white12,
       );
 }

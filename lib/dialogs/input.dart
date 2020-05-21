@@ -32,7 +32,7 @@ abstract class _InputDialog<T> extends StatefulWidget {
 abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: widget.titleKey == null ? null : Text(EzLocalization.of(context).get(widget.titleKey)),
+        title: widget.titleKey == null ? null : Text(context.getString(widget.titleKey)),
         contentPadding: widget.contentPadding,
         content: buildForm(context),
         actions: [
@@ -240,19 +240,19 @@ class BoolInputDialog extends _InputDialog<bool> {
 class _BoolInputDialogState extends _InputDialogState<bool> {
   @override
   Widget buildForm(BuildContext context) => SingleChildScrollView(
-        child: Text(EzLocalization.of(context).get((widget as BoolInputDialog).messageKey)),
+        child: Text(context.getString((widget as BoolInputDialog).messageKey)),
       );
 
   @override
   Widget createOkButton(BuildContext context) => FlatButton(
         onPressed: () => Navigator.of(context).pop(true),
-        child: Text(EzLocalization.of(context).get((widget as BoolInputDialog).yesButtonKey).toUpperCase()),
+        child: Text(context.getString((widget as BoolInputDialog).yesButtonKey).toUpperCase()),
       );
 
   @override
   Widget createCancelButton(BuildContext context) => FlatButton(
         onPressed: () => Navigator.of(context).pop(false),
-        child: Text(EzLocalization.of(context).get((widget as BoolInputDialog).noButtonKey).toUpperCase()),
+        child: Text(context.getString((widget as BoolInputDialog).noButtonKey).toUpperCase()),
       );
 
   @override
@@ -373,7 +373,7 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
     }
 
     if (weeks.isEmpty) {
-      return Text(EzLocalization.of(context).get('dialogs.week_picker.empty'));
+      return Text(context.getString('dialogs.week_picker.empty'));
     }
 
     DateFormat formatter = DateFormat.yMMMd(EzLocalization.of(context).locale.languageCode);

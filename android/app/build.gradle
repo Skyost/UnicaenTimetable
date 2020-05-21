@@ -69,11 +69,13 @@ android {
             shrinkResources true
             minifyEnabled true
             resValue 'string', 'account_type_authority', 'fr.skyost.timetable'
+            resValue 'string', 'admob_app_id', keystoreProperties['adMobAppId']
         }
         debug {
             applicationIdSuffix = '.dev'
             versionNameSuffix '-dev'
             resValue 'string', 'account_type_authority', 'fr.skyost.timetable.dev'
+            resValue 'string', 'admob_app_id', keystoreProperties['adMobAppId']
         }
     }
 
