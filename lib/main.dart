@@ -8,7 +8,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
-import 'package:unicaen_timetable/model/admob.dart';
 import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
@@ -19,7 +18,7 @@ import 'package:unicaen_timetable/utils/widgets.dart';
 /// Hello world !
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AdMobSettingsEntry.getAdMobAppId().then((appId) => Admob.initialize(appId));
+  Admob.initialize();
   await Hive.initFlutter();
   runApp(UnicaenTimetableApp());
   unawaited(BackgroundFetch.registerHeadlessTask(headlessSyncTask));

@@ -59,20 +59,6 @@ class _AppMainWidgetState extends State<AppMainWidget> {
           ),
         );
       }
-
-      RateMyApp rateMyApp = RateMyApp();
-      await rateMyApp.init();
-      if (rateMyApp.shouldOpenDialog) {
-        EzLocalization ezLocalization = EzLocalization.of(context);
-        unawaited(rateMyApp.showRateDialog(
-          context,
-          title: ezLocalization.get('dialogs.rate.title'),
-          message: ezLocalization.get('dialogs.rate.message'),
-          rateButton: ezLocalization.get('dialogs.rate.button_rate').toUpperCase(),
-          laterButton: ezLocalization.get('dialogs.rate.button_later').toUpperCase(),
-          noButton: ezLocalization.get('dialogs.rate.button_no').toUpperCase(),
-        ));
-      }
     });
   }
 
@@ -82,12 +68,26 @@ class _AppMainWidgetState extends State<AppMainWidget> {
     bool openToday = settingsModel.getEntryByKey('application.open_today_automatically').value;
     int weekDay = DateTime.now().weekday;
     bool inWeekEnd = weekDay == DateTime.saturday || weekDay == DateTime.sunday;
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ValueNotifier<Page>>(create: (_) => ValueNotifier<Page>(openToday ? DayViewPage(weekDay: inWeekEnd ? DateTime.monday : weekDay) : const HomePage())),
-        ChangeNotifierProvider<ValueNotifier<DateTime>>(create: (_) => ValueNotifier<DateTime>(_mondayOfCurrentWeek)),
-      ],
-      child: AppScaffold(),
+    return RateMyAppBuilder(
+      onInitialized: (context, rateMyApp) {
+        if (rateMyApp.shouldOpenDialog) {
+          unawaited(rateMyApp.showRateDialog(
+            context,
+            title: context.getString('dialogs.rate.title'),
+            message: context.getString('dialogs.rate.message'),
+            rateButton: context.getString('dialogs.rate.button_rate').toUpperCase(),
+            laterButton: context.getString('dialogs.rate.button_later').toUpperCase(),
+            noButton: context.getString('dialogs.rate.button_no').toUpperCase(),
+          ));
+        }
+      },
+      builder: (context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ValueNotifier<Page>>(create: (_) => ValueNotifier<Page>(openToday ? DayViewPage(weekDay: inWeekEnd ? DateTime.monday : weekDay) : const HomePage())),
+          ChangeNotifierProvider<ValueNotifier<DateTime>>(create: (_) => ValueNotifier<DateTime>(_mondayOfCurrentWeek)),
+        ],
+        child: AppScaffold(),
+      ),
     );
   }
 

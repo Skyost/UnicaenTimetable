@@ -38,19 +38,13 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
     _setAdMobEnabled(value);
   }
 
-  /// Returns the AdMob app id.
-  static Future<String> getAdMobAppId() async => (await _decodeAdMobData())['app_id'];
-
   /// Sets AdMob enabled (and loads it if needed).
   Future<void> _setAdMobEnabled(bool enabled) async {
     if (enabled && adUnitId == null) {
-      Map<String, dynamic> data = await _decodeAdMobData();
+      Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
       adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : data['ad_unit'];
     }
   }
-
-  static Future<Map<String, dynamic>> _decodeAdMobData() async => jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
-
   /// Creates the banner ad.
   AdmobBanner createBanner(BuildContext context) => !value || adUnitId == null
       ? null
