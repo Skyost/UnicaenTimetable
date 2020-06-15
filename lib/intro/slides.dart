@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,14 +15,10 @@ class Slide extends StatelessWidget {
   /// The image asset.
   final String asset;
 
-  /// Whether to the next slide button should be enabled by default.
-  final bool automaticallyAllowNextSlide;
-
   /// Creates a new slide instance.
   const Slide({
     @required this.slideId,
     this.asset,
-    this.automaticallyAllowNextSlide = true,
   });
 
   @override
@@ -41,10 +39,10 @@ class Slide extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50),
+          padding: const EdgeInsets.symmetric(vertical: 20),
           child: SvgPicture.asset(
             asset ?? 'assets/intro/${slideId}.svg',
-            width: MediaQuery.of(context).size.width - 160,
+            width: math.min(350, MediaQuery.of(context).size.width - 160),
           ),
         ),
         Text(
@@ -52,6 +50,9 @@ class Slide extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ];
+
+  /// Triggered when the user wants to go to the next slide.
+  Future<bool> onGoToNextSlide(BuildContext context) => Future<bool>.value(true);
 }
 
 /// The first intro slide.
@@ -67,11 +68,7 @@ class FirstSlide extends Slide {
 /// The second intro slide.
 class SecondSlide extends Slide {
   /// Creates a new second intro slide instance.
-  const SecondSlide()
-      : super(
-          slideId: 'login',
-          automaticallyAllowNextSlide: false,
-        );
+  const SecondSlide() : super(slideId: 'login');
 
   @override
   List<Widget> createChildren(BuildContext context) {
@@ -82,11 +79,7 @@ class SecondSlide extends Slide {
         width: double.infinity,
         child: FlatButton(
           textColor: Colors.white,
-          onPressed: () async {
-            if (await LoginDialog.show(context, synchronizeAfterLogin: true)) {
-              Provider.of<IntroScaffoldBodyModel>(context, listen: false).goToNextSlide(context);
-            }
-          },
+          onPressed: () => Provider.of<IntroScaffoldBodyModel>(context, listen: false).goToNextSlide(context),
           child: Text(context.getString('intro.slides.login.login_button').toUpperCase()),
           color: const Color(0xFF1F2B38),
           highlightColor: Colors.black12,
@@ -96,6 +89,9 @@ class SecondSlide extends Slide {
     ));
     return children;
   }
+
+  @override
+  Future<bool> onGoToNextSlide(BuildContext context) async => await LoginDialog.show(context, synchronizeAfterLogin: true);
 }
 
 /// The third intro slide.

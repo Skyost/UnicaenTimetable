@@ -201,8 +201,8 @@ class LessonModel extends UnicaenTimetableModel {
     } catch (ex, stacktrace) {
       print(ex);
       print(stacktrace);
-      return false;
     }
+    return false;
   }
 
   /// Returns the last modification time.

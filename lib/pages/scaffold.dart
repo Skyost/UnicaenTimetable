@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_svg/flutter_svg.dart';
@@ -105,13 +107,19 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
       );
 
   /// Goes to the date (if found in the app channel).
-  void goToDateIfNeeded() => WidgetsBinding.instance.addPostFrameCallback((_) async {
-        String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
-        if (rawDate != null) {
-          DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
-          Provider.of<ValueNotifier<DateTime>>(context, listen: false).value = date;
-        }
-      });
+  void goToDateIfNeeded() {
+    if(!Platform.isAndroid) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
+      if (rawDate != null) {
+        DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
+        Provider.of<ValueNotifier<DateTime>>(context, listen: false).value = date;
+      }
+    });
+  }
 }
 
 /// The floating button that allows to synchronize the app.
@@ -229,6 +237,10 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
 
   /// Synchronize the app (if found in the app channel).
   void syncIfNeeded() {
+    if(!Platform.isAndroid) {
+      return;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       bool shouldSync = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_should_sync');
       if (shouldSync) {

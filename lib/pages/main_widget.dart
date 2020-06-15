@@ -1,5 +1,6 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/services.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
@@ -86,7 +87,10 @@ class _AppMainWidgetState extends State<AppMainWidget> {
           ChangeNotifierProvider<ValueNotifier<Page>>(create: (_) => ValueNotifier<Page>(openToday ? DayViewPage(weekDay: inWeekEnd ? DateTime.monday : weekDay) : const HomePage())),
           ChangeNotifierProvider<ValueNotifier<DateTime>>(create: (_) => ValueNotifier<DateTime>(_mondayOfCurrentWeek)),
         ],
-        child: AppScaffold(),
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: settingsModel.theme.actionBarColor),
+          child: AppScaffold(),
+        ),
       ),
     );
   }

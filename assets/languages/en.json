@@ -17,7 +17,7 @@
     },
     "home": {
         "title": "Home",
-        "no_card": "The application home page feels a bit empty. Feel free to add some widgets using the upper-right button.",
+        "no_card": "It feels a bit empty here. Feel free to add some widgets using the upper-right button.",
         "loading": "Loading…",
         "synchronization_status": {
             "name": "Synchronization status",

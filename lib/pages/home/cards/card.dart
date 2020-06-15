@@ -37,12 +37,15 @@ abstract class MaterialCard extends StatelessWidget {
               ),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.all(20),
+              contentPadding: const EdgeInsets.only(top: 20, right: 20, bottom: 20),
               leading: LayoutBuilder(
-                builder: (_, constraints) => Icon(
-                  buildIcon(context),
-                  color: theme.cardsTextColor ?? color,
-                  size: constraints.maxHeight,
+                builder: (_, constraints) => Padding(
+                  padding: EdgeInsets.only(left: 0.03 * constraints.maxWidth + 20),
+                  child: Icon(
+                    buildIcon(context),
+                    color: theme.cardsTextColor ?? color,
+                    size: constraints.maxHeight,
+                  ),
                 ),
               ),
               title: Text(

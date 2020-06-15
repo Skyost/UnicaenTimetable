@@ -192,7 +192,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     }
 
     if (entry.value is UnicaenTimetableTheme) {
-      entry.value = entry.value.opposite;
+      (entry as AppThemeSettingsEntry).toggleDarkMode();
       unawaited(entry.flush());
     }
 

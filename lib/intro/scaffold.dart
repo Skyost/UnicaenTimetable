@@ -1,5 +1,6 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/intro/slides.dart';
 
@@ -10,14 +11,14 @@ class IntroScaffold extends StatelessWidget {
         data: ThemeData(
           scaffoldBackgroundColor: const Color(0xFF2C3E50),
           textTheme: TextTheme(
-            title: TextStyle(
+            headline6: TextStyle(
               color: Colors.white,
               fontSize: 38,
               fontWeight: FontWeight.w100,
               height: 1,
             ),
-            body1: const TextStyle(color: Colors.white),
-            body2: const TextStyle(
+            bodyText2: const TextStyle(color: Colors.white),
+            bodyText1: const TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
@@ -25,12 +26,15 @@ class IntroScaffold extends StatelessWidget {
           ),
         ),
         isMaterialAppTheme: true,
-        child: Scaffold(
-          body: ChangeNotifierProvider<IntroScaffoldBodyModel>(
-            create: (_) => IntroScaffoldBodyModel(),
-            child: Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: _IntroScaffoldBody(),
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: const Color(0xFF171F29)),
+          child: Scaffold(
+            body: ChangeNotifierProvider<IntroScaffoldBodyModel>(
+              create: (_) => IntroScaffoldBodyModel(),
+              child: Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                child: _IntroScaffoldBody(),
+              ),
             ),
           ),
         ),
@@ -86,7 +90,7 @@ class _IntroScaffoldBody extends StatelessWidget {
               child: Text(context.getString('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
               textColor: Colors.white,
               disabledTextColor: Colors.white54,
-              onPressed: model.allowNextSlide ? () => model.goToNextSlide(context) : null,
+              onPressed: () => model.goToNextSlide(context),
             ),
           ],
         ),
@@ -108,13 +112,9 @@ class IntroScaffoldBodyModel extends ChangeNotifier {
   /// The currently shown slide.
   Slide _currentSlide;
 
-  /// Whether it is allowed to go to the next slide.
-  bool _allowNextSlide;
-
   /// Creates a new intro scaffold body model instance.
   IntroScaffoldBodyModel() {
     _currentSlide = slides.first;
-    _allowNextSlide = slides.first.automaticallyAllowNextSlide;
   }
 
   /// Returns the currently shown slide index.
@@ -123,12 +123,9 @@ class IntroScaffoldBodyModel extends ChangeNotifier {
   /// Returns the currently shown slide.
   Slide get currentSlide => _currentSlide;
 
-  /// Returns whether it is allowed to go to the next slide.
-  bool get allowNextSlide => _allowNextSlide;
-
-  /// Sets whether it is allowed to go to the next slide.
-  set allowNextSlide(bool allowNextSlide) {
-    _allowNextSlide = allowNextSlide;
+  /// Sets the current slide.
+  set currentSlide(Slide slide) {
+    _currentSlide = slide;
     notifyListeners();
   }
 
@@ -136,21 +133,21 @@ class IntroScaffoldBodyModel extends ChangeNotifier {
   void goToPreviousSlide() {
     if (_currentSlideIndex > 0) {
       _currentSlideIndex--;
-      _currentSlide = slides[_currentSlideIndex];
-      allowNextSlide = _currentSlide.automaticallyAllowNextSlide;
+      currentSlide = slides[_currentSlideIndex];
     }
   }
 
   /// Goes to the next slide if possible.
-  void goToNextSlide([BuildContext context]) {
-    if (isLastSlide && context != null) {
-      Navigator.pushReplacementNamed(context, '/');
+  Future<void> goToNextSlide(BuildContext context) async {
+    if (isLastSlide) {
+      await Navigator.pushReplacementNamed(context, '/');
       return;
     }
 
-    _currentSlideIndex++;
-    _currentSlide = slides[_currentSlideIndex];
-    allowNextSlide = _currentSlide.automaticallyAllowNextSlide;
+    if (await _currentSlide.onGoToNextSlide(context)) {
+      _currentSlideIndex++;
+      currentSlide = slides[_currentSlideIndex];
+    }
   }
 
   /// Returns whether this is the last slide.

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:hive/hive.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
@@ -20,15 +18,12 @@ class AppThemeSettingsEntry extends SettingsEntry<UnicaenTimetableTheme> {
   @override
   Future<UnicaenTimetableTheme> load([Box settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    UnicaenTimetableTheme theme = box.get(key, defaultValue: false) ? const DarkTheme() : const LightTheme();
-    unawaited(theme.updateNavigationBarColor());
-    return theme;
+    return box.get(key, defaultValue: false) ? const DarkTheme() : const LightTheme();
   }
 
   @override
   set value(UnicaenTimetableTheme value) {
     super.value = value;
-    unawaited(value.updateNavigationBarColor());
   }
 
   @override
@@ -132,9 +127,6 @@ abstract class UnicaenTimetableTheme {
           splashColor: highlightColor,
         ),
       );
-
-  /// Updates the current navigation bar color.
-  Future<void> updateNavigationBarColor() => FlutterStatusbarcolor.setNavigationBarColor(actionBarColor);
 
   /// Creates the Flutter Week View day view style.
   DayViewStyle createDayViewStyle(DateTime date) => const DayViewStyle();

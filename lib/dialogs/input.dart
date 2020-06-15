@@ -373,7 +373,9 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
     }
 
     if (weeks.isEmpty) {
-      return Text(context.getString('dialogs.week_picker.empty'));
+      return SingleChildScrollView(
+        child: Text(context.getString('dialogs.week_picker.empty')),
+      );
     }
 
     DateFormat formatter = DateFormat.yMMMd(EzLocalization.of(context).locale.languageCode);
@@ -384,7 +386,7 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
         itemBuilder: (_, position) {
           DateTime monday = weeks[position];
           return ListTile(
-            title: Text(formatter.format(monday) + ' — ' + formatter.format(monday.add(Duration(days: DateTime.friday - 1)))),
+            title: Text(formatter.format(monday) + ' — ' + formatter.format(monday.add(const Duration(days: DateTime.friday)))),
             trailing: Radio<bool>(
               value: position == currentWeekIndex,
               groupValue: true,

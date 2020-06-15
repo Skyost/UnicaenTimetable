@@ -71,27 +71,11 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
   @override
   void initState() {
     super.initState();
+
     lessonModel = LessonModel();
     userRepository = UserRepository();
     settingsModel = SettingsModel();
-
-    lessonModel.initialize();
-    userRepository.initialize();
-    settingsModel.initialize();
-
-    BackgroundFetch.configure(
-      BackgroundFetchConfig(
-        minimumFetchInterval: const Duration(days: 1).inMinutes,
-        stopOnTerminate: false,
-        enableHeadless: true,
-        startOnBoot: true,
-        requiredNetworkType: NetworkType.ANY,
-      ),
-      (String taskId) async {
-        await lessonModel.synchronizeFromZimbra(settingsModel: settingsModel, user: await userRepository.getUser());
-        BackgroundFetch.finish(taskId);
-      },
-    );
+    _initialize();
   }
 
   @override
@@ -137,5 +121,26 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
     settingsModel.dispose();
     Hive.close();
     super.dispose();
+  }
+
+  /// Initializes the models.
+  Future<void> _initialize() async {
+    await lessonModel.initialize();
+    await userRepository.initialize();
+    await settingsModel.initialize();
+
+    await BackgroundFetch.configure(
+      BackgroundFetchConfig(
+        minimumFetchInterval: const Duration(days: 1).inMinutes,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        startOnBoot: true,
+        requiredNetworkType: NetworkType.ANY,
+      ),
+      (String taskId) async {
+        await lessonModel.synchronizeFromZimbra(settingsModel: settingsModel, user: await userRepository.getUser());
+        BackgroundFetch.finish(taskId);
+      },
+    );
   }
 }

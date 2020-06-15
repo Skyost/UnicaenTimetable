@@ -188,7 +188,6 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
 
       notifyListeners();
     }
-
     return _cachedUser;
   }
 
@@ -250,23 +249,29 @@ class AndroidUserRepository extends UserRepository<String> {
 
   @override
   Future<User> _read() async {
-    Map<dynamic, dynamic> response = await UnicaenTimetableApp.CHANNEL.invokeMethod('account.get');
-    if (response == null) {
-      return null;
-    }
+    try {
+      Map<dynamic, dynamic> response = await UnicaenTimetableApp.CHANNEL.invokeMethod('account.get');
+      if (response == null) {
+        return null;
+      }
 
-    if (response['need_update']) {
-      await updateUser(User(
+      if (response['need_update']) {
+        await updateUser(User(
+          username: response['username'],
+          password: response['password'],
+        ));
+        return _read();
+      }
+
+      return User(
         username: response['username'],
-        password: response['password'],
-      ));
-      return _read();
+        password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
+      );
+    } catch (ex, stacktrace) {
+      print(ex);
+      print(stacktrace);
     }
-
-    return User(
-      username: response['username'],
-      password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
-    );
+    return null;
   }
 
   @override
