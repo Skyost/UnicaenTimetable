@@ -337,7 +337,12 @@ class IOSUserRepository extends UserRepository<List<int>> {
       _encryptionKey = Hive.generateSecureKey();
       await storage.write(key: 'encryption_key', value: jsonEncode(_encryptionKey));
     } else {
-      _encryptionKey = jsonDecode(rawEncryptionKey);
+      List<int> result = [];
+      List<dynamic> jsonKey = jsonDecode(rawEncryptionKey);
+      for(dynamic value in jsonKey) {
+        result.add(value);
+      }
+      _encryptionKey = result;
     }
 
     markInitialized();
@@ -346,7 +351,7 @@ class IOSUserRepository extends UserRepository<List<int>> {
   @override
   Future<User> _read() async {
     Box<User> box = await Hive.openBox<User>(_HIVE_BOX, encryptionCipher: HiveAesCipher(_encryptionKey));
-    return box.getAt(0);
+    return box.get(0);
   }
 
   @override
@@ -354,7 +359,7 @@ class IOSUserRepository extends UserRepository<List<int>> {
     await super.updateUser(user);
 
     Box<User> box = await Hive.openBox<User>(_HIVE_BOX, encryptionCipher: HiveAesCipher(_encryptionKey));
-    await box.putAt(0, user);
+    await box.put(0, user);
     return user;
   }
 }
