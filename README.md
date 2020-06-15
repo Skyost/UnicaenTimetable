@@ -1,4 +1,4 @@
-# <img src="https://github.com/Skyost/UnicaenTimetable/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" height="48px" width="48px" title="Icon" alt="Icon"/> Unicaen Timetable
+# <img src="https://github.com/Skyost/UnicaenTimetable/blob/master/assets/icon.svg" height="48px" width="48px" title="Icon" alt="Icon"/> Unicaen Timetable
 This application allows the students of the University of Caen Normandie to check their timetable directly from their smartphone or tablet.
 
 

@@ -1,8 +1,0 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <Preference
-        android:key="account"
-        android:title="@string/preferences_account_account"
-        android:persistent="false"/>
-
-</PreferenceScreen>

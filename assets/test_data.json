@@ -1,0 +1,79 @@
+{
+    "username": "test",
+    "password": "test",
+    "calendar": {
+        "monday": [
+            {
+                "name": "Algèbre linéaire",
+                "description": "Salle : S3 123.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : WAYNE Bruce.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 123",
+                "start": "08:00",
+                "end": "10:00"
+            },
+            {
+                "name": "Analyse",
+                "description": "Salle : S3 124.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : PARKER Peter.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 124",
+                "start": "12:00",
+                "end": "16:00"
+            }
+        ],
+        "tuesday": [
+            {
+                "name": "Probabilités",
+                "description": "Salle : S3 125.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : KENT Clark.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 125",
+                "start": "08:30",
+                "end": "10:30"
+            },
+            {
+                "name": "Informatique",
+                "description": "Salle : S3 126.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : ROGERS Steven.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 126",
+                "start": "08:00",
+                "end": "10:00"
+            },
+            {
+                "name": "Algèbre",
+                "description": "Salle : S3 127.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : STARK Tony.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 127",
+                "start": "14:00",
+                "end": "16:00"
+            }
+        ],
+        "wednesday": [
+            {
+                "name": "Analyse",
+                "description": "Salle : S3 124.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : PARKER Peter.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 124",
+                "start": "10:00",
+                "end": "12:00"
+            }
+        ],
+        "thursday": [
+            {
+                "name": "Algèbre linéaire",
+                "description": "Salle : S3 123.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : WAYNE Bruce.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 123",
+                "start": "09:30",
+                "end": "12:15"
+            },
+            {
+                "name": "Probabilités",
+                "description": "Salle : S3 125.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : KENT Clark.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S3 125",
+                "start": "14:00",
+                "end": "16:45"
+            }
+        ],
+        "friday": [
+            {
+                "name": "Enseignement",
+                "description": "Salle : S3 111.\n\nGroupe par activité : GRP_MAT1MKCM01.\n\nEnseignant : BANNER Bruce.\n\nGroupes d'étudiants : M1 Maths G1, M1 Maths G2.",
+                "location": "S1 111",
+                "start": "14:00",
+                "end": "16:00"
+            }
+        ]
+    }
+}

@@ -1,2 +1,0 @@
-include ':app', ':android-week-view'
-project(':android-week-view').projectDir = file('android-week-view/library')

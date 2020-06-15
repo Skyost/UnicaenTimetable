@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Emploi du temps Unicaen</string>
+
+    <string name="alarm_permission_granted">Permission accordée.</string>
+    <string name="alarm_permission_denied">Permission non-accordée.</string>
+
+    <string name="notification_lessonmodenotification_channel">Mode cours</string>
+    <string name="notification_lessonmodenotification_title">Mode cours activé</string>
+    <string name="notification_lessonmodenotification_message" formatted="false">Le mode de notification a été défini sur %1$s. Vous pouvez désactiver cette option pour ce cours en appuyant sur le bouton ci-dessous.</string>
+    <string name="notification_lessonmodenotification_exception" formatted="false">Impossible de changer le mode de notification. Veuillez être sûr que l\'application a toujours la permission de changer le mode de notification.</string>
+    <string name="notification_lessonmodenotification_button">Désactiver</string>
+
+    <string-array name="notification_lessonmodenotification">
+        <item>Aucun changement</item>
+        <item>Alarmes seulement</item>
+        <item>Aucune notification</item>
+    </string-array>
+
+    <string name="toast_enable_silent">Veuillez cocher "Emploi du temps Unicaen".</string>
+
+    <string name="widget_today_title">Aujourd\'hui</string>
+    <string name="widget_today_nothing">Aucun cours pour cette journée.  Si vous pensiez avoir quelque chose, veuillez rafraîchir votre emploi du temps.</string>
+    <string name="widget_today_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
+    <string name="widget_today_error">Impossible de charger votre emploi du temps.</string>
+    <string name="widget_refresh">Rafraîchir</string>
+    <string name="widget_back">Précédent</string>
+    <string name="widget_next">Suivant</string>
+</resources>

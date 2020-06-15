@@ -1,0 +1,169 @@
+{
+    "app_name": "Unicaen Timetable",
+    "scaffold": {
+        "floating_button_tooltip": "Synchronize",
+        "drawer": {
+            "home": "Home",
+            "timetable": "Timetable",
+            "others": "Others"
+        },
+        "snack_bar": {
+            "synchronizing": "Synchronizing…",
+            "success": "Success.",
+            "unauthorized": "Wrong username / password.",
+            "error": "Error. Please try again later.",
+            "widget_already_present": "The selected widget is already present on the application home screen."
+        }
+    },
+    "home": {
+        "title": "Home",
+        "no_card": "It feels a bit empty here. Feel free to add some widgets using the upper-right button.",
+        "loading": "Loading…",
+        "synchronization_status": {
+            "name": "Synchronization status",
+            "title": "Last synchronization :",
+            "bad": "You may have to synchronize the app.",
+            "good": "The app is up-to-date.",
+            "never": "Never"
+        },
+        "current_lesson": {
+            "name": "Current lesson",
+            "title": "Now :",
+            "nothing": "No lesson."
+        },
+        "next_lesson": {
+            "name": "Next lesson",
+            "title": "Next lesson :",
+            "nothing": "Nothing today."
+        },
+        "current_theme": {
+            "name": "Current theme",
+            "title": "Current theme :",
+            "light": "Light mode.",
+            "dark": "Dark mode."
+        },
+        "info": {
+            "name": "Device & app info",
+            "title": "Info :"
+        }
+    },
+    "week_view": {
+        "title": "Week view"
+    },
+    "settings": {
+        "title": "Settings",
+        "application": {
+            "title": "Application",
+            "theme": "Dark mode",
+            "color_lessons_automatically": "Automatically color lessons",
+            "lesson_notification_mode": "Notification mode during class",
+            "open_today_automatically": "Open today's page at launch",
+            "enable_ads": "Enable ads"
+        },
+        "account": {
+            "title": "Account",
+            "account": "Switch account"
+        },
+        "server": {
+            "title": "Server",
+            "server": "Server address",
+            "calendar": "Calendar",
+            "additional_parameters": "Additional parameters",
+            "interval": "Number of weeks to download"
+        }
+    },
+    "bugs_improvements": {
+        "title": "Bugs / Improvements",
+        "message": {
+            "github": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available",
+            "website": "You can also send me an email via the form which is available"
+        }
+    },
+    "about": {
+        "title": "About",
+        "paragraphs": {
+            "first": "This app has been created by Skyost and is available under the therms of the GNU GPL v3 license. It's using Flutter and has been written in Dart by using some technologies. You can view all of this using the links below.",
+            "second": "Disclaimer : This application has not been developed by any official member of the University. Consequently, do not send any request to the University if you have a problem with this application. Furthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable. If you do not trust this application, you can still check the source code with the \"Github\" link below."
+        }
+    },
+    "dialogs": {
+        "enable_ads": {
+            "title": "Ads",
+            "message": "You have the choice to enable ads. But you have to know that it is only a little banner on the home page and this is the only income I get from this application.",
+            "enable": "Enable",
+            "disable": "Disable"
+        },
+        "lesson_info": {
+            "reset_color": "Default color",
+            "set_alarm": "Set alarm"
+        },
+        "lesson_color": {
+            "title": "Lesson color"
+        },
+        "week_picker": {
+            "title": "Pick the week to display",
+            "empty": "There is no lesson. Please check that your timetable is available on Zimbra."
+        },
+        "login": {
+            "title": "Login",
+            "username": "Étupass :",
+            "username_hint": "Before the @etu.unicaen.fr",
+            "password": "Password :",
+            "password_hint": "Your password",
+            "login": "Login",
+            "errors": {
+                "not_found": "Calendar not found : it can be caused by holidays, an unavailable timetable on Zimbra or a bad username. Another reason may be a maintenance so please try again later.",
+                "unauthorized": "Bad username / bad password.",
+                "generic_error": "An error occurred. Please try again later."
+            }
+        },
+        "calendar_not_found": {
+            "title": "Calendar not found",
+            "message": "If you just came back from holidays (or if you are in holidays), this is normal, please try again once your timetable will be available on Zimbra.\nOtherwise, it probably means that you've entered a wrong username.\nYou may also have entered a bad calendar name in the app settings or the servers are in maintenance.\nAnyway, this error is common. Please try again later."
+        },
+        "unauthorized": {
+            "title": "Wrong credentials",
+            "message": "Your username or your password may have been entered incorrectly.",
+            "button_login": "Change account"
+        },
+        "rate": {
+            "title": "Rate the app",
+            "message": "Pardon to interrupt yourself but we have a little request…\nIf you like this app, it would be very kind from you to leave a rating on the app page. It shouldn't take you more than one minute.",
+            "button_rate": "Rate the app",
+            "button_later": "Maybe later",
+            "button_no": "No"
+        }
+    },
+    "intro": {
+        "buttons": {
+            "next": "Next",
+            "finish": "Finish"
+        },
+        "slides": {
+            "main": {
+                "title": "Your timetable on your smartphone !",
+                "message": "This app allows the students of the University of Caen Normandy to have their timetable directly on their smartphone."
+            },
+            "login": {
+                "title": "We need an access to your Unicaen account…",
+                "message": "Don't worry ! This credentials will only be used to get your timetable on the Unicaen servers, nothing else.",
+                "login_button": "Login"
+            },
+            "finished": {
+                "title": "Everything is set !",
+                "message": "You're ready. Please tap on the button below to start."
+            }
+        }
+    },
+    "other": {
+        "field_empty": "This field cannot be empty.",
+        "weeks": "{interval} week(s)",
+        "lesson_notification_mode": {
+            "disabled": "Disabled",
+            "alarms_only": "Silent (alarms only)"
+        },
+        "please_wait": "Please wait…",
+        "here": "here",
+        "empty": "Empty"
+    }
+}

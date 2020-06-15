@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_splash">#3F51B5</color>
+    <color name="color_widget_today_white">#E6FFFFFF</color>
+    <color name="color_widget_today_white_disabled">#E6BABABA</color>
+    <color name="color_widget_today_dark">#992C3E50</color>
+</resources>
