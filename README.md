@@ -14,5 +14,6 @@ If you do not trust this application, you can still check the source code with t
 
 ## Links
 
+- **Play Store :** https://play.google.com/store/apps/details?id=fr.skyost.timetable
+- **App Store :** https://itunes.apple.com/app/unicaen-timetable/id1500430215
 - **Github :** https://github.com/Skyost/UnicaenTimetable.
-- Do not hesitate to leave a feedback in the **"comments"** section [of this application](https://play.google.com/store/apps/details?id=fr.skyost.timetable).
