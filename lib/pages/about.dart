@@ -37,7 +37,7 @@ class _AboutPageState extends State<AboutPage> {
 class _ListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
-        color: Provider.of<SettingsModel>(context).theme.aboutHeaderBackgroundColor,
+        color: context.watch<SettingsModel>().theme.aboutHeaderBackgroundColor,
         padding: const EdgeInsets.all(30),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -51,7 +51,7 @@ class _ListHeader extends StatelessWidget {
               child: Text(
                 context.getString('app_name'),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 30,
                   fontWeight: FontWeight.w300,
@@ -79,7 +79,7 @@ class _ListBody extends StatelessWidget {
                 width: 50,
                 child: CustomPaint(
                   painter: _SymbolPainter(
-                    color: Provider.of<SettingsModel>(context).theme.textColor ?? Colors.black54,
+                    color: context.watch<SettingsModel>().theme.textColor ?? Colors.black54,
                   ),
                   willChange: false,
                 ),
@@ -108,7 +108,7 @@ class _ListFooter extends StatelessWidget {
               icon: SvgPicture.asset(
                 'assets/about/github.svg',
                 height: 40,
-                color: (Provider.of<SettingsModel>(context).theme.textColor ?? Colors.black).withAlpha(255),
+                color: (context.watch<SettingsModel>().theme.textColor ?? Colors.black).withAlpha(255),
               ),
               onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),

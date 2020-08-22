@@ -32,7 +32,7 @@ class HomePage extends StaticTitlePage {
   @override
   List<Widget> buildActions(BuildContext context) => [
         PopupMenuButton<String>(
-          icon: Icon(Icons.add),
+          icon: const Icon(Icons.add),
           itemBuilder: (context) => [SynchronizationStatusCard.ID, CurrentLessonCard.ID, NextLessonCard.ID, ThemeCard.ID, InfoCard.ID]
               .map(
                 (id) => PopupMenuItem<String>(
@@ -42,7 +42,7 @@ class HomePage extends StaticTitlePage {
               )
               .toList(),
           onSelected: (id) async {
-            HomeCardsModel homeCardsModel = Provider.of<HomeCardsModel>(context, listen: false);
+            HomeCardsModel homeCardsModel = context.get<HomeCardsModel>();
             if (homeCardsModel.hasCard(id)) {
               Utils.showSnackBar(
                 context: context,
@@ -63,7 +63,7 @@ class HomePage extends StaticTitlePage {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    HomeCardsModel homeCardsModel = Provider.of<HomeCardsModel>(context);
+    HomeCardsModel homeCardsModel = context.watch<HomeCardsModel>();
     if (!homeCardsModel.isInitialized) {
       return const CenteredCircularProgressIndicator();
     }
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
-                color: Provider.of<SettingsModel>(context).theme.textColor ?? Colors.black.withAlpha(150),
+                color: context.watch<SettingsModel>().theme.textColor ?? Colors.black.withAlpha(150),
               ),
             ),
           ),
@@ -119,7 +119,7 @@ class _MainStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context).adMobEntry;
+    AdMobSettingsEntry adMobSettingsEntry = context.watch<SettingsModel>().adMobEntry;
     AdmobBanner banner = adMobSettingsEntry.createBanner(context);
     if (banner == null) {
       return child;

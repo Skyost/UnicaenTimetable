@@ -37,8 +37,8 @@ class InfoCard extends MaterialCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    _AppInfo appInfo = Provider.of<_AppInfo>(context);
-    _DeviceInfo deviceInfo = Provider.of<_DeviceInfo>(context);
+    _AppInfo appInfo = context.watch<_AppInfo>();
+    _DeviceInfo deviceInfo = context.watch<_DeviceInfo>();
     if (appInfo == null || deviceInfo == null) {
       return context.getString('home.loading');
     }
@@ -47,7 +47,7 @@ class InfoCard extends MaterialCard {
   }
 
   @override
-  void onTap(BuildContext context) => Provider.of<ValueNotifier<Page>>(context, listen: false).value = const AboutPage();
+  void onTap(BuildContext context) => context.get<ValueNotifier<Page>>().value = const AboutPage();
 }
 
 /// Contains some info about the app.

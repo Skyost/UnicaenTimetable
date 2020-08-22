@@ -47,7 +47,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     return Column(
       children: [
         ListTile(
@@ -130,7 +130,7 @@ class _SettingsEntryWidget extends StatelessWidget {
     }
 
     if (entry.key == 'account.account') {
-      UserRepository userRepository = Provider.of<UserRepository>(context);
+      UserRepository userRepository = context.watch<UserRepository>();
       Future<User> user = userRepository.getUser();
       return FutureProvider<User>.value(
         value: user,

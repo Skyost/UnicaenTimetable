@@ -265,7 +265,7 @@ class AndroidUserRepository extends UserRepository<String> {
 
       return User(
         username: response['username'],
-        password: crypter.decrypt(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
+        password: crypter.ofb64.decrypt(enc: response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
       );
     } catch (ex, stacktrace) {
       print(ex);
@@ -281,7 +281,7 @@ class AndroidUserRepository extends UserRepository<String> {
     await removeUser();
     await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
       'username': user.username,
-      'password': accountVersionPrefix + crypter.encrypt(user.password, iv: _initializationVector),
+      'password': accountVersionPrefix + crypter.ofb64.encrypt(inp: user.password, iv: _initializationVector),
     });
 
     notifyListeners();
@@ -307,7 +307,6 @@ class AndroidUserRepository extends UserRepository<String> {
   /// Allows to encrypt strings using the AES algorithm.
   AesCrypt get crypter => AesCrypt(
         key: _encryptionKey,
-        mode: ModeAES.ofb64,
         padding: PaddingAES.pkcs7,
       );
 

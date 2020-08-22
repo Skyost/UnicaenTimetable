@@ -26,8 +26,8 @@ class _AppMainWidgetState extends State<AppMainWidget> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
-      SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
+      UserRepository userRepository = context.get<UserRepository>();
+      SettingsModel settingsModel = context.get<SettingsModel>();
 
       User user = await userRepository.getUser();
       if (user == null) {
@@ -65,13 +65,13 @@ class _AppMainWidgetState extends State<AppMainWidget> {
 
   @override
   Widget build(BuildContext context) {
-    SettingsModel settingsModel = Provider.of<SettingsModel>(context);
+    SettingsModel settingsModel = context.watch<SettingsModel>();
     bool openToday = settingsModel.getEntryByKey('application.open_today_automatically').value;
     int weekDay = DateTime.now().weekday;
     bool inWeekEnd = weekDay == DateTime.saturday || weekDay == DateTime.sunday;
     return RateMyAppBuilder(
       onInitialized: (context, rateMyApp) {
-        if (rateMyApp.shouldOpenDialog) {
+        if (mounted && rateMyApp.shouldOpenDialog) {
           unawaited(rateMyApp.showRateDialog(
             context,
             title: context.getString('dialogs.rate.title'),

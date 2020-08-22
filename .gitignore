@@ -8,10 +8,11 @@
 .buildlog/
 .history
 .svn/
-assets/admob.json
+lib/credentials.dart
 android/app/google-services.json
 android/key.properties
 ios/Runner/GoogleService-Info.plist
+screenshots/
 
 # IntelliJ related
 *.iml

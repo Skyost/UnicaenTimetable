@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// An intro slide widget.
 class Slide extends StatelessWidget {
@@ -79,7 +79,7 @@ class SecondSlide extends Slide {
         width: double.infinity,
         child: FlatButton(
           textColor: Colors.white,
-          onPressed: () => Provider.of<IntroScaffoldBodyModel>(context, listen: false).goToNextSlide(context),
+          onPressed: () => context.get<IntroScaffoldBodyModel>().goToNextSlide(context),
           child: Text(context.getString('intro.slides.login.login_button').toUpperCase()),
           color: const Color(0xFF1F2B38),
           highlightColor: Colors.black12,

@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:background_fetch/background_fetch.dart';
+import 'package:catcher/catcher.dart';
 import 'package:ez_localization/ez_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
+import 'package:unicaen_timetable/credentials.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
@@ -20,7 +25,25 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Admob.initialize();
   await Hive.initFlutter();
-  runApp(UnicaenTimetableApp());
+
+  if (kDebugMode) {
+    runApp(UnicaenTimetableApp());
+  } else {
+    CatcherOptions releaseConfig = CatcherOptions(SilentReportMode(), [
+      DiscordHandler(
+        Credentials.DISCORD_WEBHOOK,
+        enableDeviceParameters: false,
+        enableApplicationParameters: true,
+        enableCustomParameters: true,
+        enableStackTrace: true,
+        printLogs: true,
+      ),
+    ], customParameters: {
+      'platform': Platform.isAndroid ? 'Android' : 'iOS'
+    });
+    Catcher(UnicaenTimetableApp(), releaseConfig: releaseConfig);
+  }
+
   unawaited(BackgroundFetch.registerHeadlessTask(headlessSyncTask));
 }
 
@@ -90,11 +113,12 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
           ],
           child: Consumer<SettingsModel>(
             builder: (context, settingsModel, child) => MaterialApp(
+              navigatorKey: Catcher.navigatorKey,
               onGenerateTitle: (context) => EzLocalization.of(context)?.get('app_name') ?? 'Unicaen Timetable',
               theme: settingsModel.theme?.themeData ?? ThemeData(primaryColor: Colors.indigo),
               routes: {
                 '/': (context) {
-                  if (!Provider.of<LessonModel>(context).isInitialized || !Provider.of<UserRepository>(context).isInitialized || !settingsModel.isInitialized) {
+                  if (!context.watch<LessonModel>().isInitialized || !context.watch<UserRepository>().isInitialized || !settingsModel.isInitialized) {
                     return const Scaffold(
                       body: CenteredCircularProgressIndicator(color: Colors.white),
                       backgroundColor: Colors.indigo,

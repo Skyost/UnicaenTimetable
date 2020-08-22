@@ -64,11 +64,17 @@ abstract class UnicaenTimetableTheme {
   /// The highlight color.
   final Color highlightColor;
 
+  /// The day view background color (today).
+  final Color dayViewBackgroundColorToday;
+
   /// The day bar background color.
   final Color dayBarBackgroundColor;
 
   /// The day bar text color.
   final Color dayBarTextColor;
+
+  /// The day bar text color (today).
+  final Color dayBarTextColorToday;
 
   /// The hours column background color.
   final Color hoursColumnBackgroundColor;
@@ -90,8 +96,10 @@ abstract class UnicaenTimetableTheme {
     this.cardsBackgroundColor,
     this.cardsTextColor,
     @required this.highlightColor,
-    @required this.dayBarBackgroundColor,
+    this.dayViewBackgroundColorToday,
+    this.dayBarBackgroundColor,
     this.dayBarTextColor,
+    this.dayBarTextColorToday,
     @required this.hoursColumnBackgroundColor,
     this.hoursColumnTextColor,
     @required this.aboutHeaderBackgroundColor,
@@ -126,10 +134,28 @@ abstract class UnicaenTimetableTheme {
           highlightColor: highlightColor,
           splashColor: highlightColor,
         ),
+        canvasColor: scaffoldBackgroundColor,
       );
 
   /// Creates the Flutter Week View day view style.
-  DayViewStyle createDayViewStyle(DateTime date) => const DayViewStyle();
+  DayViewStyle createDayViewStyle(DateTime date) => DayViewStyle(
+        backgroundColor: Utils.isToday(date) ? dayViewBackgroundColorToday : scaffoldBackgroundColor,
+        backgroundRulesColor: Colors.black12,
+      );
+
+  /// Creates the day bar style.
+  DayBarStyle createDayBarStyle(DateTime date, DateFormatter dateFormatter) => DayBarStyle.fromDate(
+        date: date,
+        textStyle: TextStyle(color: (Utils.isToday(date) ? dayBarTextColorToday : dayBarTextColor)),
+        color: dayBarBackgroundColor,
+        dateFormatter: dateFormatter,
+      );
+
+  /// Creates the hours column style.
+  HoursColumnStyle createHoursColumnStyle() => HoursColumnStyle(
+        color: hoursColumnBackgroundColor,
+        textStyle: TextStyle(color: hoursColumnTextColor ?? textColor),
+      );
 }
 
 /// The light theme.
@@ -142,8 +168,8 @@ class LightTheme extends UnicaenTimetableTheme {
           listHeaderTextColor: Colors.black54,
           selectedListTileTextColor: Colors.indigo,
           highlightColor: Colors.black12,
-          dayBarBackgroundColor: const Color(0xFFEBEBEB),
-          dayBarTextColor: Colors.black54,
+          dayViewBackgroundColorToday: const Color(0xFFE3F5FF),
+          dayBarTextColorToday: Colors.indigo,
           hoursColumnBackgroundColor: Colors.white,
           hoursColumnTextColor: Colors.black54,
           aboutHeaderBackgroundColor: const Color(0xFF7986CB),
@@ -164,14 +190,15 @@ class DarkTheme extends UnicaenTimetableTheme {
           cardsBackgroundColor: const Color(0xFF192734),
           cardsTextColor: Colors.white,
           highlightColor: Colors.white12,
+          dayViewBackgroundColorToday: const Color(0xFF253341),
           dayBarBackgroundColor: const Color(0xFF202D3B),
+          dayBarTextColorToday: Colors.white,
           hoursColumnBackgroundColor: const Color(0xFF202D3B),
           aboutHeaderBackgroundColor: const Color(0xFF202D3B),
         );
 
   @override
-  DayViewStyle createDayViewStyle(DateTime date) => DayViewStyle(
-        backgroundColor: date.yearMonthDay.difference(DateTime.now().yearMonthDay).inDays == 0 ? primaryColor : scaffoldBackgroundColor,
+  DayViewStyle createDayViewStyle(DateTime date) => super.createDayViewStyle(date).copyWith(
         backgroundRulesColor: Colors.white12,
       );
 }

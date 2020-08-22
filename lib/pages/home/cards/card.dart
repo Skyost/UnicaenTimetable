@@ -6,6 +6,7 @@ import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/theme.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A home material card, draggable and with an id.
 abstract class MaterialCard extends StatelessWidget {
@@ -19,7 +20,7 @@ abstract class MaterialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     Color color = buildColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -64,7 +65,7 @@ abstract class MaterialCard extends StatelessWidget {
                   Icons.close,
                   color: theme.cardsTextColor ?? color,
                 ),
-                onPressed: () => Provider.of<HomeCardsModel>(context, listen: false).removeCard(cardId),
+                onPressed: () => context.get<HomeCardsModel>().removeCard(cardId),
               ),
               onTap: () => onTap(context),
             ),
@@ -102,7 +103,7 @@ abstract class RemainingLessonsCard extends MaterialCard {
 
   @override
   Widget build(BuildContext context) {
-    LessonModel lessonModel = Provider.of<LessonModel>(context);
+    LessonModel lessonModel = context.watch<LessonModel>();
     return FutureProvider<List<Lesson>>(
       create: (_) => lessonModel.remainingLessons.then((lessons) => lessons..sort()),
       child: Builder(builder: (context) => super.build(context)),

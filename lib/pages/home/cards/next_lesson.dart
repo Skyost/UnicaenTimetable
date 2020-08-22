@@ -23,7 +23,7 @@ class NextLessonCard extends RemainingLessonsCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    List<Lesson> remainingLessons = Provider.of<List<Lesson>>(context);
+    List<Lesson> remainingLessons = context.watch<List<Lesson>>();
     if(remainingLessons == null) {
       return context.getString('home.loading');
     }
@@ -40,6 +40,6 @@ class NextLessonCard extends RemainingLessonsCard {
       now = now.atMonday;
     }
 
-    Provider.of<ValueNotifier<Page>>(context, listen: false).value = DayViewPage(weekDay: now.weekday);
+    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: now.weekday);
   }
 }

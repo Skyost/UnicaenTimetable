@@ -1,11 +1,11 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:pedantic/pedantic.dart';
-import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/utils/progress_dialog.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The user login dialog.
 class LoginDialog extends StatefulWidget {
@@ -55,7 +55,7 @@ class _LoginDialogState extends State<LoginDialog> {
     passwordController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      User user = await Provider.of<UserRepository>(context, listen: false).getUser();
+      User user = await context.get<UserRepository>().getUser();
       if (user != null) {
         setState(() {
           usernameController.text = user.username;
@@ -139,8 +139,8 @@ class _LoginDialogState extends State<LoginDialog> {
 
     unawaited(ProgressDialog.show(context));
 
-    SettingsModel settingsModel = Provider.of<SettingsModel>(context, listen: false);
-    UserRepository userRepository = Provider.of<UserRepository>(context, listen: false);
+    SettingsModel settingsModel = context.get<SettingsModel>();
+    UserRepository userRepository = context.get<UserRepository>();
 
     User user = User(username: usernameController.text.trim(), password: passwordController.text.trim());
     if (await userRepository.isTestUser(user)) {
@@ -160,7 +160,7 @@ class _LoginDialogState extends State<LoginDialog> {
     Navigator.pop(context, true);
 
     if (widget.synchronizeAfterLogin) {
-      unawaited(Provider.of<LessonModel>(context, listen: false).synchronizeFromZimbra(
+      unawaited(context.get<LessonModel>().synchronizeFromZimbra(
         settingsModel: settingsModel,
         user: user,
       ));
