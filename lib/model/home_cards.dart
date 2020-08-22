@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/pages/home/cards/card.dart';
@@ -22,8 +24,21 @@ class HomeCardsModel extends UnicaenTimetableModel {
       return;
     }
 
+    bool boxExists = await Hive.boxExists(_HIVE_BOX);
     _homeCardsBox = await Hive.openBox<String>(_HIVE_BOX);
+    if(!boxExists) {
+      _addInitialData();
+    }
     markInitialized();
+  }
+
+  /// Adds initial data to the Hive box.
+  void _addInitialData() {
+    if(!Platform.isIOS) {
+      return;
+    }
+
+    addCard(SynchronizationStatusCard.ID);
   }
 
   /// Adds a card to this model.

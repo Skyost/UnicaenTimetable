@@ -2,9 +2,16 @@ import 'dart:math';
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Contains some useful methods.
+/// Contains some useful build context methods.
+extension BuildContextUtils on BuildContext {
+  /// Extension method for provider (but with listen sets to false).
+  T get<T>() => Provider.of<T>(this, listen: false);
+}
+
+/// Contains some useful string methods.
 extension StringUtils on String {
   /// Capitalizes a string.
   String capitalize() {
@@ -66,6 +73,12 @@ extension MapUtils<K, V> on Map<K, V> {
 
 /// Contains some useful methods.
 class Utils {
+  /// Returns whether the current date is today.
+  static bool isToday(DateTime date) {
+    DateTime now = DateTime.now();
+    return date.yearMonthDay.difference(now.yearMonthDay).inDays == 0;
+  }
+
   /// Opens an url, if possible.
   static Future<void> openUrl(String url) async {
     if (await canLaunch(url)) {

@@ -104,7 +104,7 @@ class SettingsModel extends UnicaenTimetableModel {
     if (interval > 0) {
       DateTime now = DateTime.now().atMonday.yearMonthDay;
       DateTime min = now.subtract(Duration(days: interval * 7));
-      DateTime max = now.add(Duration(days: interval * 7)).add(Duration(days: DateTime.friday));
+      DateTime max = now.add(Duration(days: interval * 7)).add(const Duration(days: DateTime.friday));
 
       url += '&start=' + min.year.toString() + '/' + min.month.withLeadingZero + '/' + min.day.withLeadingZero;
       url += '&end=' + max.year.toString() + '/' + max.month.withLeadingZero + '/' + max.day.withLeadingZero;

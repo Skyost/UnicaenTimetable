@@ -1,12 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:pedantic/pedantic.dart';
+import 'package:unicaen_timetable/credentials.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 
 /// The AdMob settings entry.
@@ -25,26 +21,10 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
 
   @override
   Future<bool> load([Box settingsBox]) async {
-    bool enabled = await super.load(settingsBox);
-    if (enabled) {
-      unawaited(_setAdMobEnabled(enabled));
-    }
-    return enabled;
+    adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : Credentials.adUnit;
+    return await super.load(settingsBox);
   }
 
-  @override
-  set value(bool value) {
-    super.value = value;
-    _setAdMobEnabled(value);
-  }
-
-  /// Sets AdMob enabled (and loads it if needed).
-  Future<void> _setAdMobEnabled(bool enabled) async {
-    if (enabled && adUnitId == null) {
-      Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/admob.json'))[Platform.isAndroid ? 'android' : 'ios'];
-      adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : data['ad_unit'];
-    }
-  }
   /// Creates the banner ad.
   AdmobBanner createBanner(BuildContext context) => !value || adUnitId == null
       ? null

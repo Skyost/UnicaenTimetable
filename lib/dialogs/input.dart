@@ -4,9 +4,9 @@ import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// A dialog that allows to prompt the user for a value.
@@ -358,7 +358,7 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      List<DateTime> availableWeeks = await Provider.of<LessonModel>(context, listen: false).availableWeeks;
+      List<DateTime> availableWeeks = await context.get<LessonModel>().availableWeeks;
       setState(() {
         weeks = availableWeeks;
         currentWeekIndex = weeks.indexOf(widget.initialValue);
@@ -374,6 +374,7 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
 
     if (weeks.isEmpty) {
       return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Text(context.getString('dialogs.week_picker.empty')),
       );
     }

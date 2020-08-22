@@ -10,19 +10,19 @@ class IntroScaffold extends StatelessWidget {
   Widget build(BuildContext context) => Theme(
         data: ThemeData(
           scaffoldBackgroundColor: const Color(0xFF2C3E50),
-          textTheme: TextTheme(
+          textTheme: const TextTheme(
             headline6: TextStyle(
               color: Colors.white,
               fontSize: 38,
               fontWeight: FontWeight.w100,
               height: 1,
             ),
-            bodyText2: const TextStyle(color: Colors.white),
-            bodyText1: const TextStyle(
+            bodyText2: TextStyle(color: Colors.white),
+            bodyText1: TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
-            button: const TextStyle(color: Colors.white),
+            button: TextStyle(color: Colors.white),
           ),
         ),
         isMaterialAppTheme: true,

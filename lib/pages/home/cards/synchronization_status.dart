@@ -16,22 +16,23 @@ class SynchronizationStatusCard extends MaterialCard {
   const SynchronizationStatusCard() : super(cardId: ID);
 
   @override
-  IconData buildIcon(BuildContext context) => isBad(context) ? Icons.sync_problem : Icons.sync;
+  IconData buildIcon(BuildContext context) => _isBad(context) ? Icons.sync_problem : Icons.sync;
 
   @override
-  Color buildColor(BuildContext context) => isBad(context) ? Colors.red[700] : Colors.teal[700];
+  Color buildColor(BuildContext context) => _isBad(context) ? Colors.red[700] : Colors.teal[700];
 
   @override
   String buildSubtitle(BuildContext context) {
     LessonModel lessonModel = Provider.of<LessonModel>(context);
     String date = lessonModel.lastModificationTime == null ? context.getString('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context).locale.languageCode).add_Hms().format(lessonModel.lastModificationTime);
-    return date + '\n' + context.getString('home.synchronization_status.' + (isBad(context) ? 'bad' : 'good'));
+    return date + '\n' + context.getString('home.synchronization_status.' + (_isBad(context) ? 'bad' : 'good'));
   }
 
   @override
   void onTap(BuildContext context) => SynchronizeFloatingButton.onPressed(context);
 
-  bool isBad(BuildContext context) {
+  /// Whether we should display the "bad" color.
+  bool _isBad(BuildContext context) {
     SettingsModel settingsModel = Provider.of<SettingsModel>(context);
     LessonModel lessonModel = Provider.of<LessonModel>(context);
 

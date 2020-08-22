@@ -11,11 +11,8 @@ abstract class Page extends StatefulWidget {
     @required this.icon,
   });
 
-  @override
-  bool operator ==(Object other) => identical(this, other) || (other is Page && runtimeType == other.runtimeType && icon == other.icon);
-
-  @override
-  int get hashCode => icon.hashCode;
+  /// Returns whether the given page is the same as this one.
+  bool isSamePage(Page other) => identical(this, other) || (runtimeType == other.runtimeType && icon == other.icon);
 
   /// Builds the page title.
   String buildTitle(BuildContext context);

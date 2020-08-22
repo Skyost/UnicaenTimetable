@@ -25,7 +25,7 @@ class WeekViewPage extends StaticTitlePage {
 
   /// Resolves the page dates from a given context.
   List<DateTime> resolveDates(BuildContext context) {
-    DateTime monday = Provider.of<ValueNotifier<DateTime>>(context).value;
+    DateTime monday = context.watch<ValueNotifier<DateTime>>().value;
     return [
       monday,
       monday.add(const Duration(days: 1)),
@@ -42,27 +42,19 @@ class WeekViewPage extends StaticTitlePage {
 class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
   @override
   Widget buildChild(BuildContext context) {
-    List<FlutterWeekViewEvent> events = Provider.of<List<FlutterWeekViewEvent>>(context);
+    List<FlutterWeekViewEvent> events = context.watch<List<FlutterWeekViewEvent>>();
     if (events == null) {
       return const CenteredCircularProgressIndicator();
     }
 
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     return WeekView(
       dates: widget.resolveDates(context),
       events: events,
-      initialTime: const HourMinute(hour: 7),
-      style: WeekViewStyle(
-        dayBarTextStyle: TextStyle(
-          color: theme.dayBarTextColor ?? theme.textColor,
-          fontWeight: FontWeight.bold,
-        ),
-        dayBarBackgroundColor: theme.dayBarBackgroundColor,
-        hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
-        hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
-        dateFormatter: formatDate,
-        dayViewWidth: calculateDayViewWidth(context),
-      ),
+      initialTime: const HourMinute(hour: 7).atDate(DateTime.now()),
+      style: WeekViewStyle(dayViewWidth: calculateDayViewWidth(context)),
+      dayBarStyleBuilder: (date) => theme.createDayBarStyle(date, formatDate),
+      hoursColumnStyle: theme.createHoursColumnStyle(),
       dayViewStyleBuilder: theme.createDayViewStyle,
     );
   }

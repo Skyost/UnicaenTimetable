@@ -15,8 +15,8 @@ import 'package:unicaen_timetable/utils/utils.dart';
 abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   @override
   Widget build(BuildContext context) {
-    SettingsModel settingsModel = Provider.of<SettingsModel>(context);
-    LessonModel lessonModel = Provider.of<LessonModel>(context);
+    SettingsModel settingsModel = context.watch<SettingsModel>();
+    LessonModel lessonModel = context.watch<LessonModel>();
 
     Future<List<FlutterWeekViewEvent>> events = createEvents(context, lessonModel, settingsModel);
     return FutureProvider<List<FlutterWeekViewEvent>>.value(
@@ -119,9 +119,9 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
 class WeekPickerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<DateTime> date = Provider.of<ValueNotifier<DateTime>>(context);
+    ValueNotifier<DateTime> date = context.watch<ValueNotifier<DateTime>>();
     return IconButton(
-      icon: Icon(Icons.date_range),
+      icon: const Icon(Icons.date_range),
       onPressed: () async {
         DateTime selectedDate = await AvailableWeekInputDialog.getValue(
           context,

@@ -62,11 +62,11 @@ class DayViewPage extends Page {
       ),
       WeekPickerButton(),
       IconButton(
-        icon: Icon(Icons.share),
+        icon: const Icon(Icons.share),
         onPressed: () async {
           StringBuffer builder = StringBuffer();
           DateTime date = resolveDate(context, listen: false);
-          LessonModel lessonModel = Provider.of<LessonModel>(context, listen: false);
+          LessonModel lessonModel = context.get<LessonModel>();
           List<Lesson> lessons = await lessonModel.getLessonsForDate(date)
             ..sort();
           builder.write(DateFormat.yMd(EzLocalization.of(context).locale.languageCode).format(date) + ' :\n\n');
@@ -83,13 +83,13 @@ class DayViewPage extends Page {
     int weekDay = this.weekDay;
     if (weekDay == DateTime.monday) {
       weekDay = DateTime.friday;
-      ValueNotifier<DateTime> date = Provider.of<ValueNotifier<DateTime>>(context, listen: false);
+      ValueNotifier<DateTime> date = context.get<ValueNotifier<DateTime>>();
       date.value = date.value.subtract(const Duration(days: 7));
     } else {
       weekDay--;
     }
 
-    Provider.of<ValueNotifier<Page>>(context, listen: false).value = DayViewPage(weekDay: weekDay);
+    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: weekDay);
   }
 
   /// Goes to the next day.
@@ -97,13 +97,13 @@ class DayViewPage extends Page {
     int weekDay = this.weekDay;
     if (weekDay == DateTime.friday) {
       weekDay = DateTime.monday;
-      ValueNotifier<DateTime> date = Provider.of<ValueNotifier<DateTime>>(context, listen: false);
+      ValueNotifier<DateTime> date = context.get<ValueNotifier<DateTime>>();
       date.value = date.value.add(const Duration(days: 7));
     } else {
       weekDay++;
     }
 
-    Provider.of<ValueNotifier<Page>>(context, listen: false).value = DayViewPage(weekDay: weekDay);
+    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: weekDay);
   }
 
   /// Resolves the date from the given context.
@@ -117,13 +117,13 @@ class DayViewPage extends Page {
 class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
   @override
   Widget buildChild(BuildContext context) {
-    List<FlutterWeekViewEvent> events = Provider.of<List<FlutterWeekViewEvent>>(context);
+    List<FlutterWeekViewEvent> events = context.watch<List<FlutterWeekViewEvent>>();
     if (events == null) {
       return const CenteredCircularProgressIndicator();
     }
 
     DateTime date = widget.resolveDate(context);
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     return GestureDetector(
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity > 0) {
@@ -138,16 +138,9 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
         date: date,
         events: events,
         initialTime: const HourMinute(hour: 7),
-        style: theme.createDayViewStyle(date).copyWith(
-              dayBarTextStyle: TextStyle(
-                color: theme.dayBarTextColor ?? theme.textColor,
-                fontWeight: FontWeight.bold,
-              ),
-              dayBarBackgroundColor: theme.dayBarBackgroundColor,
-              hoursColumnTextStyle: TextStyle(color: theme.hoursColumnTextColor ?? theme.textColor),
-              hoursColumnBackgroundColor: theme.hoursColumnBackgroundColor,
-              dateFormatter: formatDate,
-            ),
+        style: theme.createDayViewStyle(date),
+        dayBarStyle: theme.createDayBarStyle(date, formatDate),
+        hoursColumnStyle: theme.createHoursColumnStyle(),
       ),
     );
   }

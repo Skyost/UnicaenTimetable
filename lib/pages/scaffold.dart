@@ -49,10 +49,10 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    Page page = Provider.of<ValueNotifier<Page>>(context).value;
+    Page page = context.watch<ValueNotifier<Page>>().value;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Builder(
           builder: (context) => AppBar(
             title: Text(page.buildTitle(context)),
@@ -73,13 +73,14 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
   }
 
   Widget createDrawer(BuildContext context) {
-    SettingsModel settingsModel = Provider.of<SettingsModel>(context);
+    SettingsModel settingsModel = context.watch<SettingsModel>();
+    UserRepository userRepository = context.watch<UserRepository>();
     return Container(
       color: settingsModel.theme.scaffoldBackgroundColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          createDrawerHeader(context),
+          createDrawerHeader(context, userRepository),
           const _DrawerSectionTitle(titleKey: 'home'),
           const _PageListTitle(page: HomePage()),
           const Divider(),
@@ -101,8 +102,8 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
   }
 
   /// Creates the drawer header widget.
-  Widget createDrawerHeader(BuildContext context) => FutureProvider<User>(
-        create: (_) => Provider.of<UserRepository>(context).getUser(),
+  Widget createDrawerHeader(BuildContext context, UserRepository userRepository) => FutureProvider<User>(
+        create: (_) => userRepository.getUser(),
         child: _DrawerHeader(),
       );
 
@@ -116,7 +117,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
       String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
       if (rawDate != null) {
         DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
-        Provider.of<ValueNotifier<DateTime>>(context, listen: false).value = date;
+        context.get<ValueNotifier<DateTime>>().value = date;
       }
     });
   }
@@ -136,10 +137,10 @@ class SynchronizeFloatingButton extends StatefulWidget {
       color: Theme.of(context).primaryColor,
     );
 
-    User user = await Provider.of<UserRepository>(context, listen: false).getUser();
+    User user = await context.get<UserRepository>().getUser();
 
-    LessonModel lessonModel = Provider.of<LessonModel>(context, listen: false);
-    dynamic result = await lessonModel.synchronizeFromZimbra(settingsModel: Provider.of<SettingsModel>(context, listen: false), user: user);
+    LessonModel lessonModel = context.get<LessonModel>();
+    dynamic result = await lessonModel.synchronizeFromZimbra(settingsModel: context.get<SettingsModel>(), user: user);
 
     if (result is bool && result) {
       Utils.showSnackBar(
@@ -211,14 +212,14 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
     Widget button = FloatingActionButton(
       onPressed: () => SynchronizeFloatingButton.onPressed(context),
       tooltip: context.getString('scaffold.floating_button_tooltip'),
-      child: Icon(Icons.sync),
+      child: const Icon(Icons.sync),
     );
 
-    if (Provider.of<ValueNotifier<Page>>(context).value is! HomePage) {
+    if (context.watch<ValueNotifier<Page>>().value is! HomePage) {
       return button;
     }
 
-    AdMobSettingsEntry adMobSettingsEntry = Provider.of<SettingsModel>(context).adMobEntry;
+    AdMobSettingsEntry adMobSettingsEntry = context.watch<SettingsModel>().adMobEntry;
     return FutureBuilder<Size>(
       initialData: Size.zero,
       future: adMobSettingsEntry.calculateSize(context),
@@ -254,12 +255,12 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
 class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<User>(context);
+    User user = context.watch<User>();
     if (user == null) {
       return const SizedBox.shrink();
     }
 
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     return UserAccountsDrawerHeader(
       accountName: Text(user.usernameWithoutAt),
       accountEmail: Text(user.username.contains('@') ? user.username : (user.username + '@etu.unicaen.fr')),
@@ -281,7 +282,7 @@ class _DrawerSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
     return ListTile(
       title: Text(
         context.getString('scaffold.drawer.${titleKey}'),
@@ -304,9 +305,9 @@ class _PageListTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = Provider.of<SettingsModel>(context).theme;
-    ValueNotifier<Page> currentPage = Provider.of<ValueNotifier<Page>>(context);
-    bool isCurrentPage = page == currentPage.value;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    ValueNotifier<Page> currentPage = context.watch<ValueNotifier<Page>>();
+    bool isCurrentPage = page.isSamePage(currentPage.value);
     return Material(
       color: isCurrentPage ? Colors.black12 : theme.scaffoldBackgroundColor,
       child: ListTile(
