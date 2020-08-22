@@ -36,8 +36,5 @@ abstract class StaticTitlePage extends Page {
   String buildTitle(BuildContext context) => context.getString(titleKey);
 
   @override
-  bool operator ==(Object other) => super == other && other is StaticTitlePage && titleKey == other.titleKey;
-
-  @override
-  int get hashCode => super.hashCode + titleKey.hashCode;
+  bool isSamePage(Page other) => super.isSamePage(other) && other is StaticTitlePage && titleKey == other.titleKey;
 }

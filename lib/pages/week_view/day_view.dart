@@ -47,7 +47,7 @@ class DayViewPage extends Page {
   String buildTitle(BuildContext context) => DateFormat.EEEE(EzLocalization.of(context).locale.languageCode).format(resolveDate(context)).capitalize();
 
   @override
-  bool operator ==(Object other) => super == other && other is DayViewPage && weekDay == other.weekDay;
+  bool isSamePage(Page other) => super.isSamePage(other) && other is DayViewPage && weekDay == other.weekDay;
 
   @override
   List<Widget> buildActions(BuildContext context) {
