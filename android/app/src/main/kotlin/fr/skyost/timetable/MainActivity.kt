@@ -35,7 +35,7 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
 
         date = intent.extras?.getString(INTENT_DATE, null)
-        shouldRefreshTimeTable = intent.extras?.getBoolean(INTENT_REFRESH_TIMETABLE, false)!!
+        shouldRefreshTimeTable = intent.extras?.getBoolean(INTENT_REFRESH_TIMETABLE) ?: false
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
@@ -57,5 +57,4 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
-
 }
