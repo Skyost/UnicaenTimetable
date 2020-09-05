@@ -28,8 +28,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
             if (isEnabled(context)) {
                 if (inLesson(context)) {
                     enable(context)
-                }
-                else {
+                } else {
                     disable(context);
                 }
                 schedule(context)
@@ -125,11 +124,29 @@ class LessonNotificationModeManager : BroadcastReceiver() {
          * @param context The context.
          */
         fun disable(context: Context) {
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+            try {
+                val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
 
-            // And we close the notification.
-            closeNotification(context)
+                // And we close the notification.
+                closeNotification(context)
+            } catch (ex: SecurityException) {
+                // If the user has disabled the application in its settings, this exception will be thrown.
+                val message = context.getString(R.string.notification_lessonmodenotification_exception)
+                val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.notification_small_drawable)
+                        .setContentTitle(context.getString(R.string.notification_lessonmodenotification_title))
+                        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setContentText(message)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                    builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                }
+                val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                // So we have to notify the user.
+                manager.notify(NOTIFICATION_TAG, EXCEPTION_NOTIFICATION_ID, builder.build())
+            }
         }
 
         /**

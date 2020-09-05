@@ -122,7 +122,7 @@ class LessonModel extends UnicaenTimetableModel {
 
   /// Returns the lessons of a date.
   Future<List<Lesson>> getLessonsForDate(DateTime date) async {
-    List result = await _lessonsBox.get(date.yearMonthDay.toString(), defaultValue: []);
+    List result = (await _lessonsBox.get(date.yearMonthDay.toString())) ?? [];
     return List<Lesson>.from(result);
   }
 

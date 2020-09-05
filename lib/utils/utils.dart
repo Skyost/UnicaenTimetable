@@ -15,6 +15,10 @@ extension BuildContextUtils on BuildContext {
 extension StringUtils on String {
   /// Capitalizes a string.
   String capitalize() {
+    if (this == null) {
+      return this;
+    }
+
     if (isEmpty || length == 1) {
       return toUpperCase();
     }
@@ -24,22 +28,16 @@ extension StringUtils on String {
 
   /// Splits a string in equal parts.
   List<String> splitEqually(int size) {
-    List<String> result = [];
-    int start = 0;
-    int end = (length / size).round();
-    for (int i = 0; i != size; i++) {
-      StringBuffer builder = StringBuffer();
-      int j;
-      for (j = start; j != end; j++) {
-        if (j >= length) {
-          break;
-        }
-        builder.write(this[j]);
-      }
-      result.add(builder.toString());
-      start = j;
-      end += end;
+    if (this == null || size > length) {
+      return List.generate(size, (index) => this == null || index >= length ? index.toString() : this[index]);
     }
+
+    List<String> result = [];
+    int partLength = (length / size).floor();
+    for (int part = 0; part < size; part++) {
+      result.add(substring(part * partLength, (part + 1) * partLength));
+    }
+
     return result;
   }
 }
