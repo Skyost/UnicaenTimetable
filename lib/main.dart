@@ -147,7 +147,7 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
     super.dispose();
   }
 
-  /// Initializes the models.
+  /// Initializes the models (and requests the tracking authorization).
   Future<void> _initialize() async {
     await lessonModel.initialize();
     await userRepository.initialize();
@@ -166,5 +166,7 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
         BackgroundFetch.finish(taskId);
       },
     );
+
+    await Admob.requestTrackingAuthorization();
   }
 }

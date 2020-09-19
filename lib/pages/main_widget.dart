@@ -79,6 +79,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
             rateButton: context.getString('dialogs.rate.button_rate').toUpperCase(),
             laterButton: context.getString('dialogs.rate.button_later').toUpperCase(),
             noButton: context.getString('dialogs.rate.button_no').toUpperCase(),
+            ignoreNativeDialog: false,
           ));
         }
       },
