@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
@@ -16,11 +17,14 @@ import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// The page that allows to show a day's lessons.
 class DayViewPage extends Page {
+  /// The share button key.
+  final GlobalKey _shareButtonKey = GlobalKey();
+
   /// The week day.
   final int weekDay;
 
   /// Creates a new day view page instance.
-  const DayViewPage({
+  DayViewPage({
     @required this.weekDay,
   }) : super(icon: null);
 
@@ -62,8 +66,12 @@ class DayViewPage extends Page {
       ),
       WeekPickerButton(),
       IconButton(
+        key: _shareButtonKey,
         icon: const Icon(Icons.share),
         onPressed: () async {
+          RenderBox renderBox = _shareButtonKey.currentContext.findRenderObject();
+          Offset position = renderBox.localToGlobal(Offset.zero);
+
           StringBuffer builder = StringBuffer();
           DateTime date = resolveDate(context, listen: false);
           LessonModel lessonModel = context.get<LessonModel>();
@@ -72,7 +80,10 @@ class DayViewPage extends Page {
           builder.write(DateFormat.yMd(EzLocalization.of(context).locale.languageCode).format(date) + ' :\n\n');
           lessons.forEach((lesson) => builder.write(lesson.toString(context) + '\n'));
           String content = builder.toString();
-          await Share.share(content.substring(0, content.lastIndexOf('\n')));
+          await Share.share(
+            content.substring(0, content.lastIndexOf('\n')),
+            sharePositionOrigin: Rect.fromLTWH(position.dx, position.dy, 24, 40),
+          );
         },
       ),
     ];

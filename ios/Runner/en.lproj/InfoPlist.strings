@@ -1,2 +1,3 @@
 "CFBundleDisplayName" = "Unicaen\U2007Timetable";
 "CFBundleName" = "Unicaen Timetable";
+"NSUserTrackingUsageDescription" = "Your data will be used to deliver personalized ads to you. This will support the app development.";

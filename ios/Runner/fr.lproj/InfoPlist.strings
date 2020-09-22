@@ -1,2 +1,3 @@
 "CFBundleDisplayName" = "Emploi\U2007du\U2007temps\U2007Unicaen";
 "CFBundleName" = "Emploi du temps Unicaen";
+"NSUserTrackingUsageDescription" = "Nous utiliserons votre IDFA pour vous délivrer du contenu personnalisé. Cela vous permettra de soutenir le développement de cette application.";

@@ -53,6 +53,6 @@
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Nous utiliserons votre IDFA pour vous délivrer du contenu personnalisé. Cela vous permettera de soutenir le développement de cette application.</string>
+	<string>Your data will be used to deliver personalized ads to you. This will support the app development.</string>
 </dict>
 </plist>

@@ -14,7 +14,7 @@ packages:
       name: admob_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0-beta.7"
+    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -112,7 +112,7 @@ packages:
       name: catcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.19"
+    version: "0.3.20"
   characters:
     dependency: transitive
     description:
@@ -491,7 +491,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.16"
+    version: "1.6.17"
   path_provider_linux:
     dependency: transitive
     description:
@@ -519,7 +519,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.4+1"
   pc_steelcrypt:
     dependency: transitive
     description:
@@ -638,7 +638,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.10"
+    version: "0.5.11"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -667,6 +667,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2+7"
+  shared_preferences_windows:
+    dependency: transitive
+    description:
+      name: shared_preferences_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+1"
   shelf:
     dependency: transitive
     description:
@@ -699,7 +706,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.6"
+    version: "0.9.7+1"
   source_span:
     dependency: transitive
     description:
@@ -776,7 +783,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.6.0"
+    version: "5.7.0"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -846,7 +853,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.1"
+    version: "1.7.3"
   xdg_directories:
     dependency: transitive
     description:
