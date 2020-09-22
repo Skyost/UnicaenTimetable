@@ -29,7 +29,7 @@ dependencies:
   package_info: ^0.4.3
   device_info: ^0.4.2
   scrollable_positioned_list: ^0.1.7
-  admob_flutter: ^1.0.0-beta.7
+  admob_flutter: ^1.0.0
   catcher: ^0.3.20
 
 dev_dependencies:
