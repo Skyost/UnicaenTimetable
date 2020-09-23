@@ -17,7 +17,7 @@ dependencies:
   ez_localization: ^0.3.0
   flutter_secure_storage: ^3.3.4
   steel_crypt: ^2.2.2
-  path_provider: ^1.6.16
+  path_provider: ^1.6.18
   pedantic: ^1.9.0
   http: ^0.12.2
   background_fetch: ^0.6.0
