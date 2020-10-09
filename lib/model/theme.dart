@@ -4,39 +4,47 @@ import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-/// The app theme settings entry that controls the app look and feel.
-class AppThemeSettingsEntry extends SettingsEntry<UnicaenTimetableTheme> {
-  /// Creates a new app theme settings entry instance.
-  AppThemeSettingsEntry({
+/// The app theme brightness settings entry that controls the app look and feel.
+class AppBrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
+  /// The current theme.
+  UnicaenTimetableTheme _theme = const LightTheme();
+
+  /// Creates a new app brightness settings entry instance.
+  AppBrightnessSettingsEntry({
     String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
-          key: 'theme',
-          value: const DarkTheme(),
+          key: 'brightness',
+          value: ThemeMode.system,
         );
 
   @override
-  Future<UnicaenTimetableTheme> load([Box settingsBox]) async {
+  Future<ThemeMode> load([Box settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    return box.get(key, defaultValue: false) ? const DarkTheme() : const LightTheme();
-  }
-
-  @override
-  set value(UnicaenTimetableTheme value) {
-    super.value = value;
+    return ThemeMode.values[box.get(key, defaultValue: ThemeMode.system.index)];
   }
 
   @override
   Future<void> flush([Box settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    await box.put(key, value is DarkTheme);
+    await box.put(key, value.index);
   }
 
-  void toggleDarkMode() => value = value is DarkTheme ? const LightTheme() : const DarkTheme();
+  /// Return the app theme according to the current brightness.
+  UnicaenTimetableTheme get theme => _theme;
+
+  /// Refreshes the current theme. Should be called once the value has been changed.
+  void refreshTheme(BuildContext context) {
+    _theme = MediaQuery.platformBrightnessOf(context) == Brightness.light ? const LightTheme() : const DarkTheme();
+    notifyListeners();
+  }
 }
 
 /// Represents an app theme.
 abstract class UnicaenTimetableTheme {
+  /// The theme brightness.
+  final Brightness brightness;
+
   /// The primary color.
   final Color primaryColor;
 
@@ -87,6 +95,7 @@ abstract class UnicaenTimetableTheme {
 
   /// Creates a new app theme.
   const UnicaenTimetableTheme({
+    @required this.brightness,
     @required this.primaryColor,
     @required this.actionBarColor,
     this.scaffoldBackgroundColor,
@@ -135,6 +144,7 @@ abstract class UnicaenTimetableTheme {
           splashColor: highlightColor,
         ),
         canvasColor: scaffoldBackgroundColor,
+        brightness: brightness,
       );
 
   /// Creates the Flutter Week View day view style.
@@ -163,6 +173,7 @@ class LightTheme extends UnicaenTimetableTheme {
   /// Creates a new light theme instance.
   const LightTheme()
       : super(
+          brightness: Brightness.light,
           primaryColor: Colors.indigo,
           actionBarColor: Colors.indigo,
           listHeaderTextColor: Colors.black54,
@@ -181,6 +192,7 @@ class DarkTheme extends UnicaenTimetableTheme {
   /// Creates a new dark theme instance.
   const DarkTheme()
       : super(
+          brightness: Brightness.dark,
           primaryColor: const Color(0xFF253341),
           scaffoldBackgroundColor: const Color(0xFF15202B),
           actionBarColor: const Color(0xFF253341),

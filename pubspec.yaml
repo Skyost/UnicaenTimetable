@@ -15,26 +15,26 @@ dependencies:
   hive: ^1.4.4
   hive_flutter: ^0.3.1
   ez_localization: ^0.3.0
-  flutter_secure_storage: ^3.3.4
+  flutter_secure_storage: ^3.3.5
   steel_crypt: ^2.2.2
   path_provider: ^1.6.18
   pedantic: ^1.9.0
   http: ^0.12.2
   background_fetch: ^0.6.0
   flutter_colorpicker: ^0.3.4
-  implicitly_animated_reorderable_list: ^0.2.3
+  implicitly_animated_reorderable_list: ^0.2.5
   share: ^0.6.5
   rate_my_app: ^0.7.2
   url_launcher: ^5.4.11
   package_info: ^0.4.3
   device_info: ^0.4.2
-  scrollable_positioned_list: ^0.1.7
+  scrollable_positioned_list: ^0.1.8
   admob_flutter: ^1.0.0
   catcher: ^0.3.20
 
 dev_dependencies:
-  hive_generator: ^0.7.0
-  build_runner: ^1.10.0
+  hive_generator: ^0.8.1
+  build_runner: ^1.10.3
 
 flutter:
   uses-material-design: true

@@ -39,8 +39,9 @@
         "current_theme": {
             "name": "Thème actuel",
             "title": "Thème actuel :",
-            "light": "Mode jour.",
-            "dark": "Mode nuit."
+            "light": "Mode jour",
+            "dark": "Mode nuit",
+            "auto": "choisi par le système"
         },
         "info": {
             "name": "Informations sur l'app",
@@ -54,11 +55,16 @@
         "title": "Paramètres",
         "application": {
             "title": "Application",
-            "theme": "Mode sombre",
             "color_lessons_automatically": "Colorer automatiquement les cours",
             "lesson_notification_mode": "Mode de notification pendant les cours",
             "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
-            "enable_ads": "Activer les publicités"
+            "enable_ads": "Activer les publicités",
+            "brightness": {
+                "title": "Luminosité",
+                "light": "Lumineux",
+                "dark": "Sombre",
+                "system": "Laisser le système choisir"
+            }
         },
         "account": {
             "title": "Compte",

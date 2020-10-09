@@ -59,8 +59,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
           enabled: false,
         ),
         for (int i = 0; i < category.entries.length; i++) //
-          if (category.entries[i].enabled)
-            _SettingsEntryWidget(entry: category.entries[i]),
+          if (category.entries[i].enabled) _SettingsEntryWidget(entry: category.entries[i]),
       ],
     );
   }
@@ -79,35 +78,51 @@ class _SettingsEntryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (entry.key == 'application.lesson_notification_mode') {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: ListTile(
-          title: Text(context.getString('settings.${entry.key}')),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: DropdownButton(
-              isExpanded: true,
-              onChanged: (value) async {
-                bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.lesson_notification_mode_changed', {'value': value});
-                if (result) {
-                  entry.value = value;
-                  await entry.flush();
-                }
-              },
-              items: [
-                DropdownMenuItem<int>(
-                  child: Text(context.getString('other.lesson_notification_mode.disabled')),
-                  value: -1,
-                ),
-                DropdownMenuItem<int>(
-                  child: Text(context.getString('other.lesson_notification_mode.alarms_only')),
-                  value: 0,
-                ),
-              ],
-              value: entry.value,
-            ),
+      return SettingsDropdownButton<int>(
+        titleKey: 'settings.${entry.key}',
+        onChanged: (value) async {
+          bool result = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.lesson_notification_mode_changed', {'value': value});
+          if (result) {
+            entry.value = value;
+            await entry.flush();
+          }
+        },
+        items: [
+          DropdownMenuItem<int>(
+            child: Text(context.getString('other.lesson_notification_mode.disabled')),
+            value: -1,
           ),
-        ),
+          DropdownMenuItem<int>(
+            child: Text(context.getString('other.lesson_notification_mode.alarms_only')),
+            value: 0,
+          ),
+        ],
+        value: entry.value,
+      );
+    }
+    else if(entry.key == 'application.brightness') {
+      return SettingsDropdownButton<ThemeMode>(
+        titleKey: 'settings.application.brightness.title',
+        onChanged: (value) async {
+          entry.value = value;
+          (entry as AppBrightnessSettingsEntry).refreshTheme(context);
+          await entry.flush();
+        },
+        items: [
+          DropdownMenuItem<ThemeMode>(
+            child: Text(context.getString('settings.application.brightness.system')),
+            value: ThemeMode.system,
+          ),
+          DropdownMenuItem<ThemeMode>(
+            child: Text(context.getString('settings.application.brightness.light')),
+            value: ThemeMode.light,
+          ),
+          DropdownMenuItem<ThemeMode>(
+            child: Text(context.getString('settings.application.brightness.dark')),
+            value: ThemeMode.dark,
+          ),
+        ],
+        value: entry.value,
       );
     }
 
@@ -152,13 +167,6 @@ class _SettingsEntryWidget extends StatelessWidget {
       );
     }
 
-    if (entry.value is UnicaenTimetableTheme) {
-      return Switch(
-        value: entry.value is DarkTheme,
-        onChanged: (_) => onTap(context),
-      );
-    }
-
     return null;
   }
 
@@ -188,11 +196,6 @@ class _SettingsEntryWidget extends StatelessWidget {
 
     if (entry.value is bool) {
       entry.value = !entry.value;
-      unawaited(entry.flush());
-    }
-
-    if (entry.value is UnicaenTimetableTheme) {
-      (entry as AppThemeSettingsEntry).toggleDarkMode();
       unawaited(entry.flush());
     }
 
@@ -253,4 +256,35 @@ class _SettingsEntryWidget extends StatelessWidget {
   void synchronize(BuildContext context) async {
     unawaited(SynchronizeFloatingButton.onPressed(context));
   }
+}
+
+class SettingsDropdownButton<T> extends StatelessWidget {
+  final String titleKey;
+  final List<DropdownMenuItem<T>> items;
+  final T value;
+  final Function(T value) onChanged;
+
+  const SettingsDropdownButton({
+    @required this.titleKey,
+    @required this.items,
+    @required this.value,
+    @required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: ListTile(
+          title: Text(context.getString(titleKey)),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: DropdownButton(
+              isExpanded: true,
+              onChanged: onChanged,
+              items: items,
+              value: value,
+            ),
+          ),
+        ),
+      );
 }

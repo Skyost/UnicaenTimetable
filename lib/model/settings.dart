@@ -79,8 +79,11 @@ class SettingsModel extends UnicaenTimetableModel {
     _categories.forEach((category) => category.dispose());
   }
 
-  /// Returns the app theme from its settings entry.
-  UnicaenTimetableTheme get theme => getEntryByKey('application.theme')?.value;
+  /// Returns the app theme according to the current brightness.
+  UnicaenTimetableTheme get theme => (getEntryByKey('application.brightness') as AppBrightnessSettingsEntry)?.theme;
+
+  /// Returns the app theme brightness from its settings entry.
+  ThemeMode get brightness => getEntryByKey('application.brightness')?.value ?? ThemeMode.system;
 
   /// Returns the ad mob settings entry.
   AdMobSettingsEntry get adMobEntry => getEntryByKey('application.enable_ads');
@@ -195,7 +198,7 @@ class ApplicationSettingsCategory extends SettingsCategory {
           key: 'application',
           icon: Platform.isIOS ? Icons.phone_iphone : Icons.phone_android,
         ) {
-    addEntry(AppThemeSettingsEntry(keyPrefix: key));
+    addEntry(AppBrightnessSettingsEntry(keyPrefix: key));
     addEntry(SettingsEntry<bool>(
       keyPrefix: key,
       key: 'color_lessons_automatically',

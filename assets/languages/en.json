@@ -39,8 +39,9 @@
         "current_theme": {
             "name": "Current theme",
             "title": "Current theme :",
-            "light": "Light mode.",
-            "dark": "Dark mode."
+            "light": "Light mode",
+            "dark": "Dark mode",
+            "auto": "picked by the system"
         },
         "info": {
             "name": "Device & app info",
@@ -54,11 +55,16 @@
         "title": "Settings",
         "application": {
             "title": "Application",
-            "theme": "Dark mode",
             "color_lessons_automatically": "Automatically color lessons",
             "lesson_notification_mode": "Notification mode during class",
             "open_today_automatically": "Open today's page at launch",
-            "enable_ads": "Enable ads"
+            "enable_ads": "Enable ads",
+            "brightness": {
+                "title": "Brightness",
+                "light": "Bright",
+                "dark": "Dark",
+                "system": "Let the system choose"
+            }
         },
         "account": {
             "title": "Account",

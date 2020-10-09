@@ -22,17 +22,24 @@ class ThemeCard extends MaterialCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    return context.getString('home.current_theme.' + (_isDarkMode(context) ? 'dark' : 'light'));
+    String subtitle = context.getString('home.current_theme.' + (_isDarkMode(context) ? 'dark' : 'light'));
+    if(context.get<SettingsModel>().brightness == ThemeMode.system) {
+      subtitle += ' (${context.getString('home.current_theme.auto')})';
+    }
+    subtitle += '.';
+    return subtitle;
   }
 
   @override
   void onTap(BuildContext context) {
     SettingsModel settingsModel = context.get<SettingsModel>();
-    AppThemeSettingsEntry themeEntry = settingsModel.getEntryByKey('application.theme');
-    themeEntry.toggleDarkMode();
+    AppBrightnessSettingsEntry themeEntry = settingsModel.getEntryByKey('application.theme');
+    themeEntry.value = _isDarkMode(context) ? ThemeMode.light : ThemeMode.dark;
+    themeEntry.refreshTheme(context);
     themeEntry.flush();
   }
 
   /// Returns whether the app is in dark mode.
   bool _isDarkMode(BuildContext context) => Provider.of<SettingsModel>(context).theme is DarkTheme;
+
 }

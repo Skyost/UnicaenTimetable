@@ -16,6 +16,7 @@ import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/theme.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/main_widget.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
@@ -115,7 +116,9 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
             builder: (context, settingsModel, child) => MaterialApp(
               navigatorKey: Catcher.navigatorKey,
               onGenerateTitle: (context) => EzLocalization.of(context)?.get('app_name') ?? 'Unicaen Timetable',
-              theme: settingsModel.theme?.themeData ?? ThemeData(primaryColor: Colors.indigo),
+              theme: const LightTheme().themeData,
+              darkTheme: const DarkTheme().themeData,
+              themeMode: settingsModel.brightness,
               routes: {
                 '/': (context) {
                   if (!context.watch<LessonModel>().isInitialized || !context.watch<UserRepository>().isInitialized || !settingsModel.isInitialized) {

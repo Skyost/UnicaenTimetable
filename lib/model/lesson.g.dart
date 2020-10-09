@@ -8,13 +8,13 @@ part of 'lesson.dart';
 
 class LessonAdapter extends TypeAdapter<Lesson> {
   @override
-  final typeId = 1;
+  final int typeId = 1;
 
   @override
   Lesson read(BinaryReader reader) {
-    var numOfFields = reader.readByte();
-    var fields = <int, dynamic>{
-      for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Lesson(
       name: fields[0] as String,
@@ -40,4 +40,14 @@ class LessonAdapter extends TypeAdapter<Lesson> {
       ..writeByte(4)
       ..write(obj.end);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LessonAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
