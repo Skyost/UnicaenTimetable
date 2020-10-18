@@ -80,10 +80,10 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Returns the app theme according to the current brightness.
-  UnicaenTimetableTheme get theme => (getEntryByKey('application.brightness') as AppBrightnessSettingsEntry)?.theme;
+  UnicaenTimetableTheme resolveTheme(BuildContext context) => themeEntry?.resolve(context);
 
-  /// Returns the app theme brightness from its settings entry.
-  ThemeMode get brightness => getEntryByKey('application.brightness')?.value ?? ThemeMode.system;
+  /// Returns the app theme brightness settings entry.
+  AppBrightnessSettingsEntry get themeEntry => getEntryByKey('application.brightness');
 
   /// Returns the ad mob settings entry.
   AdMobSettingsEntry get adMobEntry => getEntryByKey('application.enable_ads');

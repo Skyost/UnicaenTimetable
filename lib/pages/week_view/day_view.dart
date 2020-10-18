@@ -134,7 +134,7 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
     }
 
     DateTime date = widget.resolveDate(context);
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return GestureDetector(
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity > 0) {

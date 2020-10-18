@@ -20,7 +20,7 @@ abstract class MaterialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     Color color = buildColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),

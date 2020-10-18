@@ -6,8 +6,11 @@ import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The app theme brightness settings entry that controls the app look and feel.
 class AppBrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
-  /// The current theme.
-  UnicaenTimetableTheme _theme = const LightTheme();
+  /// The light theme instance.
+  static final _LightTheme LIGHT = const _LightTheme();
+
+  /// The dark theme instance.
+  static final _DarkTheme DARK = const _DarkTheme();
 
   /// Creates a new app brightness settings entry instance.
   AppBrightnessSettingsEntry({
@@ -30,13 +33,19 @@ class AppBrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
     await box.put(key, value.index);
   }
 
-  /// Return the app theme according to the current brightness.
-  UnicaenTimetableTheme get theme => _theme;
+  /// Returns the theme corresponding to the specified brightness.
+  UnicaenTimetableTheme getFromBrightness(Brightness brightness) => brightness == Brightness.light ? LIGHT : DARK;
 
-  /// Refreshes the current theme. Should be called once the value has been changed.
-  void refreshTheme(BuildContext context) {
-    _theme = MediaQuery.platformBrightnessOf(context) == Brightness.light ? const LightTheme() : const DarkTheme();
-    notifyListeners();
+  /// Resolves the theme from the specified context.
+  UnicaenTimetableTheme resolve(BuildContext context) {
+    switch (value) {
+      case ThemeMode.light:
+        return getFromBrightness(Brightness.light);
+      case ThemeMode.dark:
+        return getFromBrightness(Brightness.dark);
+      default:
+        return getFromBrightness(MediaQuery.platformBrightnessOf(context));
+    }
   }
 }
 
@@ -94,7 +103,7 @@ abstract class UnicaenTimetableTheme {
   final Color aboutHeaderBackgroundColor;
 
   /// Creates a new app theme.
-  const UnicaenTimetableTheme({
+  const UnicaenTimetableTheme._internal({
     @required this.brightness,
     @required this.primaryColor,
     @required this.actionBarColor,
@@ -169,10 +178,10 @@ abstract class UnicaenTimetableTheme {
 }
 
 /// The light theme.
-class LightTheme extends UnicaenTimetableTheme {
+class _LightTheme extends UnicaenTimetableTheme {
   /// Creates a new light theme instance.
-  const LightTheme()
-      : super(
+  const _LightTheme()
+      : super._internal(
           brightness: Brightness.light,
           primaryColor: Colors.indigo,
           actionBarColor: Colors.indigo,
@@ -188,10 +197,10 @@ class LightTheme extends UnicaenTimetableTheme {
 }
 
 /// The dark theme.
-class DarkTheme extends UnicaenTimetableTheme {
+class _DarkTheme extends UnicaenTimetableTheme {
   /// Creates a new dark theme instance.
-  const DarkTheme()
-      : super(
+  const _DarkTheme()
+      : super._internal(
           brightness: Brightness.dark,
           primaryColor: const Color(0xFF253341),
           scaffoldBackgroundColor: const Color(0xFF15202B),

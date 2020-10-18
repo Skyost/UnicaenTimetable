@@ -13,8 +13,6 @@ import androidx.core.content.ContextCompat
 import fr.skyost.timetable.LessonRepository
 import fr.skyost.timetable.MainActivity
 import fr.skyost.timetable.R
-import org.joda.time.DateTime
-import org.joda.time.DateTimeConstants
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -162,12 +160,12 @@ class TodayWidgetReceiver : AppWidgetProvider() {
     }
 
     private fun getNextRelativeDays(dateManager: TodayWidgetDateManager): Int {
-        val now: LocalDate = dateManager.absoluteDay
-        return dateManager.relativeDay + 1 + (if (now.dayOfWeek == DateTimeConstants.FRIDAY) 2 else 0)
+        /*val now: LocalDate = dateManager.absoluteDay*/
+        return dateManager.relativeDay + 1 /*+ (if (now.dayOfWeek == DateTimeConstants.FRIDAY) 2 else 0)*/
     }
 
     private fun getBackRelativeDays(dateManager: TodayWidgetDateManager): Int {
-        val now: LocalDate = LocalDate.now()
+        /*val now: LocalDate = LocalDate.now()
         val absoluteDay: LocalDate = dateManager.absoluteDay
         if(now.dayOfWeek().get() == DateTimeConstants.SUNDAY && dateManager.relativeDay == 1) {
             return dateManager.relativeDay - 1
@@ -175,8 +173,8 @@ class TodayWidgetReceiver : AppWidgetProvider() {
 
         if(now.dayOfWeek().get() == DateTimeConstants.SATURDAY && dateManager.relativeDay == 2) {
             return dateManager.relativeDay - 1
-        }
+        }*/
 
-        return dateManager.relativeDay - 1 - (if (absoluteDay.dayOfWeek == DateTimeConstants.MONDAY) 2 else 0)
+        return dateManager.relativeDay - 1 /*- (if (absoluteDay.dayOfWeek == DateTimeConstants.MONDAY) 2 else 0)*/
     }
 }

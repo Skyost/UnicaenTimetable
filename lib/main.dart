@@ -116,9 +116,9 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
             builder: (context, settingsModel, child) => MaterialApp(
               navigatorKey: Catcher.navigatorKey,
               onGenerateTitle: (context) => EzLocalization.of(context)?.get('app_name') ?? 'Unicaen Timetable',
-              theme: const LightTheme().themeData,
-              darkTheme: const DarkTheme().themeData,
-              themeMode: settingsModel.brightness,
+              theme: AppBrightnessSettingsEntry.LIGHT.themeData,
+              darkTheme: AppBrightnessSettingsEntry.DARK.themeData,
+              themeMode: settingsModel?.themeEntry?.value ?? ThemeMode.light,
               routes: {
                 '/': (context) {
                   if (!context.watch<LessonModel>().isInitialized || !context.watch<UserRepository>().isInitialized || !settingsModel.isInitialized) {

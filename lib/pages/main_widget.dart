@@ -89,7 +89,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
           ChangeNotifierProvider<ValueNotifier<DateTime>>(create: (_) => ValueNotifier<DateTime>(_mondayOfCurrentWeek)),
         ],
         child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: settingsModel.theme.actionBarColor),
+          value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: settingsModel.resolveTheme(context).actionBarColor),
           child: AppScaffold(),
         ),
       ),

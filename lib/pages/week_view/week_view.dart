@@ -47,7 +47,7 @@ class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
       return const CenteredCircularProgressIndicator();
     }
 
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return WeekView(
       dates: widget.resolveDates(context),
       events: events,

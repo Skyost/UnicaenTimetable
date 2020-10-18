@@ -47,7 +47,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return Column(
       children: [
         ListTile(
@@ -105,7 +105,6 @@ class _SettingsEntryWidget extends StatelessWidget {
         titleKey: 'settings.application.brightness.title',
         onChanged: (value) async {
           entry.value = value;
-          (entry as AppBrightnessSettingsEntry).refreshTheme(context);
           await entry.flush();
         },
         items: [
@@ -275,7 +274,7 @@ class SettingsDropdownButton<T> extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: ListTile(
-          title: Text(context.getString(titleKey)),
+          title: Text(context.getString(titleKey) + ' :'),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 5),
             child: DropdownButton(

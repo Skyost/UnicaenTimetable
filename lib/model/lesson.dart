@@ -174,6 +174,10 @@ class LessonModel extends UnicaenTimetableModel {
     @required User user,
   }) async {
     try {
+      if(user == null) {
+        return false;
+      }
+
       dynamic result = await user.synchronizeFromZimbra(
         lessonsBox: _lessonsBox,
         settingsModel: settingsModel,

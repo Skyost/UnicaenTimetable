@@ -173,7 +173,7 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
   User _cachedUser;
 
   /// Creates a new user repository according to the platform.
-  factory UserRepository() => Platform.isAndroid ? AndroidUserRepository() : IOSUserRepository();
+  factory UserRepository() => Platform.isAndroid ? _AndroidUserRepository() : _IOSUserRepository();
 
   /// The internal constructor.
   UserRepository._internal();
@@ -206,7 +206,7 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
 }
 
 /// The android user repository.
-class AndroidUserRepository extends UserRepository<String> {
+class _AndroidUserRepository extends UserRepository<String> {
   /// The version.
   static const int _VERSION = 1;
 
@@ -214,7 +214,7 @@ class AndroidUserRepository extends UserRepository<String> {
   String _initializationVector;
 
   /// Creates a new android user repository.
-  AndroidUserRepository() : super._internal();
+  _AndroidUserRepository() : super._internal();
 
   @override
   Future<void> initialize() async {
@@ -315,12 +315,12 @@ class AndroidUserRepository extends UserRepository<String> {
 }
 
 /// The iOS user repository.
-class IOSUserRepository extends UserRepository<List<int>> {
+class _IOSUserRepository extends UserRepository<List<int>> {
   /// The user hive box.
   static const String _HIVE_BOX = 'user';
 
   /// Creates a new iOS user repository.
-  IOSUserRepository() : super._internal();
+  _IOSUserRepository() : super._internal();
 
   @override
   Future<void> initialize() async {

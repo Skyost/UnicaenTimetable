@@ -76,7 +76,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
     SettingsModel settingsModel = context.watch<SettingsModel>();
     UserRepository userRepository = context.watch<UserRepository>();
     return Container(
-      color: settingsModel.theme.scaffoldBackgroundColor,
+      color: settingsModel.resolveTheme(context).scaffoldBackgroundColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -260,7 +260,7 @@ class _DrawerHeader extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return UserAccountsDrawerHeader(
       accountName: Text(user.usernameWithoutAt),
       accountEmail: Text(user.username.contains('@') ? user.username : (user.username + '@etu.unicaen.fr')),
@@ -282,7 +282,7 @@ class _DrawerSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return ListTile(
       title: Text(
         context.getString('scaffold.drawer.${titleKey}'),
@@ -305,7 +305,7 @@ class _PageListTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     ValueNotifier<Page> currentPage = context.watch<ValueNotifier<Page>>();
     bool isCurrentPage = page.isSamePage(currentPage.value);
     return Material(

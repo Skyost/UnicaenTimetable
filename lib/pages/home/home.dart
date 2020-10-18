@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
-                color: context.watch<SettingsModel>().theme.textColor ?? Colors.black.withAlpha(150),
+                color: context.watch<SettingsModel>().resolveTheme(context).textColor ?? Colors.black.withAlpha(150),
               ),
             ),
           ),

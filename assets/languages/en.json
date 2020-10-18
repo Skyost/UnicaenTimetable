@@ -41,7 +41,7 @@
             "title": "Current theme :",
             "light": "Light mode",
             "dark": "Dark mode",
-            "auto": "picked by the system"
+            "auto": "picked by system"
         },
         "info": {
             "name": "Device & app info",

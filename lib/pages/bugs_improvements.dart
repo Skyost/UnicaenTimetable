@@ -26,7 +26,7 @@ class BugsImprovementsPage extends StaticTitlePage {
 class _BugsImprovementsPageState extends State<BugsImprovementsPage> {
   @override
   Widget build(BuildContext context) {
-    UnicaenTimetableTheme theme = context.watch<SettingsModel>().theme;
+    UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(40),
