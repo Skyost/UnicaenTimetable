@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 

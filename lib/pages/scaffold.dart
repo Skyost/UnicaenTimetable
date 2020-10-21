@@ -8,10 +8,9 @@ import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
 import 'package:unicaen_timetable/main.dart';
-import 'package:unicaen_timetable/model/admob.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/model/theme.dart';
+import 'package:unicaen_timetable/model/settings/entries/application/admob.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/about.dart';
 import 'package:unicaen_timetable/pages/bugs_improvements.dart';
@@ -20,6 +19,7 @@ import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/settings.dart';
 import 'package:unicaen_timetable/pages/week_view/day_view.dart';
 import 'package:unicaen_timetable/pages/week_view/week_view.dart';
+import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The app scaffold, containing the drawer and the shown page.
@@ -86,11 +86,8 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
           const Divider(),
           const _DrawerSectionTitle(titleKey: 'timetable'),
           const _PageListTitle(page: WeekViewPage()),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.monday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.tuesday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.wednesday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.thursday)),
-          _PageListTitle(page: DayViewPage(weekDay: DateTime.friday)),
+          for (int day in settingsModel.sidebarDaysEntry.value) //
+            _PageListTitle(page: DayViewPage(weekDay: day)),
           const Divider(),
           const _DrawerSectionTitle(titleKey: 'others'),
           const _PageListTitle(page: SettingsPage()),
@@ -109,7 +106,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
 
   /// Goes to the date (if found in the app channel).
   void goToDateIfNeeded() {
-    if(!Platform.isAndroid) {
+    if (!Platform.isAndroid) {
       return;
     }
 
@@ -238,7 +235,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
 
   /// Synchronize the app (if found in the app channel).
   void syncIfNeeded() {
-    if(!Platform.isAndroid) {
+    if (!Platform.isAndroid) {
       return;
     }
 

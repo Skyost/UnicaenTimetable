@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   provider: ^4.3.2
   flutter_week_view: ^1.0.0
-  flutter_svg: ^0.19.0
+  flutter_svg: ^0.19.1
   hive: ^1.4.4
   hive_flutter: ^0.3.1
   ez_localization: ^0.3.0
@@ -42,4 +42,9 @@ flutter:
     - 'assets/'
     - 'assets/languages/'
     - 'assets/intro/'
+    - 'assets/fonts/'
     - 'assets/about/'
+  fonts:
+    - family: MaterialCommunityIcons
+      fonts:
+        - asset: assets/fonts/MaterialCommunityIcons.ttf

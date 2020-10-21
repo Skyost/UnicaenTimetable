@@ -2,7 +2,7 @@ import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/utils/progress_dialog.dart';
 import 'package:unicaen_timetable/utils/utils.dart';

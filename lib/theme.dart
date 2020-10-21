@@ -1,56 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
-import 'package:hive/hive.dart';
-import 'package:unicaen_timetable/model/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-/// The app theme brightness settings entry that controls the app look and feel.
-class AppBrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
+/// Represents an app theme.
+abstract class UnicaenTimetableTheme {
   /// The light theme instance.
   static final _LightTheme LIGHT = const _LightTheme();
 
   /// The dark theme instance.
   static final _DarkTheme DARK = const _DarkTheme();
 
-  /// Creates a new app brightness settings entry instance.
-  AppBrightnessSettingsEntry({
-    String keyPrefix,
-  }) : super(
-          keyPrefix: keyPrefix,
-          key: 'brightness',
-          value: ThemeMode.system,
-        );
-
-  @override
-  Future<ThemeMode> load([Box settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    return ThemeMode.values[box.get(key, defaultValue: ThemeMode.system.index)];
-  }
-
-  @override
-  Future<void> flush([Box settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
-    await box.put(key, value.index);
-  }
-
-  /// Returns the theme corresponding to the specified brightness.
-  UnicaenTimetableTheme getFromBrightness(Brightness brightness) => brightness == Brightness.light ? LIGHT : DARK;
-
-  /// Resolves the theme from the specified context.
-  UnicaenTimetableTheme resolve(BuildContext context) {
-    switch (value) {
-      case ThemeMode.light:
-        return getFromBrightness(Brightness.light);
-      case ThemeMode.dark:
-        return getFromBrightness(Brightness.dark);
-      default:
-        return getFromBrightness(MediaQuery.platformBrightnessOf(context));
-    }
-  }
-}
-
-/// Represents an app theme.
-abstract class UnicaenTimetableTheme {
   /// The theme brightness.
   final Brightness brightness;
 

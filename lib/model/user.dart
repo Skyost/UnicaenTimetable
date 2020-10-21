@@ -11,7 +11,7 @@ import 'package:steel_crypt/steel_crypt.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 part 'user.g.dart';

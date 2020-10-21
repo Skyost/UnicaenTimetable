@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/input.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A widget that shows a FlutterWeekView widget.

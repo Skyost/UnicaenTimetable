@@ -8,10 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/model/theme.dart';
+import 'package:unicaen_timetable/model/settings/entries/application/sidebar_days.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
+import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 
@@ -32,15 +33,19 @@ class DayViewPage extends Page {
   IconData get icon {
     switch (weekDay) {
       case DateTime.monday:
-        return Icons.looks_one;
+        return const IconData(0xf03a4, fontFamily: 'MaterialCommunityIcons');
       case DateTime.tuesday:
-        return Icons.looks_two;
+        return const IconData(0xf03a7, fontFamily: 'MaterialCommunityIcons');
       case DateTime.wednesday:
-        return Icons.looks_3;
+        return const IconData(0xf03aa, fontFamily: 'MaterialCommunityIcons');
       case DateTime.thursday:
-        return Icons.looks_4;
+        return const IconData(0xf03ad, fontFamily: 'MaterialCommunityIcons');
+      case DateTime.friday:
+        return const IconData(0xf03b1, fontFamily: 'MaterialCommunityIcons');
+      case DateTime.saturday:
+        return const IconData(0xf03b3, fontFamily: 'MaterialCommunityIcons');
       default:
-        return Icons.looks_5;
+        return const IconData(0xf03b6, fontFamily: 'MaterialCommunityIcons');
     }
   }
 
@@ -55,15 +60,18 @@ class DayViewPage extends Page {
 
   @override
   List<Widget> buildActions(BuildContext context) {
+    SidebarDaysSettingsEntry sidebarDays = context.get<SettingsModel>().sidebarDaysEntry;
     return [
-      IconButton(
-        icon: Icon(Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
-        onPressed: () => previousDay(context),
-      ),
-      IconButton(
-        icon: Icon(Platform.isAndroid ? Icons.arrow_forward : Icons.arrow_forward_ios),
-        onPressed: () => nextDay(context),
-      ),
+      if (sidebarDays.value.isNotEmpty)
+        IconButton(
+          icon: Icon(Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
+          onPressed: () => previousDay(context, sidebarDays: sidebarDays),
+        ),
+      if (sidebarDays.value.isNotEmpty)
+        IconButton(
+          icon: Icon(Platform.isAndroid ? Icons.arrow_forward : Icons.arrow_forward_ios),
+          onPressed: () => nextDay(context, sidebarDays: sidebarDays),
+        ),
       WeekPickerButton(),
       IconButton(
         key: _shareButtonKey,
@@ -90,31 +98,25 @@ class DayViewPage extends Page {
   }
 
   /// Goes to the previous day.
-  void previousDay(BuildContext context) {
-    int weekDay = this.weekDay;
-    if (weekDay == DateTime.monday) {
-      weekDay = DateTime.friday;
-      ValueNotifier<DateTime> date = context.get<ValueNotifier<DateTime>>();
-      date.value = date.value.subtract(const Duration(days: 7));
-    } else {
-      weekDay--;
+  void previousDay(BuildContext context, {SidebarDaysSettingsEntry sidebarDays}) {
+    sidebarDays ??= context.get<SettingsModel>().sidebarDaysEntry;
+    int previousDay = sidebarDays.previousDay(weekDay);
+    if (previousDay >= weekDay) {
+      ValueNotifier<DateTime> monday = context.get<ValueNotifier<DateTime>>();
+      monday.value = monday.value.subtract(const Duration(days: 7));
     }
-
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: weekDay);
+    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: previousDay);
   }
 
   /// Goes to the next day.
-  void nextDay(BuildContext context) {
-    int weekDay = this.weekDay;
-    if (weekDay == DateTime.friday) {
-      weekDay = DateTime.monday;
-      ValueNotifier<DateTime> date = context.get<ValueNotifier<DateTime>>();
-      date.value = date.value.add(const Duration(days: 7));
-    } else {
-      weekDay++;
+  void nextDay(BuildContext context, {SidebarDaysSettingsEntry sidebarDays}) {
+    sidebarDays ??= context.get<SettingsModel>().sidebarDaysEntry;
+    int nextDay = sidebarDays.nextDay(weekDay);
+    if (nextDay <= weekDay) {
+      ValueNotifier<DateTime> monday = context.get<ValueNotifier<DateTime>>();
+      monday.value = monday.value.add(const Duration(days: 7));
     }
-
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: weekDay);
+    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: nextDay);
   }
 
   /// Resolves the date from the given context.

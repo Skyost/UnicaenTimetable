@@ -5,7 +5,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/pages/home/home.dart';
 import 'package:unicaen_timetable/pages/page.dart';

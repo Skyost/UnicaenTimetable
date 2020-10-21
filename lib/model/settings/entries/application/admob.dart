@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/credentials.dart';
-import 'package:unicaen_timetable/model/settings.dart';
+import 'package:unicaen_timetable/dialogs/input.dart';
+import 'package:unicaen_timetable/model/settings/entries/entry.dart';
 
 /// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
@@ -12,7 +13,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
 
   /// Creates a new AdMob settings entry instance.
   AdMobSettingsEntry({
-    String keyPrefix,
+    @required String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'enable_ads',
@@ -20,9 +21,9 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
         );
 
   @override
-  Future<bool> load([Box settingsBox]) async {
+  Future<void> load([Box settingsBox]) {
     adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : Credentials.adUnit;
-    return await super.load(settingsBox);
+    return super.load(settingsBox);
   }
 
   /// Creates the banner ad.
@@ -38,4 +39,27 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
 
   /// Returns the AdMob banner size.
   AdmobBannerSize _getAdMobBannerSize(BuildContext context) => AdmobBannerSize.ADAPTIVE_BANNER(width: MediaQuery.of(context).size.width.ceil());
+
+  @override
+  Widget render(BuildContext context) => _AdMobSettingsEntryWidget(entry: this);
+}
+
+/// Allows to display the AdMob settings entry.
+class _AdMobSettingsEntryWidget extends SettingsEntryWidget {
+  /// Creates a new AdMob settings entry widget instance.
+  const _AdMobSettingsEntryWidget({
+    @required AdMobSettingsEntry entry,
+  }) : super(entry: entry);
+
+  @override
+  Future<bool> beforeOnTap(BuildContext context) async {
+    bool result = await BoolInputDialog.getValue(
+      context,
+      titleKey: 'dialogs.enable_ads.title',
+      messageKey: 'dialogs.enable_ads.message',
+      yesButtonKey: 'dialogs.enable_ads.enable',
+      noButtonKey: 'dialogs.enable_ads.disable',
+    );
+    return result != null && result != entry.value;
+  }
 }

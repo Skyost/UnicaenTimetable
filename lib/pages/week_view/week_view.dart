@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/model/theme.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
+import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// A widget that allows to show a week's lessons.

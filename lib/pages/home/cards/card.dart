@@ -4,8 +4,8 @@ import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorder
 import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/model/settings.dart';
-import 'package:unicaen_timetable/model/theme.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
+import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A home material card, draggable and with an id.

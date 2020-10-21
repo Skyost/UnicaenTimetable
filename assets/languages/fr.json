@@ -55,12 +55,13 @@
         "title": "Paramètres",
         "application": {
             "title": "Application",
+            "sidebar_days": "Jours à afficher dans la menu déroulant",
             "color_lessons_automatically": "Colorer automatiquement les cours",
             "lesson_notification_mode": "Mode de notification pendant les cours",
             "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
             "enable_ads": "Activer les publicités",
             "brightness": {
-                "title": "Luminosité",
+                "title": "Thème",
                 "light": "Lumineux",
                 "dark": "Sombre",
                 "system": "Laisser le système choisir"
@@ -170,6 +171,7 @@
         },
         "please_wait": "Veuillez patienter…",
         "here": "ici",
-        "empty": "Vide"
+        "empty": "Vide",
+        "none": "Aucun"
     }
 }
