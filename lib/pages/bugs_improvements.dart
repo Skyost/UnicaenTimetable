@@ -53,7 +53,7 @@ class _BugsImprovementsPageState extends State<BugsImprovementsPage> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: context.getString('bugs_improvements.message.${textKey}') + ' ',
+              text: context.getString('bugs_improvements.message.$textKey') + ' ',
             ),
             TextSpan(
               text: context.getString('other.here'),

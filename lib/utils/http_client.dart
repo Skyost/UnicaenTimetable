@@ -16,7 +16,7 @@ class UnicaenTimetableHttpClient {
   });
 
   /// Connects to the specified url (using the specified credentials).
-  Future<Response> connect(Uri url, [User user]) async {
+  Future<Response?> connect(Uri url, [User? user]) async {
     try {
       Map<String, String> headers = HashMap();
       headers[HttpHeaders.userAgentHeader] = userAgent + ' (' + (Platform.isAndroid ? 'Android' : 'iOS') + ')';

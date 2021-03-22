@@ -42,7 +42,7 @@ void main() async {
     ], customParameters: {
       'platform': Platform.isAndroid ? 'Android' : 'iOS'
     });
-    Catcher(UnicaenTimetableApp(), releaseConfig: releaseConfig);
+    Catcher(rootWidget: UnicaenTimetableApp(), releaseConfig: releaseConfig);
   }
 
   unawaited(BackgroundFetch.registerHeadlessTask(headlessSyncTask));
@@ -55,7 +55,7 @@ void headlessSyncTask(String taskId) async {
   UserRepository userRepository = UserRepository();
   await userRepository.initialize();
 
-  User user = await userRepository.getUser();
+  User? user = await userRepository.getUser();
   if (user != null) {
     LessonModel lessonModel = LessonModel();
     SettingsModel settingsModel = SettingsModel();
@@ -84,13 +84,13 @@ class UnicaenTimetableApp extends StatefulWidget {
 /// The app first widget state.
 class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
   /// The lesson model.
-  LessonModel lessonModel;
+  late LessonModel lessonModel;
 
   /// The user repository.
-  UserRepository userRepository;
+  late UserRepository userRepository;
 
   /// The settings model.
-  SettingsModel settingsModel;
+  late SettingsModel settingsModel;
 
   @override
   void initState() {
@@ -118,7 +118,7 @@ class _UnicaenTimetableAppState extends State<UnicaenTimetableApp> {
               onGenerateTitle: (context) => EzLocalization.of(context)?.get('app_name') ?? 'Unicaen Timetable',
               theme: UnicaenTimetableTheme.LIGHT.themeData,
               darkTheme: UnicaenTimetableTheme.DARK.themeData,
-              themeMode: settingsModel?.themeEntry?.value ?? ThemeMode.light,
+              themeMode: settingsModel.isInitialized ? settingsModel.themeEntry.value : ThemeMode.light,
               routes: {
                 '/': (context) {
                   if (!context.watch<LessonModel>().isInitialized || !context.watch<UserRepository>().isInitialized || !settingsModel.isInitialized) {

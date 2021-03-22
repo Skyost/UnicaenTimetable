@@ -1,24 +1,14 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-/// Contains some useful build context methods.
-extension BuildContextUtils on BuildContext {
-  /// Extension method for provider (but with listen sets to false).
-  T get<T>() => Provider.of<T>(this, listen: false);
-}
 
 /// Contains some useful string methods.
 extension StringUtils on String {
   /// Capitalizes a string.
   String capitalize() {
-    if (this == null) {
-      return this;
-    }
-
     if (isEmpty || length == 1) {
       return toUpperCase();
     }
@@ -28,8 +18,8 @@ extension StringUtils on String {
 
   /// Splits a string in equal parts.
   List<String> splitEqually(int size) {
-    if (this == null || size > length) {
-      return List.generate(size, (index) => this == null || index >= length ? index.toString() : this[index]);
+    if (size > length) {
+      return List.generate(size, (index) => index >= length ? index.toString() : this[index]);
     }
 
     List<String> result = [];
@@ -66,7 +56,7 @@ extension NumUtils on num {
 /// Contains some useful map methods.
 extension MapUtils<K, V> on Map<K, V> {
   /// Returns a key by its value (returns the first).
-  K getByValue(V value) => keys.firstWhere((K key) => this[key] == value, orElse: () => null);
+  K? getByValue(V value) => keys.firstWhereOrNull((K key) => this[key] == value);
 }
 
 /// Contains some useful methods.
@@ -95,13 +85,13 @@ class Utils {
 
   /// Shows a snack bar with an icon, a text and a color.
   static void showSnackBar({
-    @required BuildContext context,
-    @required IconData icon,
-    @required String textKey,
-    @required Color color,
-    VoidCallback onVisible,
+    required BuildContext context,
+    required IconData icon,
+    required String textKey,
+    required Color color,
+    VoidCallback? onVisible,
   }) =>
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 2),
         content: Row(
           children: [
@@ -114,7 +104,7 @@ class Utils {
               child: Padding(
                 padding: const EdgeInsets.only(left: 6),
                 child: Text(
-                  context.getString('scaffold.snack_bar.${textKey}'),
+                  context.getString('scaffold.snack_bar.$textKey'),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

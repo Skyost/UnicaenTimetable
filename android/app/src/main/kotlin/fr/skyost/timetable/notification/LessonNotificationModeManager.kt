@@ -10,10 +10,8 @@ import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import fr.skyost.timetable.*
-import fr.skyost.timetable.Application
 import fr.skyost.timetable.utils.Utils
 import org.joda.time.DateTime
-import org.joda.time.DateTimeConstants
 import org.joda.time.LocalDate
 
 
@@ -89,7 +87,6 @@ class LessonNotificationModeManager : BroadcastReceiver() {
          *
          * @param context The context.
          */
-        @JvmOverloads
         fun enable(context: Context) {
             try {
                 val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -100,21 +97,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
                 // And we display the notification.
                 displayNotification(context)
             } catch (ex: SecurityException) {
-                // If the user has disabled the application in its settings, this exception will be thrown.
-                val message = context.getString(R.string.notification_lessonmodenotification_exception)
-                val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.notification_small_drawable)
-                        .setContentTitle(context.getString(R.string.notification_lessonmodenotification_title))
-                        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setContentText(message)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                    builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                }
-                val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                // So we have to notify the user.
-                manager.notify(NOTIFICATION_TAG, EXCEPTION_NOTIFICATION_ID, builder.build())
+                displayErrorNotification(context)
             }
         }
 
@@ -131,21 +114,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
                 // And we close the notification.
                 closeNotification(context)
             } catch (ex: SecurityException) {
-                // If the user has disabled the application in its settings, this exception will be thrown.
-                val message = context.getString(R.string.notification_lessonmodenotification_exception)
-                val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.notification_small_drawable)
-                        .setContentTitle(context.getString(R.string.notification_lessonmodenotification_title))
-                        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setContentText(message)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                    builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
-                }
-                val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                // So we have to notify the user.
-                manager.notify(NOTIFICATION_TAG, EXCEPTION_NOTIFICATION_ID, builder.build())
+                displayErrorNotification(context)
             }
         }
 
@@ -252,9 +221,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
          */
         private fun getInterruptionFilterFromPreferences(context: Context): Int {
             // We read the preference value.
-            var mode: Int = context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)
-
-            when (mode) {
+            when (context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)) {
                 VALUE_FILTER_ALARMS -> return NotificationManager.INTERRUPTION_FILTER_ALARMS
             }
 
@@ -294,11 +261,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
          * @param context The context.
          */
         private fun displayNotification(context: Context) {
-            // If we are saturday or sunday (it should not be possible), we go to the next monday.
-            var date = LocalDate.now()
-            if (date.dayOfWeek == DateTimeConstants.SATURDAY || date.dayOfWeek == DateTimeConstants.SUNDAY) {
-                date = date.withDayOfWeek(DateTimeConstants.MONDAY).plusWeeks(1)
-            }
+            val date = LocalDate.now()
             // We create the MainActivity intent.
             val intent = Intent(context, MainActivity::class.java)
             intent.putExtra(MainActivity.INTENT_DATE, date.toString("yyyy-MM-dd"))
@@ -321,6 +284,33 @@ class LessonNotificationModeManager : BroadcastReceiver() {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             // And we send it !
             manager.notify(NOTIFICATION_TAG, MODE_NOTIFICATION_ID, builder.build())
+        }
+
+        /**
+         * Displays the error notification.
+         *
+         * @param context The context.
+         */
+        private fun displayErrorNotification(context: Context) {
+            if (!isEnabled(context)) {
+                return
+            }
+
+            // If the user has disabled the application in its settings, this exception will be thrown.
+            val message = context.getString(R.string.notification_lessonmodenotification_exception)
+            val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)
+                    .setSmallIcon(R.drawable.notification_small_drawable)
+                    .setContentTitle(context.getString(R.string.notification_lessonmodenotification_title))
+                    .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setContentText(message)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+            }
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            // So we have to notify the user.
+            manager.notify(NOTIFICATION_TAG, EXCEPTION_NOTIFICATION_ID, builder.build())
         }
 
         /**

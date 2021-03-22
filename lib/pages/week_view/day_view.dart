@@ -14,7 +14,6 @@ import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
 import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// The page that allows to show a day's lessons.
 class DayViewPage extends Page {
@@ -26,7 +25,7 @@ class DayViewPage extends Page {
 
   /// Creates a new day view page instance.
   DayViewPage({
-    @required this.weekDay,
+    required this.weekDay,
   }) : super(icon: null);
 
   @override
@@ -53,14 +52,14 @@ class DayViewPage extends Page {
   State<StatefulWidget> createState() => _DayViewPageState();
 
   @override
-  String buildTitle(BuildContext context) => DateFormat.EEEE(EzLocalization.of(context).locale.languageCode).format(resolveDate(context)).capitalize();
+  String buildTitle(BuildContext context) => DateFormat.EEEE(EzLocalization.of(context)?.locale.languageCode).format(resolveDate(context)).capitalize();
 
   @override
   bool isSamePage(Page other) => super.isSamePage(other) && other is DayViewPage && weekDay == other.weekDay;
 
   @override
   List<Widget> buildActions(BuildContext context) {
-    SidebarDaysSettingsEntry sidebarDays = context.get<SettingsModel>().sidebarDaysEntry;
+    SidebarDaysSettingsEntry sidebarDays = context.read<SettingsModel>().sidebarDaysEntry;
     return [
       if (sidebarDays.value.isNotEmpty)
         IconButton(
@@ -77,20 +76,24 @@ class DayViewPage extends Page {
         key: _shareButtonKey,
         icon: const Icon(Icons.share),
         onPressed: () async {
-          RenderBox renderBox = _shareButtonKey.currentContext.findRenderObject();
-          Offset position = renderBox.localToGlobal(Offset.zero);
+          RenderObject? renderObject = _shareButtonKey.currentContext?.findRenderObject();
+          Offset? position;
+
+          if(renderObject is RenderBox) {
+            position = renderObject.localToGlobal(Offset.zero);
+          }
 
           StringBuffer builder = StringBuffer();
           DateTime date = resolveDate(context, listen: false);
-          LessonModel lessonModel = context.get<LessonModel>();
+          LessonModel lessonModel = context.read<LessonModel>();
           List<Lesson> lessons = await lessonModel.getLessonsForDate(date)
             ..sort();
-          builder.write(DateFormat.yMd(EzLocalization.of(context).locale.languageCode).format(date) + ' :\n\n');
+          builder.write(DateFormat.yMd(EzLocalization.of(context)?.locale.languageCode).format(date) + ' :\n\n');
           lessons.forEach((lesson) => builder.write(lesson.toString(context) + '\n'));
           String content = builder.toString();
           await Share.share(
             content.substring(0, content.lastIndexOf('\n')),
-            sharePositionOrigin: Rect.fromLTWH(position.dx, position.dy, 24, 40),
+            sharePositionOrigin: position == null ? null : Rect.fromLTWH(position.dx, position.dy, 24, 40),
           );
         },
       ),
@@ -98,25 +101,25 @@ class DayViewPage extends Page {
   }
 
   /// Goes to the previous day.
-  void previousDay(BuildContext context, {SidebarDaysSettingsEntry sidebarDays}) {
-    sidebarDays ??= context.get<SettingsModel>().sidebarDaysEntry;
+  void previousDay(BuildContext context, {SidebarDaysSettingsEntry? sidebarDays}) {
+    sidebarDays ??= context.read<SettingsModel>().sidebarDaysEntry;
     int previousDay = sidebarDays.previousDay(weekDay);
     if (previousDay >= weekDay) {
-      ValueNotifier<DateTime> monday = context.get<ValueNotifier<DateTime>>();
+      ValueNotifier<DateTime> monday = context.read<ValueNotifier<DateTime>>();
       monday.value = monday.value.subtract(const Duration(days: 7));
     }
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: previousDay);
+    context.read<ValueNotifier<Page>>().value = DayViewPage(weekDay: previousDay);
   }
 
   /// Goes to the next day.
-  void nextDay(BuildContext context, {SidebarDaysSettingsEntry sidebarDays}) {
-    sidebarDays ??= context.get<SettingsModel>().sidebarDaysEntry;
+  void nextDay(BuildContext context, {SidebarDaysSettingsEntry? sidebarDays}) {
+    sidebarDays ??= context.read<SettingsModel>().sidebarDaysEntry;
     int nextDay = sidebarDays.nextDay(weekDay);
     if (nextDay <= weekDay) {
-      ValueNotifier<DateTime> monday = context.get<ValueNotifier<DateTime>>();
+      ValueNotifier<DateTime> monday = context.read<ValueNotifier<DateTime>>();
       monday.value = monday.value.add(const Duration(days: 7));
     }
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: nextDay);
+    context.read<ValueNotifier<Page>>().value = DayViewPage(weekDay: nextDay);
   }
 
   /// Resolves the date from the given context.
@@ -131,19 +134,19 @@ class _DayViewPageState extends FlutterWeekViewState<DayViewPage> {
   @override
   Widget buildChild(BuildContext context) {
     List<FlutterWeekViewEvent> events = context.watch<List<FlutterWeekViewEvent>>();
-    if (events == null) {
-      return const CenteredCircularProgressIndicator();
-    }
-
     DateTime date = widget.resolveDate(context);
     UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return GestureDetector(
       onHorizontalDragEnd: (details) {
-        if (details.primaryVelocity > 0) {
+        if (details.primaryVelocity == null) {
+          return;
+        }
+
+        if (details.primaryVelocity! > 0) {
           widget.previousDay(context);
         }
 
-        if (details.primaryVelocity < 0) {
+        if (details.primaryVelocity! < 0) {
           widget.nextDay(context);
         }
       },

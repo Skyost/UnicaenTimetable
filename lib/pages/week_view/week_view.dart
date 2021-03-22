@@ -6,7 +6,6 @@ import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/week_view/common.dart';
 import 'package:unicaen_timetable/theme.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// A widget that allows to show a week's lessons.
 class WeekViewPage extends StaticTitlePage {
@@ -42,15 +41,10 @@ class WeekViewPage extends StaticTitlePage {
 class _WeekViewPageState extends FlutterWeekViewState<WeekViewPage> {
   @override
   Widget buildChild(BuildContext context) {
-    List<FlutterWeekViewEvent> events = context.watch<List<FlutterWeekViewEvent>>();
-    if (events == null) {
-      return const CenteredCircularProgressIndicator();
-    }
-
     UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return WeekView(
       dates: widget.resolveDates(context),
-      events: events,
+      events: context.watch<List<FlutterWeekViewEvent>>(),
       initialTime: const HourMinute(hour: 7).atDate(DateTime.now()),
       style: WeekViewStyle(dayViewWidth: calculateDayViewWidth(context)),
       dayBarStyleBuilder: (date) => theme.createDayBarStyle(date, formatDate),

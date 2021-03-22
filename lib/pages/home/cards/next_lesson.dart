@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:provider/provider.dart';
@@ -23,13 +24,13 @@ class NextLessonCard extends RemainingLessonsCard {
 
   @override
   String buildSubtitle(BuildContext context) {
-    List<Lesson> remainingLessons = context.watch<List<Lesson>>();
-    if(remainingLessons == null) {
+    List<Lesson>? remainingLessons = context.watch<List<Lesson>?>();
+    if (remainingLessons == null) {
       return context.getString('home.loading');
     }
 
     DateTime now = DateTime.now();
-    Lesson lesson = remainingLessons.firstWhere((lesson) => now.isBefore(lesson.start), orElse: () => null);
+    Lesson? lesson = remainingLessons.firstWhereOrNull((lesson) => now.isBefore(lesson.start));
     return lesson?.toString(context) ?? context.getString('home.next_lesson.nothing');
   }
 
@@ -40,6 +41,6 @@ class NextLessonCard extends RemainingLessonsCard {
       now = now.atMonday;
     }
 
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: now.weekday);
+    context.read<ValueNotifier<Page>>().value = DayViewPage(weekDay: now.weekday);
   }
 }

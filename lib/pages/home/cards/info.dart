@@ -23,22 +23,28 @@ class InfoCard extends MaterialCard {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          FutureProvider<_AppInfo>(create: (_) => _AppInfo().initialize(context)),
-          FutureProvider<_DeviceInfo>(create: (_) => _DeviceInfo().initialize()),
+          FutureProvider<_AppInfo?>(
+            initialData: null,
+            create: (_) => _AppInfo().initialize(context),
+          ),
+          FutureProvider<_DeviceInfo?>(
+            initialData: null,
+            create: (_) => _DeviceInfo().initialize(),
+          ),
         ],
         child: Builder(builder: (context) => super.build(context)),
       );
 
   @override
-  Color buildColor(BuildContext context) => Colors.blue[700];
+  Color buildColor(BuildContext context) => Colors.blue[700]!;
 
   @override
   IconData buildIcon(BuildContext context) => Icons.info_outline;
 
   @override
   String buildSubtitle(BuildContext context) {
-    _AppInfo appInfo = context.watch<_AppInfo>();
-    _DeviceInfo deviceInfo = context.watch<_DeviceInfo>();
+    _AppInfo? appInfo = context.watch<_AppInfo?>();
+    _DeviceInfo? deviceInfo = context.watch<_DeviceInfo?>();
     if (appInfo == null || deviceInfo == null) {
       return context.getString('home.loading');
     }
@@ -47,16 +53,16 @@ class InfoCard extends MaterialCard {
   }
 
   @override
-  void onTap(BuildContext context) => context.get<ValueNotifier<Page>>().value = const AboutPage();
+  void onTap(BuildContext context) => context.read<ValueNotifier<Page>>().value = const AboutPage();
 }
 
 /// Contains some info about the app.
 class _AppInfo {
   /// The app name.
-  String name;
+  String? name;
 
   /// The app version.
-  String version;
+  String? version;
 
   /// Initializes this class.
   Future<_AppInfo> initialize(BuildContext context) async {
@@ -67,22 +73,22 @@ class _AppInfo {
   }
 
   @override
-  String toString() => '${name} ${version}';
+  String toString() => '$name $version';
 }
 
 /// Contains some info about the current device.
 class _DeviceInfo {
   /// The device brand.
-  String brand;
+  String? brand;
 
   /// The device model.
-  String model;
+  String? model;
 
   /// The device OS name.
-  String osName;
+  String? osName;
 
   /// The device OS version.
-  String osVersion;
+  String? osVersion;
 
   /// Initializes this class.
   Future<_DeviceInfo> initialize() async {
@@ -104,5 +110,5 @@ class _DeviceInfo {
   }
 
   @override
-  String toString() => '${brand} ${model}, ${osName} ${osVersion}';
+  String toString() => '$brand $model, $osName $osVersion';
 }

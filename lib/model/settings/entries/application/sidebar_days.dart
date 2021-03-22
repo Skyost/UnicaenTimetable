@@ -12,7 +12,7 @@ import 'package:unicaen_timetable/utils/utils.dart';
 class SidebarDaysSettingsEntry extends SettingsEntry<List<int>> {
   /// Creates a new sidebar days settings entry instance.
   SidebarDaysSettingsEntry({
-    @required String keyPrefix,
+    required String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'sidebar_days',
@@ -98,7 +98,7 @@ class SidebarDaysSettingsEntry extends SettingsEntry<List<int>> {
 class _SidebarDaysSettingsEntryWidget extends SettingsEntryWidget {
   /// Creates a new sidebar days settings entry widget instance.
   const _SidebarDaysSettingsEntryWidget({
-    @required SidebarDaysSettingsEntry entry,
+    required SidebarDaysSettingsEntry entry,
   }) : super(entry: entry);
 
   @override
@@ -107,12 +107,12 @@ class _SidebarDaysSettingsEntryWidget extends SettingsEntryWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.getString('settings.application.sidebar_days')),
-        content: ChangeNotifierProvider<SettingsEntry<List<int>>>.value(
-          value: entry,
+        content: ChangeNotifierProvider<SidebarDaysSettingsEntry>.value(
+          value: entry as SidebarDaysSettingsEntry,
           builder: (context, child) => _SidebarDaysSettingsEntryDialogContent(),
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
           ),
@@ -130,7 +130,7 @@ class _SidebarDaysSettingsEntryWidget extends SettingsEntryWidget {
     }
 
     DateTime monday = DateTime.now().atMonday;
-    return Text(days.map((day) => DateFormat.EEEE(EzLocalization.of(context).locale.languageCode).format(monday.add(Duration(days: day - 1))).capitalize()).join(', ') + '.');
+    return Text(days.map((day) => DateFormat.EEEE(EzLocalization.of(context)?.locale.languageCode).format(monday.add(Duration(days: day - 1))).capitalize()).join(', ') + '.');
   }
 }
 
@@ -145,7 +145,7 @@ class _SidebarDaysSettingsEntryDialogContent extends StatelessWidget {
       child: ListView.builder(
         itemCount: DateTime.daysPerWeek,
         itemBuilder: (context, position) => ListTile(
-          title: Text(DateFormat.EEEE(EzLocalization.of(context).locale.languageCode).format(monday.add(Duration(days: position)))),
+          title: Text(DateFormat.EEEE(EzLocalization.of(context)?.locale.languageCode).format(monday.add(Duration(days: position)))),
           onTap: () => onTap(entry, position + 1),
           trailing: Switch(
             value: entry.value.contains(position + 1),
@@ -158,7 +158,7 @@ class _SidebarDaysSettingsEntryDialogContent extends StatelessWidget {
   }
 
   /// Triggered when the switch has been tapped on.
-  void onTap(SidebarDaysSettingsEntry entry, int day, {bool selected}) {
+  void onTap(SidebarDaysSettingsEntry entry, int day, {bool? selected}) {
     selected ??= !entry.hasDay(day);
     if (selected) {
       entry.addDay(day);

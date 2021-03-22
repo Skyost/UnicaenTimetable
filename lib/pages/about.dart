@@ -132,7 +132,7 @@ class _SymbolPainter extends CustomPainter {
 
   /// Creates a new symbol painter instance.
   const _SymbolPainter({
-    this.color,
+    required this.color,
   });
 
   @override

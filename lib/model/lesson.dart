@@ -26,7 +26,7 @@ class Lesson extends HiveObject with Comparable<Lesson> {
 
   /// The lesson description.
   @HiveField(1)
-  String description;
+  String? description;
 
   /// The lesson location.
   @HiveField(2)
@@ -42,46 +42,50 @@ class Lesson extends HiveObject with Comparable<Lesson> {
 
   /// Creates a new lesson instance.
   Lesson({
-    this.name,
+    required this.name,
     this.description,
-    this.location,
-    this.start,
-    this.end,
+    required this.location,
+    required this.start,
+    required this.end,
   });
 
   /// Creates a new lesson instance from a Zimbra JSON map.
-  Lesson.fromJson(Map<String, dynamic> inv) {
-    Map<String, dynamic> comp = inv['comp'].first;
-    name = comp['name'];
-    location = comp['loc'];
+  factory Lesson.fromJson(Map<String, dynamic> inv) {
+    Map<String, dynamic> comp = inv['comp']!.first;
 
+    String name = comp['name']!;
+    String location = comp['loc']!;
+    String? description;
     if (comp.containsKey('desc')) {
       description = comp['desc'].first['_content'];
     }
+    DateTime start = DateTime.fromMillisecondsSinceEpoch(comp['s']!.first['u']!);
+    DateTime end = DateTime.fromMillisecondsSinceEpoch(comp['e']!.first['u']!);
 
-    start = DateTime.fromMillisecondsSinceEpoch(comp['s'].first['u']);
-    end = DateTime.fromMillisecondsSinceEpoch(comp['e'].first['u']);
+    return Lesson(name: name, location: location, description: description, start: start, end: end);
   }
 
   /// Creates a new lesson instance from a test JSON calendar.
-  Lesson.fromTestJson(DateTime date, Map<String, dynamic> json) {
-    List<dynamic> startParts = json['start'].split(':').map(int.parse).toList();
-    List<dynamic> endParts = json['end'].split(':').map(int.parse).toList();
+  factory Lesson.fromTestJson(DateTime date, Map<String, dynamic> json) {
+    List<dynamic> startParts = json['start']!.split(':').map(int.parse).toList();
+    List<dynamic> endParts = json['end']!.split(':').map(int.parse).toList();
 
-    name = json['name'];
-    description = json['description'];
-    location = json['location'];
-    start = date.add(Duration(hours: startParts.first, minutes: startParts.last));
-    end = date.add(Duration(hours: endParts.first, minutes: endParts.last));
+    String name = json['name']!;
+    String? description = json['description'];
+    String location = json['location']!;
+    DateTime start = date.add(Duration(hours: startParts.first, minutes: startParts.last));
+    DateTime end = date.add(Duration(hours: endParts.first, minutes: endParts.last));
+
+    return Lesson(name: name, location: location, description: description, start: start, end: end);
   }
 
   @override
-  String toString([BuildContext context]) {
+  String toString([BuildContext? context]) {
     String hour;
     if (context == null) {
       hour = start.hour.withLeadingZero + ':' + start.minute.withLeadingZero + '-' + end.hour.withLeadingZero + ':' + end.minute.withLeadingZero;
     } else {
-      String locale = EzLocalization.of(context).locale.languageCode;
+      String? locale = EzLocalization.of(context)?.locale.languageCode;
       DateFormat formatter = DateFormat.Hm(locale);
       hour = formatter.format(start) + '-' + formatter.format(end);
     }
@@ -91,6 +95,14 @@ class Lesson extends HiveObject with Comparable<Lesson> {
 
   @override
   int compareTo(Lesson other) => start.compareTo(other.start);
+
+  /// Computes lesson foreground and background colors.
+  Pair<Color, Color> computeColors({LessonModel? lessonModel, SettingsModel? settingsModel}) {
+    Color? backgroundColor = lessonModel?.getLessonColor(this);
+    backgroundColor ??= settingsModel?.getEntryByKey('application.color_lessons_automatically')?.value ? Utils.randomColor(150, name.splitEqually(3)) : const Color(0xCC2196F3).withAlpha(150);
+    Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
+    return Pair<Color, Color>(backgroundColor, textColor);
+  }
 }
 
 /// The lesson model.
@@ -102,10 +114,10 @@ class LessonModel extends UnicaenTimetableModel {
   static const String _LESSONS_COLORS_HIVE_BOX = 'lessons_colors';
 
   /// The lessons Hive box.
-  LazyBox<List> _lessonsBox;
+  LazyBox<List>? _lessonsBox;
 
   /// The lessons colors Hive box.
-  Box<int> _lessonsColorsBox;
+  Box<int>? _lessonsColorsBox;
 
   @override
   Future<void> initialize() async {
@@ -122,12 +134,16 @@ class LessonModel extends UnicaenTimetableModel {
 
   /// Returns the lessons of a date.
   Future<List<Lesson>> getLessonsForDate(DateTime date) async {
-    List result = (await _lessonsBox.get(date.yearMonthDay.toString())) ?? [];
+    if (!isInitialized) {
+      return [];
+    }
+
+    List result = (await _lessonsBox!.get(date.yearMonthDay.toString())) ?? [];
     return List<Lesson>.from(result);
   }
 
   /// Selects the lessons available between two dates.
-  Future<List<Lesson>> selectLessons([DateTime min, DateTime max]) async {
+  Future<List<Lesson>> selectLessons(DateTime min, DateTime max) async {
     List<Lesson> result = [];
     DateTime date = min;
     while (date.isBefore(max)) {
@@ -152,14 +168,22 @@ class LessonModel extends UnicaenTimetableModel {
 
   /// Clears all lessons.
   Future<void> clearLessons() async {
-    await _lessonsBox.clear();
+    if (!isInitialized) {
+      return;
+    }
+
+    await _lessonsBox!.clear();
     notifyListeners();
   }
 
   /// Returns all weeks handled.
   Future<List<DateTime>> get availableWeeks async {
+    if (!isInitialized) {
+      return [];
+    }
+
     Set<DateTime> result = HashSet();
-    for (String date in _lessonsBox.keys) {
+    for (String date in _lessonsBox!.keys) {
       DateTime monday = DateTime.parse(date).atMonday;
       if (!result.contains(monday)) {
         result.add(monday);
@@ -170,29 +194,31 @@ class LessonModel extends UnicaenTimetableModel {
 
   /// Synchronizes the app with Zimbra.
   Future<dynamic> synchronizeFromZimbra({
-    @required SettingsModel settingsModel,
-    @required User user,
+    required SettingsModel settingsModel,
+    required User? user,
   }) async {
     try {
-      if(user == null) {
+      if (!isInitialized || user == null) {
         return false;
       }
 
       dynamic result = await user.synchronizeFromZimbra(
-        lessonsBox: _lessonsBox,
+        lessonsBox: _lessonsBox!,
         settingsModel: settingsModel,
       );
 
-      if(result != null) {
+      if (result != null) {
         return result;
       }
 
       if (Platform.isAndroid) {
         Map<String, List<_JsonLesson>> jsonContent = HashMap();
-        for(String boxKey in _lessonsBox.keys) {
+        for (String boxKey in _lessonsBox!.keys) {
           DateTime date = DateTime.parse(boxKey);
           String key = date.millisecondsSinceEpoch.toString();
-          jsonContent[key] = (await _lessonsBox.get(boxKey)).map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
+
+          List lessons = (await _lessonsBox!.get(boxKey)) ?? [];
+          jsonContent[key] = lessons.map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
         }
 
         Directory directory = await getApplicationDocumentsDirectory();
@@ -210,24 +236,28 @@ class LessonModel extends UnicaenTimetableModel {
   }
 
   /// Returns the last modification time.
-  DateTime get lastModificationTime => File(_lessonsBox.path).lastModifiedSync();
+  DateTime? get lastModificationTime => isInitialized ? File(_lessonsBox!.path!).lastModifiedSync() : null;
 
   /// Returns the color of a lesson (depends on the name).
-  Color getLessonColor(Lesson lesson) {
-    int value = _lessonsColorsBox.get(lesson.name);
+  Color? getLessonColor(Lesson lesson) {
+    int? value = _lessonsColorsBox?.get(lesson.name);
     return value == null ? null : Color(value);
   }
 
   /// Sets the lesson color according to its name.
   Future<void> setLessonColor(Lesson lesson, Color color) async {
-    await _lessonsColorsBox.put(lesson.name, color.value);
-    notifyListeners();
+    if (isInitialized) {
+      await _lessonsColorsBox!.put(lesson.name, color.value);
+      notifyListeners();
+    }
   }
 
   /// Resets the lesson color according to its name.
   Future<void> resetLessonColor(Lesson lesson) async {
-    await _lessonsColorsBox.delete(lesson.name);
-    notifyListeners();
+    if (isInitialized) {
+      await _lessonsColorsBox!.delete(lesson.name);
+      notifyListeners();
+    }
   }
 }
 

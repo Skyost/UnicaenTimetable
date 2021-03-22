@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/dialogs/login.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
 
 /// An intro slide widget.
 class Slide extends StatelessWidget {
@@ -13,11 +13,11 @@ class Slide extends StatelessWidget {
   final String slideId;
 
   /// The image asset.
-  final String asset;
+  final String? asset;
 
   /// Creates a new slide instance.
   const Slide({
-    @required this.slideId,
+    required this.slideId,
     this.asset,
   });
 
@@ -26,27 +26,27 @@ class Slide extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 36),
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
-          children: createChildren(context),
           shrinkWrap: true,
+          children: createChildren(context),
         ),
       );
 
   /// Creates the list view children.
   List<Widget> createChildren(BuildContext context) => [
         Text(
-          context.getString('intro.slides.${slideId}.title'),
-          style: Theme.of(context).textTheme.headline6,
+          context.getString('intro.slides.$slideId.title'),
+          style: Theme.of(context).textTheme.headline4,
           textAlign: TextAlign.center,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: SvgPicture.asset(
-            asset ?? 'assets/intro/${slideId}.svg',
+            asset ?? 'assets/intro/$slideId.svg',
             width: math.min(350, MediaQuery.of(context).size.width - 160),
           ),
         ),
         Text(
-          context.getString('intro.slides.${slideId}.message'),
+          context.getString('intro.slides.$slideId.message'),
           textAlign: TextAlign.center,
         ),
       ];
@@ -77,13 +77,12 @@ class SecondSlide extends Slide {
       padding: const EdgeInsets.only(top: 30),
       child: SizedBox(
         width: double.infinity,
-        child: FlatButton(
-          textColor: Colors.white,
-          onPressed: () => context.get<IntroScaffoldBodyModel>().goToNextSlide(context),
+        child: TextButton(
+          onPressed: () => context.read<IntroScaffoldBodyModel>().goToNextSlide(context),
+          style: IntroScaffold.buttonStyle.copyWith(
+            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF1F2B38)),
+          ),
           child: Text(context.getString('intro.slides.login.login_button').toUpperCase()),
-          color: const Color(0xFF1F2B38),
-          highlightColor: Colors.black12,
-          splashColor: Colors.black26,
         ),
       ),
     ));
@@ -91,7 +90,7 @@ class SecondSlide extends Slide {
   }
 
   @override
-  Future<bool> onGoToNextSlide(BuildContext context) async => await LoginDialog.show(context, synchronizeAfterLogin: true);
+  Future<bool> onGoToNextSlide(BuildContext context) => LoginDialog.show(context, synchronizeAfterLogin: true);
 }
 
 /// The third intro slide.

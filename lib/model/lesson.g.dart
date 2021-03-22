@@ -18,7 +18,7 @@ class LessonAdapter extends TypeAdapter<Lesson> {
     };
     return Lesson(
       name: fields[0] as String,
-      description: fields[1] as String,
+      description: fields[1] as String?,
       location: fields[2] as String,
       start: fields[3] as DateTime,
       end: fields[4] as DateTime,

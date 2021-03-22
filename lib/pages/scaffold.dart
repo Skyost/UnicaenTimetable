@@ -34,7 +34,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
     goToDateIfNeeded();
   }
 
@@ -68,7 +68,7 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
@@ -99,7 +99,8 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
   }
 
   /// Creates the drawer header widget.
-  Widget createDrawerHeader(BuildContext context, UserRepository userRepository) => FutureProvider<User>(
+  Widget createDrawerHeader(BuildContext context, UserRepository userRepository) => FutureProvider<User?>(
+        initialData: null,
         create: (_) => userRepository.getUser(),
         child: _DrawerHeader(),
       );
@@ -110,11 +111,11 @@ class _AppScaffoldState extends State<AppScaffold> with WidgetsBindingObserver {
       return;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      String rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_date');
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      String? rawDate = await UnicaenTimetableApp.CHANNEL.invokeMethod<String>('activity.extract_date');
       if (rawDate != null) {
         DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
-        context.get<ValueNotifier<DateTime>>().value = date;
+        context.read<ValueNotifier<DateTime>>().value = date;
       }
     });
   }
@@ -134,17 +135,17 @@ class SynchronizeFloatingButton extends StatefulWidget {
       color: Theme.of(context).primaryColor,
     );
 
-    User user = await context.get<UserRepository>().getUser();
+    User? user = await context.read<UserRepository>().getUser();
 
-    LessonModel lessonModel = context.get<LessonModel>();
-    dynamic result = await lessonModel.synchronizeFromZimbra(settingsModel: context.get<SettingsModel>(), user: user);
+    LessonModel lessonModel = context.read<LessonModel>();
+    dynamic result = await lessonModel.synchronizeFromZimbra(settingsModel: context.read<SettingsModel>(), user: user);
 
     if (result is bool && result) {
       Utils.showSnackBar(
         context: context,
         icon: Icons.check,
         textKey: 'success',
-        color: Colors.green[700],
+        color: Colors.green[700]!,
       );
       return;
     }
@@ -159,7 +160,7 @@ class SynchronizeFloatingButton extends StatefulWidget {
             child: Text(context.getString('calendar_not_found.message')),
           ),
           actions: [
-            FlatButton(
+            TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),
             )
@@ -171,7 +172,7 @@ class SynchronizeFloatingButton extends StatefulWidget {
         context: context,
         icon: Icons.error_outline,
         textKey: 'unauthorized',
-        color: Colors.amber[800],
+        color: Colors.amber[800]!,
         onVisible: () => LoginDialog.show(context),
       );
     } else {
@@ -179,7 +180,7 @@ class SynchronizeFloatingButton extends StatefulWidget {
         context: context,
         icon: Icons.error_outline,
         textKey: 'error',
-        color: Colors.red[800],
+        color: Colors.red[800]!,
       );
     }
   }
@@ -191,7 +192,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
     syncIfNeeded();
   }
 
@@ -221,7 +222,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
       initialData: Size.zero,
       future: adMobSettingsEntry.calculateSize(context),
       builder: (context, sizeSnapshot) => Padding(
-        padding: EdgeInsets.only(bottom: sizeSnapshot.data.height),
+        padding: EdgeInsets.only(bottom: sizeSnapshot.hasData ? sizeSnapshot.data!.height : 0),
         child: button,
       ),
     );
@@ -229,7 +230,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
@@ -239,9 +240,9 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
       return;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool shouldSync = await UnicaenTimetableApp.CHANNEL.invokeMethod('activity.extract_should_sync');
-      if (shouldSync) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      bool? shouldSync = await UnicaenTimetableApp.CHANNEL.invokeMethod<bool>('activity.extract_should_sync');
+      if (shouldSync != null && shouldSync) {
         await SynchronizeFloatingButton.onPressed(context);
       }
     });
@@ -252,7 +253,7 @@ class _SynchronizeFloatingButtonState extends State<SynchronizeFloatingButton> w
 class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    User user = context.watch<User>();
+    User? user = context.watch<User?>();
     if (user == null) {
       return const SizedBox.shrink();
     }
@@ -274,7 +275,7 @@ class _DrawerSectionTitle extends StatelessWidget {
 
   /// Creates a new drawer section title instance.
   const _DrawerSectionTitle({
-    @required this.titleKey,
+    required this.titleKey,
   });
 
   @override
@@ -282,7 +283,7 @@ class _DrawerSectionTitle extends StatelessWidget {
     UnicaenTimetableTheme theme = context.watch<SettingsModel>().resolveTheme(context);
     return ListTile(
       title: Text(
-        context.getString('scaffold.drawer.${titleKey}'),
+        context.getString('scaffold.drawer.$titleKey'),
         style: TextStyle(color: theme.listHeaderTextColor),
       ),
       enabled: false,
@@ -297,7 +298,7 @@ class _PageListTitle extends StatelessWidget {
 
   /// Creates a new page list title instance.
   const _PageListTitle({
-    @required this.page,
+    required this.page,
   });
 
   @override

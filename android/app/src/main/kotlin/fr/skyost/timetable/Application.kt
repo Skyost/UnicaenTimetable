@@ -27,7 +27,6 @@ class Application : FlutterApplication() {
     companion object {
         const val CHANNEL = "fr.skyost.timetable"
 
-        const val ACCOUNT_VERSION = 1;
         const val PREFERENCES_FILE = "preferences"
         const val PREFERENCES_LESSON_NOTIFICATION_MODE = "lesson-notification-mode"
 
@@ -38,12 +37,9 @@ class Application : FlutterApplication() {
                     val accounts: Array<Account> = manager.getAccountsByType(context.getString(R.string.account_type_authority))
                     if (!accounts.isNullOrEmpty()) {
                         val account: Account = accounts.first()
-                        val password: String = manager.getPassword(account)
-                        val needUpdate: Boolean = !password.startsWith("{$ACCOUNT_VERSION}") // For old versions.
                         val user: MutableMap<String, Any> = HashMap()
                         user["username"] = account.name
-                        user["password"] = if (needUpdate) Utils.base64Decode(context, password) else password
-                        user["need_update"] = needUpdate
+                        user["password"] = manager.getPassword(account)
 
                         result.success(user)
                         return

@@ -10,7 +10,7 @@ import 'package:unicaen_timetable/pages/scaffold.dart';
 class AccountSettingsEntry extends SettingsEntry {
   /// Creates a new app account settings entry instance.
   AccountSettingsEntry({
-    @required String keyPrefix,
+    required String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'account',
@@ -26,16 +26,17 @@ class AccountSettingsEntry extends SettingsEntry {
 class _AccountSettingsEntryWidget extends SettingsEntryWidget {
   /// Creates a new account settings entry widget instance.
   const _AccountSettingsEntryWidget({
-    @required AccountSettingsEntry entry,
+    required AccountSettingsEntry entry,
   }) : super(entry: entry);
 
   @override
   Widget createSubtitle(BuildContext context) {
     UserRepository userRepository = context.watch<UserRepository>();
-    Future<User> user = userRepository.getUser();
-    return FutureProvider<User>.value(
+    Future<User?> user = userRepository.getUser();
+    return FutureProvider<User?>.value(
+      initialData: null,
       value: user,
-      child: Consumer<User>(
+      child: Consumer<User?>(
         builder: (context, user, widget) => user == null ? const SizedBox.shrink() : Text(user.usernameWithoutAt),
       ),
     );
@@ -44,7 +45,7 @@ class _AccountSettingsEntryWidget extends SettingsEntryWidget {
   @override
   Future<void> afterOnTap(BuildContext context) async {
     bool result = await LoginDialog.show(context);
-    if (result != null && result) {
+    if (result) {
       unawaited(SynchronizeFloatingButton.onPressed(context));
     }
   }

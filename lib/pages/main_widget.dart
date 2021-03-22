@@ -25,13 +25,13 @@ class _AppMainWidgetState extends State<AppMainWidget> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      UserRepository userRepository = context.get<UserRepository>();
-      SettingsModel settingsModel = context.get<SettingsModel>();
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      UserRepository userRepository = context.read<UserRepository>();
+      SettingsModel settingsModel = context.read<SettingsModel>();
 
-      User user = await userRepository.getUser();
+      User? user = await userRepository.getUser();
       if (user == null) {
-        unawaited(Navigator.of(context).pushReplacementNamed('/intro'));
+        await Navigator.of(context).pushReplacementNamed('/intro');
         return;
       }
 
@@ -45,14 +45,14 @@ class _AppMainWidgetState extends State<AppMainWidget> {
               child: Text(context.getString('dialogs.unauthorized.message')),
             ),
             actions: [
-              FlatButton(
-                onPressed: () async {
-                  await Navigator.pop(context);
-                  unawaited(LoginDialog.show(context));
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  LoginDialog.show(context);
                 },
                 child: Text(context.getString('dialogs.unauthorized.button_login').toUpperCase()),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
               ),
@@ -66,7 +66,7 @@ class _AppMainWidgetState extends State<AppMainWidget> {
   @override
   Widget build(BuildContext context) {
     SettingsModel settingsModel = context.watch<SettingsModel>();
-    bool openToday = settingsModel.getEntryByKey('application.open_today_automatically').value;
+    bool openToday = settingsModel.getEntryByKey('application.open_today_automatically')!.value;
     int weekDay = DateTime.now().weekday;
     bool inWeekEnd = weekDay == DateTime.saturday || weekDay == DateTime.sunday;
     return RateMyAppBuilder(

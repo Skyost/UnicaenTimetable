@@ -49,7 +49,7 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Flushes this model entries to the settings box.
-  void flush([Box settingsBox]) async {
+  void flush([Box? settingsBox]) async {
     for (SettingsCategory category in _categories) {
       await category.flush(settingsBox);
     }
@@ -62,9 +62,9 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Returns the settings entry thanks to its key.
-  SettingsEntry getEntryByKey(String key) {
+  SettingsEntry? getEntryByKey(String key) {
     for (SettingsCategory category in _categories) {
-      SettingsEntry entry = category.getEntryByKey(key);
+      SettingsEntry? entry = category.getEntryByKey(key);
       if (entry != null) {
         return entry;
       }
@@ -85,7 +85,7 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Returns the app theme according to the current brightness.
-  UnicaenTimetableTheme resolveTheme(BuildContext context) => themeEntry?.resolve(context);
+  UnicaenTimetableTheme resolveTheme(BuildContext context) => themeEntry.resolve(context);
 
   /// Returns the app theme brightness settings entry.
   BrightnessSettingsEntry get themeEntry => getEntryByKey('application.brightness') as BrightnessSettingsEntry;
@@ -98,20 +98,20 @@ class SettingsModel extends UnicaenTimetableModel {
 
   /// Returns the calendar address according to the specified user.
   Uri getCalendarAddressFromSettings(User user) {
-    String url = getEntryByKey('server.server').value;
+    String url = getEntryByKey('server.server')!.value;
     url += '/home/';
     url += user.username;
     url += '/';
-    url += Uri.encodeFull(getEntryByKey('server.calendar').value);
+    url += Uri.encodeFull(getEntryByKey('server.calendar')!.value);
     url += '?auth=ba&fmt=json';
 
-    String additionalParameters = getEntryByKey('server.additional_parameters').value;
+    String additionalParameters = getEntryByKey('server.additional_parameters')!.value;
     if (additionalParameters.isNotEmpty) {
       url += '&';
       url += additionalParameters;
     }
 
-    int interval = getEntryByKey('server.interval').value;
+    int interval = getEntryByKey('server.interval')!.value;
     if (interval > 0) {
       DateTime now = DateTime.now().atMonday.yearMonthDay;
       DateTime min = now.subtract(Duration(days: interval * 7));
@@ -125,9 +125,9 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Requests the calendar according to the specified settings model.
-  Future<Response> requestCalendar(User user) async {
+  Future<Response?> requestCalendar(User user) async {
     UnicaenTimetableHttpClient client = const UnicaenTimetableHttpClient();
-    Response response = await client.connect(getCalendarAddressFromSettings(user), user);
+    Response? response = await client.connect(getCalendarAddressFromSettings(user), user);
     if (response?.statusCode == 401 || response?.statusCode == 404) {
       user.username = user.username.endsWith('@etu.unicaen.fr') ? user.username.substring(0, user.username.lastIndexOf('@etu.unicaen.fr')) : (user.username + '@etu.unicaen.fr');
       if (user.isInBox) {

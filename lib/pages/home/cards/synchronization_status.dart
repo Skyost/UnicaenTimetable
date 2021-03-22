@@ -19,12 +19,12 @@ class SynchronizationStatusCard extends MaterialCard {
   IconData buildIcon(BuildContext context) => _isBad(context) ? Icons.sync_problem : Icons.sync;
 
   @override
-  Color buildColor(BuildContext context) => _isBad(context) ? Colors.red[700] : Colors.teal[700];
+  Color buildColor(BuildContext context) => _isBad(context) ? Colors.red[700]! : Colors.teal[700]!;
 
   @override
   String buildSubtitle(BuildContext context) {
     LessonModel lessonModel = Provider.of<LessonModel>(context);
-    String date = lessonModel.lastModificationTime == null ? context.getString('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context).locale.languageCode).add_Hms().format(lessonModel.lastModificationTime);
+    String date = lessonModel.lastModificationTime == null ? context.getString('home.synchronization_status.never') : DateFormat.yMd(EzLocalization.of(context)?.locale.languageCode).add_Hms().format(lessonModel.lastModificationTime!);
     return date + '\n' + context.getString('home.synchronization_status.' + (_isBad(context) ? 'bad' : 'good'));
   }
 
@@ -33,9 +33,9 @@ class SynchronizationStatusCard extends MaterialCard {
 
   /// Whether we should display the "bad" color.
   bool _isBad(BuildContext context) {
-    SettingsModel settingsModel = Provider.of<SettingsModel>(context);
-    LessonModel lessonModel = Provider.of<LessonModel>(context);
+    SettingsModel settingsModel = context.watch<SettingsModel>();
+    LessonModel lessonModel = context.watch<LessonModel>();
 
-    return lessonModel.lastModificationTime == null || DateTime.now().difference(lessonModel.lastModificationTime).compareTo(Duration(days: settingsModel.getEntryByKey('server.interval').value) * 7) > 0;
+    return lessonModel.lastModificationTime == null || DateTime.now().difference(lessonModel.lastModificationTime!).compareTo(Duration(days: settingsModel.getEntryByKey('server.interval')!.value) * 7) > 0;
   }
 }

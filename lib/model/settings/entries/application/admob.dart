@@ -9,11 +9,11 @@ import 'package:unicaen_timetable/model/settings/entries/entry.dart';
 /// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
   /// The AdMob banner identifier.
-  String adUnitId;
+  String? adUnitId;
 
   /// Creates a new AdMob settings entry instance.
   AdMobSettingsEntry({
-    @required String keyPrefix,
+    required String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'enable_ads',
@@ -21,16 +21,16 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
         );
 
   @override
-  Future<void> load([Box settingsBox]) {
+  Future<void> load([Box? settingsBox]) {
     adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : Credentials.adUnit;
     return super.load(settingsBox);
   }
 
   /// Creates the banner ad.
-  AdmobBanner createBanner(BuildContext context) => !value || adUnitId == null
+  AdmobBanner? createBanner(BuildContext context) => !value || adUnitId == null
       ? null
       : AdmobBanner(
-          adUnitId: adUnitId,
+          adUnitId: adUnitId!,
           adSize: _getAdMobBannerSize(context),
         );
 
@@ -48,12 +48,12 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
 class _AdMobSettingsEntryWidget extends SettingsEntryWidget {
   /// Creates a new AdMob settings entry widget instance.
   const _AdMobSettingsEntryWidget({
-    @required AdMobSettingsEntry entry,
+    required AdMobSettingsEntry entry,
   }) : super(entry: entry);
 
   @override
   Future<bool> beforeOnTap(BuildContext context) async {
-    bool result = await BoolInputDialog.getValue(
+    bool? result = await BoolInputDialog.getValue(
       context,
       titleKey: 'dialogs.enable_ads.title',
       messageKey: 'dialogs.enable_ads.message',

@@ -36,19 +36,19 @@ class HomePage extends StaticTitlePage {
           itemBuilder: (context) => [SynchronizationStatusCard.ID, CurrentLessonCard.ID, NextLessonCard.ID, ThemeCard.ID, InfoCard.ID]
               .map(
                 (id) => PopupMenuItem<String>(
-                  child: Text(context.getString('home.${id}.name')),
                   value: id,
+                  child: Text(context.getString('home.$id.name')),
                 ),
               )
               .toList(),
           onSelected: (id) async {
-            HomeCardsModel homeCardsModel = context.get<HomeCardsModel>();
+            HomeCardsModel homeCardsModel = context.read<HomeCardsModel>();
             if (homeCardsModel.hasCard(id)) {
               Utils.showSnackBar(
                 context: context,
                 icon: Icons.close,
                 textKey: 'widget_already_present',
-                color: Colors.red[800],
+                color: Colors.red[800]!,
               );
               return;
             }
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
       child: ImplicitlyAnimatedReorderableList<MaterialCard>(
         padding: listPadding,
         items: items,
-        areItemsTheSame: (first, second) => first.cardId == second.cardId,
+        areItemsTheSame: (first, second) => first?.cardId == second?.cardId,
         onReorderFinished: (card, from, to, cards) => homeCardsModel.reorder(cards),
         itemBuilder: (context, itemAnimation, card, position) {
           return Reorderable(
@@ -114,13 +114,13 @@ class _MainStack extends StatelessWidget {
 
   /// Creates a new main stack instance.
   const _MainStack({
-    @required this.child,
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
     AdMobSettingsEntry adMobSettingsEntry = context.watch<SettingsModel>().adMobEntry;
-    AdmobBanner banner = adMobSettingsEntry.createBanner(context);
+    AdmobBanner? banner = adMobSettingsEntry.createBanner(context);
     if (banner == null) {
       return child;
     }
@@ -131,7 +131,7 @@ class _MainStack extends StatelessWidget {
       builder: (context, sizeSnapshot) => Stack(
         children: [
           Padding(
-            padding: EdgeInsets.only(bottom: sizeSnapshot.data.height),
+            padding: EdgeInsets.only(bottom: sizeSnapshot.hasData ? sizeSnapshot.data!.height : 0),
             child: child,
           ),
           Positioned(

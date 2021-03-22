@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// A centered circular progress indicator.
 class CenteredCircularProgressIndicator extends StatelessWidget {
   /// The progress indicator color.
-  final Color color;
+  final Color? color;
 
   /// Creates a new centered circular progress indicator instance.
   const CenteredCircularProgressIndicator({

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -20,12 +21,12 @@ abstract class SettingsCategory extends ChangeNotifier with RenderableSettingsOb
 
   /// Creates a new settings category instance.
   SettingsCategory({
-    @required this.key,
-    @required this.icon,
+    required this.key,
+    required this.icon,
   });
 
   /// Loads this settings entry from the settings box.
-  Future<void> load([Box settingsBox]) async {
+  Future<void> load([Box? settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
     for (SettingsEntry entry in _entries) {
       await entry.load(box);
@@ -44,7 +45,7 @@ abstract class SettingsCategory extends ChangeNotifier with RenderableSettingsOb
   }
 
   /// Returns an entry by its key.
-  SettingsEntry getEntryByKey(String key) => _entries.firstWhere((entry) => entry.key == key, orElse: () => null);
+  SettingsEntry? getEntryByKey(String key) => _entries.firstWhereOrNull((entry) => entry.key == key);
 
   /// Removes an entry from this category.
   void removeEntry(SettingsEntry entry) {
@@ -53,7 +54,7 @@ abstract class SettingsCategory extends ChangeNotifier with RenderableSettingsOb
   }
 
   /// Flushes this category entries to the settings box.
-  Future<void> flush([Box settingsBox]) async {
+  Future<void> flush([Box? settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
     _entries.forEach((entry) => entry.flush(box));
   }
@@ -75,7 +76,7 @@ class _SettingsCategoryWidget extends StatelessWidget {
 
   /// Creates a new settings category widget.
   const _SettingsCategoryWidget({
-    @required this.category,
+    required this.category,
   });
 
   @override

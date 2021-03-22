@@ -9,7 +9,7 @@ import 'package:unicaen_timetable/theme.dart';
 class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
   /// Creates a new app brightness settings entry instance.
   BrightnessSettingsEntry({
-    @required String keyPrefix,
+    required String keyPrefix,
   }) : super(
           keyPrefix: keyPrefix,
           key: 'brightness',
@@ -17,7 +17,7 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
         );
 
   @override
-  Future<void> flush([Box settingsBox]) async {
+  Future<void> flush([Box? settingsBox]) async {
     Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
     await box.put(key, value.index);
   }
@@ -58,28 +58,30 @@ class _BrightnessSettingsEntryWidget extends StatelessWidget {
 
   /// Creates a new brightness settings entry widget instance.
   const _BrightnessSettingsEntryWidget({
-    @required this.entry,
+    required this.entry,
   });
 
   @override
   Widget build(BuildContext context) => SettingsDropdownButton<ThemeMode>(
         titleKey: 'settings.application.brightness.title',
         onChanged: (value) async {
-          entry.value = value;
-          await entry.flush();
+          if (value != null) {
+            entry.value = value;
+            await entry.flush();
+          }
         },
         items: [
           DropdownMenuItem<ThemeMode>(
-            child: Text(context.getString('settings.application.brightness.system')),
             value: ThemeMode.system,
+            child: Text(context.getString('settings.application.brightness.system')),
           ),
           DropdownMenuItem<ThemeMode>(
-            child: Text(context.getString('settings.application.brightness.light')),
             value: ThemeMode.light,
+            child: Text(context.getString('settings.application.brightness.light')),
           ),
           DropdownMenuItem<ThemeMode>(
-            child: Text(context.getString('settings.application.brightness.dark')),
             value: ThemeMode.dark,
+            child: Text(context.getString('settings.application.brightness.dark')),
           ),
         ],
         value: entry.value,

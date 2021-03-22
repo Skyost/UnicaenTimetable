@@ -20,6 +20,7 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
 
     Future<List<FlutterWeekViewEvent>> events = createEvents(context, lessonModel, settingsModel);
     return FutureProvider<List<FlutterWeekViewEvent>>.value(
+      initialData: [],
       value: events,
       child: Builder(
         builder: (context) => buildChild(context),
@@ -29,10 +30,10 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
 
   /// Creates an event.
   FlutterWeekViewEvent createEvent(Lesson lesson, LessonModel lessonModel, SettingsModel settingsModel) {
-    Pair<Color, Color> colors = computeColors(lessonModel, settingsModel, lesson);
+    Pair<Color, Color> colors = lesson.computeColors(lessonModel: lessonModel, settingsModel: settingsModel);
     return FlutterWeekViewEvent(
       title: lesson.name,
-      description: lesson.description,
+      description: lesson.description ?? '',
       start: lesson.start,
       end: lesson.end,
       backgroundColor: colors.first,
@@ -42,18 +43,11 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
     );
   }
 
-  /// Computes lesson colors.
-  Pair<Color, Color> computeColors(LessonModel lessonModel, SettingsModel settingsModel, Lesson lesson) {
-    Color backgroundColor = lessonModel.getLessonColor(lesson);
-    backgroundColor ??= settingsModel.getEntryByKey('application.color_lessons_automatically').value ? Utils.randomColor(150, lesson.name.splitEqually(3)) : const Color(0xCC2196F3).withAlpha(150);
-    Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
-    return Pair<Color, Color>(backgroundColor, textColor);
-  }
-
   /// Triggered when the user long press on an event.
   Future<void> onEventLongPress(BuildContext context, Lesson lesson, LessonModel lessonModel, Color initialValue) async {
-    Color color = await ColorInputDialog.getValue(
+    Color? color = await ColorInputDialog.getValue(
       context,
+      lesson: lesson,
       titleKey: 'dialogs.lesson_color.title',
       initialValue: initialValue,
     );
@@ -64,49 +58,33 @@ abstract class FlutterWeekViewState<T extends StatefulWidget> extends State<T> {
   }
 
   /// Triggered when the user taps on an event.
-  void onEventTap(BuildContext context, Lesson lesson, LessonModel lessonModel) {
-    List<Widget> actions = [
-      FlatButton(
-        child: Text(context.getString('dialogs.lesson_info.reset_color').toUpperCase()),
-        onPressed: () {
-          lessonModel.resetLessonColor(lesson);
-          Navigator.of(context).pop();
-        },
-      ),
-      FlatButton(
-        child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ];
-
-    if (Platform.isAndroid) {
-      actions.insert(
-        0,
-        FlatButton(
-          child: Text(context.getString('dialogs.lesson_info.set_alarm').toUpperCase()),
-          onPressed: () => UnicaenTimetableApp.CHANNEL.invokeMethod('activity.set_alarm', {
-            'title': lesson.name,
-            'hour': lesson.start.hour,
-            'minute': lesson.start.minute,
-          }),
+  Future<void> onEventTap(BuildContext context, Lesson lesson, LessonModel lessonModel) => showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(lesson.name),
+          content: SingleChildScrollView(
+            child: Text(lesson.start.hour.withLeadingZero + ':' + lesson.start.minute.withLeadingZero + ' — ' + lesson.end.hour.withLeadingZero + ':' + lesson.end.minute.withLeadingZero + '\n\n' + (lesson.description ?? '')),
+          ),
+          actions: [
+            if (Platform.isAndroid)
+              TextButton(
+                onPressed: () => UnicaenTimetableApp.CHANNEL.invokeMethod('activity.set_alarm', {
+                  'title': lesson.name,
+                  'hour': lesson.start.hour,
+                  'minute': lesson.start.minute,
+                }),
+                child: Text(context.getString('dialogs.lesson_info.set_alarm').toUpperCase()),
+              ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
+            ),
+          ],
         ),
       );
-    }
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(lesson.name),
-        content: SingleChildScrollView(
-          child: Text(lesson.start.hour.withLeadingZero + ':' + lesson.start.minute.withLeadingZero + ' — ' + lesson.end.hour.withLeadingZero + ':' + lesson.end.minute.withLeadingZero + '\n\n' + lesson.description),
-        ),
-        actions: actions,
-      ),
-    );
-  }
 
   /// Formats a date.
-  String formatDate(int year, int month, int day) => DateFormat.yMMMMEEEEd(EzLocalization.of(context).locale.languageCode).format(DateTime(year, month, day)).capitalize();
+  String formatDate(int year, int month, int day) => DateFormat.yMMMMEEEEd(EzLocalization.of(context)?.locale.languageCode).format(DateTime(year, month, day)).capitalize();
 
   /// Builds the widget child.
   Widget buildChild(BuildContext context);
@@ -123,7 +101,7 @@ class WeekPickerButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.date_range),
       onPressed: () async {
-        DateTime selectedDate = await AvailableWeekInputDialog.getValue(
+        DateTime? selectedDate = await AvailableWeekInputDialog.getValue(
           context,
           titleKey: 'dialogs.week_picker.title',
           initialValue: date.value,

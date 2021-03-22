@@ -4,18 +4,19 @@ import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 
 /// A dialog that allows to prompt the user for a value.
 abstract class _InputDialog<T> extends StatefulWidget {
   /// The title text key.
-  final String titleKey;
+  final String? titleKey;
 
   /// The initial value.
-  final T initialValue;
+  final T? initialValue;
 
   /// The dialog content padding.
   final EdgeInsets contentPadding;
@@ -29,32 +30,35 @@ abstract class _InputDialog<T> extends StatefulWidget {
 }
 
 /// The input dialog state.
-abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
+abstract class _InputDialogState<T, D extends _InputDialog<T>> extends State<D> {
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: widget.titleKey == null ? null : Text(context.getString(widget.titleKey)),
+        title: widget.titleKey == null ? null : Text(context.getString(widget.titleKey!)),
         contentPadding: widget.contentPadding,
         content: buildForm(context),
-        actions: [
-          createOkButton(context),
-          createCancelButton(context),
-        ],
+        actions: createActions(context),
       );
 
   /// Builds the dialog form.
   Widget buildForm(BuildContext context);
 
   /// Returns the current value.
-  T get value;
+  T? get value;
+
+  /// Creates the actions.
+  List<Widget> createActions(BuildContext context) => [
+        createOkButton(context),
+        createCancelButton(context),
+      ];
 
   /// Creates the "Ok" button.
-  Widget createOkButton(BuildContext context) => FlatButton(
+  Widget createOkButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.of(context).pop(),
         child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
       );
 
   /// Creates the "Cancel" button.
-  Widget createCancelButton(BuildContext context) => FlatButton(
+  Widget createCancelButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.of(context).pop(value),
         child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
       );
@@ -64,8 +68,8 @@ abstract class _InputDialogState<T> extends State<_InputDialog<T>> {
 class TextInputDialog extends _InputDialog<String> {
   /// Creates a new text input dialog instance.
   const TextInputDialog({
-    String titleKey,
-    String initialValue,
+    String? titleKey,
+    String? initialValue,
   }) : super(
           titleKey: titleKey,
           initialValue: initialValue,
@@ -75,12 +79,12 @@ class TextInputDialog extends _InputDialog<String> {
   State<StatefulWidget> createState() => _TextInputDialogState();
 
   /// Prompts the user for a text value.
-  static Future<String> getValue(
+  static Future<String?> getValue(
     BuildContext context, {
-    String titleKey,
-    String initialValue,
+    String? titleKey,
+    String? initialValue,
   }) =>
-      showDialog<String>(
+      showDialog<String?>(
         context: context,
         builder: (_) => TextInputDialog(
           titleKey: titleKey,
@@ -90,9 +94,9 @@ class TextInputDialog extends _InputDialog<String> {
 }
 
 /// The text input dialog state.
-class _TextInputDialogState extends _InputDialogState<String> {
+class _TextInputDialogState extends _InputDialogState<String, TextInputDialog> {
   /// The current text editing controller.
-  TextEditingController textEditingController;
+  late TextEditingController textEditingController;
 
   @override
   void initState() {
@@ -126,11 +130,11 @@ class IntInputDialog extends _InputDialog<int> {
 
   /// Creates a new integer input dialog.
   const IntInputDialog({
-    String titleKey,
-    int initialValue,
-    @required this.min,
-    @required this.max,
-    @required this.divisions,
+    String? titleKey,
+    int? initialValue,
+    required this.min,
+    required this.max,
+    required this.divisions,
   }) : super(
           titleKey: titleKey,
           initialValue: initialValue,
@@ -140,15 +144,15 @@ class IntInputDialog extends _InputDialog<int> {
   State<StatefulWidget> createState() => _IntInputDialogState();
 
   /// Prompts the user for an integer value.
-  static Future<int> getValue(
+  static Future<int?> getValue(
     BuildContext context, {
-    String titleKey,
-    int initialValue,
-    @required int min,
-    @required int max,
-    @required int divisions,
+    String? titleKey,
+    int? initialValue,
+    required int min,
+    required int max,
+    required int divisions,
   }) =>
-      showDialog<int>(
+      showDialog<int?>(
         context: context,
         builder: (_) => IntInputDialog(
           titleKey: titleKey,
@@ -161,14 +165,14 @@ class IntInputDialog extends _InputDialog<int> {
 }
 
 /// The integer input dialog state.
-class _IntInputDialogState extends _InputDialogState<int> {
+class _IntInputDialogState extends _InputDialogState<int, IntInputDialog> {
   /// The current value.
-  int currentValue;
+  late int currentValue;
 
   @override
   void initState() {
     super.initState();
-    currentValue = widget.initialValue;
+    currentValue = widget.initialValue ?? (widget).min;
   }
 
   @override
@@ -176,15 +180,15 @@ class _IntInputDialogState extends _InputDialogState<int> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Slider(
-            min: (widget as IntInputDialog).min.toDouble(),
-            max: (widget as IntInputDialog).max.toDouble(),
-            divisions: (widget as IntInputDialog).divisions,
+            min: widget.min.toDouble(),
+            max: widget.max.toDouble(),
+            divisions: widget.divisions,
             value: currentValue.toDouble(),
             onChanged: (value) => setState(() {
               currentValue = value.toInt();
             }),
           ),
-          Text(currentValue?.toString() ?? '?')
+          Text(currentValue.toString())
         ],
       );
 
@@ -205,10 +209,10 @@ class BoolInputDialog extends _InputDialog<bool> {
 
   /// Creates a new boolean input dialog.
   const BoolInputDialog({
-    String titleKey,
-    @required this.messageKey,
-    @required this.yesButtonKey,
-    @required this.noButtonKey,
+    String? titleKey,
+    required this.messageKey,
+    required this.yesButtonKey,
+    required this.noButtonKey,
   }) : super(
           titleKey: titleKey,
           initialValue: null,
@@ -218,14 +222,14 @@ class BoolInputDialog extends _InputDialog<bool> {
   State<StatefulWidget> createState() => _BoolInputDialogState();
 
   /// Prompts the user for a boolean value.
-  static Future<bool> getValue(
+  static Future<bool?> getValue(
     BuildContext context, {
-    String titleKey,
-    @required String messageKey,
-    @required String yesButtonKey,
-    @required String noButtonKey,
+    String? titleKey,
+    required String messageKey,
+    required String yesButtonKey,
+    required String noButtonKey,
   }) =>
-      showDialog<bool>(
+      showDialog<bool?>(
         context: context,
         builder: (_) => BoolInputDialog(
           titleKey: titleKey,
@@ -237,34 +241,38 @@ class BoolInputDialog extends _InputDialog<bool> {
 }
 
 /// The boolean input dialog state.
-class _BoolInputDialogState extends _InputDialogState<bool> {
+class _BoolInputDialogState extends _InputDialogState<bool, BoolInputDialog> {
   @override
   Widget buildForm(BuildContext context) => SingleChildScrollView(
-        child: Text(context.getString((widget as BoolInputDialog).messageKey)),
+        child: Text(context.getString((widget).messageKey)),
       );
 
   @override
-  Widget createOkButton(BuildContext context) => FlatButton(
+  Widget createOkButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.of(context).pop(true),
-        child: Text(context.getString((widget as BoolInputDialog).yesButtonKey).toUpperCase()),
+        child: Text(context.getString((widget).yesButtonKey).toUpperCase()),
       );
 
   @override
-  Widget createCancelButton(BuildContext context) => FlatButton(
+  Widget createCancelButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.of(context).pop(false),
-        child: Text(context.getString((widget as BoolInputDialog).noButtonKey).toUpperCase()),
+        child: Text(context.getString((widget).noButtonKey).toUpperCase()),
       );
 
   @override
-  bool get value => null;
+  bool? get value => null;
 }
 
 /// A color input dialog.
 class ColorInputDialog extends _InputDialog<Color> {
+  /// The target lesson.
+  final Lesson lesson;
+
   /// Creates a new color input dialog.
   const ColorInputDialog({
-    String titleKey,
-    Color initialValue,
+    required this.lesson,
+    String? titleKey,
+    Color? initialValue,
   }) : super(
           titleKey: titleKey,
           initialValue: initialValue,
@@ -274,14 +282,16 @@ class ColorInputDialog extends _InputDialog<Color> {
   State<StatefulWidget> createState() => _ColorInputDialogState();
 
   /// Prompts the user for a color value.
-  static Future<Color> getValue(
+  static Future<Color?> getValue(
     BuildContext context, {
-    String titleKey,
-    Color initialValue,
+    required Lesson lesson,
+    String? titleKey,
+    Color? initialValue,
   }) =>
-      showDialog<Color>(
+      showDialog<Color?>(
         context: context,
         builder: (_) => ColorInputDialog(
+          lesson: lesson,
           titleKey: titleKey,
           initialValue: initialValue,
         ),
@@ -289,9 +299,9 @@ class ColorInputDialog extends _InputDialog<Color> {
 }
 
 /// The color input dialog state.
-class _ColorInputDialogState extends _InputDialogState<Color> {
+class _ColorInputDialogState extends _InputDialogState<Color, ColorInputDialog> {
   /// The current color.
-  Color currentColor;
+  late Color currentColor;
 
   @override
   void initState() {
@@ -302,22 +312,33 @@ class _ColorInputDialogState extends _InputDialogState<Color> {
   @override
   Widget buildForm(BuildContext context) => ColorPicker(
         pickerColor: currentColor,
-        onColorChanged: (color) => setState(() {
-          currentColor = color;
-        }),
+        onColorChanged: (color) {
+          setState(() => currentColor = color);
+        },
         showLabel: false,
       );
 
   @override
   Color get value => currentColor;
+
+  @override
+  List<Widget> createActions(BuildContext context) => [
+        TextButton(
+          onPressed: () {
+            setState(() => currentColor = widget.lesson.computeColors(settingsModel: context.read<SettingsModel>()).first);
+          },
+          child: Text(context.getString('dialogs.lesson_info.reset_color').toUpperCase()),
+        ),
+        ...super.createActions(context),
+      ];
 }
 
 /// An available week input dialog.
 class AvailableWeekInputDialog extends _InputDialog<DateTime> {
   /// Creates a new available week input dialog.
   const AvailableWeekInputDialog({
-    String titleKey,
-    DateTime initialValue,
+    String? titleKey,
+    required DateTime initialValue,
   }) : super(
           titleKey: titleKey,
           initialValue: initialValue,
@@ -328,12 +349,12 @@ class AvailableWeekInputDialog extends _InputDialog<DateTime> {
   State<StatefulWidget> createState() => _AvailableWeekInputDialogState();
 
   /// Prompts the user for an available week value.
-  static Future<DateTime> getValue(
+  static Future<DateTime?> getValue(
     BuildContext context, {
-    String titleKey,
-    DateTime initialValue,
+    String? titleKey,
+    required DateTime initialValue,
   }) =>
-      showDialog<DateTime>(
+      showDialog<DateTime?>(
         context: context,
         builder: (_) => AvailableWeekInputDialog(
           titleKey: titleKey,
@@ -343,12 +364,12 @@ class AvailableWeekInputDialog extends _InputDialog<DateTime> {
 }
 
 /// The available week input dialog state.
-class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
+class _AvailableWeekInputDialogState extends _InputDialogState<DateTime, AvailableWeekInputDialog> {
   /// Available weeks (got from a model).
-  List<DateTime> weeks;
+  List<DateTime>? weeks;
 
   /// The currently selected week index.
-  int currentWeekIndex;
+  int? currentWeekIndex;
 
   /// The scroll controller.
   ScrollController scrollController = ScrollController();
@@ -357,11 +378,11 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      List<DateTime> availableWeeks = await context.get<LessonModel>().availableWeeks;
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      List<DateTime> availableWeeks = await context.read<LessonModel>().availableWeeks;
       setState(() {
         weeks = availableWeeks;
-        currentWeekIndex = weeks.indexOf(widget.initialValue);
+        currentWeekIndex = weeks!.indexOf(widget.initialValue!);
       });
     });
   }
@@ -372,20 +393,20 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
       return const CenteredCircularProgressIndicator();
     }
 
-    if (weeks.isEmpty) {
+    if (weeks!.isEmpty) {
       return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Text(context.getString('dialogs.week_picker.empty')),
       );
     }
 
-    DateFormat formatter = DateFormat.yMMMd(EzLocalization.of(context).locale.languageCode);
+    DateFormat formatter = DateFormat.yMMMd(EzLocalization.of(context)?.locale.languageCode);
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: ScrollablePositionedList.builder(
         itemBuilder: (_, position) {
-          DateTime monday = weeks[position];
+          DateTime monday = weeks![position];
           return ListTile(
             title: Text(formatter.format(monday) + ' — ' + formatter.format(monday.add(const Duration(days: DateTime.friday)))),
             trailing: Radio<bool>(
@@ -396,14 +417,14 @@ class _AvailableWeekInputDialogState extends _InputDialogState<DateTime> {
             onTap: () => onTap(position),
           );
         },
-        itemCount: weeks.length,
-        initialScrollIndex: math.max(0, currentWeekIndex),
+        itemCount: weeks!.length,
+        initialScrollIndex: math.max(0, currentWeekIndex!),
       ),
     );
   }
 
   @override
-  DateTime get value => currentWeekIndex < 0 || currentWeekIndex >= weeks.length ? null : weeks[currentWeekIndex];
+  DateTime? get value => (currentWeekIndex == null || weeks == null) || currentWeekIndex! < 0 || currentWeekIndex! >= weeks!.length ? null : weeks![currentWeekIndex!];
 
   /// Handles on tap event.
   void onTap(int position) => setState(() {

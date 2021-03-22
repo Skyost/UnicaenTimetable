@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Key;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:steel_crypt/steel_crypt.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/model.dart';
@@ -29,8 +29,8 @@ class User extends HiveObject {
 
   /// Creates a new username instance.
   User({
-    @required this.username,
-    @required this.password,
+    required this.username,
+    required this.password,
   });
 
   /// Returns the username without the @.
@@ -40,15 +40,15 @@ class User extends HiveObject {
   Future<LoginResult> login(SettingsModel model) async => LoginResult.fromResponse(await model.requestCalendar(this));
 
   Future<dynamic> synchronizeFromZimbra({
-    @required LazyBox<List> lessonsBox,
-    @required SettingsModel settingsModel,
+    required LazyBox<List> lessonsBox,
+    required SettingsModel settingsModel,
   }) async {
-    Response response = await settingsModel.requestCalendar(this);
-    if (response.statusCode != 200) {
+    Response? response = await settingsModel.requestCalendar(this);
+    if (response?.statusCode != 200) {
       return response;
     }
 
-    Map<String, dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
+    Map<String, dynamic> body = jsonDecode(utf8.decode(response!.bodyBytes));
     await lessonsBox.clear();
 
     if (body.isNotEmpty) {
@@ -60,7 +60,8 @@ class User extends HiveObject {
 
         Lesson lesson = Lesson.fromJson(jsonData['inv'].first);
         DateTime start = lesson.start.yearMonthDay;
-        await lessonsBox.put(start.toString(), (await lessonsBox.get(start.yearMonthDay.toString(), defaultValue: []))..add(lesson));
+        List lessons = (await lessonsBox.get(start.yearMonthDay.toString())) ?? [];
+        await lessonsBox.put(start.toString(), lessons..add(lesson));
       }
     }
   }
@@ -80,8 +81,8 @@ class TestUser extends User {
 
   @override
   Future<dynamic> synchronizeFromZimbra({
-    @required LazyBox<List> lessonsBox,
-    @required SettingsModel settingsModel,
+    required LazyBox<List> lessonsBox,
+    required SettingsModel settingsModel,
   }) async {
     DateTime now = DateTime.now();
     if (now.weekday == DateTime.saturday || now.weekday == DateTime.sunday) {
@@ -126,13 +127,13 @@ class LoginResult {
   static const GENERIC_ERROR = LoginResult._internal(null);
 
   /// The http response code.
-  final int httpCode;
+  final int? httpCode;
 
   /// Creates a new login result.
   const LoginResult._internal(this.httpCode);
 
   /// Returns the login result corresponding to the given response.
-  LoginResult.fromResponse(Response response) : httpCode = response?.statusCode;
+  LoginResult.fromResponse(Response? response) : httpCode = response?.statusCode;
 
   @override
   bool operator ==(other) {
@@ -165,12 +166,12 @@ class LoginResult {
 }
 
 /// The user repository.
-abstract class UserRepository<K> extends UnicaenTimetableModel {
+abstract class UserRepository extends UnicaenTimetableModel {
   /// The password encryption key.
-  K _encryptionKey;
+  dynamic _encryptionKey;
 
   /// The cached user.
-  User _cachedUser;
+  User? _cachedUser;
 
   /// Creates a new user repository according to the platform.
   factory UserRepository() => Platform.isAndroid ? _AndroidUserRepository() : _IOSUserRepository();
@@ -179,11 +180,11 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
   UserRepository._internal();
 
   /// Returns the user.
-  Future<User> getUser() async {
+  Future<User?> getUser() async {
     if (_cachedUser == null) {
       _cachedUser = await _read();
       if (await isTestUser(_cachedUser)) {
-        _cachedUser = TestUser(_cachedUser);
+        _cachedUser = TestUser(_cachedUser!);
       }
 
       notifyListeners();
@@ -196,25 +197,28 @@ abstract class UserRepository<K> extends UnicaenTimetableModel {
   Future<void> updateUser(User user) async => _cachedUser = user;
 
   /// Reads the user.
-  Future<User> _read();
+  Future<User?> _read();
 
   /// Returns whether this is the test user.
-  Future<bool> isTestUser(User user) async {
+  Future<bool> isTestUser(User? user) async {
     Map<String, dynamic> data = jsonDecode(await rootBundle.loadString('assets/test_data.json'));
     return data['username'] == user?.username && data['password'] == user?.password;
   }
 }
 
 /// The android user repository.
-class _AndroidUserRepository extends UserRepository<String> {
+class _AndroidUserRepository extends UserRepository {
   /// The version.
   static const int _VERSION = 1;
 
   /// The initialization vector.
-  String _initializationVector;
+  IV? _initializationVector;
 
   /// Creates a new android user repository.
   _AndroidUserRepository() : super._internal();
+
+  @override
+  Key? get _encryptionKey => super._encryptionKey as Key?;
 
   @override
   Future<void> initialize() async {
@@ -223,49 +227,48 @@ class _AndroidUserRepository extends UserRepository<String> {
     }
 
     FlutterSecureStorage storage = const FlutterSecureStorage();
-    String encryptionKey = await storage.read(key: 'encryption_key');
-    String initializationVector = await storage.read(key: 'initialization_vector');
+    String? rawEncryptionKey = await storage.read(key: 'encryption_key');
+    String? rawInitializationVector = await storage.read(key: 'initialization_vector');
 
-    if (!_testValidity(encryptionKey, initializationVector)) {
+    if (!_testValidity(rawEncryptionKey, rawInitializationVector)) {
       await removeUser();
-      encryptionKey = null;
-      initializationVector = null;
+      rawEncryptionKey = null;
+      rawInitializationVector = null;
     }
 
-    if (encryptionKey == null) {
-      encryptionKey = await CryptKey().genFortuna();
-      await storage.write(key: 'encryption_key', value: encryptionKey);
+    if (rawEncryptionKey == null) {
+      _encryptionKey = Key.fromLength(32);
+      await storage.write(key: 'encryption_key', value: _encryptionKey!.base64);
+    } else {
+      _encryptionKey = Key.fromBase64(rawEncryptionKey);
     }
 
-    if (initializationVector == null) {
-      initializationVector = await CryptKey().genDart();
-      await storage.write(key: 'initialization_vector', value: initializationVector);
+    if (rawInitializationVector == null) {
+      _initializationVector = IV.fromLength(16);
+      await storage.write(key: 'initialization_vector', value: _initializationVector!.base64);
+    } else {
+      _initializationVector = IV.fromBase64(rawInitializationVector);
     }
 
-    _encryptionKey = encryptionKey;
-    _initializationVector = initializationVector;
     markInitialized();
   }
 
   @override
-  Future<User> _read() async {
+  Future<User?> _read() async {
     try {
-      Map<dynamic, dynamic> response = await UnicaenTimetableApp.CHANNEL.invokeMethod('account.get');
+      Map<dynamic, dynamic>? response = await UnicaenTimetableApp.CHANNEL.invokeMethod<Map<dynamic, dynamic>>('account.get');
       if (response == null) {
         return null;
       }
 
-      if (response['need_update']) {
-        await updateUser(User(
-          username: response['username'],
-          password: response['password'],
-        ));
-        return _read();
+      Encrypter? encrypter = this.encrypter;
+      if (encrypter == null) {
+        return null;
       }
 
       return User(
         username: response['username'],
-        password: crypter.ofb64.decrypt(enc: response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
+        password: encrypter.decrypt64(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
       );
     } catch (ex, stacktrace) {
       print(ex);
@@ -276,22 +279,25 @@ class _AndroidUserRepository extends UserRepository<String> {
 
   @override
   Future<void> updateUser(User user) async {
-    await super.updateUser(user);
+    Encrypter? encrypter = this.encrypter;
+    if (encrypter != null) {
+      await super.updateUser(user);
 
-    await removeUser();
-    await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
-      'username': user.username,
-      'password': accountVersionPrefix + crypter.ofb64.encrypt(inp: user.password, iv: _initializationVector),
-    });
+      await removeUser();
+      await UnicaenTimetableApp.CHANNEL.invokeMethod('account.create', {
+        'username': user.username,
+        'password': accountVersionPrefix + encrypter.encrypt(user.password, iv: _initializationVector).base64,
+      });
 
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
   /// Removes the current user.
   Future<void> removeUser() => UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
 
   /// Tests the data validity.
-  bool _testValidity(String encryptionKey, String initializationVector) {
+  bool _testValidity(String? encryptionKey, String? initializationVector) {
     try {
       if (encryptionKey != null) {
         base64.decode(encryptionKey);
@@ -305,17 +311,14 @@ class _AndroidUserRepository extends UserRepository<String> {
   }
 
   /// Allows to encrypt strings using the AES algorithm.
-  AesCrypt get crypter => AesCrypt(
-        key: _encryptionKey,
-        padding: PaddingAES.pkcs7,
-      );
+  Encrypter? get encrypter => _encryptionKey == null ? null : Encrypter(AES(_encryptionKey!));
 
   /// Returns the account version prefix.
   String get accountVersionPrefix => '{$_VERSION}';
 }
 
 /// The iOS user repository.
-class _IOSUserRepository extends UserRepository<List<int>> {
+class _IOSUserRepository extends UserRepository {
   /// The user hive box.
   static const String _HIVE_BOX = 'user';
 
@@ -331,14 +334,14 @@ class _IOSUserRepository extends UserRepository<List<int>> {
     FlutterSecureStorage storage = const FlutterSecureStorage();
 
     Hive.registerAdapter(UserAdapter());
-    String rawEncryptionKey = await storage.read(key: 'encryption_key');
+    String? rawEncryptionKey = await storage.read(key: 'encryption_key');
     if (rawEncryptionKey == null) {
       _encryptionKey = Hive.generateSecureKey();
       await storage.write(key: 'encryption_key', value: jsonEncode(_encryptionKey));
     } else {
       List<int> result = [];
       List<dynamic> jsonKey = jsonDecode(rawEncryptionKey);
-      for(dynamic value in jsonKey) {
+      for (dynamic value in jsonKey) {
         result.add(value);
       }
       _encryptionKey = result;
@@ -348,7 +351,7 @@ class _IOSUserRepository extends UserRepository<List<int>> {
   }
 
   @override
-  Future<User> _read() async {
+  Future<User?> _read() async {
     Box<User> box = await Hive.openBox<User>(_HIVE_BOX, encryptionCipher: HiveAesCipher(_encryptionKey));
     return box.get(0);
   }
@@ -359,6 +362,5 @@ class _IOSUserRepository extends UserRepository<List<int>> {
 
     Box<User> box = await Hive.openBox<User>(_HIVE_BOX, encryptionCipher: HiveAesCipher(_encryptionKey));
     await box.put(0, user);
-    return user;
   }
 }

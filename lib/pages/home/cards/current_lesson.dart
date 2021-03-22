@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:provider/provider.dart';
@@ -19,17 +20,17 @@ class CurrentLessonCard extends RemainingLessonsCard {
   IconData buildIcon(BuildContext context) => Icons.business_center;
 
   @override
-  Color buildColor(BuildContext context) => Colors.pink[700];
+  Color buildColor(BuildContext context) => Colors.pink[700]!;
 
   @override
   String buildSubtitle(BuildContext context) {
-    List<Lesson> remainingLessons = context.watch<List<Lesson>>();
-    if(remainingLessons == null) {
+    List<Lesson>? remainingLessons = context.watch<List<Lesson>?>();
+    if (remainingLessons == null) {
       return context.getString('home.loading');
     }
 
     DateTime now = DateTime.now();
-    Lesson lesson = remainingLessons.firstWhere((lesson) => lesson.start.isBefore(now), orElse: () => null);
+    Lesson? lesson = remainingLessons.firstWhereOrNull((lesson) => lesson.start.isBefore(now));
     return lesson?.toString(context) ?? context.getString('home.current_lesson.nothing');
   }
 
@@ -40,6 +41,6 @@ class CurrentLessonCard extends RemainingLessonsCard {
       now = now.atMonday;
     }
 
-    context.get<ValueNotifier<Page>>().value = DayViewPage(weekDay: now.weekday);
+    context.read<ValueNotifier<Page>>().value = DayViewPage(weekDay: now.weekday);
   }
 }

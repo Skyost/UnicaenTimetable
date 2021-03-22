@@ -6,7 +6,6 @@ import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/theme.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A home material card, draggable and with an id.
 abstract class MaterialCard extends StatelessWidget {
@@ -15,7 +14,7 @@ abstract class MaterialCard extends StatelessWidget {
 
   /// Creates a new material card instance.
   const MaterialCard({
-    @required this.cardId,
+    required this.cardId,
   });
 
   @override
@@ -65,7 +64,7 @@ abstract class MaterialCard extends StatelessWidget {
                   Icons.close,
                   color: theme.cardsTextColor ?? color,
                 ),
-                onPressed: () => context.get<HomeCardsModel>().removeCard(cardId),
+                onPressed: () => context.read<HomeCardsModel>().removeCard(cardId),
               ),
               onTap: () => onTap(context),
             ),
@@ -82,7 +81,7 @@ abstract class MaterialCard extends StatelessWidget {
   Color buildColor(BuildContext context);
 
   /// Builds the card title.
-  String buildTitle(BuildContext context) => context.getString('home.${cardId}.title');
+  String buildTitle(BuildContext context) => context.getString('home.$cardId.title');
 
   /// Builds the card subtitle.
   String buildSubtitle(BuildContext context);
@@ -98,13 +97,14 @@ abstract class MaterialCard extends StatelessWidget {
 abstract class RemainingLessonsCard extends MaterialCard {
   /// Creates the remaining lessons card.
   const RemainingLessonsCard({
-    @required String cardId,
+    required String cardId,
   }) : super(cardId: cardId);
 
   @override
   Widget build(BuildContext context) {
     LessonModel lessonModel = context.watch<LessonModel>();
-    return FutureProvider<List<Lesson>>(
+    return FutureProvider<List<Lesson>?>(
+      initialData: null,
       create: (_) => lessonModel.remainingLessons.then((lessons) => lessons..sort()),
       child: Builder(builder: (context) => super.build(context)),
     );

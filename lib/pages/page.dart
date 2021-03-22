@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 /// A page with a title and an icon, can be added to a drawer.
 abstract class Page extends StatefulWidget {
   /// The icon.
-  final IconData icon;
+  final IconData? icon;
 
   /// Creates a new page instance.
   const Page({
-    @required this.icon,
+    this.icon,
   });
 
   /// Returns whether the given page is the same as this one.
@@ -28,8 +28,8 @@ abstract class StaticTitlePage extends Page {
 
   /// Creates a new static title page instance.
   const StaticTitlePage({
-    @required IconData icon,
-    @required this.titleKey,
+    IconData? icon,
+    required this.titleKey,
   }) : super(icon: icon);
 
   @override

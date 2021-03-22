@@ -17,7 +17,7 @@ abstract class UnicaenTimetableTheme {
   final Color primaryColor;
 
   /// The scaffold background color.
-  final Color scaffoldBackgroundColor;
+  final Color? scaffoldBackgroundColor;
 
   /// The action bar color.
   final Color actionBarColor;
@@ -29,57 +29,57 @@ abstract class UnicaenTimetableTheme {
   final Color selectedListTileTextColor;
 
   /// The text color.
-  final Color textColor;
+  final Color? textColor;
 
   /// The lesson background color.
-  final Color cardsBackgroundColor;
+  final Color? cardsBackgroundColor;
 
   /// The lesson background color.
-  final Color cardsTextColor;
+  final Color? cardsTextColor;
 
   /// The highlight color.
   final Color highlightColor;
 
   /// The day view background color (today).
-  final Color dayViewBackgroundColorToday;
+  final Color? dayViewBackgroundColorToday;
 
   /// The day bar background color.
-  final Color dayBarBackgroundColor;
+  final Color? dayBarBackgroundColor;
 
   /// The day bar text color.
-  final Color dayBarTextColor;
+  final Color? dayBarTextColor;
 
   /// The day bar text color (today).
-  final Color dayBarTextColorToday;
+  final Color? dayBarTextColorToday;
 
   /// The hours column background color.
   final Color hoursColumnBackgroundColor;
 
   /// The hours column text color.
-  final Color hoursColumnTextColor;
+  final Color? hoursColumnTextColor;
 
   /// The about header background color.
   final Color aboutHeaderBackgroundColor;
 
   /// Creates a new app theme.
   const UnicaenTimetableTheme._internal({
-    @required this.brightness,
-    @required this.primaryColor,
-    @required this.actionBarColor,
+    required this.brightness,
+    required this.primaryColor,
+    required this.actionBarColor,
     this.scaffoldBackgroundColor,
-    @required this.listHeaderTextColor,
-    @required this.selectedListTileTextColor,
+    required this.listHeaderTextColor,
+    required this.selectedListTileTextColor,
     this.textColor,
     this.cardsBackgroundColor,
     this.cardsTextColor,
-    @required this.highlightColor,
+    required this.highlightColor,
     this.dayViewBackgroundColorToday,
     this.dayBarBackgroundColor,
     this.dayBarTextColor,
     this.dayBarTextColorToday,
-    @required this.hoursColumnBackgroundColor,
+    required this.hoursColumnBackgroundColor,
     this.hoursColumnTextColor,
-    @required this.aboutHeaderBackgroundColor,
+    required this.aboutHeaderBackgroundColor,
   });
 
   /// Converts this class values to its corresponding Flutter theme data.
@@ -87,7 +87,10 @@ abstract class UnicaenTimetableTheme {
         primaryColor: primaryColor,
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         dialogBackgroundColor: scaffoldBackgroundColor,
-        appBarTheme: AppBarTheme(color: actionBarColor),
+        appBarTheme: AppBarTheme(
+          color: actionBarColor,
+          brightness: Brightness.dark,
+        ),
         textTheme: TextTheme(
           headline1: TextStyle(color: textColor),
           headline2: TextStyle(color: textColor),
@@ -106,11 +109,6 @@ abstract class UnicaenTimetableTheme {
         popupMenuTheme: PopupMenuThemeData(color: scaffoldBackgroundColor),
         highlightColor: highlightColor,
         splashColor: highlightColor,
-        buttonTheme: ButtonThemeData(
-          textTheme: ButtonTextTheme.accent,
-          highlightColor: highlightColor,
-          splashColor: highlightColor,
-        ),
         canvasColor: scaffoldBackgroundColor,
         brightness: brightness,
       );

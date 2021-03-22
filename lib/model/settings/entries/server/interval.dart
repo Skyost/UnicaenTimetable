@@ -8,12 +8,12 @@ import 'package:unicaen_timetable/model/settings/entries/entry.dart';
 class IntervalSettingsEntry extends SettingsEntry<int> {
   /// Creates a new server interval settings entry instance.
   IntervalSettingsEntry({
-    @required String keyPrefix,
+    required String keyPrefix,
   }) : super(
-    keyPrefix: keyPrefix,
-    key: 'interval',
-    value: 2,
-  );
+          keyPrefix: keyPrefix,
+          key: 'interval',
+          value: 2,
+        );
 
   @override
   Widget render(BuildContext context) => _IntervalSettingsEntryWidget(entry: this);
@@ -23,15 +23,15 @@ class IntervalSettingsEntry extends SettingsEntry<int> {
 class _IntervalSettingsEntryWidget extends SettingsEntryWidget {
   /// Creates a new server sync interval settings entry widget instance.
   _IntervalSettingsEntryWidget({
-    @required IntervalSettingsEntry entry,
+    required IntervalSettingsEntry entry,
   }) : super(entry: entry);
 
   @override
-  Widget createSubtitle(BuildContext context)=>Text(context.getString('other.weeks', {'interval': entry.value}));
+  Widget createSubtitle(BuildContext context) => Text(context.getString('other.weeks', {'interval': entry.value}));
 
   @override
   Future<void> afterOnTap(BuildContext context) async {
-    int value = await IntInputDialog.getValue(
+    int? value = await IntInputDialog.getValue(
       context,
       titleKey: 'settings.server.interval',
       initialValue: entry.value,

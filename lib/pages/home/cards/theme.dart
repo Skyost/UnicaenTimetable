@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/settings/entries/application/theme.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/home/cards/card.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A card that allows to change the app theme.
 class ThemeCard extends MaterialCard {
@@ -18,12 +17,12 @@ class ThemeCard extends MaterialCard {
   IconData buildIcon(BuildContext context) => _isDarkMode(context) ? Icons.brightness_3 : Icons.wb_sunny;
 
   @override
-  Color buildColor(BuildContext context) => Colors.indigo[400];
+  Color buildColor(BuildContext context) => Colors.indigo[400]!;
 
   @override
   String buildSubtitle(BuildContext context) {
     String subtitle = context.getString('home.current_theme.' + (_isDarkMode(context) ? 'dark' : 'light'));
-    if(context.get<SettingsModel>().themeEntry.value == ThemeMode.system) {
+    if(context.read<SettingsModel>().themeEntry.value == ThemeMode.system) {
       subtitle += ' (${context.getString('home.current_theme.auto')})';
     }
     subtitle += '.';
@@ -32,7 +31,7 @@ class ThemeCard extends MaterialCard {
 
   @override
   void onTap(BuildContext context) {
-    SettingsModel settingsModel = context.get<SettingsModel>();
+    SettingsModel settingsModel = context.read<SettingsModel>();
     BrightnessSettingsEntry themeEntry = settingsModel.themeEntry;
     themeEntry.value = _isDarkMode(context, listen: false) ? ThemeMode.light : ThemeMode.dark;
     themeEntry.flush();

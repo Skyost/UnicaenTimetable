@@ -16,7 +16,7 @@ class HomeCardsModel extends UnicaenTimetableModel {
   static const String _HIVE_BOX = 'home_cards';
 
   /// The home cards box.
-  Box<String> _homeCardsBox;
+  Box<String>? _homeCardsBox;
 
   @override
   Future<void> initialize() async {
@@ -26,7 +26,7 @@ class HomeCardsModel extends UnicaenTimetableModel {
 
     bool boxExists = await Hive.boxExists(_HIVE_BOX);
     _homeCardsBox = await Hive.openBox<String>(_HIVE_BOX);
-    if(!boxExists) {
+    if (!boxExists) {
       _addInitialData();
     }
     markInitialized();
@@ -34,7 +34,7 @@ class HomeCardsModel extends UnicaenTimetableModel {
 
   /// Adds initial data to the Hive box.
   void _addInitialData() {
-    if(!Platform.isIOS) {
+    if (!Platform.isIOS) {
       return;
     }
 
@@ -43,31 +43,41 @@ class HomeCardsModel extends UnicaenTimetableModel {
 
   /// Adds a card to this model.
   Future<void> addCard(String id) async {
-    await _homeCardsBox.add(id);
-    notifyListeners();
+    if (isInitialized) {
+      await _homeCardsBox!.add(id);
+      notifyListeners();
+    }
   }
 
   /// Removes a card from this model.
   Future<void> removeCard(String id) async {
-    await _homeCardsBox.delete(_homeCardsBox.toMap().getByValue(id));
-    notifyListeners();
+    if (isInitialized) {
+      await _homeCardsBox!.delete(_homeCardsBox!.toMap().getByValue(id));
+      notifyListeners();
+    }
   }
 
   /// Returns whether this model has the specified card.
-  bool hasCard(String id) => _homeCardsBox.values.contains(id);
+  bool hasCard(String id) => isInitialized ? _homeCardsBox!.values.contains(id) : false;
 
   /// Reorders the cards.
   Future<void> reorder(List<MaterialCard> cards) async {
-    await _homeCardsBox.clear();
-    await _homeCardsBox.addAll(cards.map((card) => card.cardId).toList());
-    notifyListeners();
+    if (isInitialized) {
+      await _homeCardsBox!.clear();
+      await _homeCardsBox!.addAll(cards.map((card) => card.cardId).toList());
+      notifyListeners();
+    }
   }
 
   /// Returns all added cards, in order.
   List<MaterialCard> get cards {
+    if (!isInitialized) {
+      return [];
+    }
+
     List<MaterialCard> cardsList = [];
-    for (String cardId in _homeCardsBox.values) {
-      MaterialCard card = createCardById(cardId);
+    for (String cardId in _homeCardsBox!.values) {
+      MaterialCard? card = createCardById(cardId);
       if (card != null) {
         cardsList.add(card);
       }
@@ -76,7 +86,7 @@ class HomeCardsModel extends UnicaenTimetableModel {
   }
 
   /// Creates a card instance by its id.
-  MaterialCard createCardById(String cardId) {
+  MaterialCard? createCardById(String cardId) {
     switch (cardId) {
       case SynchronizationStatusCard.ID:
         return const SynchronizationStatusCard();

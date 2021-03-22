@@ -6,12 +6,18 @@ import 'package:unicaen_timetable/intro/slides.dart';
 
 /// The intro scaffold.
 class IntroScaffold extends StatelessWidget {
+  /// Buttons style.
+  static ButtonStyle buttonStyle = ButtonStyle(
+    overlayColor: MaterialStateProperty.all<Color>(Colors.black26),
+    foregroundColor: MaterialStateProperty.resolveWith<Color>((states) => states.contains(MaterialState.disabled) ? Colors.white54 : Colors.white),
+  );
+
   @override
   Widget build(BuildContext context) => Theme(
         data: ThemeData(
           scaffoldBackgroundColor: const Color(0xFF2C3E50),
           textTheme: const TextTheme(
-            headline6: TextStyle(
+            headline4: TextStyle(
               color: Colors.white,
               fontSize: 38,
               fontWeight: FontWeight.w100,
@@ -22,10 +28,8 @@ class IntroScaffold extends StatelessWidget {
               color: Colors.white,
               fontSize: 18,
             ),
-            button: TextStyle(color: Colors.white),
           ),
         ),
-        isMaterialAppTheme: true,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: const Color(0xFF171F29)),
           child: Scaffold(
@@ -86,11 +90,10 @@ class _IntroScaffoldBody extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20),
               child: Text((model.currentSlideIndex + 1).toString() + '/' + model.slides.length.toString()),
             ),
-            FlatButton(
-              child: Text(context.getString('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
-              textColor: Colors.white,
-              disabledTextColor: Colors.white54,
+            TextButton(
               onPressed: () => model.goToNextSlide(context),
+              style: IntroScaffold.buttonStyle,
+              child: Text(context.getString('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
             ),
           ],
         ),
@@ -110,7 +113,7 @@ class IntroScaffoldBodyModel extends ChangeNotifier {
   int _currentSlideIndex = 0;
 
   /// The currently shown slide.
-  Slide _currentSlide;
+  late Slide _currentSlide;
 
   /// Creates a new intro scaffold body model instance.
   IntroScaffoldBodyModel() {
