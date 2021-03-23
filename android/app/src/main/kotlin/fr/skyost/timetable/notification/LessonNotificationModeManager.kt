@@ -221,7 +221,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
          */
         private fun getInterruptionFilterFromPreferences(context: Context): Int {
             // We read the preference value.
-            when (context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)) {
+            when (context.getSharedPreferences(UnicaenTimetableApplication.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(UnicaenTimetableApplication.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)) {
                 VALUE_FILTER_ALARMS -> return NotificationManager.INTERRUPTION_FILTER_ALARMS
             }
 
@@ -268,7 +268,7 @@ class LessonNotificationModeManager : BroadcastReceiver() {
             // The disable intent.
             val disableMode = PendingIntent.getService(context, 0, Intent(context, NotificationAction::class.java), PendingIntent.FLAG_ONE_SHOT)
             // And we create the message.
-            val value = context.getSharedPreferences(Application.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(Application.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)
+            val value = context.getSharedPreferences(UnicaenTimetableApplication.PREFERENCES_FILE, Context.MODE_PRIVATE).getInt(UnicaenTimetableApplication.PREFERENCES_LESSON_NOTIFICATION_MODE, VALUE_DISABLED)
             val message = context.getString(R.string.notification_lessonmodenotification_message, context.resources.getStringArray(R.array.notification_lessonmodenotification)[value + 1].toUpperCase())
             // We build our notification.
             val builder = NotificationCompat.Builder(context.applicationContext, NOTIFICATION_CHANNEL_ID)

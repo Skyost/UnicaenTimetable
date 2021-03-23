@@ -23,7 +23,7 @@ import io.flutter.app.FlutterApplication
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-class Application : FlutterApplication() {
+class UnicaenTimetableApplication : FlutterApplication() {
     companion object {
         const val CHANNEL = "fr.skyost.timetable"
 

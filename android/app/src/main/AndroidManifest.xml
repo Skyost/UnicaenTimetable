@@ -22,7 +22,7 @@
     <application
         tools:replace="android:label"
         android:label="@string/app_name"
-        android:name=".Application"
+        android:name=".UnicaenTimetableApplication"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher">

@@ -40,8 +40,8 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Application.CHANNEL).setMethodCallHandler { call, result ->
-            Application.handleMethod(call, result, this)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, UnicaenTimetableApplication.CHANNEL).setMethodCallHandler { call, result ->
+            UnicaenTimetableApplication.handleMethod(call, result, this)
         }
     }
 
