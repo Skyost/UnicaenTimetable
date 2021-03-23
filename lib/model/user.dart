@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart' hide Key;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lesson.dart';
 import 'package:unicaen_timetable/model/model.dart';
@@ -266,9 +266,17 @@ class _AndroidUserRepository extends UserRepository {
         return null;
       }
 
+      String username = response['username'];
+      String password = response['password'];
+      User? toUpdate = _needUpdate(username, password);
+      if (toUpdate != null) {
+        await updateUser(toUpdate);
+        return toUpdate;
+      }
+
       return User(
-        username: response['username'],
-        password: encrypter.decrypt64(response['password'].substring(accountVersionPrefix.length), iv: _initializationVector),
+        username: username,
+        password: encrypter.decrypt64(password.substring(accountVersionPrefix.length), iv: _initializationVector),
       );
     } catch (ex, stacktrace) {
       print(ex);
@@ -296,6 +304,17 @@ class _AndroidUserRepository extends UserRepository {
   /// Removes the current user.
   Future<void> removeUser() => UnicaenTimetableApp.CHANNEL.invokeMethod('account.remove');
 
+  /// Returns an user if the user should be updated.
+  User? _needUpdate(String username, String password) {
+    if (!password.startsWith(accountVersionPrefix)) {
+      return User(
+        username: username,
+        password: utf8.decode(base64.decode(password)),
+      );
+    }
+    return null;
+  }
+
   /// Tests the data validity.
   bool _testValidity(String? encryptionKey, String? initializationVector) {
     try {
@@ -311,7 +330,7 @@ class _AndroidUserRepository extends UserRepository {
   }
 
   /// Allows to encrypt strings using the AES algorithm.
-  Encrypter? get encrypter => _encryptionKey == null ? null : Encrypter(AES(_encryptionKey!));
+  Encrypter? get encrypter => _encryptionKey == null ? null : Encrypter(AES(_encryptionKey!, mode: AESMode.ofb64));
 
   /// Returns the account version prefix.
   String get accountVersionPrefix => '{$_VERSION}';
