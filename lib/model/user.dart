@@ -39,6 +39,7 @@ class User extends HiveObject {
   /// Tries to login this user.
   Future<LoginResult> login(SettingsModel model) async => LoginResult.fromResponse(await model.requestCalendar(this));
 
+  /// Tries to synchronize this user from Zimbra.
   Future<dynamic> synchronizeFromZimbra({
     required LazyBox<List> lessonsBox,
     required SettingsModel settingsModel,
@@ -60,7 +61,7 @@ class User extends HiveObject {
 
         Lesson lesson = Lesson.fromJson(jsonData['inv'].first);
         DateTime start = lesson.start.yearMonthDay;
-        List lessons = (await lessonsBox.get(start.yearMonthDay.toString())) ?? [];
+        List lessons = List.from((await lessonsBox.get(start.yearMonthDay.toString())) ?? []);
         await lessonsBox.put(start.toString(), lessons..add(lesson));
       }
     }
