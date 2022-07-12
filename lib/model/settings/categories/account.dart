@@ -4,12 +4,16 @@ import 'package:unicaen_timetable/model/settings/entries/account/account.dart';
 
 /// The account settings category.
 class AccountSettingsCategory extends SettingsCategory {
+  /// This category key.
+  static const String categoryKey = 'account';
+
   /// Creates a new account settings category instance.
   AccountSettingsCategory()
       : super(
-          key: 'account',
+          key: categoryKey,
           icon: Icons.person,
-        ) {
-    addEntry(AccountSettingsEntry(keyPrefix: key));
-  }
+          entries: [
+            AccountSettingsEntry(keyPrefix: categoryKey),
+          ]
+        );
 }

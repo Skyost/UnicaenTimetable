@@ -45,6 +45,9 @@ extension DateUtils on DateTime {
 
   /// Changes the day of week by putting it at monday.
   DateTime get atMonday => subtract(Duration(days: weekday - 1));
+
+  /// Changes the day of week by putting it at sunday.
+  DateTime get atSunday => add(Duration(days: DateTime.sunday - weekday));
 }
 
 /// Contains some useful number methods.

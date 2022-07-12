@@ -3,43 +3,20 @@ package fr.skyost.timetable.utils
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.AccountManagerFuture
-import android.content.Context
+import android.app.PendingIntent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Base64
 import io.flutter.plugin.common.MethodChannel
 import org.joda.time.DateTime
-import java.nio.charset.Charset
-import javax.crypto.Cipher
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
-import javax.crypto.spec.PBEParameterSpec
-
 
 class Utils {
     companion object {
         /**
-         * Decodes a password.
+         * Returns PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT if supported.
          *
-         * @param context The context.
-         * @param password The account password.
-         *
-         * @return The decoded password.
+         * @return PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT if supported.
          */
-        fun base64Decode(context: Context, password: String): String {
-            try {
-                val bytes = Base64.decode(password, Base64.DEFAULT)
-                val keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES")
-                val key = keyFactory.generateSecret(PBEKeySpec(Settings.Secure.ANDROID_ID.toCharArray()))
-                val pbeCipher = Cipher.getInstance("PBEWithMD5AndDES")
-                pbeCipher.init(Cipher.DECRYPT_MODE, key, PBEParameterSpec(Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID).toByteArray(Charset.forName("UTF-8")), 20))
-                return String(pbeCipher.doFinal(bytes), Charset.forName("UTF-8"))
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-            return password
-        }
+        val FLAG_IMMUTABLE_OR_UPDATE_CURRENT = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT } else { PendingIntent.FLAG_UPDATE_CURRENT }
 
         /**
          * Removes an account.
@@ -73,6 +50,11 @@ class Utils {
             return DateTime.now().plusDays(1).withTimeAtStartOfDay()
         }
 
+        /**
+         * Adds a leading zero to the given number.
+         *
+         * @return The number with a leading zero.
+         */
         fun addLeadingZero(n: Int): String {
             return (if (n < 10) "0" else "") + n.toString()
         }

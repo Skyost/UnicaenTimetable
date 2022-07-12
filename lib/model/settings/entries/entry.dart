@@ -1,14 +1,13 @@
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:pedantic/pedantic.dart';
-import 'package:unicaen_timetable/dialogs/input.dart';
-import 'package:unicaen_timetable/model/settings/renderable.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/pages/scaffold.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/bool_entry.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/entry.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/int_entry.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/string_entry.dart';
 
 /// A settings entry.
-class SettingsEntry<T> extends ChangeNotifier with RenderableSettingsObject {
+class SettingsEntry<T> extends ChangeNotifier {
   /// This entry key.
   final String key;
 
@@ -23,17 +22,17 @@ class SettingsEntry<T> extends ChangeNotifier with RenderableSettingsObject {
 
   /// Creates a new settings entry instance.
   SettingsEntry({
-    String keyPrefix = '',
+    String categoryKey = '',
     required String key,
     this.mutable = true,
     this.enabled = true,
     required T value,
-  })  : key = (keyPrefix.isEmpty ? '' : (keyPrefix + '.')) + key,
+  })  : key = (categoryKey.isEmpty ? '' : ('$categoryKey.')) + key,
         _value = value;
 
   /// Loads this entry value from the settings box.
   Future<void> load([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
+    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
     _value = decodeValue(box.get(key));
   }
 
@@ -47,6 +46,7 @@ class SettingsEntry<T> extends ChangeNotifier with RenderableSettingsObject {
     }
 
     _value = value;
+    flush();
     notifyListeners();
   }
 
@@ -56,7 +56,7 @@ class SettingsEntry<T> extends ChangeNotifier with RenderableSettingsObject {
       return;
     }
 
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
+    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
     await box.put(key, value);
   }
 
@@ -64,125 +64,17 @@ class SettingsEntry<T> extends ChangeNotifier with RenderableSettingsObject {
   @protected
   T decodeValue(dynamic boxValue) => boxValue ?? _value;
 
-  @override
-  Widget render(BuildContext context) => SettingsEntryWidget(entry: this);
-}
-
-/// A widget that shows a settings entry.
-class SettingsEntryWidget extends StatelessWidget {
-  /// The settings entry.
-  final SettingsEntry entry;
-
-  /// Creates a new settings entry widget instance.
-  const SettingsEntryWidget({
-    required this.entry,
-  });
-
-  @override
-  Widget build(BuildContext context) => ListTile(
-        onTap: () => onTap(context),
-        title: Text(context.getString('settings.${entry.key}')),
-        subtitle: createSubtitle(context),
-        trailing: createController(context),
-      );
-
-  /// Creates the subtitle widget.
-  Widget? createSubtitle(BuildContext context) {
-    if (entry.value is String) {
-      return Text(entry.value == null || entry.value.isEmpty ? context.getString('other.empty') : entry.value);
+  /// Renders this entry.
+  Widget render(BuildContext context) {
+    if (T == String) {
+      return StringSettingsEntryWidget(entry: this as SettingsEntry<String>);
     }
-    return null;
+    if (T == bool) {
+      return BoolSettingsEntryWidget(entry: this as SettingsEntry<bool>);
+    }
+    if (T == int) {
+      return IntSettingsEntryWidget(entry: this as SettingsEntry<int>);
+    }
+    return SettingsEntryWidget<T>(entry: this);
   }
-
-  /// Creates the controller widget.
-  Widget? createController(BuildContext context) {
-    if (entry.value is bool) {
-      return Switch(
-        value: entry.value,
-        onChanged: (_) => onTap(context),
-      );
-    }
-
-    return null;
-  }
-
-  /// Triggered before running the "on tap" action.
-  Future<bool> beforeOnTap(BuildContext context) => Future<bool>.value(true);
-
-  /// Triggered when the user has tapped the controller.
-  Future<void> onTap(BuildContext context) async {
-    bool result = await beforeOnTap(context);
-    if (!result) {
-      return;
-    }
-
-    if (entry.value is bool) {
-      entry.value = !entry.value;
-      unawaited(entry.flush());
-    }
-
-    if (entry.value is String) {
-      String? value = await TextInputDialog.getValue(
-        context,
-        titleKey: 'settings.${entry.key}',
-        initialValue: entry.value,
-      );
-
-      if (value == null || value == entry.value) {
-        return;
-      }
-
-      entry.value = value;
-      unawaited(entry.flush());
-    }
-
-    unawaited(afterOnTap(context));
-  }
-
-  /// Triggered after the user has tapped the controller.
-  Future<void> afterOnTap(BuildContext context) async {
-    if (entry.key.startsWith('server.')) {
-      unawaited(SynchronizeFloatingButton.onPressed(context));
-    }
-  }
-}
-
-/// Allows to display a dropdown button for a settings entry.
-class SettingsDropdownButton<T> extends StatelessWidget {
-  /// The title key of this settings entry.
-  final String titleKey;
-
-  /// Items to be displayed.
-  final List<DropdownMenuItem<T>> items;
-
-  /// The current value.
-  final T value;
-
-  /// Triggered when the value has been changed.
-  final ValueChanged<T?>? onChanged;
-
-  /// Creates a new settings dropdown button instance.
-  const SettingsDropdownButton({
-    required this.titleKey,
-    required this.items,
-    required this.value,
-    this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: ListTile(
-          title: Text(context.getString(titleKey) + ' :'),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: DropdownButton(
-              isExpanded: true,
-              onChanged: onChanged,
-              items: items,
-              value: value,
-            ),
-          ),
-        ),
-      );
 }

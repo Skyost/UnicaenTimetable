@@ -1,10 +1,10 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/credentials.dart';
-import 'package:unicaen_timetable/dialogs/input.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/application/admob.dart';
 
 /// The AdMob settings entry.
 class AdMobSettingsEntry extends SettingsEntry<bool> {
@@ -15,7 +15,7 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
   AdMobSettingsEntry({
     required String keyPrefix,
   }) : super(
-          keyPrefix: keyPrefix,
+          categoryKey: keyPrefix,
           key: 'enable_ads',
           value: true,
         );
@@ -27,39 +27,30 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
   }
 
   /// Creates the banner ad.
-  AdmobBanner? createBanner(BuildContext context) => !value || adUnitId == null
-      ? null
-      : AdmobBanner(
-          adUnitId: adUnitId!,
-          adSize: _getAdMobBannerSize(context),
-        );
-
-  /// Calculates the banner size.
-  Future<Size> calculateSize(BuildContext context) => !value || adUnitId == null ? Future<Size>.value(Size.zero) : Admob.bannerSize(_getAdMobBannerSize(context));
-
-  /// Returns the AdMob banner size.
-  AdmobBannerSize _getAdMobBannerSize(BuildContext context) => AdmobBannerSize.ADAPTIVE_BANNER(width: MediaQuery.of(context).size.width.ceil());
+  BannerAd? createBanner(
+    BuildContext context, {
+    AdSize? size,
+    bool? nonPersonalizedAds,
+  }) =>
+      !value || adUnitId == null
+          ? null
+          : BannerAd(
+              adUnitId: adUnitId!,
+              size: size ?? AdSize.banner,
+              request: AdRequest(
+                keywords: ['caen', 'étudiant', 'université', 'unicaen'],
+                nonPersonalizedAds: nonPersonalizedAds,
+              ),
+              listener: BannerAdListener(
+                onAdFailedToLoad: (ad, error) {
+                  ad.dispose();
+                  if (kDebugMode) {
+                    print(error);
+                  }
+                },
+              ),
+            );
 
   @override
-  Widget render(BuildContext context) => _AdMobSettingsEntryWidget(entry: this);
-}
-
-/// Allows to display the AdMob settings entry.
-class _AdMobSettingsEntryWidget extends SettingsEntryWidget {
-  /// Creates a new AdMob settings entry widget instance.
-  const _AdMobSettingsEntryWidget({
-    required AdMobSettingsEntry entry,
-  }) : super(entry: entry);
-
-  @override
-  Future<bool> beforeOnTap(BuildContext context) async {
-    bool? result = await BoolInputDialog.getValue(
-      context,
-      titleKey: 'dialogs.enable_ads.title',
-      messageKey: 'dialogs.enable_ads.message',
-      yesButtonKey: 'dialogs.enable_ads.enable',
-      noButtonKey: 'dialogs.enable_ads.disable',
-    );
-    return result != null && result != entry.value;
-  }
+  Widget render(BuildContext context) => AdMobSettingsEntryWidget(entry: this);
 }

@@ -11,7 +11,7 @@
             "synchronizing": "Synchronizing…",
             "success": "Success.",
             "unauthorized": "Wrong username / password.",
-            "error": "Error. Please try again later.",
+            "generic_error": "Error. Please try again later.",
             "widget_already_present": "The selected widget is already present on the application home screen."
         }
     },
@@ -57,7 +57,6 @@
             "title": "Application",
             "sidebar_days": "Days to show in the sidebar",
             "color_lessons_automatically": "Automatically color lessons",
-            "lesson_notification_mode": "Notification mode during class",
             "open_today_automatically": "Open today's page at launch",
             "enable_ads": "Enable ads",
             "brightness": {
@@ -82,18 +81,25 @@
     "bugs_improvements": {
         "title": "Bugs / Improvements",
         "message": {
-            "github": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available",
-            "website": "You can also send me an email via the form which is available"
+            "github": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available <a href=\"https://github.com/Skyost/UnicaenTimetable/issues/\">here</a>.",
+            "website": "You can also send me an email via the form which is available <a href=\"https://skyost.eu/#contact\">here</a>."
         }
     },
     "about": {
         "title": "About",
         "paragraphs": {
             "first": "This app has been created by Skyost and is available under the therms of the GNU GPL v3 license. It's using Flutter and has been written in Dart by using some technologies. You can view all of this using the links below.",
-            "second": "Disclaimer : This application has not been developed by any official member of the University. Consequently, do not send any request to the University if you have a problem with this application. Furthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable. If you do not trust this application, you can still check the source code with the \"Github\" link below."
+            "second": "Disclaimer. This application has not been developed by any official member of the University. Consequently, do not send any request to the University if you have a problem with this application. Furthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable. If you do not trust this application, you can still check the source code with the \"Github\" link below."
         }
     },
     "dialogs": {
+        "consent": {
+            "app_message": "We need your consent to show you some relevant ads. You have to know that this app and its content are available for free and that ads are the only income I get from this application.",
+            "question": "Can we use your data to show you personalized ads ?",
+            "privacy_policy_message": "You will be able to change your choice later in the app settings. Please note that some cookies will be stored on your device. Read our <a href=\"https://github.com/Skyost/UnicaenTimetable/raw/master/privacy_policy.pdf\">privacy policy</a> for more information.",
+            "personalized_ads_button": "Yes, I want to see relevant ads",
+            "non_personalized_ads_button": "No, I want to see less relevant ads"
+        },
         "enable_ads": {
             "title": "Ads",
             "message": "You have the choice to enable ads. But you have to know that it is only a little banner on the home page and this is the only income I get from this application.",
@@ -153,8 +159,7 @@
             },
             "login": {
                 "title": "We need an access to your Unicaen account…",
-                "message": "Don't worry ! This credentials will only be used to get your timetable on the Unicaen servers, nothing else.",
-                "login_button": "Login"
+                "message": "Don't worry ! This credentials will only be used to get your timetable on the Unicaen servers, nothing else."
             },
             "finished": {
                 "title": "Everything is set !",
@@ -164,11 +169,6 @@
     },
     "other": {
         "field_empty": "This field cannot be empty.",
-        "weeks": "{interval} week(s)",
-        "lesson_notification_mode": {
-            "disabled": "Disabled",
-            "alarms_only": "Silent (alarms only)"
-        },
         "please_wait": "Please wait…",
         "here": "here",
         "empty": "Empty",

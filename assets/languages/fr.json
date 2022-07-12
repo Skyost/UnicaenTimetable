@@ -11,7 +11,7 @@
             "synchronizing": "Synchronisation…",
             "success": "Succès.",
             "unauthorized": "Mauvais non d'utilisateur / mot de passe.",
-            "error": "Erreur. Veuillez réessayer plus tard.",
+            "generic_error": "Erreur. Veuillez réessayer plus tard.",
             "widget_already_present": "Un tel widget est déjà ajouté sur la page d'accueil de l'application."
         }
     },
@@ -57,7 +57,6 @@
             "title": "Application",
             "sidebar_days": "Jours à afficher dans la menu déroulant",
             "color_lessons_automatically": "Colorer automatiquement les cours",
-            "lesson_notification_mode": "Mode de notification pendant les cours",
             "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
             "enable_ads": "Activer les publicités",
             "brightness": {
@@ -82,18 +81,25 @@
     "bugs_improvements": {
         "title": "Bugs / Améliorations",
         "message": {
-            "github": "Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible",
-            "website": "Vous pouvez également m'envoyer un email via le formulaire disponible"
+            "github": "Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible <a href=\"https://github.com/Skyost/UnicaenTimetable/issues/\">ici</a>.",
+            "website": "Vous pouvez également m'envoyer un email via le formulaire disponible <a href=\"https://skyost.eu/#contact\">ici</a>."
         }
     },
     "about": {
         "title": "À propos",
         "paragraphs": {
             "first": "Cette application a été créée par Skyost et est disponible sous licence GNU GPL v3. Elle utilise Flutter et a été écrite en Dart en utilisant certaines technologies. Vous pouvez consulter tout ça en cliquant sur les liens disponibles ci-dessous.",
-            "second": "Avertissement : Cette application n'a en aucun cas été conçue par un employé de l'Université. Par conséquent, il est inutile de s'adresser à l'Université en cas de problème avec l'application. De plus, il faut préciser que cette application a besoin de votre numéro d'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l'Université pour récupérer votre emploi du temps. Si vous n'êtes pas convaincu du fonctionnement de l'application, le code source est disponible via le lien \"Github\" ci-dessous."
+            "second": "Avertissement. Cette application n'a en aucun cas été conçue par un employé de l'Université. Par conséquent, il est inutile de s'adresser à l'Université en cas de problème avec l'application. De plus, il faut préciser que cette application a besoin de votre numéro d'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l'Université pour récupérer votre emploi du temps. Si vous n'êtes pas convaincu du fonctionnement de l'application, le code source est disponible via le lien \"Github\" ci-dessous."
         }
     },
     "dialogs": {
+        "consent": {
+            "app_message": "Nous souhaitons votre accord pour vous afficher des publicités personnalisées. Sachez que cette application et son contenu sont mis à disposition gratuitement pour les utilisateurs et que les publicités constituent les seuls revenus de cette application.",
+            "question": "Pouvons-nous utiliser vos données pour vous afficher des publicités personnalisées ?",
+            "privacy_policy_message": "Vous pourrez changer votre choix dans les paramètres de l'application. Sachez que des cookies seront stockés sur votre appareil. Consultez notre <a href=\"https://github.com/Skyost/UnicaenTimetable/raw/master/privacy_policy.pdf\">politique de confidentialité</a> pour plus d'informations.",
+            "personalized_ads_button": "Oui, je souhaite voir des annonces pertinentes",
+            "non_personalized_ads_button": "Non, je souhaite voir des annonces moins pertinentes"
+        },
         "enable_ads": {
             "title": "Publicités",
             "message": "Vous avez le choix d'activer ou de désactiver les publicités. Sachez cependant que cela ne consiste qu'en une petite bannière publicitaire sur la page d'accueil et que celle-ci constitue l'unique source de revenus de cette application.",
@@ -153,8 +159,7 @@
             },
             "login": {
                 "title": "Nous devons maintenant accéder à votre compte Unicaen…",
-                "message": "Pas d'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen.",
-                "login_button": "Connexion"
+                "message": "Pas d'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen."
             },
             "finished": {
                 "title": "Tout est prêt !",
@@ -164,11 +169,6 @@
     },
     "other": {
         "field_empty": "Ce champ ne peut être vide.",
-        "weeks": "{interval} semaine(s)",
-        "lesson_notification_mode": {
-            "disabled": "Désactivé",
-            "alarms_only": "Mode silencieux (alarmes seulement)"
-        },
         "please_wait": "Veuillez patienter…",
         "here": "ici",
         "empty": "Vide",

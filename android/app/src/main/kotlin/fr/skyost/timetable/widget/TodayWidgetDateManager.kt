@@ -1,19 +1,11 @@
+package fr.skyost.timetable.widget
+
 import org.joda.time.LocalDate
 
 /**
  * The today's widget date manager.
  */
 class TodayWidgetDateManager {
-    /**
-     * Returns the relative day.
-     *
-     * @return The relative day.
-     */
-    /**
-     * Sets the relative day.
-     *
-     * @param relativeDay The relative day.
-     */
     /**
      * Relative day (from today).
      */

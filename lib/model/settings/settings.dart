@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart';
 import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/model/settings/categories/account.dart';
 import 'package:unicaen_timetable/model/settings/categories/application.dart';
@@ -10,15 +10,19 @@ import 'package:unicaen_timetable/model/settings/entries/application/admob.dart'
 import 'package:unicaen_timetable/model/settings/entries/application/sidebar_days.dart';
 import 'package:unicaen_timetable/model/settings/entries/application/theme.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
-import 'package:unicaen_timetable/model/user.dart';
 import 'package:unicaen_timetable/theme.dart';
-import 'package:unicaen_timetable/utils/http_client.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/calendar_url.dart';
+
+final settingsModelProvider = ChangeNotifierProvider((ref) {
+  SettingsModel settingsModel = SettingsModel();
+  settingsModel.initialize();
+  return settingsModel;
+});
 
 /// The settings model.
 class SettingsModel extends UnicaenTimetableModel {
   /// The settings Hive box name.
-  static const String HIVE_BOX = 'settings';
+  static const String hiveBox = 'settings';
 
   /// Available settings categories.
   final List<SettingsCategory> _categories = [];
@@ -39,7 +43,7 @@ class SettingsModel extends UnicaenTimetableModel {
       ServerSettingsCategory(),
     ];
 
-    Box box = await Hive.openBox(HIVE_BOX);
+    Box box = await Hive.openBox(hiveBox);
     for (SettingsCategory category in categories) {
       await category.load(box);
       addCategory(category);
@@ -80,8 +84,10 @@ class SettingsModel extends UnicaenTimetableModel {
 
   @override
   void dispose() {
+    for (SettingsCategory category in _categories) {
+      category.dispose();
+    }
     super.dispose();
-    _categories.forEach((category) => category.dispose());
   }
 
   /// Returns the app theme according to the current brightness.
@@ -96,46 +102,11 @@ class SettingsModel extends UnicaenTimetableModel {
   /// Returns the days shown at the sidebar.
   SidebarDaysSettingsEntry get sidebarDaysEntry => getEntryByKey('application.sidebar_days') as SidebarDaysSettingsEntry;
 
-  /// Returns the calendar address according to the specified user.
-  Uri getCalendarAddressFromSettings(User user) {
-    String url = getEntryByKey('server.server')!.value;
-    url += '/home/';
-    url += user.username;
-    url += '/';
-    url += Uri.encodeFull(getEntryByKey('server.calendar')!.value);
-    url += '?auth=ba&fmt=json';
-
-    String additionalParameters = getEntryByKey('server.additional_parameters')!.value;
-    if (additionalParameters.isNotEmpty) {
-      url += '&';
-      url += additionalParameters;
-    }
-
-    int interval = getEntryByKey('server.interval')!.value;
-    if (interval > 0) {
-      DateTime now = DateTime.now().atMonday.yearMonthDay;
-      DateTime min = now.subtract(Duration(days: interval * 7));
-      DateTime max = now.add(Duration(days: interval * 7)).add(const Duration(days: DateTime.friday));
-
-      url += '&start=' + min.year.toString() + '/' + min.month.withLeadingZero + '/' + min.day.withLeadingZero;
-      url += '&end=' + max.year.toString() + '/' + max.month.withLeadingZero + '/' + max.day.withLeadingZero;
-    }
-
-    return Uri.parse(url);
-  }
-
-  /// Requests the calendar according to the specified settings model.
-  Future<Response?> requestCalendar(User user) async {
-    UnicaenTimetableHttpClient client = const UnicaenTimetableHttpClient();
-    Response? response = await client.connect(getCalendarAddressFromSettings(user), user);
-    if (response?.statusCode == 401 || response?.statusCode == 404) {
-      user.username = user.username.endsWith('@etu.unicaen.fr') ? user.username.substring(0, user.username.lastIndexOf('@etu.unicaen.fr')) : (user.username + '@etu.unicaen.fr');
-      if (user.isInBox) {
-        await user.save();
-      }
-      response = await client.connect(getCalendarAddressFromSettings(user), user);
-    }
-
-    return response;
-  }
+  /// Returns the calendar URL.
+  CalendarUrl get calendarUrl => CalendarUrl(
+    server: getEntryByKey('server.server')?.value,
+    calendar: getEntryByKey('server.calendar')?.value,
+    additionalParameters: getEntryByKey('server.additional_parameters')?.value,
+    interval: getEntryByKey('server.interval')?.value,
+  );
 }

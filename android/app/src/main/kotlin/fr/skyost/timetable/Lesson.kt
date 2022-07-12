@@ -5,7 +5,6 @@ import com.grack.nanojson.JsonArray
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import org.joda.time.DateTime
-import org.joda.time.DateTimeFieldType
 import org.joda.time.LocalDate
 import java.io.File
 
@@ -13,7 +12,7 @@ class LessonRepository {
     private val lessons : HashMap<Long, ArrayList<Lesson>> = HashMap()
 
     fun load(context: Context) {
-        val filesDir = File(context.getFilesDir().parentFile, "app_flutter")
+        val filesDir = File(context.filesDir.parentFile, "app_flutter")
         if(!filesDir.exists()) {
             return
         }

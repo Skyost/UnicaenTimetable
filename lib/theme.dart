@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// Represents an app theme.
 abstract class UnicaenTimetableTheme {
   /// The light theme instance.
-  static final _LightTheme LIGHT = const _LightTheme();
+  static const LightTheme light = LightTheme();
 
   /// The dark theme instance.
-  static final _DarkTheme DARK = const _DarkTheme();
+  static const DarkTheme dark = DarkTheme();
 
   /// The theme brightness.
   final Brightness brightness;
@@ -25,11 +26,14 @@ abstract class UnicaenTimetableTheme {
   /// The list header text color.
   final Color listHeaderTextColor;
 
+  /// The list tile text color.
+  final Color? listTileTextColor;
+
   /// The selected list tile text color.
   final Color selectedListTileTextColor;
 
   /// The text color.
-  final Color? textColor;
+  final Color textColor;
 
   /// The lesson background color.
   final Color? cardsBackgroundColor;
@@ -68,8 +72,9 @@ abstract class UnicaenTimetableTheme {
     required this.actionBarColor,
     this.scaffoldBackgroundColor,
     required this.listHeaderTextColor,
+    this.listTileTextColor,
     required this.selectedListTileTextColor,
-    this.textColor,
+    required this.textColor,
     this.cardsBackgroundColor,
     this.cardsTextColor,
     required this.highlightColor,
@@ -89,7 +94,6 @@ abstract class UnicaenTimetableTheme {
         dialogBackgroundColor: scaffoldBackgroundColor,
         appBarTheme: AppBarTheme(
           color: actionBarColor,
-          brightness: Brightness.dark,
         ),
         textTheme: TextTheme(
           headline1: TextStyle(color: textColor),
@@ -103,8 +107,12 @@ abstract class UnicaenTimetableTheme {
           bodyText1: TextStyle(color: textColor),
           bodyText2: TextStyle(color: textColor),
           caption: TextStyle(color: textColor),
-          //button: TextStyle(color: textColor),
+          // button: TextStyle(color: textColor),
           overline: TextStyle(color: textColor),
+        ),
+        listTileTheme: ListTileThemeData(
+          textColor: listTileTextColor,
+          selectedColor: selectedListTileTextColor,
         ),
         popupMenuTheme: PopupMenuThemeData(color: scaffoldBackgroundColor),
         highlightColor: highlightColor,
@@ -135,14 +143,16 @@ abstract class UnicaenTimetableTheme {
 }
 
 /// The light theme.
-class _LightTheme extends UnicaenTimetableTheme {
+class LightTheme extends UnicaenTimetableTheme {
   /// Creates a new light theme instance.
-  const _LightTheme()
+  const LightTheme()
       : super._internal(
           brightness: Brightness.light,
           primaryColor: Colors.indigo,
           actionBarColor: Colors.indigo,
+          textColor: Colors.black,
           listHeaderTextColor: Colors.black54,
+          listTileTextColor: Colors.black87,
           selectedListTileTextColor: Colors.indigo,
           highlightColor: Colors.black12,
           dayViewBackgroundColorToday: const Color(0xFFE3F5FF),
@@ -154,9 +164,9 @@ class _LightTheme extends UnicaenTimetableTheme {
 }
 
 /// The dark theme.
-class _DarkTheme extends UnicaenTimetableTheme {
+class DarkTheme extends UnicaenTimetableTheme {
   /// Creates a new dark theme instance.
-  const _DarkTheme()
+  const DarkTheme()
       : super._internal(
           brightness: Brightness.dark,
           primaryColor: const Color(0xFF253341),

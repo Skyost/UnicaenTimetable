@@ -1,30 +1,26 @@
-import 'dart:ui';
-
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Page;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The about page that shows info about the app.
-class AboutPage extends StaticTitlePage {
+class AboutPage extends Page {
+  /// The page identifier.
+  static const String id = 'about';
+
   /// Creates a new about page instance.
-  const AboutPage()
-      : super(
-          titleKey: 'about.title',
+  const AboutPage({
+    super.key,
+  }) : super(
+          pageId: id,
           icon: Icons.insert_emoticon,
         );
 
   @override
-  State<StatefulWidget> createState() => _AboutPageState();
-}
-
-/// The about page state.
-class _AboutPageState extends State<AboutPage> {
-  @override
-  Widget build(BuildContext context) => ListView(
+  Widget build(BuildContext context, WidgetRef ref) => ListView(
         children: [
           _ListHeader(),
           _ListBody(),
@@ -34,10 +30,10 @@ class _AboutPageState extends State<AboutPage> {
 }
 
 /// The about page list header.
-class _ListHeader extends StatelessWidget {
+class _ListHeader extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) => Container(
-        color: context.watch<SettingsModel>().resolveTheme(context).aboutHeaderBackgroundColor,
+  Widget build(BuildContext context, WidgetRef ref) => Container(
+        color: ref.watch(settingsModelProvider).resolveTheme(context).aboutHeaderBackgroundColor,
         padding: const EdgeInsets.all(30),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -64,9 +60,9 @@ class _ListHeader extends StatelessWidget {
 }
 
 /// The about page list body.
-class _ListBody extends StatelessWidget {
+class _ListBody extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context, WidgetRef ref) => Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -79,7 +75,7 @@ class _ListBody extends StatelessWidget {
                 width: 50,
                 child: CustomPaint(
                   painter: _SymbolPainter(
-                    color: context.watch<SettingsModel>().resolveTheme(context).textColor ?? Colors.black54,
+                    color: ref.watch(settingsModelProvider).resolveTheme(context).textColor,
                   ),
                   willChange: false,
                 ),
@@ -92,9 +88,9 @@ class _ListBody extends StatelessWidget {
 }
 
 /// The about page list footer.
-class _ListFooter extends StatelessWidget {
+class _ListFooter extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context, WidgetRef ref) => Padding(
         padding: const EdgeInsets.only(
           left: 40,
           right: 40,
@@ -108,7 +104,7 @@ class _ListFooter extends StatelessWidget {
               icon: SvgPicture.asset(
                 'assets/about/github.svg',
                 height: 40,
-                color: (context.watch<SettingsModel>().resolveTheme(context).textColor ?? Colors.black).withAlpha(255),
+                color: ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255),
               ),
               onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),

@@ -1,6 +1,5 @@
 package fr.skyost.timetable.widget
 
-import TodayWidgetDateManager
 import android.content.Context
 import android.os.Build
 import android.text.Html

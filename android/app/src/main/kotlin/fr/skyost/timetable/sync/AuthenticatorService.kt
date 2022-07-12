@@ -18,9 +18,6 @@ class AuthenticatorService : Service() {
         authenticator = Authenticator(this)
     }
 
-    /*
-     * When the system binds to this Service to make the RPC call
-     * return the authenticator's IBinder.
-     */
+    // When the system binds to this Service to make the RPC call return the authenticator's IBinder.
     override fun onBind(intent: Intent?): IBinder = authenticator.iBinder
 }

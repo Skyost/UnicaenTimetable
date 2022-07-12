@@ -1,6 +1,5 @@
 package fr.skyost.timetable.widget
 
-import TodayWidgetDateManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -13,6 +12,7 @@ import androidx.core.content.ContextCompat
 import fr.skyost.timetable.LessonRepository
 import fr.skyost.timetable.MainActivity
 import fr.skyost.timetable.R
+import fr.skyost.timetable.utils.Utils
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -75,7 +75,7 @@ class TodayWidgetReceiver : AppWidgetProvider() {
         }
         // And we schedule the next update.
         val repository = LessonRepository()
-        TodayWidgetUpdateScheduler(context).execute(repository)
+        TodayWidgetUpdateScheduler.schedule(context, repository)
     }
 
     /**
@@ -113,7 +113,7 @@ class TodayWidgetReceiver : AppWidgetProvider() {
         }
         // Otherwise we show the date.
         val date: Date = TodayWidgetDateManager.instance.absoluteDay.toDate()
-        views.setTextViewText(R.id.widget_today_title, SimpleDateFormat("E", Locale.getDefault()).format(date).toUpperCase() + " " + DateFormat.getDateFormat(context).format(date))
+        views.setTextViewText(R.id.widget_today_title, SimpleDateFormat("E", Locale.getDefault()).format(date).uppercase() + " " + DateFormat.getDateFormat(context).format(date))
     }
 
     /**
@@ -139,21 +139,21 @@ class TodayWidgetReceiver : AppWidgetProvider() {
         // We create the intent that allows to go to the current date.
         val currentFragment = Intent(context, MainActivity::class.java)
         currentFragment.putExtra(MainActivity.INTENT_DATE, now.toString("yyyy-MM-dd"))
-        views.setOnClickPendingIntent(R.id.widget_today_title, PendingIntent.getActivity(context, 0, currentFragment, PendingIntent.FLAG_UPDATE_CURRENT))
+        views.setOnClickPendingIntent(R.id.widget_today_title, PendingIntent.getActivity(context, 0, currentFragment, Utils.FLAG_IMMUTABLE_OR_UPDATE_CURRENT))
         // The refresh intent.
         val refresh = currentFragment.clone() as Intent
         refresh.putExtra(MainActivity.INTENT_REFRESH_TIMETABLE, true)
-        views.setOnClickPendingIntent(R.id.widget_today_refresh, PendingIntent.getActivity(context, 0, refresh, PendingIntent.FLAG_UPDATE_CURRENT))
+        views.setOnClickPendingIntent(R.id.widget_today_refresh, PendingIntent.getActivity(context, 0, refresh, Utils.FLAG_IMMUTABLE_OR_UPDATE_CURRENT))
         // The next button intent.
         val next = Intent(context, this.javaClass)
         next.putExtra(INTENT_REFRESH_WIDGETS, true)
         next.putExtra(INTENT_RELATIVE_DAY, getNextRelativeDays(dateManager))
-        views.setOnClickPendingIntent(R.id.widget_today_next, PendingIntent.getBroadcast(context, BACK_REQUEST, next, PendingIntent.FLAG_UPDATE_CURRENT))
+        views.setOnClickPendingIntent(R.id.widget_today_next, PendingIntent.getBroadcast(context, BACK_REQUEST, next, Utils.FLAG_IMMUTABLE_OR_UPDATE_CURRENT))
         // And the previous button intent (enabled if it's not today).
         if (dateManager.relativeDay > 0) {
             val back = next.clone() as Intent
             back.putExtra(INTENT_RELATIVE_DAY, getBackRelativeDays(dateManager))
-            views.setOnClickPendingIntent(R.id.widget_today_back, PendingIntent.getBroadcast(context, NEXT_REQUEST, back, PendingIntent.FLAG_UPDATE_CURRENT))
+            views.setOnClickPendingIntent(R.id.widget_today_back, PendingIntent.getBroadcast(context, NEXT_REQUEST, back, Utils.FLAG_IMMUTABLE_OR_UPDATE_CURRENT))
         } else {
             views.setOnClickPendingIntent(R.id.widget_today_back, null)
         }

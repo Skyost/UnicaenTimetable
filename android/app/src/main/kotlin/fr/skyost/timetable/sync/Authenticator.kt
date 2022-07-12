@@ -7,7 +7,7 @@ import android.accounts.NetworkErrorException
 import android.content.Context
 import android.os.Bundle
 
-/*
+/**
  * Implement AbstractAccountAuthenticator and stub out all
  * of its methods
  */

@@ -1,9 +1,9 @@
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/theme.dart';
+import 'package:unicaen_timetable/widgets/settings/entries/application/theme.dart';
 
 /// The app theme brightness settings entry that controls the app look and feel.
 class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
@@ -11,14 +11,14 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
   BrightnessSettingsEntry({
     required String keyPrefix,
   }) : super(
-          keyPrefix: keyPrefix,
+          categoryKey: keyPrefix,
           key: 'brightness',
           value: ThemeMode.system,
         );
 
   @override
   Future<void> flush([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.HIVE_BOX);
+    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
     await box.put(key, value.index);
   }
 
@@ -33,7 +33,7 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
   }
 
   /// Returns the theme corresponding to the specified brightness.
-  UnicaenTimetableTheme getFromBrightness(Brightness brightness) => brightness == Brightness.light ? UnicaenTimetableTheme.LIGHT : UnicaenTimetableTheme.DARK;
+  UnicaenTimetableTheme getFromBrightness(Brightness brightness) => brightness == Brightness.light ? UnicaenTimetableTheme.light : UnicaenTimetableTheme.dark;
 
   /// Resolves the theme from the specified context.
   UnicaenTimetableTheme resolve(BuildContext context) {
@@ -48,42 +48,5 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
   }
 
   @override
-  Widget render(BuildContext context) => _BrightnessSettingsEntryWidget(entry: this);
-}
-
-/// Allows to display the brightness settings entry.
-class _BrightnessSettingsEntryWidget extends StatelessWidget {
-  /// The entry.
-  final BrightnessSettingsEntry entry;
-
-  /// Creates a new brightness settings entry widget instance.
-  const _BrightnessSettingsEntryWidget({
-    required this.entry,
-  });
-
-  @override
-  Widget build(BuildContext context) => SettingsDropdownButton<ThemeMode>(
-        titleKey: 'settings.application.brightness.title',
-        onChanged: (value) async {
-          if (value != null) {
-            entry.value = value;
-            await entry.flush();
-          }
-        },
-        items: [
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.system,
-            child: Text(context.getString('settings.application.brightness.system')),
-          ),
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.light,
-            child: Text(context.getString('settings.application.brightness.light')),
-          ),
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.dark,
-            child: Text(context.getString('settings.application.brightness.dark')),
-          ),
-        ],
-        value: entry.value,
-      );
+  Widget render(BuildContext context) => BrightnessSettingsEntryWidget(entry: this);
 }

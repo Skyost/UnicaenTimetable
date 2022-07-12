@@ -1,19 +1,21 @@
 import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/pages/home/cards/card.dart';
-import 'package:unicaen_timetable/pages/home/cards/current_lesson.dart';
-import 'package:unicaen_timetable/pages/home/cards/info.dart';
-import 'package:unicaen_timetable/pages/home/cards/next_lesson.dart';
-import 'package:unicaen_timetable/pages/home/cards/synchronization_status.dart';
-import 'package:unicaen_timetable/pages/home/cards/theme.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/widgets/cards/synchronization_status.dart';
+
+final homeCardsModelProvider = ChangeNotifierProvider((ref) {
+  HomeCardsModel model = HomeCardsModel();
+  model.initialize();
+  return model;
+});
 
 /// The home cards model.
 class HomeCardsModel extends UnicaenTimetableModel {
   /// The hive box.
-  static const String _HIVE_BOX = 'home_cards';
+  static const String _hiveBox = 'home_cards';
 
   /// The home cards box.
   Box<String>? _homeCardsBox;
@@ -24,8 +26,8 @@ class HomeCardsModel extends UnicaenTimetableModel {
       return;
     }
 
-    bool boxExists = await Hive.boxExists(_HIVE_BOX);
-    _homeCardsBox = await Hive.openBox<String>(_HIVE_BOX);
+    bool boxExists = await Hive.boxExists(_hiveBox);
+    _homeCardsBox = await Hive.openBox<String>(_hiveBox);
     if (!boxExists) {
       _addInitialData();
     }
@@ -38,7 +40,7 @@ class HomeCardsModel extends UnicaenTimetableModel {
       return;
     }
 
-    addCard(SynchronizationStatusCard.ID);
+    addCard(SynchronizationStatusCard.id);
   }
 
   /// Adds a card to this model.
@@ -61,45 +63,26 @@ class HomeCardsModel extends UnicaenTimetableModel {
   bool hasCard(String id) => isInitialized ? _homeCardsBox!.values.contains(id) : false;
 
   /// Reorders the cards.
-  Future<void> reorder(List<MaterialCard> cards) async {
+  Future<void> reorder(int oldIndex, int newIndex) async {
     if (isInitialized) {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      List<String> cards = _homeCardsBox!.values.toList();
+      String card = cards.removeAt(oldIndex);
+      cards.insert(newIndex, card);
       await _homeCardsBox!.clear();
-      await _homeCardsBox!.addAll(cards.map((card) => card.cardId).toList());
+      await _homeCardsBox!.addAll(cards);
       notifyListeners();
     }
   }
 
   /// Returns all added cards, in order.
-  List<MaterialCard> get cards {
+  Iterable<String> get cards {
     if (!isInitialized) {
       return [];
     }
 
-    List<MaterialCard> cardsList = [];
-    for (String cardId in _homeCardsBox!.values) {
-      MaterialCard? card = createCardById(cardId);
-      if (card != null) {
-        cardsList.add(card);
-      }
-    }
-    return cardsList;
-  }
-
-  /// Creates a card instance by its id.
-  MaterialCard? createCardById(String cardId) {
-    switch (cardId) {
-      case SynchronizationStatusCard.ID:
-        return const SynchronizationStatusCard();
-      case CurrentLessonCard.ID:
-        return const CurrentLessonCard();
-      case NextLessonCard.ID:
-        return const NextLessonCard();
-      case ThemeCard.ID:
-        return const ThemeCard();
-      case InfoCard.ID:
-        return const InfoCard();
-      default:
-        return null;
-    }
+    return _homeCardsBox!.values;
   }
 }

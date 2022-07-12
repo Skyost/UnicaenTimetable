@@ -1,16 +1,20 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:unicaen_timetable/intro/slides.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:unicaen_timetable/intro/slides/first.dart';
+import 'package:unicaen_timetable/intro/slides/slide.dart';
+import 'package:unicaen_timetable/widgets/slide.dart';
+
+final currentSlideProvider = ChangeNotifierProvider((ref) => ValueNotifier<Slide>(const FirstSlide()));
 
 /// The intro scaffold.
 class IntroScaffold extends StatelessWidget {
-  /// Buttons style.
-  static ButtonStyle buttonStyle = ButtonStyle(
-    overlayColor: MaterialStateProperty.all<Color>(Colors.black26),
-    foregroundColor: MaterialStateProperty.resolveWith<Color>((states) => states.contains(MaterialState.disabled) ? Colors.white54 : Colors.white),
-  );
+  const IntroScaffold({
+    Key? key,
+  }) : super(
+          key: key,
+        );
 
   @override
   Widget build(BuildContext context) => Theme(
@@ -23,22 +27,26 @@ class IntroScaffold extends StatelessWidget {
               fontWeight: FontWeight.w100,
               height: 1,
             ),
-            bodyText2: TextStyle(color: Colors.white),
+            bodyText2: TextStyle(
+              color: Colors.white,
+            ),
             bodyText1: TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
           ),
+          // textButtonTheme: TextButtonThemeData(
+          //   style: ButtonStyle(
+          //     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          //   ),
+          // ),
         ),
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: const Color(0xFF171F29)),
           child: Scaffold(
-            body: ChangeNotifierProvider<IntroScaffoldBodyModel>(
-              create: (_) => IntroScaffoldBodyModel(),
-              child: Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: _IntroScaffoldBody(),
-              ),
+            body: Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: _IntroScaffoldBody(),
             ),
           ),
         ),
@@ -46,113 +54,63 @@ class IntroScaffold extends StatelessWidget {
 }
 
 /// The intro scaffold body.
-class _IntroScaffoldBody extends StatelessWidget {
+class _IntroScaffoldBody extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) => Consumer<IntroScaffoldBodyModel>(builder: (context, model, child) {
-        return WillPopScope(
-          onWillPop: () {
-            if (model.isLastSlide) {
-              return Future.value(true);
-            }
-
-            model.goToPreviousSlide();
-            return Future.value(false);
-          },
-          child: LayoutBuilder(
-            builder: (context, constraints) => SizedBox(
-              height: constraints.maxHeight,
-              width: constraints.maxWidth,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: model.currentSlide,
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    child: createFooter(context, model),
-                  ),
-                ],
-              ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    Slide slide = ref.watch(currentSlideProvider.select((provider) => provider.value));
+    return WillPopScope(
+      onWillPop: () {
+        if (!slide.isFirstSlide) {
+          ref.read(currentSlideProvider).value = slide.createPreviousSlide()!;
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: Stack(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: SlideWidget(
+              slide: slide,
             ),
           ),
-        );
-      });
+          Positioned(
+            right: 0,
+            bottom: 0,
+            left: 0,
+            child: createFooter(context, ref, slide),
+          ),
+        ],
+      ),
+    );
+  }
 
   /// Creates the footer widget.
-  Widget createFooter(BuildContext context, IntroScaffoldBodyModel model) => Container(
+  Widget createFooter(BuildContext context, WidgetRef ref, Slide slide) => Container(
         color: const Color(0xFF1F2B38),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text((model.currentSlideIndex + 1).toString() + '/' + model.slides.length.toString()),
-            ),
-            TextButton(
-              onPressed: () => model.goToNextSlide(context),
-              style: IntroScaffold.buttonStyle,
-              child: Text(context.getString('intro.buttons.' + (model.isLastSlide ? 'finish' : 'next')).toUpperCase()),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('${slide.slideIndex + 1}/${Slide.slideCount}'),
+              TextButton(
+                onPressed: () async {
+                  if (slide.isLastSlide) {
+                    await Navigator.pushReplacementNamed(context, '/');
+                  }
+                  else if (await slide.onGoToNextSlide(context)) {
+                    ref.read(currentSlideProvider).value = slide.createNextSlide()!;
+                  }
+                },
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                ),
+                child: Text(context.getString('intro.buttons.${slide.isLastSlide ? 'finish' : 'next'}').toUpperCase()),
+              ),
+            ],
+          ),
         ),
       );
-}
-
-/// The intro scaffold body model.
-class IntroScaffoldBodyModel extends ChangeNotifier {
-  /// The intro slides.
-  List<Slide> slides = [
-    const FirstSlide(),
-    const SecondSlide(),
-    const ThirdSlide(),
-  ];
-
-  /// The currently shown slide index.
-  int _currentSlideIndex = 0;
-
-  /// The currently shown slide.
-  late Slide _currentSlide;
-
-  /// Creates a new intro scaffold body model instance.
-  IntroScaffoldBodyModel() {
-    _currentSlide = slides.first;
-  }
-
-  /// Returns the currently shown slide index.
-  int get currentSlideIndex => _currentSlideIndex;
-
-  /// Returns the currently shown slide.
-  Slide get currentSlide => _currentSlide;
-
-  /// Sets the current slide.
-  set currentSlide(Slide slide) {
-    _currentSlide = slide;
-    notifyListeners();
-  }
-
-  /// Goes to the previous slide if possible.
-  void goToPreviousSlide() {
-    if (_currentSlideIndex > 0) {
-      _currentSlideIndex--;
-      currentSlide = slides[_currentSlideIndex];
-    }
-  }
-
-  /// Goes to the next slide if possible.
-  Future<void> goToNextSlide(BuildContext context) async {
-    if (isLastSlide) {
-      await Navigator.pushReplacementNamed(context, '/');
-      return;
-    }
-
-    if (await _currentSlide.onGoToNextSlide(context)) {
-      _currentSlideIndex++;
-      currentSlide = slides[_currentSlideIndex];
-    }
-  }
-
-  /// Returns whether this is the last slide.
-  bool get isLastSlide => _currentSlideIndex == slides.length - 1;
 }
