@@ -153,14 +153,18 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     RequestResultState loginResultState = await user.login(settingsModel.calendarUrl);
 
     if (loginResultState != RequestResultState.success) {
-      Navigator.pop(context);
-      setState(() => this.loginResultState = loginResultState);
+      if (mounted) {
+        Navigator.pop(context);
+        setState(() => this.loginResultState = loginResultState);
+      }
       return;
     }
 
     await userRepository.updateUser(user);
-    Navigator.pop(context);
-    Navigator.pop(context, true);
+    if (mounted) {
+      Navigator.pop(context);
+      Navigator.pop(context, true);
+    }
 
     if (widget.synchronizeAfterLogin) {
       ref.read(lessonRepositoryProvider).downloadLessons(

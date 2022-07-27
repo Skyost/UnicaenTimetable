@@ -141,7 +141,7 @@ class _PageContainerState extends ConsumerState<PageContainer> with WidgetsBindi
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       bool? shouldSync = await UnicaenTimetableRoot.channel.invokeMethod<bool>('activity.extract_should_sync');
-      if (shouldSync != null && shouldSync) {
+      if (shouldSync != null && shouldSync && mounted) {
         LessonRepository lessonRepository = ref.read(lessonRepositoryProvider);
         await lessonRepository.downloadLessonsFromWidget(context, ref);
       }

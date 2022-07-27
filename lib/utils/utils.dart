@@ -71,9 +71,9 @@ class Utils {
   }
 
   /// Opens an url, if possible.
-  static Future<void> openUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  static Future<void> openUrl(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     }
   }
 

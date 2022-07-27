@@ -7,6 +7,7 @@ class CenteredCircularProgressIndicator extends StatelessWidget {
 
   /// Creates a new centered circular progress indicator instance.
   const CenteredCircularProgressIndicator({
+    super.key,
     this.color,
   });
 

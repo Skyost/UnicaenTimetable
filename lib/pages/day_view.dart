@@ -128,6 +128,7 @@ class DayViewPage extends FlutterWeekViewWidget {
         key: _shareButtonKey,
         icon: const Icon(Icons.share),
         onPressed: () async {
+          String? languageCode = EzLocalization.of(context)?.locale.languageCode;
           RenderObject? renderObject = _shareButtonKey.currentContext?.findRenderObject();
           Offset? position;
 
@@ -140,7 +141,7 @@ class DayViewPage extends FlutterWeekViewWidget {
           LessonRepository lessonRepository = ref.read(lessonRepositoryProvider);
           List<Lesson> lessons = await lessonRepository.getLessonsForDate(date)
             ..sort();
-          builder.write('${DateFormat.yMd(EzLocalization.of(context)?.locale.languageCode).format(date)} :\n\n');
+          builder.write('${DateFormat.yMd(languageCode).format(date)} :\n\n');
           for (Lesson lesson in lessons) {
             builder.write('$lesson\n');
           }

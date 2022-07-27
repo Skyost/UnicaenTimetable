@@ -20,33 +20,30 @@ class BrightnessSettingsEntryWidget extends SettingsEntryWidget<ThemeMode> {
       );
 
   @override
-  Widget createSubtitle(BuildContext context, WidgetRef ref) {
-    print(entry.key);
-    return Padding(
-      padding: const EdgeInsets.only(top: 5),
-      child: DropdownButton<ThemeMode>(
-        isExpanded: true,
-        onChanged: (value) async {
-          if (value != null) {
-            entry.value = value;
-          }
-        },
-        items: [
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.system,
-            child: Text(context.getString('settings.application.brightness.system')),
-          ),
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.light,
-            child: Text(context.getString('settings.application.brightness.light')),
-          ),
-          DropdownMenuItem<ThemeMode>(
-            value: ThemeMode.dark,
-            child: Text(context.getString('settings.application.brightness.dark')),
-          ),
-        ],
-        value: entry.value,
-      ),
-    );
-  }
+  Widget createSubtitle(BuildContext context, WidgetRef ref) => Padding(
+        padding: const EdgeInsets.only(top: 5),
+        child: DropdownButton<ThemeMode>(
+          isExpanded: true,
+          onChanged: (value) async {
+            if (value != null) {
+              entry.value = value;
+            }
+          },
+          items: [
+            DropdownMenuItem<ThemeMode>(
+              value: ThemeMode.system,
+              child: Text(context.getString('settings.application.brightness.system')),
+            ),
+            DropdownMenuItem<ThemeMode>(
+              value: ThemeMode.light,
+              child: Text(context.getString('settings.application.brightness.light')),
+            ),
+            DropdownMenuItem<ThemeMode>(
+              value: ThemeMode.dark,
+              child: Text(context.getString('settings.application.brightness.dark')),
+            ),
+          ],
+          value: entry.value,
+        ),
+      );
 }

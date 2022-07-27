@@ -54,7 +54,7 @@ abstract class UserRepository extends UnicaenTimetableModel {
   Future<User?> _read();
 
   /// Returns whether this is the test user.
-  Future<bool> isTestUser(User? user) async => await TestUser(user).login(CalendarUrl()) == RequestResultState.success;
+  Future<bool> isTestUser(User? user) async => await TestUser(user).login(const CalendarUrl()) == RequestResultState.success;
 }
 
 /// The android user repository.

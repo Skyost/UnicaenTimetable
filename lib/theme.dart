@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 

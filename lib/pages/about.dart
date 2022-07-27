@@ -106,7 +106,7 @@ class _ListFooter extends ConsumerWidget {
                 height: 40,
                 color: ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255),
               ),
-              onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
+              onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
             ),
             IconButton(
               iconSize: 40,
@@ -114,7 +114,7 @@ class _ListFooter extends ConsumerWidget {
                 backgroundImage: AssetImage('assets/about/skyost.png'),
                 radius: 20,
               ),
-              onPressed: () => Utils.openUrl('https://www.skyost.eu'),
+              onPressed: () => Utils.openUrl(Uri.parse('https://skyost.eu')),
             ),
           ],
         ),

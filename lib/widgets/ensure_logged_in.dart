@@ -58,7 +58,6 @@ class _RedirectIfNotLoggedInWidget extends ConsumerStatefulWidget {
 
   /// Creates a new redirect if not logged in widget instance.
   const _RedirectIfNotLoggedInWidget({
-    super.key,
     required this.child,
   });
 
@@ -75,13 +74,13 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       UserRepository userRepository = ref.read(userRepositoryProvider);
       User? user = await userRepository.getUser();
-      if (user == null) {
+      if (user == null && mounted) {
         await Navigator.pushReplacementNamed(context, '/intro');
         return;
       }
 
       SettingsModel settingsModel = ref.read(settingsModelProvider);
-      RequestResultState loginResult = await user.login(settingsModel.calendarUrl);
+      RequestResultState? loginResult = await user?.login(settingsModel.calendarUrl);
       if (loginResult == RequestResultState.unauthorized) {
         await showDialog(
           context: context,

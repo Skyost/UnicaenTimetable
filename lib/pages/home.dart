@@ -156,14 +156,16 @@ class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
     AdMobSettingsEntry adMobSettingsEntry = ref.watch(settingsModelProvider.select((settings) => settings.adMobEntry));
     if (mounted) {
       AdSize? size = await AdSize.getAnchoredAdaptiveBannerAdSize(MediaQuery.of(context).orientation, MediaQuery.of(context).size.width.truncate());
-      BannerAd? banner = adMobSettingsEntry.createBanner(
-        context,
-        size: size,
-        nonPersonalizedAds: consentInformation!.wantsNonPersonalizedAds,
-      );
-      await banner?.load();
       if (mounted) {
-        setState(() => this.banner = banner);
+        BannerAd? banner = adMobSettingsEntry.createBanner(
+          context,
+          size: size,
+          nonPersonalizedAds: consentInformation!.wantsNonPersonalizedAds,
+        );
+        await banner?.load();
+        if (mounted) {
+          setState(() => this.banner = banner);
+        }
       }
     }
   }
