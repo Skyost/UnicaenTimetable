@@ -22,8 +22,8 @@ class EnsureLoggedInWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => WaitForModelsToLoadWidget(
-    child: _RedirectIfNotLoggedInWidget(child: child),
-  );
+        child: _RedirectIfNotLoggedInWidget(child: child),
+      );
 }
 
 /// Allows to wait for models to load before showing the main widget.
@@ -42,12 +42,7 @@ class WaitForModelsToLoadWidget extends ConsumerWidget {
     bool lessonRepositoryIsInitialized = ref.watch(lessonRepositoryProvider.select((model) => model.isInitialized));
     bool userRepositoryIsInitialized = ref.watch(userRepositoryProvider.select((model) => model.isInitialized));
     bool settingsModelIsInitialized = ref.watch(settingsModelProvider.select((model) => model.isInitialized));
-    return lessonRepositoryIsInitialized && userRepositoryIsInitialized && settingsModelIsInitialized
-        ? child
-        : const Scaffold(
-      body: CenteredCircularProgressIndicator(color: Colors.white),
-      backgroundColor: Colors.indigo,
-    );
+    return lessonRepositoryIsInitialized && userRepositoryIsInitialized && settingsModelIsInitialized ? child : _WaitScaffold();
   }
 }
 
@@ -67,6 +62,9 @@ class _RedirectIfNotLoggedInWidget extends ConsumerStatefulWidget {
 
 /// The redirect if not logged in widget state.
 class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLoggedInWidget> {
+  /// Whether there is an user in the repository.
+  bool hasUser = false;
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +77,9 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
         return;
       }
 
+      if (mounted) {
+        setState(() => hasUser = true);
+      }
       SettingsModel settingsModel = ref.read(settingsModelProvider);
       RequestResultState? loginResult = await user?.login(settingsModel.calendarUrl);
       if (loginResult == RequestResultState.unauthorized) {
@@ -109,5 +110,14 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => hasUser ? widget.child : _WaitScaffold();
+}
+
+/// A scaffold that allows the user to wait.
+class _WaitScaffold extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => const Scaffold(
+        body: CenteredCircularProgressIndicator(color: Colors.white),
+        backgroundColor: Colors.indigo,
+      );
 }

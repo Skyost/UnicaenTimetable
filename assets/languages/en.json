@@ -159,7 +159,7 @@
             },
             "login": {
                 "title": "We need an access to your Unicaen account…",
-                "message": "Don't worry ! This credentials will only be used to get your timetable on the Unicaen servers, nothing else."
+                "message": "Don't worry ! This credentials will only be used to download your timetable on the Unicaen servers, nothing else."
             },
             "finished": {
                 "title": "Everything is set !",
