@@ -62,9 +62,6 @@ class _RedirectIfNotLoggedInWidget extends ConsumerStatefulWidget {
 
 /// The redirect if not logged in widget state.
 class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLoggedInWidget> {
-  /// Whether there is an user in the repository.
-  bool hasUser = false;
-
   @override
   void initState() {
     super.initState();
@@ -77,9 +74,6 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
         return;
       }
 
-      if (mounted) {
-        setState(() => hasUser = true);
-      }
       SettingsModel settingsModel = ref.read(settingsModelProvider);
       RequestResultState? loginResult = await user?.login(settingsModel.calendarUrl);
       if (loginResult == RequestResultState.unauthorized) {
@@ -110,7 +104,7 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
   }
 
   @override
-  Widget build(BuildContext context) => hasUser ? widget.child : _WaitScaffold();
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// A scaffold that allows the user to wait.
