@@ -39,10 +39,19 @@ class WaitForModelsToLoadWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool lessonRepositoryIsInitialized = ref.watch(lessonRepositoryProvider.select((model) => model.isInitialized));
-    bool userRepositoryIsInitialized = ref.watch(userRepositoryProvider.select((model) => model.isInitialized));
     bool settingsModelIsInitialized = ref.watch(settingsModelProvider.select((model) => model.isInitialized));
-    return lessonRepositoryIsInitialized && userRepositoryIsInitialized && settingsModelIsInitialized ? child : _WaitScaffold();
+    if (!settingsModelIsInitialized) {
+      return _WaitScaffold(message: context.getString('scaffold.wait.settings_repository'));
+    }
+    bool lessonRepositoryIsInitialized = ref.watch(lessonRepositoryProvider.select((model) => model.isInitialized));
+    if (!lessonRepositoryIsInitialized) {
+      return _WaitScaffold(message: context.getString('scaffold.wait.lesson_repository'));
+    }
+    bool userRepositoryIsInitialized = ref.watch(userRepositoryProvider.select((model) => model.isInitialized));
+    if (!userRepositoryIsInitialized) {
+      return _WaitScaffold(message: context.getString('scaffold.wait.user_repository'));
+    }
+    return child;
   }
 }
 
@@ -62,6 +71,9 @@ class _RedirectIfNotLoggedInWidget extends ConsumerStatefulWidget {
 
 /// The redirect if not logged in widget state.
 class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLoggedInWidget> {
+  /// Whether there is an user in the repository.
+  bool hasUser = false;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +84,10 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
       if (user == null && mounted) {
         await Navigator.pushReplacementNamed(context, '/intro');
         return;
+      }
+
+      if (mounted) {
+        setState(() => hasUser = true);
       }
 
       SettingsModel settingsModel = ref.read(settingsModelProvider);
@@ -104,14 +120,34 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => hasUser
+      ? widget.child
+      : _WaitScaffold(
+          message: context.getString('scaffold.wait.has_user'),
+        );
 }
 
 /// A scaffold that allows the user to wait.
 class _WaitScaffold extends StatelessWidget {
+  /// The wait message.
+  final String message;
+
+  /// Creates a new wait scaffold instance.
+  const _WaitScaffold({
+    required this.message,
+  });
+
   @override
-  Widget build(BuildContext context) => const Scaffold(
-        body: CenteredCircularProgressIndicator(color: Colors.white),
-        backgroundColor: Colors.indigo,
+  Widget build(BuildContext context) => Theme(
+        data: ThemeData(
+          textTheme: const TextTheme(bodyText2: TextStyle(color: Colors.white)),
+        ),
+        child: Scaffold(
+          body: CenteredCircularProgressIndicator(
+            color: Colors.white,
+            message: message,
+          ),
+          backgroundColor: Colors.indigo,
+        ),
       );
 }

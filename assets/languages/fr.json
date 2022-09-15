@@ -2,6 +2,12 @@
     "app_name": "Emploi du temps Unicaen",
     "scaffold": {
         "floating_button_tooltip": "Synchroniser",
+        "wait": {
+            "settings_repository": "Initialisation des paramètres…",
+            "lesson_repository": "Initialisation du dépôt de cours…",
+            "user_repository": "Initialisation du dépôt utilisateur…",
+            "has_user": "En attente de l'utilisateur…"
+        },
         "drawer": {
             "home": "Accueil",
             "timetable": "Emploi du temps",

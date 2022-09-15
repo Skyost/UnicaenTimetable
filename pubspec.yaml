@@ -1,6 +1,6 @@
 name: unicaen_timetable
 description: Allows the students of the University of Caen Normandie to check their timetable directly from their smartphone.
-version: 3.3.3+84
+version: 3.3.4+85
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -36,7 +36,7 @@ dependencies:
 
 dev_dependencies:
   hive_generator: ^1.1.3
-  build_runner: ^2.2.0
+  build_runner: ^2.2.1
   flutter_lints: ^2.0.1
 
 flutter:
