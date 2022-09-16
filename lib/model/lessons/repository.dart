@@ -7,7 +7,6 @@ import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/result.dart';
@@ -29,17 +28,20 @@ final lessonRepositoryProvider = ChangeNotifierProvider((ref) {
 
 /// The lesson model.
 class LessonRepository extends UnicaenTimetableModel {
-  /// The lessons Hive box name.
-  static const String _lessonsHiveBox = 'lessons';
+  /// The lessons file name.
+  static const String _lessonsFilename = 'lessons';
 
-  /// The lessons colors Hive box name.
-  static const String _lessonsColorsHiveBox = 'lessons_colors';
+  /// The lessons colors file name.
+  static const String _lessonsColorsFilename = 'lessons_colors';
 
-  /// The lessons Hive box.
-  LazyBox<List>? _lessonsBox;
+  /// The lessons.
+  Map<String, List>? _lessons;
 
-  /// The lessons colors Hive box.
-  Box<int>? _lessonsColorsBox;
+  /// The lessons colors.
+  Map<String, int>? _lessonsColors;
+
+  /// The lessons file last modification date.
+  DateTime? _lastModificationDate;
 
   @override
   Future<void> initialize() async {
@@ -47,9 +49,8 @@ class LessonRepository extends UnicaenTimetableModel {
       return;
     }
 
-    Hive.registerAdapter(LessonAdapter());
-    _lessonsBox = await Hive.openLazyBox<List>(_lessonsHiveBox);
-    _lessonsColorsBox = await Hive.openBox(_lessonsColorsHiveBox);
+    _lessons = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsFilename));
+    _lessonsColors = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsColorsFilename));
 
     markInitialized();
   }
@@ -60,7 +61,7 @@ class LessonRepository extends UnicaenTimetableModel {
       return [];
     }
 
-    List result = (await _lessonsBox!.get(date.yearMonthDay.toString())) ?? [];
+    List result = _lessons![date.yearMonthDay.toString()] ?? [];
     return List<Lesson>.from(result);
   }
 
@@ -94,8 +95,9 @@ class LessonRepository extends UnicaenTimetableModel {
       return;
     }
 
-    await _lessonsBox!.clear();
+    _lessons!.clear();
     notifyListeners();
+    await _saveLessons();
   }
 
   /// Returns all weeks handled.
@@ -105,7 +107,7 @@ class LessonRepository extends UnicaenTimetableModel {
     }
 
     Set<DateTime> result = HashSet();
-    for (String date in _lessonsBox!.keys) {
+    for (String date in _lessons!.keys) {
       DateTime monday = DateTime.parse(date).atMonday;
       if (!result.contains(monday)) {
         result.add(monday);
@@ -192,17 +194,17 @@ class LessonRepository extends UnicaenTimetableModel {
       }
 
       Map<DateTime, List<Lesson>> lessons = result.object;
-      _lessonsBox!.clear();
+      _lessons!.clear();
       for (MapEntry<DateTime, List<Lesson>> entry in lessons.entries) {
-        _lessonsBox!.put(entry.key.toString(), entry.value);
+        _lessons![entry.key.toString()] = entry.value;
       }
       if (Platform.isAndroid) {
         Map<String, List<_JsonLesson>> jsonContent = HashMap();
-        for (String boxKey in _lessonsBox!.keys) {
+        for (String boxKey in _lessons!.keys) {
           DateTime date = DateTime.parse(boxKey);
           String key = date.millisecondsSinceEpoch.toString();
 
-          List lessons = (await _lessonsBox!.get(boxKey)) ?? [];
+          List lessons = _lessons![boxKey] ?? [];
           jsonContent[key] = lessons.map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
         }
 
@@ -212,6 +214,7 @@ class LessonRepository extends UnicaenTimetableModel {
       }
 
       notifyListeners();
+      await _saveLessons();
       return RequestResultState.success;
     } catch (ex, stacktrace) {
       if (kDebugMode) {
@@ -222,29 +225,57 @@ class LessonRepository extends UnicaenTimetableModel {
     return RequestResultState.genericError;
   }
 
-  /// Returns the last modification time.
-  DateTime? get lastModificationTime => isInitialized ? File(_lessonsBox!.path!).lastModifiedSync() : null;
+  /// Returns the last modification date.
+  DateTime? get lastModificationDate => _lastModificationDate;
+
+  /// Updates the last modification time.
+  Future<void> updateLastModificationDate() async {
+    DateTime? newDate = isInitialized ? await UnicaenTimetableModel.storage.getLastModificationTime(_lessonsFilename) : null;
+    if (_lastModificationDate != newDate) {
+      _lastModificationDate = newDate;
+      notifyListeners();
+    }
+  }
 
   /// Returns the color of a lesson (depends on the name).
   Color? getLessonColor(Lesson lesson) {
-    int? value = _lessonsColorsBox?.get(lesson.name);
+    int? value = _lessonsColors![lesson.name];
     return value == null ? null : Color(value);
   }
 
   /// Sets the lesson color according to its name.
   Future<void> setLessonColor(Lesson lesson, Color color) async {
     if (isInitialized) {
-      await _lessonsColorsBox!.put(lesson.name, color.value);
+      _lessonsColors![lesson.name] = color.value;
       notifyListeners();
+      await _saveLessonsColors();
     }
   }
 
   /// Resets the lesson color according to its name.
   Future<void> resetLessonColor(Lesson lesson) async {
     if (isInitialized) {
-      await _lessonsColorsBox!.delete(lesson.name);
+      _lessonsColors!.remove(lesson.name);
       notifyListeners();
+      await _saveLessonsColors();
     }
+  }
+
+  /// Saves the lessons.
+  Future<void> _saveLessons() async {
+    if (!isInitialized) {
+      return;
+    }
+    await UnicaenTimetableModel.storage.saveFile(_lessonsFilename, jsonEncode(_lessons));
+    await updateLastModificationDate();
+  }
+
+  /// Saves the lessons colors.
+  Future<void> _saveLessonsColors() async {
+    if (!isInitialized) {
+      return;
+    }
+    await UnicaenTimetableModel.storage.saveFile(_lessonsColorsFilename, jsonEncode(_lessonsColors));
   }
 }
 

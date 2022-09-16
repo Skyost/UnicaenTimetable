@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/credentials.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/application/admob.dart';
@@ -21,9 +20,9 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
         );
 
   @override
-  Future<void> load([Box? settingsBox]) {
+  Future<void> load(Map<String, dynamic> json) {
     adUnitId = kDebugMode ? 'ca-app-pub-3940256099942544/6300978111' : Credentials.adUnit;
-    return super.load(settingsBox);
+    return super.load(json);
   }
 
   /// Creates the banner ad.

@@ -1,33 +1,24 @@
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-part 'lesson.g.dart';
-
 /// Represents a lesson with a name, a description, a location, a start and an end.
-@HiveType(typeId: 1)
-class Lesson extends HiveObject with Comparable<Lesson> {
+class Lesson with Comparable<Lesson> {
   /// The lesson name.
-  @HiveField(0)
   String name;
 
   /// The lesson description.
-  @HiveField(1)
   String? description;
 
   /// The lesson location.
-  @HiveField(2)
   String location;
 
   /// The lesson start.
-  @HiveField(3)
   DateTime start;
 
   /// The lesson end.
-  @HiveField(4)
   DateTime end;
 
   /// Creates a new lesson instance.

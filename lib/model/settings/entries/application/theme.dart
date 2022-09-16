@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/theme.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/application/theme.dart';
 
@@ -17,19 +15,18 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
         );
 
   @override
-  Future<void> flush([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
-    await box.put(key, value.index);
+  void flush(Map<String, dynamic> json) {
+    json[key] = value.index;
   }
 
   @protected
   @override
-  ThemeMode decodeValue(dynamic boxValue) {
-    if (boxValue == null || boxValue is! int) {
+  ThemeMode decodeValue(dynamic value) {
+    if (value == null || value is! int) {
       return value;
     }
 
-    return ThemeMode.values[boxValue];
+    return ThemeMode.values[value];
   }
 
   /// Returns the theme corresponding to the specified brightness.

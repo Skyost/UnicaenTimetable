@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' show MobileAds;
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
@@ -19,7 +18,6 @@ import 'package:unicaen_timetable/widgets/ensure_logged_in.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  await Hive.initFlutter();
   runApp(const ProviderScope(child: UnicaenTimetableRoot()));
 
   BackgroundFetch.registerHeadlessTask(headlessSyncTask);
@@ -27,8 +25,6 @@ void main() async {
 
 /// The headless synchronization task.
 void headlessSyncTask(String taskId) async {
-  await Hive.initFlutter();
-
   UserRepository userRepository = UserRepository();
   await userRepository.initialize();
 
@@ -45,7 +41,6 @@ void headlessSyncTask(String taskId) async {
     );
   }
 
-  await Hive.close();
   BackgroundFetch.finish(taskId);
 }
 
@@ -78,12 +73,6 @@ class _UnicaenTimetableRootState extends ConsumerState<UnicaenTimetableRoot> {
         delegate: const EzLocalizationDelegate(supportedLocales: [Locale('en'), Locale('fr')]),
         builder: (context, ezLocalization) => _UnicaenTimetableApp(ezLocalization: ezLocalization),
       );
-
-  @override
-  void dispose() {
-    Hive.close();
-    super.dispose();
-  }
 
   /// Initializes the background tasks.
   Future<void> initializeBackgroundTasks() async {

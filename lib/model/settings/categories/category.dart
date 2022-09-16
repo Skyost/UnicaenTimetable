@@ -1,8 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
 
 /// A settings category.
 class SettingsCategory extends ChangeNotifier {
@@ -26,11 +24,10 @@ class SettingsCategory extends ChangeNotifier {
     }
   }
 
-  /// Loads this settings entry from the settings box.
-  Future<void> load([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
+  /// Loads this settings entry from the storage.
+  Future<void> load(Map<String, dynamic> json) async {
     for (SettingsEntry entry in _entries) {
-      await entry.load(box);
+      await entry.load(json);
     }
   }
 
@@ -54,11 +51,10 @@ class SettingsCategory extends ChangeNotifier {
     _entries.remove(entry);
   }
 
-  /// Flushes this category entries to the settings box.
-  Future<void> flush([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
+  /// Flushes this category entries to the storage.
+  Future<void> flush(Map<String, dynamic> json) async {
     for (SettingsEntry entry in _entries) {
-      entry.flush(box);
+      entry.flush(json);
     }
   }
 

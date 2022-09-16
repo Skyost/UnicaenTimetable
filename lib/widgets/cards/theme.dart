@@ -39,7 +39,7 @@ class ThemeCard extends MaterialCard<String> {
     SettingsModel settingsModel = ref.read(settingsModelProvider);
     BrightnessSettingsEntry themeEntry = settingsModel.themeEntry;
     themeEntry.value = _isDarkMode(context, ref, listen: false) ? ThemeMode.light : ThemeMode.dark;
-    themeEntry.flush();
+    settingsModel.flush();
   }
 
   /// Returns whether the app is in dark mode.

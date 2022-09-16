@@ -5,7 +5,6 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart' hide Key;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
 import 'package:unicaen_timetable/model/lessons/user/test.dart';
@@ -21,9 +20,6 @@ final userRepositoryProvider = ChangeNotifierProvider((ref) {
 
 /// The user repository.
 abstract class UserRepository extends UnicaenTimetableModel {
-  /// The password encryption key.
-  dynamic _encryptionKey;
-
   /// The cached user.
   User? _cachedUser;
 
@@ -60,16 +56,16 @@ abstract class UserRepository extends UnicaenTimetableModel {
 /// The android user repository.
 class _AndroidUserRepository extends UserRepository {
   /// The version.
-  static const int _version = 1;
+  static const int version = 1;
 
   /// The initialization vector.
-  IV? _initializationVector;
+  IV? initializationVector;
+
+  /// The password encryption key.
+  Key? encryptionKey;
 
   /// Creates a new android user repository.
   _AndroidUserRepository() : super._internal();
-
-  @override
-  Key? get _encryptionKey => super._encryptionKey as Key?;
 
   @override
   Future<void> initialize() async {
@@ -88,17 +84,17 @@ class _AndroidUserRepository extends UserRepository {
     }
 
     if (rawEncryptionKey == null) {
-      _encryptionKey = Key.fromLength(32);
-      await storage.write(key: 'encryption_key', value: _encryptionKey!.base64);
+      encryptionKey = Key.fromLength(32);
+      await storage.write(key: 'encryption_key', value: encryptionKey!.base64);
     } else {
-      _encryptionKey = Key.fromBase64(rawEncryptionKey);
+      encryptionKey = Key.fromBase64(rawEncryptionKey);
     }
 
     if (rawInitializationVector == null) {
-      _initializationVector = IV.fromLength(16);
-      await storage.write(key: 'initialization_vector', value: _initializationVector!.base64);
+      initializationVector = IV.fromLength(16);
+      await storage.write(key: 'initialization_vector', value: initializationVector!.base64);
     } else {
-      _initializationVector = IV.fromBase64(rawInitializationVector);
+      initializationVector = IV.fromBase64(rawInitializationVector);
     }
 
     markInitialized();
@@ -118,13 +114,13 @@ class _AndroidUserRepository extends UserRepository {
       }
 
       String password = response['password'];
-      if (password.startsWith((_version - 1).toString())) {
+      if (password.startsWith((version - 1).toString())) {
         return null;
       }
 
       return User(
         username: response['username'],
-        password: encrypter.decrypt64(password.substring(accountVersionPrefix.length), iv: _initializationVector),
+        password: encrypter.decrypt64(password.substring(accountVersionPrefix.length), iv: initializationVector),
       );
     } catch (ex, stacktrace) {
       if (kDebugMode) {
@@ -144,7 +140,7 @@ class _AndroidUserRepository extends UserRepository {
       await removeUser();
       await UnicaenTimetableRoot.channel.invokeMethod('account.create', {
         'username': user.username,
-        'password': accountVersionPrefix + encrypter.encrypt(user.password, iv: _initializationVector).base64,
+        'password': accountVersionPrefix + encrypter.encrypt(user.password, iv: initializationVector).base64,
       });
 
       notifyListeners();
@@ -169,16 +165,16 @@ class _AndroidUserRepository extends UserRepository {
   }
 
   /// Allows to encrypt strings using the AES algorithm.
-  Encrypter? get encrypter => _encryptionKey == null ? null : Encrypter(AES(_encryptionKey!, mode: AESMode.ofb64));
+  Encrypter? get encrypter => encryptionKey == null ? null : Encrypter(AES(encryptionKey!, mode: AESMode.ofb64));
 
   /// Returns the account version prefix.
-  String get accountVersionPrefix => '{$_version}';
+  String get accountVersionPrefix => '{$version}';
 }
 
 /// The iOS user repository.
 class _IOSUserRepository extends UserRepository {
-  /// The user hive box.
-  static const String _hiveBox = 'user';
+  /// The flutter secure storage instance.
+  FlutterSecureStorage? storage;
 
   /// Creates a new iOS user repository.
   _IOSUserRepository() : super._internal();
@@ -189,36 +185,38 @@ class _IOSUserRepository extends UserRepository {
       return;
     }
 
-    FlutterSecureStorage storage = const FlutterSecureStorage();
-
-    Hive.registerAdapter(UserAdapter());
-    String? rawEncryptionKey = await storage.read(key: 'encryption_key');
-    if (rawEncryptionKey == null) {
-      _encryptionKey = Hive.generateSecureKey();
-      await storage.write(key: 'encryption_key', value: jsonEncode(_encryptionKey));
-    } else {
-      List<int> result = [];
-      List<dynamic> jsonKey = jsonDecode(rawEncryptionKey);
-      for (dynamic value in jsonKey) {
-        result.add(value);
-      }
-      _encryptionKey = result;
-    }
-
+    storage = const FlutterSecureStorage(
+      iOptions: IOSOptions(
+        accountName: 'unicaen_timetable',
+        accessibility: KeychainAccessibility.first_unlock,
+        synchronizable: true,
+      ),
+    );
     markInitialized();
   }
 
   @override
   Future<User?> _read() async {
-    Box<User> box = await Hive.openBox<User>(_hiveBox, encryptionCipher: HiveAesCipher(_encryptionKey));
-    return box.get(0);
+    if (!isInitialized) {
+      return null;
+    }
+
+    String? username = await storage!.read(key: 'username');
+    String? password = await storage!.read(key: 'password');
+    if (username == null || password == null) {
+      return null;
+    }
+
+    return User(username: username, password: password);
   }
 
   @override
   Future<void> updateUser(User user) async {
     await super.updateUser(user);
 
-    Box<User> box = await Hive.openBox<User>(_hiveBox, encryptionCipher: HiveAesCipher(_encryptionKey));
-    await box.put(0, user);
+    if (isInitialized) {
+      await storage!.write(key: 'username', value: user.username);
+      await storage!.write(key: 'password', value: user.password);
+    }
   }
 }

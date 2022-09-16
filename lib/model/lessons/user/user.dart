@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/result.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
@@ -10,17 +9,12 @@ import 'package:unicaen_timetable/utils/calendar_url.dart';
 import 'package:unicaen_timetable/utils/http_client.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-part 'user.g.dart';
-
 /// Represents an user with an username and a password.
-@HiveType(typeId: 0)
-class User extends HiveObject {
+class User {
   /// The username.
-  @HiveField(0)
   String username;
 
   /// The password.
-  @HiveField(1)
   String password;
 
   /// Creates a new username instance.
@@ -38,9 +32,6 @@ class User extends HiveObject {
     Response? response = await client.connect(calendarUrl, this);
     if (response?.statusCode == 401 || response?.statusCode == 404) {
       username = username.endsWith('@etu.unicaen.fr') ? usernameWithoutAt : ('$username@etu.unicaen.fr');
-      if (isInBox) {
-        save();
-      }
       response = await client.connect(calendarUrl, this);
     }
 

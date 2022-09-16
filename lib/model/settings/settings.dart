@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:unicaen_timetable/model/model.dart';
 import 'package:unicaen_timetable/model/settings/categories/account.dart';
 import 'package:unicaen_timetable/model/settings/categories/application.dart';
@@ -22,7 +23,7 @@ final settingsModelProvider = ChangeNotifierProvider((ref) {
 /// The settings model.
 class SettingsModel extends UnicaenTimetableModel {
   /// The settings Hive box name.
-  static const String hiveBox = 'settings';
+  static const String _settingsFilename = 'settings.json';
 
   /// Available settings categories.
   final List<SettingsCategory> _categories = [];
@@ -43,20 +44,22 @@ class SettingsModel extends UnicaenTimetableModel {
       ServerSettingsCategory(),
     ];
 
-    Box box = await Hive.openBox(hiveBox);
+    Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_settingsFilename));
     for (SettingsCategory category in categories) {
-      await category.load(box);
+      await category.load(json);
       addCategory(category);
     }
 
     markInitialized();
   }
 
-  /// Flushes this model entries to the settings box.
-  void flush([Box? settingsBox]) async {
+  /// Flushes this model entries to the storage.
+  void flush() async {
+    Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_settingsFilename));
     for (SettingsCategory category in _categories) {
-      await category.flush(settingsBox);
+      await category.flush(json);
     }
+    await UnicaenTimetableModel.storage.saveFile(_settingsFilename, jsonEncode(json));
   }
 
   /// Adds a category to this model.

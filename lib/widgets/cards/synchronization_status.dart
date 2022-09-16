@@ -27,9 +27,10 @@ class SynchronizationStatusCard extends MaterialCard<String> {
   @override
   Future<String> requestData(BuildContext context, WidgetRef ref) async {
     LessonRepository lessonRepository = ref.watch(lessonRepositoryProvider);
-    String date = lessonRepository.lastModificationTime == null
+    DateTime? lastModificationTime = lessonRepository.lastModificationDate;
+    String date = lastModificationTime == null
         ? context.getString('home.synchronization_status.never')
-        : DateFormat.yMd(EzLocalization.of(context)?.locale.languageCode).add_Hms().format(lessonRepository.lastModificationTime!);
+        : DateFormat.yMd(EzLocalization.of(context)!.locale.languageCode).add_Hms().format(lastModificationTime);
     String status = _isBad(ref) ? 'bad' : 'good';
     String statusString = context.getString('home.synchronization_status.$status');
     return '$date\n$statusString';
@@ -46,7 +47,7 @@ class SynchronizationStatusCard extends MaterialCard<String> {
     SettingsModel settingsModel = ref.watch(settingsModelProvider);
     LessonRepository lessonRepository = ref.watch(lessonRepositoryProvider);
 
-    return lessonRepository.lastModificationTime == null ||
-        DateTime.now().difference(lessonRepository.lastModificationTime!).compareTo(Duration(days: settingsModel.getEntryByKey('server.interval')!.value) * 7) > 0;
+    return lessonRepository.lastModificationDate == null ||
+        DateTime.now().difference(lessonRepository.lastModificationDate!).compareTo(Duration(days: settingsModel.getEntryByKey('server.interval')!.value) * 7) > 0;
   }
 }

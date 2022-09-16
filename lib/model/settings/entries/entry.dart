@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/bool_entry.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/entry.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/int_entry.dart';
@@ -30,10 +28,9 @@ class SettingsEntry<T> extends ChangeNotifier {
   })  : key = (categoryKey.isEmpty ? '' : ('$categoryKey.')) + key,
         _value = value;
 
-  /// Loads this entry value from the settings box.
-  Future<void> load([Box? settingsBox]) async {
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
-    _value = decodeValue(box.get(key));
+  /// Loads this entry value from the storage.
+  Future<void> load(Map<String, dynamic> json) async {
+    _value = decodeValue(json[key]);
   }
 
   /// Returns this entry current value.
@@ -46,23 +43,22 @@ class SettingsEntry<T> extends ChangeNotifier {
     }
 
     _value = value;
-    flush();
+    // TODO: flush();
     notifyListeners();
   }
 
-  /// Flushes this entry value to the settings box.
-  Future<void> flush([Box? settingsBox]) async {
+  /// Flushes this entry value to the storage.
+  void flush(Map<String, dynamic> json) {
     if (!mutable) {
       return;
     }
 
-    Box box = settingsBox ?? await Hive.openBox(SettingsModel.hiveBox);
-    await box.put(key, value);
+    json[key] = _value;
   }
 
   /// Decodes the value that was read from a Hive box.
   @protected
-  T decodeValue(dynamic boxValue) => boxValue ?? _value;
+  T decodeValue(dynamic value) => value ?? _value;
 
   /// Renders this entry.
   Widget render(BuildContext context) {
