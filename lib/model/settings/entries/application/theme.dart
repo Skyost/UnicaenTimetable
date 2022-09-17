@@ -23,7 +23,7 @@ class BrightnessSettingsEntry extends SettingsEntry<ThemeMode> {
   @override
   ThemeMode decodeValue(dynamic value) {
     if (value == null || value is! int) {
-      return value;
+      return ThemeMode.system;
     }
 
     return ThemeMode.values[value];

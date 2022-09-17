@@ -55,7 +55,6 @@ class _PageContainerState extends ConsumerState<PageContainer> with WidgetsBindi
   void initState() {
     super.initState();
 
-    // TODO: Show message to tell that settings have been reset
     WidgetsBinding.instance.addObserver(this);
     goToDateIfNeeded();
   }

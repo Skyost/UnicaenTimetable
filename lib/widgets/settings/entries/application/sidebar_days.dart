@@ -21,6 +21,7 @@ class SidebarDaysSettingsEntryWidget extends SettingsEntryWidget<List<int>> {
     );
     if (result != null) {
       entry.value = result;
+      flush(ref);
     }
   }
 

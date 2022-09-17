@@ -25,9 +25,15 @@ class HomeCardsModel extends UnicaenTimetableModel {
       return;
     }
 
-    bool boxExists = await UnicaenTimetableModel.storage.fileExists(_homeCardsFilename);
-    _homeCardsList = jsonDecode(await UnicaenTimetableModel.storage.readFile(_homeCardsFilename));
-    if (!boxExists) {
+    bool fileExists = await UnicaenTimetableModel.storage.fileExists(_homeCardsFilename);
+    if (fileExists) {
+      _homeCardsList = [];
+      List<dynamic> jsonList = jsonDecode(await UnicaenTimetableModel.storage.readFile(_homeCardsFilename));
+      for (dynamic jsonObject in jsonList) {
+        _homeCardsList!.add(jsonObject);
+      }
+    } else {
+      _homeCardsList = [];
       _addInitialData();
     }
     markInitialized();

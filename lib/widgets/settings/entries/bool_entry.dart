@@ -19,6 +19,7 @@ class BoolSettingsEntryWidget extends SettingsEntryWidget<bool> {
   @override
   Future<void> onTap(BuildContext context, WidgetRef ref) async {
     entry.value = !entry.value;
+    flush(ref);
     super.onTap(context, ref);
   }
 }

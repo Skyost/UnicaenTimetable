@@ -7,7 +7,6 @@ import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/result.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
@@ -29,13 +28,13 @@ final lessonRepositoryProvider = ChangeNotifierProvider((ref) {
 /// The lesson model.
 class LessonRepository extends UnicaenTimetableModel {
   /// The lessons file name.
-  static const String _lessonsFilename = 'lessons';
+  static const String _lessonsFilename = 'lessons.json';
 
   /// The lessons colors file name.
-  static const String _lessonsColorsFilename = 'lessons_colors';
+  static const String _lessonsColorsFilename = 'lessons_colors.json';
 
   /// The lessons.
-  Map<String, List>? _lessons;
+  Map<String, List<Lesson>>? _lessons;
 
   /// The lessons colors.
   Map<String, int>? _lessonsColors;
@@ -49,8 +48,34 @@ class LessonRepository extends UnicaenTimetableModel {
       return;
     }
 
-    _lessons = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsFilename));
-    _lessonsColors = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsColorsFilename));
+    _lessons = {};
+    if (await UnicaenTimetableModel.storage.fileExists(_lessonsFilename)) {
+      Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsFilename));
+      for (MapEntry<String, dynamic> jsonEntry in json.entries) {
+        if (jsonEntry.value is List) {
+          List<Lesson> lessonsAtDate = [];
+          for (dynamic jsonLesson in jsonEntry.value) {
+            lessonsAtDate.add(Lesson.fromJson(jsonLesson));
+          }
+          _lessons![jsonEntry.key] = lessonsAtDate;
+        }
+      }
+    } else {
+      await UnicaenTimetableModel.storage.saveFile(_lessonsFilename, jsonEncode(_lessons));
+    }
+    _lastModificationDate = await UnicaenTimetableModel.storage.getLastModificationTime(_lessonsFilename);
+
+    _lessonsColors = {};
+    if (await UnicaenTimetableModel.storage.fileExists(_lessonsColorsFilename)) {
+      Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsColorsFilename));
+      for (MapEntry<String, dynamic> jsonEntry in json.entries) {
+        if (jsonEntry.value is int) {
+          _lessonsColors![jsonEntry.key] = jsonEntry.value;
+        }
+      }
+    } else {
+      await UnicaenTimetableModel.storage.saveFile(_lessonsColorsFilename, jsonEncode(_lessonsColors));
+    }
 
     markInitialized();
   }
@@ -61,7 +86,7 @@ class LessonRepository extends UnicaenTimetableModel {
       return [];
     }
 
-    List result = _lessons![date.yearMonthDay.toString()] ?? [];
+    List result = _lessons![date.millisecondsSinceEpoch.toString()] ?? [];
     return List<Lesson>.from(result);
   }
 
@@ -107,8 +132,8 @@ class LessonRepository extends UnicaenTimetableModel {
     }
 
     Set<DateTime> result = HashSet();
-    for (String date in _lessons!.keys) {
-      DateTime monday = DateTime.parse(date).atMonday;
+    for (String timestamp in _lessons!.keys) {
+      DateTime monday = DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp)).atMonday;
       if (!result.contains(monday)) {
         result.add(monday);
       }
@@ -196,20 +221,9 @@ class LessonRepository extends UnicaenTimetableModel {
       Map<DateTime, List<Lesson>> lessons = result.object;
       _lessons!.clear();
       for (MapEntry<DateTime, List<Lesson>> entry in lessons.entries) {
-        _lessons![entry.key.toString()] = entry.value;
+        _lessons![entry.key.millisecondsSinceEpoch.toString()] = entry.value;
       }
       if (Platform.isAndroid) {
-        Map<String, List<_JsonLesson>> jsonContent = HashMap();
-        for (String boxKey in _lessons!.keys) {
-          DateTime date = DateTime.parse(boxKey);
-          String key = date.millisecondsSinceEpoch.toString();
-
-          List lessons = _lessons![boxKey] ?? [];
-          jsonContent[key] = lessons.map((lesson) => _JsonLesson.fromLesson(lesson)).toList();
-        }
-
-        Directory directory = await getApplicationDocumentsDirectory();
-        File('${directory.path}/android_lessons.json').writeAsStringSync(jsonEncode(jsonContent), flush: true);
         UnicaenTimetableRoot.channel.invokeMethod('sync.finished');
       }
 
@@ -277,34 +291,4 @@ class LessonRepository extends UnicaenTimetableModel {
     }
     await UnicaenTimetableModel.storage.saveFile(_lessonsColorsFilename, jsonEncode(_lessonsColors));
   }
-}
-
-/// Represents a JSON lesson.
-class _JsonLesson {
-  /// The lesson name.
-  final String name;
-
-  /// The lesson start timestamp.
-  final int start;
-
-  /// The lesson end timestamp.
-  final int end;
-
-  /// The lesson location.
-  final String location;
-
-  /// Creates a new JSON lesson instance from a lesson.
-  _JsonLesson.fromLesson(Lesson lesson)
-      : name = lesson.name,
-        start = lesson.start.millisecondsSinceEpoch,
-        end = lesson.end.millisecondsSinceEpoch,
-        location = lesson.location;
-
-  /// Converts this lesson to a JSON map.
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'start': start,
-        'end': end,
-        'location': location,
-      };
 }

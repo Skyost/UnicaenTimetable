@@ -30,8 +30,15 @@ class Lesson with Comparable<Lesson> {
     required this.end,
   });
 
+  Lesson.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        description = json['description'],
+        location = json['location'],
+        start = DateTime.fromMillisecondsSinceEpoch(json['start']),
+        end = DateTime.fromMillisecondsSinceEpoch(json['end']);
+
   /// Creates a new lesson instance from a Zimbra JSON map.
-  factory Lesson.fromJson(Map<String, dynamic> inv) {
+  factory Lesson.fromZimbra(Map<String, dynamic> inv) {
     Map<String, dynamic> comp = inv['comp']!.first;
 
     String name = comp['name']!;
@@ -47,7 +54,7 @@ class Lesson with Comparable<Lesson> {
   }
 
   /// Creates a new lesson instance from a test JSON calendar.
-  factory Lesson.fromTestJson(DateTime date, Map<String, dynamic> json) {
+  factory Lesson.fromTest(DateTime date, Map<String, dynamic> json) {
     List<dynamic> startParts = json['start']!.split(':').map(int.parse).toList();
     List<dynamic> endParts = json['end']!.split(':').map(int.parse).toList();
 
@@ -76,4 +83,13 @@ class Lesson with Comparable<Lesson> {
 
   @override
   int compareTo(Lesson other) => start.compareTo(other.start);
+
+  /// Converts this lesson to a json object.
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'description': description,
+    'location': location,
+    'start': start.millisecondsSinceEpoch,
+    'end': end.millisecondsSinceEpoch,
+  };
 }

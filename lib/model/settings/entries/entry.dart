@@ -43,11 +43,10 @@ class SettingsEntry<T> extends ChangeNotifier {
     }
 
     _value = value;
-    // TODO: flush();
     notifyListeners();
   }
 
-  /// Flushes this entry value to the storage.
+  /// Flushes this entry value to the specified json map.
   void flush(Map<String, dynamic> json) {
     if (!mutable) {
       return;

@@ -50,7 +50,7 @@ class TestUser extends User {
     List<Lesson> result = [];
     List<dynamic> lessons = calendar[day];
     for (dynamic lesson in lessons) {
-      result.add(Lesson.fromTestJson(date, lesson));
+      result.add(Lesson.fromTest(date, lesson));
     }
     return result;
   }

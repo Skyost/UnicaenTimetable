@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
+import 'package:unicaen_timetable/model/settings/settings.dart';
 
 /// A widget that shows a settings entry.
 class SettingsEntryWidget<T> extends ConsumerWidget {
@@ -49,5 +50,11 @@ class SettingsEntryWidget<T> extends ConsumerWidget {
       LessonRepository lessonRepository = ref.read(lessonRepositoryProvider);
       await lessonRepository.downloadLessonsFromWidget(context, ref);
     }
+  }
+
+  /// Flushes settings.
+  @protected
+  Future<void> flush(WidgetRef ref) async {
+    await ref.read(settingsModelProvider).flush();
   }
 }

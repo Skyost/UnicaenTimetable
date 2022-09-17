@@ -44,7 +44,13 @@ class SettingsModel extends UnicaenTimetableModel {
       ServerSettingsCategory(),
     ];
 
-    Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_settingsFilename));
+    Map<String, dynamic> json = {};
+    if (await UnicaenTimetableModel.storage.fileExists(_settingsFilename)) {
+      json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_settingsFilename));
+    } else {
+      UnicaenTimetableModel.storage.saveFile(_settingsFilename, jsonEncode(json));
+    }
+
     for (SettingsCategory category in categories) {
       await category.load(json);
       addCategory(category);
@@ -54,7 +60,7 @@ class SettingsModel extends UnicaenTimetableModel {
   }
 
   /// Flushes this model entries to the storage.
-  void flush() async {
+  Future<void> flush() async {
     Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_settingsFilename));
     for (SettingsCategory category in _categories) {
       await category.flush(json);
@@ -107,9 +113,9 @@ class SettingsModel extends UnicaenTimetableModel {
 
   /// Returns the calendar URL.
   CalendarUrl get calendarUrl => CalendarUrl(
-    server: getEntryByKey('server.server')?.value,
-    calendar: getEntryByKey('server.calendar')?.value,
-    additionalParameters: getEntryByKey('server.additional_parameters')?.value,
-    interval: getEntryByKey('server.interval')?.value,
-  );
+        server: getEntryByKey('server.server')?.value,
+        calendar: getEntryByKey('server.calendar')?.value,
+        additionalParameters: getEntryByKey('server.additional_parameters')?.value,
+        interval: getEntryByKey('server.interval')?.value,
+      );
 }

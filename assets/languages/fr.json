@@ -1,6 +1,11 @@
 {
     "app_name": "Emploi du temps Unicaen",
     "scaffold": {
+        "settings_reset": {
+            "message": "Les paramètres de l'application ont dû être réinitialisés suite à une mise à jour. Nous nous excusons pour la gêne encourue.",
+            "ios": "Si vous êtes sur iOS, vous devrez peut-être également vous reconnecter.",
+            "end": "Merci pour votre fidélité dans l'utilisation de cette application \uD83D\uDC98"
+        },
         "floating_button_tooltip": "Synchroniser",
         "wait": {
             "settings_repository": "Initialisation des paramètres…",

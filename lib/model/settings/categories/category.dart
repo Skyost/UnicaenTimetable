@@ -51,7 +51,7 @@ class SettingsCategory extends ChangeNotifier {
     _entries.remove(entry);
   }
 
-  /// Flushes this category entries to the storage.
+  /// Flushes this category entries to the specified json map.
   Future<void> flush(Map<String, dynamic> json) async {
     for (SettingsEntry entry in _entries) {
       entry.flush(json);

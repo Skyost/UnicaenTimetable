@@ -27,6 +27,7 @@ class BrightnessSettingsEntryWidget extends SettingsEntryWidget<ThemeMode> {
           onChanged: (value) async {
             if (value != null) {
               entry.value = value;
+              flush(ref);
             }
           },
           items: [

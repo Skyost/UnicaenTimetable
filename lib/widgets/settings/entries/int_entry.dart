@@ -30,6 +30,7 @@ class IntSettingsEntryWidget extends SettingsEntryWidget<int> {
     }
 
     entry.value = value;
+    flush(ref);
     super.onTap(context, ref);
   }
 }

@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/user.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
+import 'package:unicaen_timetable/widgets/dialogs/consent.dart';
 import 'package:unicaen_timetable/widgets/dialogs/login.dart';
 
 /// Allows to ensure that the user is logged in.
@@ -79,6 +83,32 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // TODO: Remove this message.
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      // That's really a workaround to check whether the app has been previously opened.
+      if (mounted && preferences.containsKey(ConsentInformation.preferencesWantsNonPersonalizedAds) && !preferences.containsKey('reset_message_shown')) {
+        String message = context.getString('scaffold.settings_reset.message');
+        if (Platform.isIOS) {
+          message += '\n${context.getString('scaffold.settings_reset.ios')}';
+        }
+        message += '\n\n${context.getString('scaffold.settings_reset.end')}';
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: SingleChildScrollView(
+              child: Text(message),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
+              )
+            ],
+          ),
+        );
+      }
+      preferences.setBool('reset_message_shown', true);
+
       UserRepository userRepository = ref.read(userRepositoryProvider);
       User? user = await userRepository.getUser();
       if (user == null && mounted) {

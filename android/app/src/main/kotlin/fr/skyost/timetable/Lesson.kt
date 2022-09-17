@@ -17,7 +17,7 @@ class LessonRepository {
             return
         }
 
-        val file = File(filesDir, "android_lessons.json")
+        val file = File(filesDir, "lessons.json")
         if(!file.exists()) {
             return
         }

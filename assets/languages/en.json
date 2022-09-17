@@ -1,6 +1,11 @@
 {
     "app_name": "Unicaen Timetable",
     "scaffold": {
+        "settings_reset": {
+            "message": "The app settings have been reset due to an update. We really apologize for this trouble.",
+            "ios": "If you're on iOS, you may also have to reconnect yourself.",
+            "end": "Thanks for using this app \uD83D\uDC98"
+        },
         "floating_button_tooltip": "Synchronize",
         "wait": {
             "settings_repository": "Initializing settings…",

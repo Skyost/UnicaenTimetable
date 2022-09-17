@@ -54,7 +54,7 @@ class User {
             continue;
           }
 
-          Lesson lesson = Lesson.fromJson(jsonData['inv'].first);
+          Lesson lesson = Lesson.fromZimbra(jsonData['inv'].first);
           DateTime start = lesson.start.yearMonthDay;
           if (result.containsKey(start)) {
             List<Lesson> lessons = result[start]!;
