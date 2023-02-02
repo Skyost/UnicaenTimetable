@@ -73,7 +73,7 @@ class _AndroidUserRepository extends UserRepository {
       return;
     }
 
-    FlutterSecureStorage storage = const FlutterSecureStorage();
+    FlutterSecureStorage storage = const FlutterSecureStorage(aOptions: AndroidOptions(resetOnError: true));
     String? rawEncryptionKey = await storage.read(key: 'encryption_key');
     String? rawInitializationVector = await storage.read(key: 'initialization_vector');
 
@@ -83,18 +83,34 @@ class _AndroidUserRepository extends UserRepository {
       rawInitializationVector = null;
     }
 
-    if (rawEncryptionKey == null) {
+    try {
+      if (rawEncryptionKey != null) {
+        encryptionKey = Key.fromBase64(rawEncryptionKey);
+      }
+    } catch (ex, stacktrace) {
+      if (kDebugMode) {
+        print(ex);
+        print(stacktrace);
+      }
+    }
+    if (encryptionKey == null) {
       encryptionKey = Key.fromLength(32);
       await storage.write(key: 'encryption_key', value: encryptionKey!.base64);
-    } else {
-      encryptionKey = Key.fromBase64(rawEncryptionKey);
     }
 
-    if (rawInitializationVector == null) {
+    try {
+      if (rawEncryptionKey != null) {
+        initializationVector = IV.fromBase64(rawEncryptionKey);
+      }
+    } catch (ex, stacktrace) {
+      if (kDebugMode) {
+        print(ex);
+        print(stacktrace);
+      }
+    }
+    if (initializationVector == null) {
       initializationVector = IV.fromLength(16);
       await storage.write(key: 'initialization_vector', value: initializationVector!.base64);
-    } else {
-      initializationVector = IV.fromBase64(rawInitializationVector);
     }
 
     markInitialized();
@@ -114,7 +130,7 @@ class _AndroidUserRepository extends UserRepository {
       }
 
       String password = response['password'];
-      if (password.startsWith((version - 1).toString())) {
+      if (!password.startsWith(accountVersionPrefix)) {
         return null;
       }
 

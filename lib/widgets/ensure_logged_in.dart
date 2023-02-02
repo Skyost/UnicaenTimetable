@@ -21,19 +21,18 @@ class EnsureLoggedInWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => WaitForModelsToLoadWidget(
+  Widget build(BuildContext context) => _WaitForModelsToLoadWidget(
         child: _RedirectIfNotLoggedInWidget(child: child),
       );
 }
 
 /// Allows to wait for models to load before showing the main widget.
-class WaitForModelsToLoadWidget extends ConsumerWidget {
+class _WaitForModelsToLoadWidget extends ConsumerWidget {
   /// The child widget.
   final Widget child;
 
   /// Creates a new widget that allows to wait for models to load.
-  const WaitForModelsToLoadWidget({
-    super.key,
+  const _WaitForModelsToLoadWidget({
     required this.child,
   });
 
