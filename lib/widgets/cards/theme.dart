@@ -12,6 +12,7 @@ class ThemeCard extends MaterialCard<String> {
 
   /// Creates a new theme card instance.
   ThemeCard({
+    super.key,
     super.onRemove,
   }) : super(
           cardId: id,

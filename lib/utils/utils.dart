@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -60,6 +59,17 @@ extension NumUtils on num {
 extension MapUtils<K, V> on Map<K, V> {
   /// Returns a key by its value (returns the first).
   K? getByValue(V value) => keys.firstWhereOrNull((K key) => this[key] == value);
+}
+
+/// Contains some useful iterable methods.
+extension IterableUtils<T> on Iterable<T> {
+  /// The first element satisfying [test], or `null` if there are none.
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
 }
 
 /// Contains some useful methods.

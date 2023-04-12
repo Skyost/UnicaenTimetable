@@ -91,7 +91,7 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
 
       SettingsModel settingsModel = ref.read(settingsModelProvider);
       RequestResultState? loginResult = await user?.login(settingsModel.calendarUrl);
-      if (loginResult == RequestResultState.unauthorized) {
+      if (loginResult == RequestResultState.unauthorized && context.mounted) {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -101,15 +101,15 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
             ),
             actions: [
               TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
+              ),
+              TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   LoginDialog.show(context);
                 },
                 child: Text(context.getString('dialogs.unauthorized.button_login').toUpperCase()),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(MaterialLocalizations.of(context).closeButtonLabel.toUpperCase()),
               ),
             ],
           ),
@@ -139,7 +139,7 @@ class _WaitScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Theme(
         data: ThemeData(
-          textTheme: const TextTheme(bodyText2: TextStyle(color: Colors.white)),
+          textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
         ),
         child: Scaffold(
           body: CenteredCircularProgressIndicator(

@@ -22,10 +22,11 @@ abstract class MaterialCard<T> extends ConsumerWidget {
 
   /// Creates a new material card instance.
   MaterialCard({
+    Key? key,
     required this.cardId,
     this.onRemove,
   }) : super(
-          key: ValueKey('material-card-$cardId'),
+          key: key ?? ValueKey('material-card-$cardId'),
         );
 
   /// Creates a card instance by its id.
@@ -128,6 +129,7 @@ abstract class MaterialCard<T> extends ConsumerWidget {
 abstract class RemainingLessonsCard extends MaterialCard<List<Lesson>> {
   /// Creates the remaining lessons card.
   RemainingLessonsCard({
+    super.key,
     required super.cardId,
     super.onRemove,
   });

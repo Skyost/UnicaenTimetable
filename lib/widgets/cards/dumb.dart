@@ -9,6 +9,7 @@ class DumbCard extends MaterialCard {
 
   /// Creates a new dumb card instance.
   DumbCard({
+    super.key,
     String id = id,
     super.onRemove,
   }) : super(

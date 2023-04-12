@@ -50,20 +50,20 @@ abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerS
 
   /// Creates the actions.
   List<Widget> createActions(BuildContext context) => [
-        createOkButton(context),
         createCancelButton(context),
+        createOkButton(context),
       ];
-
-  /// Creates the "Ok" button.
-  Widget createOkButton(BuildContext context) => TextButton(
-        onPressed: () => Navigator.pop(context, value),
-        child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
-      );
 
   /// Creates the "Cancel" button.
   Widget createCancelButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.pop(context),
         child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
+      );
+
+  /// Creates the "Ok" button.
+  Widget createOkButton(BuildContext context) => TextButton(
+        onPressed: () => Navigator.pop(context, value),
+        child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
       );
 }
 

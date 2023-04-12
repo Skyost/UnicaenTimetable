@@ -17,6 +17,7 @@ class InfoCard extends MaterialCard<InfoCardData> {
 
   /// Creates a new info card instance.
   InfoCard({
+    super.key,
     super.onRemove,
   }) : super(
           cardId: id,

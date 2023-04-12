@@ -65,7 +65,7 @@ class ConsentInformation {
     Map<String, dynamic> data = jsonDecode(await http.read(uri));
     bool needToAsk = data['is_request_in_eea_or_unknown'] ?? false;
     bool wantsNonPersonalizedAds = false;
-    if (needToAsk) {
+    if (needToAsk && context.mounted) {
       bool? result = await showDialog<bool>(
         context: context,
         builder: (context) => _PersonalizedAdsConsentDialog(
@@ -103,14 +103,16 @@ class ConsentInformation {
       }
 
       ConsentInformation? result = await read();
-      result ??= await ask(
-        context: context,
-        appMessageKey: appMessageKey,
-        questionKey: questionKey,
-        privacyPolicyMessageKey: privacyPolicyMessageKey,
-        personalizedAdsButtonKey: personalizedAdsButtonKey,
-        nonPersonalizedAdsButtonKey: nonPersonalizedAdsButtonKey,
-      );
+      if (context.mounted) {
+        result ??= await ask(
+          context: context,
+          appMessageKey: appMessageKey,
+          questionKey: questionKey,
+          privacyPolicyMessageKey: privacyPolicyMessageKey,
+          personalizedAdsButtonKey: personalizedAdsButtonKey,
+          nonPersonalizedAdsButtonKey: nonPersonalizedAdsButtonKey,
+        );
+      }
 
       if (result != null) {
         return result;

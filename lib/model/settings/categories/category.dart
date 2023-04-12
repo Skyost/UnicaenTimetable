@@ -1,6 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:unicaen_timetable/model/settings/entries/entry.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// A settings category.
 class SettingsCategory extends ChangeNotifier {
@@ -44,12 +44,6 @@ class SettingsCategory extends ChangeNotifier {
 
   /// Returns an entry by its key.
   SettingsEntry? getEntryByKey(String key) => _entries.firstWhereOrNull((entry) => entry.key == key);
-
-  /// Removes an entry from this category.
-  void _removeEntry(SettingsEntry entry) {
-    entry.removeListener(notifyListeners);
-    _entries.remove(entry);
-  }
 
   /// Flushes this category entries to the specified json map.
   Future<void> flush(Map<String, dynamic> json) async {

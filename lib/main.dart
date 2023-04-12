@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:background_fetch/background_fetch.dart';
+import 'package:catcher/catcher.dart';
 import 'package:ez_localization/ez_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' show MobileAds;
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:unicaen_timetable/credentials.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
@@ -18,7 +23,24 @@ import 'package:unicaen_timetable/widgets/ensure_logged_in.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(const ProviderScope(child: UnicaenTimetableRoot()));
+  Widget main = const ProviderScope(child: UnicaenTimetableRoot());
+  if (kDebugMode) {
+    runApp(main);
+  } else {
+    CatcherOptions releaseConfig = CatcherOptions(SilentReportMode(), [
+      DiscordHandler(
+        Credentials.discordWebhook,
+        enableDeviceParameters: false,
+        enableApplicationParameters: true,
+        enableCustomParameters: true,
+        enableStackTrace: true,
+        printLogs: true,
+      ),
+    ], customParameters: {
+      'platform': Platform.isAndroid ? 'Android' : 'iOS'
+    });
+    Catcher(rootWidget: main, releaseConfig: releaseConfig);
+  }
 
   BackgroundFetch.registerHeadlessTask(headlessSyncTask);
 }
@@ -121,26 +143,26 @@ class _UnicaenTimetableApp extends ConsumerWidget {
       themeMode: settingsModel.isInitialized ? settingsModel.themeEntry.value : ThemeMode.light,
       routes: {
         '/': (_) => EnsureLoggedInWidget(
-          child: RateMyAppBuilder(
-            onInitialized: (context, rateMyApp) {
-              if (rateMyApp.shouldOpenDialog) {
-                rateMyApp.showRateDialog(
-                  context,
-                  title: context.getString('dialogs.rate.title'),
-                  message: context.getString('dialogs.rate.message'),
-                  rateButton: context.getString('dialogs.rate.button_rate').toUpperCase(),
-                  laterButton: context.getString('dialogs.rate.button_later').toUpperCase(),
-                  noButton: context.getString('dialogs.rate.button_no').toUpperCase(),
-                  ignoreNativeDialog: false,
-                );
-              }
-            },
-            builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: ref.watch(settingsModelProvider).resolveTheme(context).actionBarColor),
-              child: const PageContainer(),
+              child: RateMyAppBuilder(
+                onInitialized: (context, rateMyApp) {
+                  if (rateMyApp.shouldOpenDialog) {
+                    rateMyApp.showRateDialog(
+                      context,
+                      title: context.getString('dialogs.rate.title'),
+                      message: context.getString('dialogs.rate.message'),
+                      rateButton: context.getString('dialogs.rate.button_rate').toUpperCase(),
+                      laterButton: context.getString('dialogs.rate.button_later').toUpperCase(),
+                      noButton: context.getString('dialogs.rate.button_no').toUpperCase(),
+                      ignoreNativeDialog: false,
+                    );
+                  }
+                },
+                builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: ref.watch(settingsModelProvider).resolveTheme(context).actionBarColor),
+                  child: const PageContainer(),
+                ),
+              ),
             ),
-          ),
-        ),
         '/intro': (_) => const IntroScaffold(),
       },
       initialRoute: '/',

@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +14,7 @@ class NextLessonCard extends RemainingLessonsCard {
 
   /// Creates a new next lesson card instance.
   NextLessonCard({
+    super.key,
     super.onRemove,
   }) : super(
           cardId: id,

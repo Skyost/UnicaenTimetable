@@ -21,16 +21,16 @@ class IntroScaffold extends StatelessWidget {
         data: ThemeData(
           scaffoldBackgroundColor: const Color(0xFF2C3E50),
           textTheme: const TextTheme(
-            headline4: TextStyle(
+            headlineMedium: TextStyle(
               color: Colors.white,
               fontSize: 38,
               fontWeight: FontWeight.w100,
               height: 1,
             ),
-            bodyText2: TextStyle(
+            bodyMedium: TextStyle(
               color: Colors.white,
             ),
-            bodyText1: TextStyle(
+            bodyLarge: TextStyle(
               color: Colors.white,
               fontSize: 18,
             ),
@@ -99,8 +99,8 @@ class _IntroScaffoldBody extends ConsumerWidget {
                 onPressed: () async {
                   if (slide.isLastSlide) {
                     await Navigator.pushReplacementNamed(context, '/');
-                  }
-                  else if (await slide.onGoToNextSlide(context)) {
+                  // ignore: use_build_context_synchronously
+                  } else if (await slide.onGoToNextSlide(context)) {
                     ref.read(currentSlideProvider).value = slide.createNextSlide()!;
                   }
                 },

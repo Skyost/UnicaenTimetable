@@ -13,6 +13,7 @@ class SynchronizationStatusCard extends MaterialCard<String> {
 
   /// Creates the synchronization status card.
   SynchronizationStatusCard({
+    super.key,
     super.onRemove,
   }) : super(
           cardId: id,

@@ -153,49 +153,51 @@ class LessonRepository extends UnicaenTimetableModel {
     User? user = await ref.read(userRepositoryProvider).getUser();
     SettingsModel settingsModel = ref.read(settingsModelProvider);
     RequestResultState state = await downloadLessons(calendarUrl: settingsModel.calendarUrl, user: user);
-    switch (state) {
-      case RequestResultState.success:
-        Utils.showSnackBar(
-          context: context,
-          icon: Icons.check,
-          textKey: state.id,
-          color: Colors.green[700]!,
-        );
-        break;
-      case RequestResultState.notFound:
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(context.getString('calendar_not_found.title')),
-            content: SingleChildScrollView(
-              child: Text(context.getString('calendar_not_found.message')),
+    if (context.mounted) {
+      switch (state) {
+        case RequestResultState.success:
+          Utils.showSnackBar(
+            context: context,
+            icon: Icons.check,
+            textKey: state.id,
+            color: Colors.green[700]!,
+          );
+          break;
+        case RequestResultState.notFound:
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(context.getString('calendar_not_found.title')),
+              content: SingleChildScrollView(
+                child: Text(context.getString('calendar_not_found.message')),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+                )
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-              )
-            ],
-          ),
-        );
-        break;
-      case RequestResultState.unauthorized:
-        Utils.showSnackBar(
-          context: context,
-          icon: Icons.error_outline,
-          textKey: state.id,
-          color: Colors.amber[800]!,
-          onVisible: () => LoginDialog.show(context),
-        );
-        break;
-      default:
-        Utils.showSnackBar(
-          context: context,
-          icon: Icons.error_outline,
-          textKey: state.id,
-          color: Colors.red[800]!,
-        );
-        break;
+          );
+          break;
+        case RequestResultState.unauthorized:
+          Utils.showSnackBar(
+            context: context,
+            icon: Icons.error_outline,
+            textKey: state.id,
+            color: Colors.amber[800]!,
+            onVisible: () => LoginDialog.show(context),
+          );
+          break;
+        default:
+          Utils.showSnackBar(
+            context: context,
+            icon: Icons.error_outline,
+            textKey: state.id,
+            color: Colors.red[800]!,
+          );
+          break;
+      }
     }
   }
 

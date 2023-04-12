@@ -32,7 +32,7 @@ class SlideWidget extends StatelessWidget {
   List<Widget> createChildren(BuildContext context) => [
     Text(
       context.getString('intro.slides.${slide.slideId}.title'),
-      style: Theme.of(context).textTheme.headline4,
+      style: Theme.of(context).textTheme.headlineMedium,
       textAlign: TextAlign.center,
     ),
     Padding(

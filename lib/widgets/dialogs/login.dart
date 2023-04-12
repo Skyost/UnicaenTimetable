@@ -114,12 +114,12 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => onLoginButtonPressed(context),
-          child: Text(context.getString('dialogs.login.login').toUpperCase()),
-        ),
-        TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
+        ),
+        TextButton(
+          onPressed: () => onLoginButtonPressed(context),
+          child: Text(context.getString('dialogs.login.login').toUpperCase()),
         ),
       ],
     );
@@ -168,9 +168,9 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
 
     if (widget.synchronizeAfterLogin) {
       ref.read(lessonRepositoryProvider).downloadLessons(
-        calendarUrl: settingsModel.calendarUrl,
-        user: user,
-      );
+            calendarUrl: settingsModel.calendarUrl,
+            user: user,
+          );
     }
   }
 }

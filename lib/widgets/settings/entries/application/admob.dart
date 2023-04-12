@@ -20,7 +20,7 @@ class AdMobSettingsEntryWidget extends SettingsEntryWidget<bool> {
       yesButtonKey: 'dialogs.enable_ads.enable',
       noButtonKey: 'dialogs.enable_ads.disable',
     );
-    if (result != null && result != entry.value) {
+    if (result != null && result != entry.value && context.mounted) {
       await super.onTap(context, ref);
     }
   }

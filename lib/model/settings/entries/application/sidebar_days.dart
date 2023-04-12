@@ -28,12 +28,12 @@ class SidebarDaysSettingsEntry extends SettingsEntry<List<int>> {
 
   @protected
   @override
-  List<int> decodeValue(dynamic boxValue) {
-    if (boxValue == null || boxValue is! List) {
+  List<int> decodeValue(dynamic value) {
+    if (value == null || value is! List) {
       return super.value;
     }
 
-    return List<int>.from(boxValue)..sort();
+    return List<int>.from(value)..sort();
   }
 
   @override

@@ -85,12 +85,12 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, sidebarDays),
-          child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
-        ),
-        TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, sidebarDays),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
         ),
       ],
     );

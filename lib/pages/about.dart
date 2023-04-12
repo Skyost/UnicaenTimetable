@@ -104,7 +104,7 @@ class _ListFooter extends ConsumerWidget {
               icon: SvgPicture.asset(
                 'assets/about/github.svg',
                 height: 40,
-                color: ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255),
+                colorFilter: ColorFilter.mode(ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255), BlendMode.srcIn),
               ),
               onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
             ),

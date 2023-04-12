@@ -31,6 +31,8 @@ class StringSettingsEntryWidget extends SettingsEntryWidget<String> {
 
     entry.value = value;
     flush(ref);
-    super.onTap(context, ref);
+    if (context.mounted) {
+      super.onTap(context, ref);
+    }
   }
 }

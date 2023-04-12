@@ -27,7 +27,7 @@ class AccountSettingsEntryWidget extends SettingsEntryWidget {
   @override
   Future<void> onTap(BuildContext context, WidgetRef ref) async {
     bool result = await LoginDialog.show(context);
-    if (result) {
+    if (result && context.mounted) {
       LessonRepository lessonRepository = ref.read(lessonRepositoryProvider);
       await lessonRepository.downloadLessonsFromWidget(context, ref);
     }
