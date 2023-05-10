@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// Represents a lesson with a name, a description, a location, a start and an end.
-class Lesson with Comparable<Lesson> {
+class Lesson implements Comparable<Lesson> {
   /// The lesson name.
   String name;
 

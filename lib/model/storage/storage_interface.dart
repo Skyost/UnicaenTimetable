@@ -1,4 +1,4 @@
-abstract class StorageInterface {
+mixin StorageInterface {
   Future<String> buildPathPrefix();
 
   Future<String> readFile(String file);
