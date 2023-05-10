@@ -42,7 +42,7 @@ class UserRepository extends UnicaenTimetableModel {
         await preferences.setBool('user.has-migrated-account', true);
       }
     }
-    notifyListeners();
+    markInitialized();
   }
 
   /// Updates the user.
