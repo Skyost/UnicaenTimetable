@@ -27,19 +27,17 @@ class UserRepository extends UnicaenTimetableModel {
     }
 
     Map<dynamic, dynamic>? response = await UnicaenTimetableRoot.channel.invokeMethod<Map<dynamic, dynamic>>('account.get');
-    if (response == null) {
-      return;
-    }
-
-    _cachedUser = User(username: response['username'], password: response['password']);
-    if (await isTestUser(_cachedUser)) {
-      _cachedUser = TestUser(_cachedUser!);
-    }
-    if (_isUserAccountDeprecated) {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      if (!preferences.containsKey('user.has-migrated-account')) {
-        await removeUser();
-        await preferences.setBool('user.has-migrated-account', true);
+    if (response != null) {
+      _cachedUser = User(username: response['username'], password: response['password']);
+      if (await isTestUser(_cachedUser)) {
+        _cachedUser = TestUser(_cachedUser!);
+      }
+      if (_isUserAccountDeprecated) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        if (!preferences.containsKey('user.has-migrated-account')) {
+          await removeUser();
+          await preferences.setBool('user.has-migrated-account', true);
+        }
       }
     }
     markInitialized();
@@ -53,6 +51,7 @@ class UserRepository extends UnicaenTimetableModel {
       'username': user.username,
       'password': user.password,
     });
+    notifyListeners();
   }
 
   /// Removes the current user.

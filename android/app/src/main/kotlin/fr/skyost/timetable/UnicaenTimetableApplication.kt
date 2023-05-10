@@ -65,7 +65,7 @@ class UnicaenTimetableApplication : FlutterApplication() {
                     val manager: AccountManager = AccountManager.get(context)
                     val accounts: Array<Account> = manager.getAccountsByType(context.getString(R.string.account_type_authority))
                     if (accounts.isNotEmpty()) {
-                        manager.notifyAccountAuthenticated(accounts.first)
+                        manager.notifyAccountAuthenticated(accounts.first())
                     }
                     result.success(null)
                 }
