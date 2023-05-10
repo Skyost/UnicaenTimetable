@@ -1,19 +1,13 @@
-import 'dart:io';
-
 import 'package:background_fetch/background_fetch.dart';
-import 'package:catcher/catcher.dart';
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' show MobileAds;
 import 'package:rate_my_app/rate_my_app.dart';
-import 'package:unicaen_timetable/credentials.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/user.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page_container.dart';
 import 'package:unicaen_timetable/theme.dart';
@@ -23,25 +17,7 @@ import 'package:unicaen_timetable/widgets/ensure_logged_in.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  Widget main = const ProviderScope(child: UnicaenTimetableRoot());
-  if (kDebugMode) {
-    runApp(main);
-  } else {
-    CatcherOptions releaseConfig = CatcherOptions(SilentReportMode(), [
-      DiscordHandler(
-        Credentials.discordWebhook,
-        enableDeviceParameters: false,
-        enableApplicationParameters: true,
-        enableCustomParameters: true,
-        enableStackTrace: true,
-        printLogs: true,
-      ),
-    ], customParameters: {
-      'platform': Platform.isAndroid ? 'Android' : 'iOS'
-    });
-    Catcher(rootWidget: main, releaseConfig: releaseConfig);
-  }
-
+  runApp(const ProviderScope(child: UnicaenTimetableRoot()));
   BackgroundFetch.registerHeadlessTask(headlessSyncTask);
 }
 
@@ -50,8 +26,7 @@ void headlessSyncTask(String taskId) async {
   UserRepository userRepository = UserRepository();
   await userRepository.initialize();
 
-  User? user = await userRepository.getUser();
-  if (user != null) {
+  if (userRepository.user != null) {
     LessonRepository lessonRepository = LessonRepository();
     SettingsModel settingsModel = SettingsModel();
 
@@ -59,7 +34,7 @@ void headlessSyncTask(String taskId) async {
     await lessonRepository.initialize();
     await lessonRepository.downloadLessons(
       calendarUrl: settingsModel.calendarUrl,
-      user: user,
+      user: userRepository.user!,
     );
   }
 
@@ -116,7 +91,7 @@ class _UnicaenTimetableRootState extends ConsumerState<UnicaenTimetableRoot> {
         SettingsModel settingsModel = ref.read(settingsModelProvider);
         await settingsModel.initialize();
 
-        await lessonRepository.downloadLessons(calendarUrl: settingsModel.calendarUrl, user: await userRepository.getUser());
+        await lessonRepository.downloadLessons(calendarUrl: settingsModel.calendarUrl, user: userRepository.user);
         BackgroundFetch.finish(taskId);
       },
     );

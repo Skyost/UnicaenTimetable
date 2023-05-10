@@ -150,9 +150,7 @@ class LessonRepository extends UnicaenTimetableModel {
       color: Theme.of(context).primaryColor,
     );
 
-    User? user = await ref.read(userRepositoryProvider).getUser();
-    SettingsModel settingsModel = ref.read(settingsModelProvider);
-    RequestResultState state = await downloadLessons(calendarUrl: settingsModel.calendarUrl, user: user);
+    RequestResultState state = await downloadLessons(calendarUrl: ref.read(settingsModelProvider).calendarUrl, user: ref.read(userRepositoryProvider).user);
     if (context.mounted) {
       switch (state) {
         case RequestResultState.success:

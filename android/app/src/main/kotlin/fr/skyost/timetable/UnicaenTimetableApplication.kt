@@ -62,6 +62,11 @@ class UnicaenTimetableApplication : FlutterApplication() {
                     updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     updateIntent.putExtra(TodayWidgetReceiver.INTENT_REFRESH_WIDGETS, true)
                     context.sendBroadcast(updateIntent)
+                    val manager: AccountManager = AccountManager.get(context)
+                    val accounts: Array<Account> = manager.getAccountsByType(context.getString(R.string.account_type_authority))
+                    if (accounts.isNotEmpty()) {
+                        manager.notifyAccountAuthenticated(accounts.first)
+                    }
                     result.success(null)
                 }
                 "activity.set_alarm" -> {

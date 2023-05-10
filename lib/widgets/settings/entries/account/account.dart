@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/user.dart';
 import 'package:unicaen_timetable/widgets/dialogs/login.dart';
 import 'package:unicaen_timetable/widgets/settings/entries/entry.dart';
 
@@ -17,11 +16,7 @@ class AccountSettingsEntryWidget extends SettingsEntryWidget {
   @override
   Widget createSubtitle(BuildContext context, WidgetRef ref) {
     UserRepository userRepository = ref.watch(userRepositoryProvider);
-    return FutureBuilder<User?>(
-      initialData: null,
-      future: userRepository.getUser(),
-      builder: (context, snapshot) => snapshot.data == null ? const SizedBox.shrink() : Text(snapshot.data!.usernameWithoutAt),
-    );
+    return userRepository.user == null ? const SizedBox.shrink() : Text(userRepository.user!.usernameWithoutAt);
   }
 
   @override

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/user.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 import 'package:unicaen_timetable/widgets/dialogs/login.dart';
@@ -79,8 +78,7 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       UserRepository userRepository = ref.read(userRepositoryProvider);
-      User? user = await userRepository.getUser();
-      if (user == null && mounted) {
+      if (userRepository.user == null && mounted) {
         await Navigator.pushReplacementNamed(context, '/intro');
         return;
       }
@@ -90,7 +88,7 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
       }
 
       SettingsModel settingsModel = ref.read(settingsModelProvider);
-      RequestResultState? loginResult = await user?.login(settingsModel.calendarUrl);
+      RequestResultState? loginResult = await userRepository.user?.login(settingsModel.calendarUrl);
       if (loginResult == RequestResultState.unauthorized && context.mounted) {
         await showDialog(
           context: context,

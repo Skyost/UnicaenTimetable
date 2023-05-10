@@ -57,8 +57,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     usernameController = TextEditingController();
     passwordController = TextEditingController();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      User? user = await ref.read(userRepositoryProvider).getUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      User? user = ref.read(userRepositoryProvider).user;
       if (user != null) {
         setState(() {
           usernameController.text = user.username;
