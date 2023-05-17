@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:unicaen_timetable/pages/about.dart';
 import 'package:unicaen_timetable/pages/page_container.dart';
 import 'package:unicaen_timetable/utils/utils.dart';

@@ -17,16 +17,16 @@ dependencies:
   background_fetch: ^1.1.6
   flutter_colorpicker: ^1.0.3
   share: ^2.0.4
-  rate_my_app: ^1.1.4
+  rate_my_app: ^2.0.0
   url_launcher: ^6.1.11
-  package_info: ^2.0.2
+  package_info_plus: ^4.0.0
   device_info_plus: ^9.0.0
   scrollable_positioned_list: ^0.3.8
   google_mobile_ads: ^3.0.0
   flutter_riverpod: ^2.3.6
-  user_messaging_platform: ^1.2.1
   flutter_widget_from_html_core: ^0.10.0
   shared_preferences: ^2.1.1
+  app_tracking_transparency: ^2.0.4
 
 dev_dependencies:
   flutter_lints: ^2.0.1

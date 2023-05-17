@@ -1,3 +1,4 @@
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Page;
@@ -16,7 +17,6 @@ import 'package:unicaen_timetable/widgets/cards/next_lesson.dart';
 import 'package:unicaen_timetable/widgets/cards/synchronization_status.dart';
 import 'package:unicaen_timetable/widgets/cards/theme.dart';
 import 'package:unicaen_timetable/widgets/dialogs/consent.dart' as consent_dialog;
-import 'package:user_messaging_platform/user_messaging_platform.dart';
 
 /// The home page widget.
 class HomePage extends Page {
@@ -183,9 +183,9 @@ class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
     setState(() => this.consentInformation = consentInformation);
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      TrackingAuthorizationStatus? status = await UserMessagingPlatform.instance.getTrackingAuthorizationStatus();
-      if (status == TrackingAuthorizationStatus.notDetermined) {
-        await UserMessagingPlatform.instance.requestTrackingAuthorization();
+      TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
+      if (status == TrackingStatus.notDetermined) {
+        await AppTrackingTransparency.requestTrackingAuthorization();
       }
     }
   }
