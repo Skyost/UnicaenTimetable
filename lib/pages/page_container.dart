@@ -103,12 +103,10 @@ class _PageContainerState extends ConsumerState<PageContainer> with WidgetsBindi
           const DrawerHeader(),
           const DrawerSectionTitle(titleKey: 'home'),
           const PageListTitle(page: HomePage()),
-          const Divider(),
           const DrawerSectionTitle(titleKey: 'timetable'),
           const PageListTitle(page: WeekViewPage()),
           for (int day in settingsModel.sidebarDaysEntry.value) //
             PageListTitle(page: Page.createFromId(DayViewPage.buildPageId(day))),
-          const Divider(),
           const DrawerSectionTitle(titleKey: 'others'),
           const PageListTitle(page: SettingsPage()),
           const PageListTitle(page: BugsImprovementsPage()),
@@ -148,8 +146,3 @@ class _PageContainerState extends ConsumerState<PageContainer> with WidgetsBindi
     });
   }
 }
-
-
-
-
-

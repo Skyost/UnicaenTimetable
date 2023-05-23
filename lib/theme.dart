@@ -22,6 +22,9 @@ abstract class UnicaenTimetableTheme {
   /// The action bar color.
   final Color actionBarColor;
 
+  /// The action bar foreground color.
+  final Color actionBarForegroundColor;
+
   /// The list header text color.
   final Color listHeaderTextColor;
 
@@ -69,6 +72,7 @@ abstract class UnicaenTimetableTheme {
     required this.brightness,
     required this.primaryColor,
     required this.actionBarColor,
+    required this.actionBarForegroundColor,
     this.scaffoldBackgroundColor,
     required this.listHeaderTextColor,
     this.listTileTextColor,
@@ -88,11 +92,13 @@ abstract class UnicaenTimetableTheme {
 
   /// Converts this class values to its corresponding Flutter theme data.
   ThemeData get themeData => ThemeData(
+        useMaterial3: true,
         primaryColor: primaryColor,
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         dialogBackgroundColor: scaffoldBackgroundColor,
         appBarTheme: AppBarTheme(
           color: actionBarColor,
+          foregroundColor: actionBarForegroundColor,
         ),
         textTheme: TextTheme(
           displayLarge: TextStyle(color: textColor),
@@ -149,6 +155,7 @@ class LightTheme extends UnicaenTimetableTheme {
           brightness: Brightness.light,
           primaryColor: Colors.indigo,
           actionBarColor: Colors.indigo,
+          actionBarForegroundColor: Colors.white,
           textColor: Colors.black,
           listHeaderTextColor: Colors.black54,
           listTileTextColor: Colors.black87,
@@ -171,6 +178,7 @@ class DarkTheme extends UnicaenTimetableTheme {
           primaryColor: const Color(0xFF253341),
           scaffoldBackgroundColor: const Color(0xFF15202B),
           actionBarColor: const Color(0xFF253341),
+          actionBarForegroundColor: Colors.white,
           listHeaderTextColor: Colors.white,
           selectedListTileTextColor: Colors.white,
           textColor: Colors.white70,

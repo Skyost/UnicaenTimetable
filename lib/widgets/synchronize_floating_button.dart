@@ -24,6 +24,7 @@ class SynchronizeFloatingButton extends ConsumerWidget {
         await lessonRepository.downloadLessonsFromWidget(context, ref);
       },
       tooltip: context.getString('scaffold.floating_button_tooltip'),
+      elevation: 1,
       child: const Icon(Icons.sync),
     );
 
