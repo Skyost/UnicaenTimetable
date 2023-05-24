@@ -21,7 +21,7 @@
         "snack_bar": {
             "synchronizing": "Synchronisation…",
             "success": "Succès.",
-            "unauthorized": "Mauvais non d'utilisateur / mot de passe.",
+            "unauthorized": "Mauvais nom d'utilisateur / mot de passe.",
             "generic_error": "Erreur. Veuillez réessayer plus tard.",
             "widget_already_present": "Un tel widget est déjà ajouté sur la page d'accueil de l'application."
         }

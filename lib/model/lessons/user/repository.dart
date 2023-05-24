@@ -64,5 +64,5 @@ class UserRepository extends UnicaenTimetableModel {
   User? get user => _cachedUser;
 
   /// Returns whether the account is deprecated and should be deleted.
-  bool get _isUserAccountDeprecated => Platform.isAndroid && user != null && user!.password.startsWith('{0}');
+  bool get _isUserAccountDeprecated => Platform.isAndroid && user != null && user!.password.startsWith('{1}');
 }

@@ -1,6 +1,6 @@
 name: unicaen_timetable
 description: Allows the students of the University of Caen Normandie to check their timetable directly from their smartphone.
-version: 4.0.0+89
+version: 4.0.1+90
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
