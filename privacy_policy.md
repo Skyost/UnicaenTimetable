@@ -182,10 +182,9 @@ comme offrant un niveau de protection équivalent.
 L'Éditeur transfère les données personnelles de ses Utilisateurs en dehors des pays
 reconnus par la CNIL comme ayant un niveau de protection suffisant : L'Éditeur a obtenu
 une autorisation de la CNIL pour procéder à ce transfert.
-Pour connaître la liste de ces pays : CNIL - La protection des données dans le monde
+Pour connaître la liste de ces pays :
 
-https://www.cnil.fr/fr/la-protection-des-donnees-dans-le-mondehttps://www.cnil.fr/fr/la-
-protection-des-donnees-dans-le-monde
+[CNIL - La protection des données dans le monde](https://www.cnil.fr/fr/la-protection-des-donnees-dans-le-monde)
 
 ## 15- Modification de la politique de confidentialité
 
