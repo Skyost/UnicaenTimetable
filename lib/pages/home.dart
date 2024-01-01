@@ -1,6 +1,4 @@
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -16,7 +14,6 @@ import 'package:unicaen_timetable/widgets/cards/info.dart';
 import 'package:unicaen_timetable/widgets/cards/next_lesson.dart';
 import 'package:unicaen_timetable/widgets/cards/synchronization_status.dart';
 import 'package:unicaen_timetable/widgets/cards/theme.dart';
-import 'package:unicaen_timetable/widgets/dialogs/consent.dart' as consent_dialog;
 
 /// The home page widget.
 class HomePage extends Page {
@@ -113,7 +110,7 @@ class _HomeWidgetStack extends ConsumerStatefulWidget {
 /// The home widget stack state.
 class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
   /// The consent information.
-  consent_dialog.ConsentInformation? consentInformation;
+  ConsentStatus? consentStatus;
 
   /// The banner ad.
   BannerAd? banner;
@@ -128,7 +125,7 @@ class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
 
   @override
   Widget build(BuildContext context) {
-    if (consentInformation == null || banner == null) {
+    if (consentStatus == null || banner == null) {
       return widget.child;
     }
 
@@ -157,11 +154,7 @@ class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
     if (mounted) {
       AdSize? size = await AdSize.getAnchoredAdaptiveBannerAdSize(MediaQuery.of(context).orientation, MediaQuery.of(context).size.width.truncate());
       if (mounted) {
-        BannerAd? banner = adMobSettingsEntry.createBanner(
-          context,
-          size: size,
-          nonPersonalizedAds: consentInformation!.wantsNonPersonalizedAds,
-        );
+        BannerAd? banner = adMobSettingsEntry.createBanner(context, size: size);
         await banner?.load();
         if (mounted) {
           setState(() => this.banner = banner);
@@ -172,21 +165,31 @@ class _HomeWidgetStackState extends ConsumerState<_HomeWidgetStack> {
 
   /// Requests various consents.
   Future<void> requestConsents() async {
-    consent_dialog.ConsentInformation? consentInformation = await consent_dialog.ConsentInformation.askIfNeeded(
-      context: context,
-      appMessageKey: 'dialogs.consent.app_message',
-      questionKey: 'dialogs.consent.question',
-      privacyPolicyMessageKey: 'dialogs.consent.privacy_policy_message',
-      personalizedAdsButtonKey: 'dialogs.consent.personalized_ads_button',
-      nonPersonalizedAdsButtonKey: 'dialogs.consent.non_personalized_ads_button',
+    ConsentRequestParameters parameters = ConsentRequestParameters();
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      parameters,
+      () async {
+        if (await ConsentInformation.instance.isConsentFormAvailable()) {
+          _loadForm();
+        }
+      },
+      (_) {},
     );
-    setState(() => this.consentInformation = consentInformation);
+  }
 
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
-      if (status == TrackingStatus.notDetermined) {
-        await AppTrackingTransparency.requestTrackingAuthorization();
-      }
-    }
+  /// Loads the UMP form and displays it.
+  void _loadForm() {
+    ConsentForm.loadConsentForm(
+      (ConsentForm consentForm) async {
+        ConsentStatus status = await ConsentInformation.instance.getConsentStatus();
+        if (status == ConsentStatus.required) {
+          consentForm.show((_) => _loadForm());
+        }
+        if (mounted) {
+          setState(() => consentStatus = status);
+        }
+      },
+      (_) {},
+    );
   }
 }

@@ -10,11 +10,10 @@ final currentSlideProvider = ChangeNotifierProvider((ref) => ValueNotifier<Slide
 
 /// The intro scaffold.
 class IntroScaffold extends StatelessWidget {
+  /// Creates a new intro scaffold instance.
   const IntroScaffold({
-    Key? key,
-  }) : super(
-          key: key,
-        );
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Theme(
@@ -58,13 +57,12 @@ class _IntroScaffoldBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Slide slide = ref.watch(currentSlideProvider.select((provider) => provider.value));
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      canPop: slide.isFirstSlide,
+      onPopInvoked: (_) {
         if (!slide.isFirstSlide) {
           ref.read(currentSlideProvider).value = slide.createPreviousSlide()!;
-          return Future.value(false);
         }
-        return Future.value(true);
       },
       child: Stack(
         children: [

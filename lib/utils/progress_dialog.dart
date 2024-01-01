@@ -9,8 +9,8 @@ class ProgressDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-        onWillPop: () => Future.value(false),
+  Widget build(BuildContext context) => PopScope(
+        canPop: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -12,11 +12,9 @@ class SlideWidget extends StatelessWidget {
 
   /// Creates a new slide widget instance.
   const SlideWidget({
-    Key? key,
+    super.key,
     required this.slide,
-  }) : super(
-    key: key,
-  );
+  });
 
   @override
   Widget build(BuildContext context) => Padding(

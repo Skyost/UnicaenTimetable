@@ -26,6 +26,7 @@ abstract class _InputDialog<T> extends ConsumerStatefulWidget {
 
   /// Creates a new input dialog instance.
   const _InputDialog({
+    super.key,
     this.titleKey,
     this.initialValue,
     this.contentPadding = const EdgeInsets.all(24),
@@ -71,12 +72,10 @@ abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerS
 class TextInputDialog extends _InputDialog<String> {
   /// Creates a new text input dialog instance.
   const TextInputDialog({
-    String? titleKey,
-    String? initialValue,
-  }) : super(
-          titleKey: titleKey,
-          initialValue: initialValue,
-        );
+    super.key,
+    super.titleKey,
+    super.initialValue,
+  });
 
   @override
   ConsumerState createState() => _TextInputDialogState();
@@ -133,15 +132,13 @@ class IntInputDialog extends _InputDialog<int> {
 
   /// Creates a new integer input dialog.
   const IntInputDialog({
-    String? titleKey,
-    int? initialValue,
+    super.key,
+    super.titleKey,
+    super.initialValue,
     required this.min,
     required this.max,
     required this.divisions,
-  }) : super(
-          titleKey: titleKey,
-          initialValue: initialValue,
-        );
+  });
 
   @override
   ConsumerState createState() => _IntInputDialogState();
@@ -212,12 +209,12 @@ class BoolInputDialog extends _InputDialog<bool> {
 
   /// Creates a new boolean input dialog.
   const BoolInputDialog({
-    String? titleKey,
+    super.key,
+    super.titleKey,
     required this.messageKey,
     required this.yesButtonKey,
     required this.noButtonKey,
   }) : super(
-          titleKey: titleKey,
           initialValue: null,
         );
 
@@ -273,13 +270,11 @@ class ColorInputDialog extends _InputDialog<Color> {
 
   /// Creates a new color input dialog.
   const ColorInputDialog({
+    super.key,
     required this.lesson,
-    String? titleKey,
-    Color? initialValue,
-  }) : super(
-          titleKey: titleKey,
-          initialValue: initialValue,
-        );
+    super.titleKey,
+    super.initialValue,
+  });
 
   @override
   ConsumerState createState() => _ColorInputDialogState();
@@ -340,11 +335,10 @@ class _ColorInputDialogState extends _InputDialogState<Color, ColorInputDialog> 
 class AvailableWeekInputDialog extends _InputDialog<DateTime> {
   /// Creates a new available week input dialog.
   const AvailableWeekInputDialog({
-    String? titleKey,
-    required DateTime initialValue,
+    super.key,
+    super.titleKey,
+    required DateTime super.initialValue,
   }) : super(
-          titleKey: titleKey,
-          initialValue: initialValue,
           contentPadding: const EdgeInsets.symmetric(vertical: 24),
         );
 

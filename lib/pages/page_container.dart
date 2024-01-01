@@ -40,10 +40,8 @@ final currentPageProvider = ChangeNotifierProvider((ref) {
 class PageContainer extends ConsumerStatefulWidget {
   /// Creates a new page container instance.
   const PageContainer({
-    Key? key,
-  }) : super(
-          key: key,
-        );
+    super.key,
+  });
 
   @override
   ConsumerState createState() => _PageContainerState();

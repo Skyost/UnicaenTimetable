@@ -48,10 +48,8 @@ class UnicaenTimetableRoot extends ConsumerStatefulWidget {
 
   /// Creates a new Unicaen timetable app instance.
   const UnicaenTimetableRoot({
-    Key? key,
-  }) : super(
-          key: key,
-        );
+    super.key,
+  });
 
   @override
   ConsumerState createState() => _UnicaenTimetableRootState();

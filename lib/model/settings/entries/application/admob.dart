@@ -26,29 +26,24 @@ class AdMobSettingsEntry extends SettingsEntry<bool> {
   }
 
   /// Creates the banner ad.
-  BannerAd? createBanner(
-    BuildContext context, {
-    AdSize? size,
-    bool? nonPersonalizedAds,
-  }) =>
-      !value || adUnitId == null
-          ? null
-          : BannerAd(
-              adUnitId: adUnitId!,
-              size: size ?? AdSize.banner,
-              request: AdRequest(
-                keywords: ['caen', 'étudiant', 'université', 'unicaen'],
-                nonPersonalizedAds: nonPersonalizedAds,
-              ),
-              listener: BannerAdListener(
-                onAdFailedToLoad: (ad, error) {
-                  ad.dispose();
-                  if (kDebugMode) {
-                    print(error);
-                  }
-                },
-              ),
-            );
+  BannerAd? createBanner(BuildContext context, {AdSize? size}) => !value || adUnitId == null
+      ? null
+      : BannerAd(
+          adUnitId: adUnitId!,
+          size: size ?? AdSize.banner,
+          request: const AdRequest(
+            keywords: ['caen', 'étudiant', 'université', 'unicaen'],
+            // nonPersonalizedAds: nonPersonalizedAds,
+          ),
+          listener: BannerAdListener(
+            onAdFailedToLoad: (ad, error) {
+              ad.dispose();
+              if (kDebugMode) {
+                print(error);
+              }
+            },
+          ),
+        );
 
   @override
   Widget render(BuildContext context) => AdMobSettingsEntryWidget(entry: this);

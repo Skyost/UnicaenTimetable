@@ -28,11 +28,9 @@ class DayViewPage extends FlutterWeekViewWidget {
   DayViewPage({
     super.key,
     required this.weekDay,
-    required String pageId,
+    required super.pageId,
     super.icon,
-  }) : super(
-          pageId: pageId,
-        );
+  });
 
   /// Builds a day view page id.
   static String buildPageId(int weekDay) => 'day_view_$weekDay';

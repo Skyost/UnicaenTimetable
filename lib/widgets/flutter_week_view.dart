@@ -19,12 +19,9 @@ abstract class FlutterWeekViewWidget extends Page {
   /// Creates a new FlutterWeekView widget instance.
   const FlutterWeekViewWidget({
     super.key,
-    required String pageId,
-    IconData? icon,
-  }) : super(
-          pageId: pageId,
-          icon: icon,
-        );
+    required super.pageId,
+    super.icon,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => FutureBuilder<List<FlutterWeekViewEvent>>(
