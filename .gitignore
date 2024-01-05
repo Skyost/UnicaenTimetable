@@ -40,5 +40,10 @@ lib/generated_plugin_registrant.dart
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-/android/app/google-services.json
 ios/Flutter/.last_build_id
+
+# Firebase / Google
+/ios/Runner/GoogleService-Info.plist
+/ios/firebase_app_id_file.json
+/lib/firebase_options.dart
+/android/app/google-services.json

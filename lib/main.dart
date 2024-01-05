@@ -1,10 +1,14 @@
 import 'package:background_fetch/background_fetch.dart';
 import 'package:ez_localization/ez_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' show MobileAds;
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:unicaen_timetable/firebase_options.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
@@ -17,6 +21,12 @@ import 'package:unicaen_timetable/widgets/ensure_logged_in.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
   runApp(const ProviderScope(child: UnicaenTimetableRoot()));
   BackgroundFetch.registerHeadlessTask(headlessSyncTask);
 }
