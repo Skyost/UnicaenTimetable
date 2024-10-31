@@ -1,7 +1,8 @@
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
@@ -38,9 +39,11 @@ class _ListHeader extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              'assets/icon.svg',
+            SizedBox(
               height: 100,
+              child: ScalableImageWidget.fromSISource(
+                si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -101,10 +104,14 @@ class _ListFooter extends ConsumerWidget {
           children: [
             IconButton(
               iconSize: 40,
-              icon: SvgPicture.asset(
-                'assets/about/github.svg',
-                height: 40,
+              icon: ColorFiltered(
                 colorFilter: ColorFilter.mode(ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255), BlendMode.srcIn),
+                child: SizedBox(
+                  height: 40,
+                  child: ScalableImageWidget.fromSISource(
+                    si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
+                  ),
+                ),
               ),
               onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
             ),

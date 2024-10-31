@@ -2,7 +2,8 @@ import 'dart:math' as math;
 
 import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/services.dart';
+import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
 
 /// Allows to render a slide.
@@ -35,14 +36,18 @@ class SlideWidget extends StatelessWidget {
     ),
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
-      child: SvgPicture.asset(
-        slide.asset,
+      child: SizedBox(
+        height: 350,
         width: math.min(350, MediaQuery.of(context).size.width - 160),
+        child: ScalableImageWidget.fromSISource(
+          si: ScalableImageSource.fromSI(rootBundle, slide.asset),
+        ),
       ),
     ),
     Text(
       context.getString('intro.slides.${slide.slideId}.message'),
       textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.bodyMedium,
     ),
   ];
 }

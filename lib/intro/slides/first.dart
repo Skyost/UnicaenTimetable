@@ -6,10 +6,10 @@ class FirstSlide extends Slide {
   /// Creates a new first intro slide instance.
   const FirstSlide()
       : super(
-    slideId: 'main',
-    slideIndex: 0,
-    asset: 'assets/icon.svg',
-  );
+          slideId: 'main',
+          slideIndex: 0,
+          asset: 'assets/icon.si',
+        );
 
   @override
   Slide? createPreviousSlide() => null;

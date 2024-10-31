@@ -89,7 +89,7 @@ class _RedirectIfNotLoggedInWidgetState extends ConsumerState<_RedirectIfNotLogg
 
       SettingsModel settingsModel = ref.read(settingsModelProvider);
       RequestResultState? loginResult = await userRepository.user?.login(settingsModel.calendarUrl);
-      if (loginResult == RequestResultState.unauthorized && context.mounted) {
+      if (loginResult == RequestResultState.unauthorized && mounted) {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(

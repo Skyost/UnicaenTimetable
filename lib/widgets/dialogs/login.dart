@@ -153,7 +153,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     RequestResultState loginResultState = await user.login(settingsModel.calendarUrl);
 
     if (loginResultState != RequestResultState.success) {
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pop(context);
         setState(() => this.loginResultState = loginResultState);
       }
@@ -161,7 +161,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     }
 
     await userRepository.updateUser(user);
-    if (mounted) {
+    if (context.mounted) {
       Navigator.pop(context);
       Navigator.pop(context, true);
     }

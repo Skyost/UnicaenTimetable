@@ -19,7 +19,7 @@ abstract class Slide {
     required this.slideId,
     required this.slideIndex,
     String? asset,
-  }) : asset = asset ?? 'assets/intro/$slideId.svg';
+  }) : asset = asset ?? 'assets/intro/$slideId.si';
 
   /// Triggered when the user wants to go to the next slide.
   Future<bool> onGoToNextSlide(BuildContext context) => Future<bool>.value(true);

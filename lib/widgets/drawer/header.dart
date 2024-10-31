@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/model/lessons/user/repository.dart';
 import 'package:unicaen_timetable/model/lessons/user/user.dart';
 import 'package:unicaen_timetable/model/settings/settings.dart';
@@ -25,7 +26,9 @@ class DrawerHeader extends ConsumerWidget {
     return UserAccountsDrawerHeader(
       accountName: Text(user.usernameWithoutAt),
       accountEmail: Text(user.username.contains('@') ? user.username : ('${user.username}@etu.unicaen.fr')),
-      currentAccountPicture: SvgPicture.asset('assets/icon.svg'),
+      currentAccountPicture: ScalableImageWidget.fromSISource(
+        si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
+      ),
       decoration: BoxDecoration(color: theme.actionBarColor),
     );
   }

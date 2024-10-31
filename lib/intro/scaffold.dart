@@ -16,37 +16,13 @@ class IntroScaffold extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Theme(
-        data: ThemeData(
-          scaffoldBackgroundColor: const Color(0xFF2C3E50),
-          textTheme: const TextTheme(
-            headlineMedium: TextStyle(
-              color: Colors.white,
-              fontSize: 38,
-              fontWeight: FontWeight.w100,
-              height: 1,
-            ),
-            bodyMedium: TextStyle(
-              color: Colors.white,
-            ),
-            bodyLarge: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-          ),
-          // textButtonTheme: TextButtonThemeData(
-          //   style: ButtonStyle(
-          //     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          //   ),
-          // ),
-        ),
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: const Color(0xFF171F29)),
-          child: Scaffold(
-            body: Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: _IntroScaffoldBody(),
-            ),
+  Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: const Color(0xFF171F29)),
+        child: Scaffold(
+          backgroundColor: const Color(0xFF2C3E50),
+          body: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            child: _IntroScaffoldBody(),
           ),
         ),
       );
@@ -59,7 +35,7 @@ class _IntroScaffoldBody extends ConsumerWidget {
     Slide slide = ref.watch(currentSlideProvider.select((provider) => provider.value));
     return PopScope(
       canPop: slide.isFirstSlide,
-      onPopInvoked: (_) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!slide.isFirstSlide) {
           ref.read(currentSlideProvider).value = slide.createPreviousSlide()!;
         }
@@ -69,8 +45,32 @@ class _IntroScaffoldBody extends ConsumerWidget {
           SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: SlideWidget(
-              slide: slide,
+            child: Theme(
+              data: ThemeData(
+                textTheme: const TextTheme(
+                  headlineMedium: TextStyle(
+                    color: Colors.white,
+                    fontSize: 38,
+                    fontWeight: FontWeight.w100,
+                    height: 1,
+                  ),
+                  bodyMedium: TextStyle(
+                    color: Colors.white,
+                  ),
+                  bodyLarge: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+                // textButtonTheme: TextButtonThemeData(
+                //   style: ButtonStyle(
+                //     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                //   ),
+                // ),
+              ),
+              child: SlideWidget(
+                slide: slide,
+              ),
             ),
           ),
           Positioned(
@@ -92,18 +92,21 @@ class _IntroScaffoldBody extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${slide.slideIndex + 1}/${Slide.slideCount}'),
+              Text(
+                '${slide.slideIndex + 1}/${Slide.slideCount}',
+                style: TextStyle(color: Colors.white),
+              ),
               TextButton(
                 onPressed: () async {
                   if (slide.isLastSlide) {
                     await Navigator.pushReplacementNamed(context, '/');
-                  // ignore: use_build_context_synchronously
+                    // ignore: use_build_context_synchronously
                   } else if (await slide.onGoToNextSlide(context)) {
                     ref.read(currentSlideProvider).value = slide.createNextSlide()!;
                   }
                 },
                 style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                 ),
                 child: Text(context.getString('intro.buttons.${slide.isLastSlide ? 'finish' : 'next'}').toUpperCase()),
               ),
