@@ -1,27 +1,50 @@
-import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jovial_svg/jovial_svg.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/pages/page.dart';
+import 'package:unicaen_timetable/utils/brightness_listener.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 
-/// The about page that shows info about the app.
-class AboutPage extends Page {
-  /// The page identifier.
-  static const String id = 'about';
-
-  /// Creates a new about page instance.
-  const AboutPage({
+/// The about page list tile.
+class AboutPageListTile extends StatelessWidget {
+  /// Creates a new about page list tile.
+  const AboutPageListTile({
     super.key,
-  }) : super(
-          pageId: id,
-          icon: Icons.insert_emoticon,
-        );
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ListView(
+  Widget build(BuildContext context) => PageListTitle(
+    page: AboutPage(),
+    title: translations.about.title,
+    icon: Icons.favorite,
+  );
+}
+
+/// The about page app bar.
+class AboutPageAppBar extends StatelessWidget {
+  /// Creates a new about page app bar.
+  const AboutPageAppBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => AppBar(
+    title: Text(translations.about.title),
+  );
+}
+
+/// The about page widget.
+class AboutPageWidget extends StatelessWidget {
+  /// Creates a new about page instance.
+  const AboutPageWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => ListView(
         children: [
           _ListHeader(),
           _ListBody(),
@@ -31,10 +54,16 @@ class AboutPage extends Page {
 }
 
 /// The about page list header.
-class _ListHeader extends ConsumerWidget {
+class _ListHeader extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Container(
-        color: ref.watch(settingsModelProvider).resolveTheme(context).aboutHeaderBackgroundColor,
+  ConsumerState<ConsumerStatefulWidget> createState() => _ListHeaderState();
+}
+
+/// The list header state.
+class _ListHeaderState extends ConsumerState<_ListHeader> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => Container(
+        color: currentBrightness == Brightness.light ? const Color(0xFF7986CB) : const Color(0xFF202D3B),
         padding: const EdgeInsets.all(30),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -48,7 +77,7 @@ class _ListHeader extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Text(
-                context.getString('app_name'),
+                translations.common.appName,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -63,14 +92,14 @@ class _ListHeader extends ConsumerWidget {
 }
 
 /// The about page list body.
-class _ListBody extends ConsumerWidget {
+class _ListBody extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Padding(
+  Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(context.getString('about.paragraphs.first')),
+            Text(translations.about.paragraphs.first),
             Padding(
               padding: const EdgeInsets.all(6),
               child: SizedBox(
@@ -78,13 +107,13 @@ class _ListBody extends ConsumerWidget {
                 width: 50,
                 child: CustomPaint(
                   painter: _SymbolPainter(
-                    color: ref.watch(settingsModelProvider).resolveTheme(context).textColor,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                   willChange: false,
                 ),
               ),
             ),
-            Text(context.getString('about.paragraphs.second')),
+            Text(translations.about.paragraphs.second),
           ],
         ),
       );
@@ -104,15 +133,7 @@ class _ListFooter extends ConsumerWidget {
           children: [
             IconButton(
               iconSize: 40,
-              icon: ColorFiltered(
-                colorFilter: ColorFilter.mode(ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255), BlendMode.srcIn),
-                child: SizedBox(
-                  height: 40,
-                  child: ScalableImageWidget.fromSISource(
-                    si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
-                  ),
-                ),
-              ),
+              icon: _GithubLogo(),
               onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
             ),
             IconButton(
@@ -128,21 +149,41 @@ class _ListFooter extends ConsumerWidget {
       );
 }
 
+/// A Github logo.
+class _GithubLogo extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _GithubLogoState();
+}
+
+/// The Github logo state.
+class _GithubLogoState extends ConsumerState<_GithubLogo> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => ColorFiltered(
+        colorFilter: ColorFilter.mode(currentBrightness == Brightness.light ? Colors.black : Colors.white, BlendMode.srcIn),
+        child: SizedBox(
+          height: 40,
+          child: ScalableImageWidget.fromSISource(
+            si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
+          ),
+        ),
+      );
+}
+
 /// Paints a little but cool symbol between the two paragraphs.
 class _SymbolPainter extends CustomPainter {
   /// The symbol color.
-  final Color color;
+  final Color? color;
 
   /// Creates a new symbol painter instance.
   const _SymbolPainter({
-    required this.color,
+    this.color,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     paint.strokeWidth = 2;
-    paint.color = color;
+    paint.color = color ?? Colors.black;
     paint.style = PaintingStyle.stroke;
     paint.strokeCap = StrokeCap.butt;
     paint.isAntiAlias = true;

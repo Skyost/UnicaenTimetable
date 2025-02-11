@@ -1,0 +1,41 @@
+{
+  "lesson_info": {
+    "reset_color": "Default color",
+    "set_alarm": "Set alarm"
+  },
+  "lesson_color": {
+    "title": "Lesson color"
+  },
+  "week_picker": {
+    "title": "Pick the week to display",
+    "empty": "There is no lesson. Please check that your timetable is available on Zimbra."
+  },
+  "login": {
+    "title": "Login",
+    "username": "Étupass :",
+    "username_hint": "Before the @etu.unicaen.fr",
+    "password": "Password :",
+    "password_hint": "Your password",
+    "login": "Login",
+    "moreSettings": {
+      "button": "More settings",
+      "server": "Server address",
+      "calendarName": "Calendar name",
+      "additional_parameters": "Additional parameters"
+    },
+    "errors": {
+      "not_found": "Calendar not found : it can be caused by holidays, an unavailable timetable on Zimbra or a bad username. Another reason may be a maintenance so please try again later.",
+      "unauthorized": "Bad username / bad password.",
+      "generic_error": "An error occurred. Please try again later."
+    }
+  },
+  "calendar_not_found": {
+    "title": "Calendar not found",
+    "message": "If you just came back from holidays (or if you are in holidays), this is normal, please try again once your timetable will be available on Zimbra.\nOtherwise, it probably means that you've entered a wrong username.\nYou may also have entered a bad calendar name in the app settings or the servers are in maintenance.\nAnyway, this error is common. Please try again later."
+  },
+  "unauthorized": {
+    "title": "Wrong credentials",
+    "message": "Your username or your password may have been entered incorrectly.",
+    "button_login": "Change account"
+  }
+}

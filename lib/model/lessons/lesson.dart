@@ -1,41 +1,40 @@
-
-import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:intl/intl.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
+import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// Represents a lesson with a name, a description, a location, a start and an end.
 class Lesson implements Comparable<Lesson> {
   /// The lesson name.
-  String name;
+  final String name;
 
   /// The lesson description.
-  String? description;
+  final String? description;
 
   /// The lesson location.
-  String location;
+  final String location;
 
-  /// The lesson start.
-  DateTime start;
-
-  /// The lesson end.
-  DateTime end;
+  /// The lesson start and end.
+  final DateTimeRange dateTime;
 
   /// Creates a new lesson instance.
-  Lesson({
+  const Lesson({
     required this.name,
     this.description,
     required this.location,
-    required this.start,
-    required this.end,
+    required this.dateTime,
   });
 
+  /// Creates a new [Lesson] from a JSON map.
   Lesson.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         description = json['description'],
         location = json['location'],
-        start = DateTime.fromMillisecondsSinceEpoch(json['start']),
-        end = DateTime.fromMillisecondsSinceEpoch(json['end']);
+        dateTime = DateTimeRange(
+          start: DateTime.fromMillisecondsSinceEpoch(json['start']),
+          end: DateTime.fromMillisecondsSinceEpoch(json['end']),
+        );
 
   /// Creates a new lesson instance from a Zimbra JSON map.
   factory Lesson.fromZimbra(Map<String, dynamic> inv) {
@@ -50,7 +49,15 @@ class Lesson implements Comparable<Lesson> {
     DateTime start = DateTime.fromMillisecondsSinceEpoch(comp['s']!.first['u']!);
     DateTime end = DateTime.fromMillisecondsSinceEpoch(comp['e']!.first['u']!);
 
-    return Lesson(name: name, location: location, description: description, start: start, end: end);
+    return Lesson(
+      name: name,
+      location: location,
+      description: description,
+      dateTime: DateTimeRange(
+        start: start,
+        end: end,
+      ),
+    );
   }
 
   /// Creates a new lesson instance from a test JSON calendar.
@@ -64,32 +71,39 @@ class Lesson implements Comparable<Lesson> {
     DateTime start = date.add(Duration(hours: startParts.first, minutes: startParts.last));
     DateTime end = date.add(Duration(hours: endParts.first, minutes: endParts.last));
 
-    return Lesson(name: name, location: location, description: description, start: start, end: end);
+    return Lesson(
+      name: name,
+      location: location,
+      description: description,
+      dateTime: DateTimeRange(
+        start: start,
+        end: end,
+      ),
+    );
   }
 
   @override
   String toString([BuildContext? context]) {
     String hour;
     if (context == null) {
-      hour = '${start.hour.withLeadingZero}:${start.minute.withLeadingZero}-${end.hour.withLeadingZero}:${end.minute.withLeadingZero}';
+      hour = '${dateTime.start.hour.withLeadingZero}:${dateTime.start.minute.withLeadingZero}-${dateTime.end.hour.withLeadingZero}:${dateTime.end.minute.withLeadingZero}';
     } else {
-      String? locale = EzLocalization.of(context)?.locale.languageCode;
+      String? locale = TranslationProvider.of(context).flutterLocale.languageCode;
       DateFormat formatter = DateFormat.Hm(locale);
-      hour = '${formatter.format(start)}-${formatter.format(end)}';
+      hour = '${formatter.format(dateTime.start)}-${formatter.format(dateTime.end)}';
     }
-
     return '$hour $name ($location)';
   }
 
   @override
-  int compareTo(Lesson other) => start.compareTo(other.start);
+  int compareTo(Lesson other) => dateTime.start.compareTo(other.dateTime.start);
 
   /// Converts this lesson to a json object.
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'location': location,
-    'start': start.millisecondsSinceEpoch,
-    'end': end.millisecondsSinceEpoch,
-  };
+        'name': name,
+        'description': description,
+        'location': location,
+        'start': dateTime.start.millisecondsSinceEpoch,
+        'end': dateTime.end.millisecondsSinceEpoch,
+      };
 }

@@ -1,0 +1,7 @@
+{
+  "title": "About",
+  "paragraphs": {
+    "first": "This app has been created by Skyost and is available under the therms of the GNU GPL v3 license. It's using Flutter and has been written in Dart by using some technologies. You can view all of this using the links below.",
+    "second": "Disclaimer. This application has not been developed by any official member of the University. Consequently, do not send any request to the University if you have a problem with this application. Furthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable. If you do not trust this application, you can still check the source code with the \"Github\" link below."
+  }
+}

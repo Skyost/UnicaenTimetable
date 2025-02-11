@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jovial_svg/jovial_svg.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
 
 /// Allows to render a slide.
@@ -30,7 +30,7 @@ class SlideWidget extends StatelessWidget {
   /// Creates the list view children.
   List<Widget> createChildren(BuildContext context) => [
     Text(
-      context.getString('intro.slides.${slide.slideId}.title'),
+      translations['intro.slides.${slide.slideId}.title'],
       style: Theme.of(context).textTheme.headlineMedium,
       textAlign: TextAlign.center,
     ),
@@ -45,7 +45,7 @@ class SlideWidget extends StatelessWidget {
       ),
     ),
     Text(
-      context.getString('intro.slides.${slide.slideId}.message'),
+      translations['intro.slides.${slide.slideId}.message'],
       textAlign: TextAlign.center,
       style: Theme.of(context).textTheme.bodyMedium,
     ),

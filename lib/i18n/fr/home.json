@@ -1,0 +1,33 @@
+{
+  "title": "Accueil",
+  "no_card": "La page d'accueil de l'application est acuellement vide. N'hésitez pas à ajouter des widgets via le bouton situé en haut à droite.",
+  "loading": "Chargement…",
+  "synchronization_status": {
+    "name": "Synchronisation",
+    "title": "Dernière synchronisation :",
+    "bad": "Une synchronisation peut être requise.",
+    "good": "L'application est à jour.",
+    "never": "Jamais"
+  },
+  "current_lesson": {
+    "name": "Cours en cours",
+    "title": "Maintenant :",
+    "nothing": "Aucun cours"
+  },
+  "next_lesson": {
+    "name": "Prochain cours",
+    "title": "Prochain cours :",
+    "nothing": "Aucun aujourd'hui."
+  },
+  "current_theme": {
+    "name": "Thème actuel",
+    "title": "Thème actuel :",
+    "light": "Mode jour",
+    "dark": "Mode nuit",
+    "auto": "choisi par le système"
+  },
+  "info": {
+    "name": "Informations sur l'app",
+    "title": "Informations :"
+  }
+}

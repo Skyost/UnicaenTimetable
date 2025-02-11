@@ -1,0 +1,29 @@
+{
+  "title": "Settings",
+  "application": {
+    "title": "Application",
+    "sidebar_days": "Days to show in the sidebar",
+    "color_lessons_automatically": "Automatically color lessons",
+    "open_today_automatically": "Open today's page at launch",
+    "enable_ads": "Enable ads",
+    "brightness": {
+      "title": "Theme",
+      "values(map)": {
+        "light": "Bright",
+        "dark": "Dark",
+        "system": "Let the system choose"
+      }
+    }
+  },
+  "account": {
+    "title": "Account",
+    "switch": "Switch account"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "server": "Server address",
+    "name": "Name",
+    "additional_parameters": "Additional parameters",
+    "interval": "Number of weeks to download"
+  }
+}

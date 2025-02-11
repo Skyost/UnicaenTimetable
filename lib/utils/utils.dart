@@ -1,8 +1,23 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Finds the enum value in this list with name.
+extension EnumByName<T extends Enum> on Iterable<T> {
+  /// Finds the enum value in this list with name [name].
+  /// Returns `null` if not found.
+  T? byNameOrNull(String name) {
+    for (T value in this) {
+      if (value.name == name) {
+        return value;
+      }
+    }
+    return null;
+  }
+}
 
 /// Contains some useful string methods.
 extension StringUtils on String {
@@ -97,46 +112,51 @@ class Utils {
   }
 
   /// Shows a snack bar with an icon, a text and a color.
-  static void showSnackBar({
+  static Future<SnackBarClosedReason> showSnackBar({
     required BuildContext context,
-    required IconData icon,
-    required String textKey,
-    required Color color,
-    VoidCallback? onVisible,
+    IconData? icon,
+    required String text,
+    Color? color,
   }) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 2),
-        content: Row(
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 18,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: Text(
-                  context.getString('scaffold.snack_bar.$textKey'),
-                  style: const TextStyle(color: Colors.white),
-                ),
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 2),
+              content: Row(
+                children: [
+                  if (icon != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  Expanded(
+                    child: Text(
+                      text,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
+              backgroundColor: color,
             ),
-          ],
-        ),
-        backgroundColor: color,
-        onVisible: onVisible,
-      ));
+          )
+          .closed;
 }
 
-/// A pair of two elements.
-class Pair<A, B> {
-  /// The first element.
-  final A first;
-
-  /// The second element.
-  final B second;
-
-  /// Creates a new pair instance.
-  const Pair(this.first, this.second);
+/// Allows to cache a given provider for an amount of time.
+extension CacheForExtension on Ref<Object?> {
+  /// Keeps the provider alive for [duration].
+  void cacheFor(Duration duration) {
+    // Immediately prevent the state from getting destroyed.
+    KeepAliveLink link = keepAlive();
+    // After duration has elapsed, we re-enable automatic disposal.
+    Timer timer = Timer(duration, link.close);
+    // Optional: when the provider is recomputed (such as with ref.watch),
+    // we cancel the pending timer.
+    onDispose(timer.cancel);
+  }
 }

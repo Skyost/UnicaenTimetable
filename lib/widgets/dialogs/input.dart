@@ -1,22 +1,15 @@
 import 'dart:math' as math;
 
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:unicaen_timetable/model/lessons/lesson.dart';
-import 'package:unicaen_timetable/model/lessons/repository.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
-import 'package:unicaen_timetable/widgets/flutter_week_view.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 
 /// A dialog that allows to prompt the user for a value.
 abstract class _InputDialog<T> extends ConsumerStatefulWidget {
   /// The title text key.
-  final String? titleKey;
+  final String? title;
 
   /// The initial value.
   final T? initialValue;
@@ -27,7 +20,7 @@ abstract class _InputDialog<T> extends ConsumerStatefulWidget {
   /// Creates a new input dialog instance.
   const _InputDialog({
     super.key,
-    this.titleKey,
+    this.title,
     this.initialValue,
     this.contentPadding = const EdgeInsets.all(24),
   });
@@ -37,7 +30,7 @@ abstract class _InputDialog<T> extends ConsumerStatefulWidget {
 abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerState<T> {
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: widget.titleKey == null ? null : Text(context.getString(widget.titleKey!)),
+        title: widget.title == null ? null : Text(widget.title!),
         contentPadding: widget.contentPadding,
         content: buildForm(context),
         actions: createActions(context),
@@ -58,13 +51,13 @@ abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerS
   /// Creates the "Cancel" button.
   Widget createCancelButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.pop(context),
-        child: Text(MaterialLocalizations.of(context).cancelButtonLabel.toUpperCase()),
+        child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
       );
 
   /// Creates the "Ok" button.
   Widget createOkButton(BuildContext context) => TextButton(
         onPressed: () => Navigator.pop(context, value),
-        child: Text(MaterialLocalizations.of(context).okButtonLabel.toUpperCase()),
+        child: Text(MaterialLocalizations.of(context).okButtonLabel),
       );
 }
 
@@ -73,7 +66,7 @@ class TextInputDialog extends _InputDialog<String> {
   /// Creates a new text input dialog instance.
   const TextInputDialog({
     super.key,
-    super.titleKey,
+    super.title,
     super.initialValue,
   });
 
@@ -83,13 +76,13 @@ class TextInputDialog extends _InputDialog<String> {
   /// Prompts the user for a text value.
   static Future<String?> getValue(
     BuildContext context, {
-    String? titleKey,
+    String? title,
     String? initialValue,
   }) =>
       showDialog<String?>(
         context: context,
         builder: (_) => TextInputDialog(
-          titleKey: titleKey,
+          title: title,
           initialValue: initialValue,
         ),
       );
@@ -133,7 +126,7 @@ class IntInputDialog extends _InputDialog<int> {
   /// Creates a new integer input dialog.
   const IntInputDialog({
     super.key,
-    super.titleKey,
+    super.title,
     super.initialValue,
     required this.min,
     required this.max,
@@ -146,7 +139,7 @@ class IntInputDialog extends _InputDialog<int> {
   /// Prompts the user for an integer value.
   static Future<int?> getValue(
     BuildContext context, {
-    String? titleKey,
+    String? title,
     int? initialValue,
     required int min,
     required int max,
@@ -155,7 +148,7 @@ class IntInputDialog extends _InputDialog<int> {
       showDialog<int?>(
         context: context,
         builder: (_) => IntInputDialog(
-          titleKey: titleKey,
+          title: title,
           initialValue: initialValue,
           min: min,
           max: max,
@@ -196,83 +189,16 @@ class _IntInputDialogState extends _InputDialogState<int, IntInputDialog> {
   int get value => currentValue;
 }
 
-/// A boolean input dialog.
-class BoolInputDialog extends _InputDialog<bool> {
-  /// The message key.
-  final String messageKey;
-
-  /// The yes button key.
-  final String yesButtonKey;
-
-  /// The no button key.
-  final String noButtonKey;
-
-  /// Creates a new boolean input dialog.
-  const BoolInputDialog({
-    super.key,
-    super.titleKey,
-    required this.messageKey,
-    required this.yesButtonKey,
-    required this.noButtonKey,
-  }) : super(
-          initialValue: null,
-        );
-
-  @override
-  ConsumerState createState() => _BoolInputDialogState();
-
-  /// Prompts the user for a boolean value.
-  static Future<bool?> getValue(
-    BuildContext context, {
-    String? titleKey,
-    required String messageKey,
-    required String yesButtonKey,
-    required String noButtonKey,
-  }) =>
-      showDialog<bool?>(
-        context: context,
-        builder: (_) => BoolInputDialog(
-          titleKey: titleKey,
-          messageKey: messageKey,
-          yesButtonKey: yesButtonKey,
-          noButtonKey: noButtonKey,
-        ),
-      );
-}
-
-/// The boolean input dialog state.
-class _BoolInputDialogState extends _InputDialogState<bool, BoolInputDialog> {
-  @override
-  Widget buildForm(BuildContext context) => SingleChildScrollView(
-        child: Text(context.getString((widget).messageKey)),
-      );
-
-  @override
-  Widget createOkButton(BuildContext context) => TextButton(
-        onPressed: () => Navigator.pop(context, true),
-        child: Text(context.getString((widget).yesButtonKey).toUpperCase()),
-      );
-
-  @override
-  Widget createCancelButton(BuildContext context) => TextButton(
-        onPressed: () => Navigator.pop(context, false),
-        child: Text(context.getString((widget).noButtonKey).toUpperCase()),
-      );
-
-  @override
-  bool? get value => null;
-}
-
 /// A color input dialog.
 class ColorInputDialog extends _InputDialog<Color> {
-  /// The target lesson.
-  final Lesson lesson;
+  /// The default color.
+  final Color? resetColor;
 
   /// Creates a new color input dialog.
   const ColorInputDialog({
     super.key,
-    required this.lesson,
-    super.titleKey,
+    this.resetColor,
+    super.title,
     super.initialValue,
   });
 
@@ -282,15 +208,15 @@ class ColorInputDialog extends _InputDialog<Color> {
   /// Prompts the user for a color value.
   static Future<Color?> getValue(
     BuildContext context, {
-    required Lesson lesson,
-    String? titleKey,
+    Color? resetColor,
+    String? title,
     Color? initialValue,
   }) =>
       showDialog<Color?>(
         context: context,
         builder: (_) => ColorInputDialog(
-          lesson: lesson,
-          titleKey: titleKey,
+          resetColor: resetColor,
+          title: title,
           initialValue: initialValue,
         ),
       );
@@ -321,110 +247,105 @@ class _ColorInputDialogState extends _InputDialogState<Color, ColorInputDialog> 
 
   @override
   List<Widget> createActions(BuildContext context) => [
-        TextButton(
-          onPressed: () {
-            setState(() => currentColor = FlutterWeekViewWidget.computeColors(widget.lesson, settingsModel: ref.read(settingsModelProvider)).first);
-          },
-          child: Text(context.getString('dialogs.lesson_info.reset_color').toUpperCase()),
-        ),
+        if (widget.resetColor != null)
+          TextButton(
+            onPressed: () {
+              setState(() => currentColor = widget.resetColor!);
+            },
+            child: Text(translations.dialogs.lessonInfo.resetColor),
+          ),
         ...super.createActions(context),
       ];
 }
 
 /// An available week input dialog.
-class AvailableWeekInputDialog extends _InputDialog<DateTime> {
+class MultiChoicePickerDialog<T> extends _InputDialog<T> {
+  /// The available values.
+  final List<T> values;
+
+  /// The message to display if empty.
+  final String emptyMessage;
+
+  /// Converts a [T] to a readable [String].
+  final String Function(T)? valueToString;
+
   /// Creates a new available week input dialog.
-  const AvailableWeekInputDialog({
+  const MultiChoicePickerDialog({
     super.key,
-    super.titleKey,
-    required DateTime super.initialValue,
+    super.title,
+    super.initialValue,
+    this.values = const [],
+    required this.emptyMessage,
+    this.valueToString,
   }) : super(
           contentPadding: const EdgeInsets.symmetric(vertical: 24),
         );
 
   @override
-  ConsumerState createState() => _AvailableWeekInputDialogState();
+  ConsumerState createState() => _AvailableWeekInputDialogState<T>();
 
   /// Prompts the user for an available week value.
-  static Future<DateTime?> getValue(
+  static Future<T?> getValue<T>(
     BuildContext context, {
-    String? titleKey,
-    required DateTime initialValue,
+    String? title,
+    T? initialValue,
+    List<T>? values,
+    required String emptyMessage,
+        String Function(T)? valueToString,
   }) =>
-      showDialog<DateTime?>(
+      showDialog<T?>(
         context: context,
-        builder: (_) => AvailableWeekInputDialog(
-          titleKey: titleKey,
+        builder: (_) => MultiChoicePickerDialog<T>(
+          title: title,
           initialValue: initialValue,
+          values: values ?? [],
+          emptyMessage: emptyMessage,
+          valueToString: valueToString,
         ),
       );
 }
 
 /// The available week input dialog state.
-class _AvailableWeekInputDialogState extends _InputDialogState<DateTime, AvailableWeekInputDialog> {
-  /// Available weeks (got from a model).
-  List<DateTime>? weeks;
-
+class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoicePickerDialog<T>> {
   /// The currently selected week index.
-  int? currentWeekIndex;
-
-  /// The scroll controller.
-  ScrollController scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      List<DateTime> availableWeeks = await ref.read(lessonRepositoryProvider).availableWeeks;
-      setState(() {
-        weeks = availableWeeks;
-        currentWeekIndex = weeks!.indexOf(widget.initialValue!);
-      });
-    });
-  }
+  late int currentValueIndex = widget.initialValue == null ? -1 : widget.values.indexOf(widget.initialValue!);
 
   @override
   Widget buildForm(BuildContext context) {
-    if (weeks == null) {
-      return const CenteredCircularProgressIndicator();
-    }
-
-    if (weeks!.isEmpty) {
+    if (widget.values.isEmpty) {
       return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Text(context.getString('dialogs.week_picker.empty')),
+        child: Text(widget.emptyMessage),
       );
     }
 
-    DateFormat formatter = DateFormat.yMMMd(EzLocalization.of(context)?.locale.languageCode);
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: ScrollablePositionedList.builder(
         itemBuilder: (_, position) {
-          DateTime monday = weeks![position];
+          T value = widget.values[position];
           return ListTile(
-            title: Text('${formatter.format(monday)} — ${formatter.format(monday.atSunday)}'),
-            trailing: Radio<bool>(
-              value: position == currentWeekIndex,
-              groupValue: true,
+            title: Text(widget.valueToString?.call(value) ?? value.toString()),
+            trailing: Radio<int>(
+              value: position,
+              groupValue: currentValueIndex,
               onChanged: (_) => onTap(position),
             ),
             onTap: () => onTap(position),
           );
         },
-        itemCount: weeks!.length,
-        initialScrollIndex: math.max(0, currentWeekIndex!),
+        itemCount: widget.values.length,
+        initialScrollIndex: math.max(0, currentValueIndex),
       ),
     );
   }
 
   @override
-  DateTime? get value => (currentWeekIndex == null || weeks == null) || currentWeekIndex! < 0 || currentWeekIndex! >= weeks!.length ? null : weeks![currentWeekIndex!];
+  T? get value => (currentValueIndex == -1 || widget.values.isEmpty) || currentValueIndex < 0 || currentValueIndex >= widget.values.length ? null : widget.values[currentValueIndex];
 
   /// Handles on tap event.
   void onTap(int position) {
-    setState(() => currentWeekIndex = position);
+    setState(() => currentValueIndex = position);
   }
 }

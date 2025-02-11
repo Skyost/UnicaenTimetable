@@ -30,8 +30,9 @@ abstract class Slide {
   /// Creates the next slide.
   Slide? createNextSlide();
 
+  /// Returns whether this slide is the first slide.
   bool get isFirstSlide => slideIndex == 0;
 
-  /// Returns whether this slide the last slide.
+  /// Returns whether this slide is the last slide.
   bool get isLastSlide => slideIndex == slideCount - 1;
 }

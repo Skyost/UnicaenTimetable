@@ -1,7 +1,7 @@
-import 'package:ez_localization/ez_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/slides/first.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
 import 'package:unicaen_timetable/widgets/slide.dart';
@@ -94,7 +94,7 @@ class _IntroScaffoldBody extends ConsumerWidget {
             children: [
               Text(
                 '${slide.slideIndex + 1}/${Slide.slideCount}',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
               TextButton(
                 onPressed: () async {
@@ -108,7 +108,9 @@ class _IntroScaffoldBody extends ConsumerWidget {
                 style: ButtonStyle(
                   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                 ),
-                child: Text(context.getString('intro.buttons.${slide.isLastSlide ? 'finish' : 'next'}').toUpperCase()),
+                child: Text(
+                  (slide.isLastSlide ? translations.intro.buttons.finish : translations.intro.buttons.next).toUpperCase(),
+                ),
               ),
             ],
           ),

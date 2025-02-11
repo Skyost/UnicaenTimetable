@@ -1,0 +1,29 @@
+{
+  "title": "Paramètres",
+  "application": {
+    "title": "Application",
+    "sidebar_days": "Jours à afficher dans la menu déroulant",
+    "color_lessons_automatically": "Colorer automatiquement les cours",
+    "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
+    "enable_ads": "Activer les publicités",
+    "brightness": {
+      "title": "Thème",
+      "values(map)": {
+        "light": "Lumineux",
+        "dark": "Sombre",
+        "system": "Laisser le système choisir"
+      }
+    }
+  },
+  "account": {
+    "title": "Compte",
+    "switch": "Changer de compte"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "server": "Adresse du serveur",
+    "name": "Nom",
+    "additional_parameters": "Paramètres additionnels",
+    "interval": "Nombre de semaines à télécharger"
+  }
+}

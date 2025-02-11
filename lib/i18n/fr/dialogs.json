@@ -1,0 +1,41 @@
+{
+  "lesson_info": {
+    "reset_color": "Couleur par défaut",
+    "set_alarm": "Mettre une alarme"
+  },
+  "lesson_color": {
+    "title": "Couleur du cours"
+  },
+  "week_picker": {
+    "title": "Séléctionnez la semaine à afficher",
+    "empty": "Pas de cours disponible. Veuillez vous assurer que vos cours sont bien disponibles sur l'interface Zimbra."
+  },
+  "login": {
+    "title": "Connexion",
+    "username": "Étupass :",
+    "username_hint": "Avant le @etu.unicaen.fr",
+    "password": "Mot de passe :",
+    "password_hint": "Votre mot de passe",
+    "login": "Connexion",
+    "moreSettings": {
+      "button": "Paramètres",
+      "server": "Adresse du serveur",
+      "calendarName": "Nom du calendrier",
+      "additional_parameters": "Paramètres additionnels"
+    },
+    "errors": {
+      "not_found": "Calendrier non trouvé : cela peut être dû à une période de vacances en cours, un emploi du temps indisponible sur Zimbra ou à un mauvais nom d'utilisateur. Cela peut également être dû à une maintenance donc réessayez plus tard.",
+      "unauthorized": "Mauvais nom d'utilisateur / mauvais mot de passe.",
+      "generic_error": "Une erreur est survenue. Veuillez réessayer plus tard."
+    }
+  },
+  "calendar_not_found": {
+    "title": "Calendrier non trouvé",
+    "message": "Si vous êtes en vacances ou que vous venez de rentrer, ceci est normal, veuillez réessayer une fois que votre emploi du temps sera disponible sur Zimbra.\nSinon, cela signifie probablement que le nom d'utilisateur que vous avez entré est incorrect.\nVous pouvez également avoir entré un mauvais nom de calendrier dans les paramètres de l'application ou les serveurs sont tout simplement en maintenance.\nQuoi qu'il en soit, cette erreur est fréquente. Veuillez réessayer plus tard."
+  },
+  "unauthorized": {
+    "title": "Mauvais identifiants",
+    "message": "Votre nom d'utilisateur ou votre mot de passe est incorrect.",
+    "button_login": "Changer de compte"
+  }
+}

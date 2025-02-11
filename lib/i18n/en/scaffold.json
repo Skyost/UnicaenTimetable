@@ -1,0 +1,26 @@
+{
+  "settings_reset": {
+    "message": "The app settings have been reset due to an update. We really apologize for this trouble.",
+    "ios": "If you're on iOS, you may also have to reconnect yourself.",
+    "end": "Thanks for using this app \uD83D\uDC98"
+  },
+  "floating_button_tooltip": "Synchronize",
+  "wait": {
+    "settings_repository": "Initializing settings…",
+    "lesson_repository": "Initializing the lessons repository…",
+    "user_repository": "Initializing the user repository…",
+    "has_user": "Waiting for the user…"
+  },
+  "drawer": {
+    "home": "Home",
+    "timetable": "Timetable",
+    "others": "Others"
+  },
+  "snack_bar": {
+    "synchronizing": "Synchronizing…",
+    "success": "Success.",
+    "unauthorized": "Wrong username / password.",
+    "generic_error": "Error. Please try again later.",
+    "widget_already_present": "The selected widget is already present on the application home screen."
+  }
+}
