@@ -13,6 +13,7 @@ import 'package:unicaen_timetable/model/lessons/storage.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/utils/widgets.dart';
 import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
 /// A widget that shows a FlutterWeekView widget.
@@ -27,7 +28,12 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
       AsyncData<List<Lesson>>(:final value) => buildChild(
           value.map(createEvent).toList(),
         ),
-      _ => const CircularProgressIndicator(),
+      AsyncError(:final error) => Center(
+          child: Text(
+            error.toString(),
+          ),
+        ),
+      _ => const CenteredCircularProgressIndicator(),
     };
   }
 

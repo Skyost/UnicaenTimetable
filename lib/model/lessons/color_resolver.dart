@@ -20,10 +20,14 @@ class LessonColorResolver extends AsyncNotifier<ColorResolver> {
     Map<String, Color> colors;
     File file = await _getFile(create: false);
     if (file.existsSync()) {
-      Map<String, dynamic> content = jsonDecode(file.readAsStringSync());
-      colors = {
-        for (MapEntry<String, dynamic> entry in content.entries) entry.key: Color(entry.value),
-      };
+      try {
+        Map<String, dynamic> content = jsonDecode(file.readAsStringSync());
+        colors = {
+          for (MapEntry<String, dynamic> entry in content.entries) entry.key: Color(entry.value),
+        };
+      } catch (ex) {
+        colors = {};
+      }
     } else {
       colors = {};
     }
@@ -37,7 +41,7 @@ class LessonColorResolver extends AsyncNotifier<ColorResolver> {
   Future<File> _getFile({bool create = true}) async {
     Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     File file = File('${appDocumentsDir.path}/colors.json');
-    if (!file.existsSync()) {
+    if (create && !file.existsSync()) {
       file.createSync(recursive: true);
     }
     return file;
