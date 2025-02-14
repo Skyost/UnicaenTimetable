@@ -100,11 +100,21 @@ class HomePageWidget extends ConsumerWidget {
             onReorder: (oldIndex, newIndex) => ref.read(homeCardsProvider.notifier).reorder(oldIndex, newIndex),
             itemCount: cards.length,
             itemBuilder: (context, index) => switch (cards[index]) {
-              HomeCard.synchronizationStatus => const SynchronizationStatusCard(),
-              HomeCard.currentLesson => const CurrentLessonCard(),
-              HomeCard.nextLesson => const NextLessonCard(),
-              HomeCard.theme => const ThemeCard(),
-              HomeCard.info => const InfoCard(),
+              HomeCard.synchronizationStatus => SynchronizationStatusCard(
+                  key: ValueKey(cards[index]),
+                ),
+              HomeCard.currentLesson => CurrentLessonCard(
+                  key: ValueKey(cards[index]),
+                ),
+              HomeCard.nextLesson => NextLessonCard(
+                  key: ValueKey(cards[index]),
+                ),
+              HomeCard.theme => ThemeCard(
+                  key: ValueKey(cards[index]),
+                ),
+              HomeCard.info => InfoCard(
+                  key: ValueKey(cards[index]),
+                ),
             },
             proxyDecorator: (widget, index, animation) => widget,
           );

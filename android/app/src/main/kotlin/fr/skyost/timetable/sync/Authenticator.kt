@@ -22,28 +22,28 @@ class Authenticator(context: Context) // Simple constructor
     // Don't add additional accounts
     @Throws(NetworkErrorException::class)
     override fun addAccount(
-            r: AccountAuthenticatorResponse,
-            s: String,
-            s2: String,
-            strings: Array<String>,
-            bundle: Bundle
+        r: AccountAuthenticatorResponse,
+        s: String,
+        s2: String,
+        strings: Array<String>,
+        bundle: Bundle
     ): Bundle? = null
 
     // Ignore attempts to confirm credentials
     @Throws(NetworkErrorException::class)
     override fun confirmCredentials(
-            r: AccountAuthenticatorResponse,
-            account: Account,
-            bundle: Bundle
+        r: AccountAuthenticatorResponse,
+        account: Account,
+        bundle: Bundle
     ): Bundle? = null
 
     // Getting an authentication token is not supported
     @Throws(NetworkErrorException::class)
     override fun getAuthToken(
-            r: AccountAuthenticatorResponse,
-            account: Account,
-            s: String,
-            bundle: Bundle
+        r: AccountAuthenticatorResponse,
+        account: Account,
+        s: String,
+        bundle: Bundle
     ): Bundle {
         throw UnsupportedOperationException()
     }
@@ -56,10 +56,10 @@ class Authenticator(context: Context) // Simple constructor
     // Updating user credentials is not supported
     @Throws(NetworkErrorException::class)
     override fun updateCredentials(
-            r: AccountAuthenticatorResponse,
-            account: Account,
-            s: String,
-            bundle: Bundle
+        r: AccountAuthenticatorResponse,
+        account: Account,
+        s: String,
+        bundle: Bundle
     ): Bundle {
         throw UnsupportedOperationException()
     }
@@ -67,9 +67,9 @@ class Authenticator(context: Context) // Simple constructor
     // Checking features for the account is not supported
     @Throws(NetworkErrorException::class)
     override fun hasFeatures(
-            r: AccountAuthenticatorResponse,
-            account: Account,
-            strings: Array<String>
+        r: AccountAuthenticatorResponse,
+        account: Account,
+        strings: Array<String>
     ): Bundle {
         throw UnsupportedOperationException()
     }

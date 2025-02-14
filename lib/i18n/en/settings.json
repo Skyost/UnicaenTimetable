@@ -13,14 +13,15 @@
         "dark": "Dark",
         "system": "Let the system choose"
       }
-    }
+    },
+    "sync_with_device_calendar": "Synchronize with device calendar"
   },
   "account": {
     "title": "Account",
     "switch": "Switch account"
   },
   "calendar": {
-    "title": "Calendar",
+    "title": "Remote calendar",
     "server": "Server address",
     "name": "Name",
     "additional_parameters": "Additional parameters",

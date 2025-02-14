@@ -13,14 +13,15 @@
         "dark": "Sombre",
         "system": "Laisser le système choisir"
       }
-    }
+    },
+    "sync_with_device_calendar": "Synchroniser le calendrier avec l'appareil"
   },
   "account": {
     "title": "Compte",
     "switch": "Changer de compte"
   },
   "calendar": {
-    "title": "Calendrier",
+    "title": "Calendrier distant",
     "server": "Adresse du serveur",
     "name": "Nom",
     "additional_parameters": "Paramètres additionnels",

@@ -39,9 +39,6 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   /// The current form key.
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  /// The current focus node.
-  FocusNode focusNode = FocusNode();
-
   /// The username text controller.
   late TextEditingController usernameController = TextEditingController();
 
@@ -57,10 +54,11 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   /// The additional parameters text controller.
   late TextEditingController additionalParametersController = TextEditingController();
 
-  /// The password text controller.
-
   /// Whether a login has been requested.
   bool waiting = false;
+
+  /// Whether the login button is enabled.
+  bool canLogin = false;
 
   /// Whether to display more settings.
   bool moreSettings = false;
@@ -98,10 +96,12 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                     TextFormField(
                       decoration: InputDecoration(hintText: translations.dialogs.login.usernameHint),
                       autocorrect: false,
+                      onChanged: refreshLogin,
                       validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
                       controller: usernameController,
                       textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(focusNode),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      autofocus: true,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
@@ -112,10 +112,11 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                       autocorrect: false,
                       obscureText: true,
                       keyboardType: TextInputType.visiblePassword,
+                      onChanged: refreshLogin,
                       validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
                       controller: passwordController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: moreSettings ? TextInputAction.next : TextInputAction.done,
-                      focusNode: focusNode,
                     ),
                     if (loginHttpResponseCode != null)
                       Padding(
@@ -139,10 +140,11 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                           decoration: const InputDecoration(hintText: kDefaultServer),
                           autocorrect: false,
                           keyboardType: TextInputType.url,
+                          onChanged: refreshLogin,
                           validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
                           controller: serverAddressController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.next,
-                          focusNode: focusNode,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
@@ -152,10 +154,11 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                           decoration: const InputDecoration(hintText: kDefaultCalendarName),
                           autocorrect: false,
                           keyboardType: TextInputType.text,
+                          onChanged: refreshLogin,
                           validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
                           controller: calendarNameController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.next,
-                          focusNode: focusNode,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
@@ -164,10 +167,11 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                         TextFormField(
                           decoration: const InputDecoration(hintText: kDefaultAdditionalParameters),
                           autocorrect: false,
+                          onChanged: refreshLogin,
                           keyboardType: TextInputType.url,
                           controller: additionalParametersController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.done,
-                          focusNode: focusNode,
                         ),
                       ],
                   ],
@@ -189,11 +193,14 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                   child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 ),
                 TextButton(
-                  onPressed: () => onLoginButtonPressed(context),
+                  onPressed: canLogin ? (onLoginButtonPressed) : null,
                   child: Text(translations.dialogs.login.login),
                 ),
               ],
       );
+
+  /// Refreshes whether the login button is enabled.
+  void refreshLogin(String? _) => setState(() => canLogin = formKey.currentState?.validate() == true);
 
   @override
   void dispose() {
@@ -206,30 +213,40 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   }
 
   /// Triggered when the login button has been pressed.
-  void onLoginButtonPressed(BuildContext context) async {
-    if (!(formKey.currentState?.validate() ?? false)) {
+  void onLoginButtonPressed() async {
+    if (!canLogin) {
       return;
     }
 
     setState(() => waiting = true);
 
-    await ref.read(serverSettingsEntryProvider.notifier).changeValue(serverAddressController.text);
-    await ref.read(calendarNameSettingsEntryProvider.notifier).changeValue(calendarNameController.text);
-    await ref.read(additionalParametersSettingsEntryProvider.notifier).changeValue(additionalParametersController.text);
+    if (moreSettings) {
+      if (serverAddressController.text.isNotEmpty) {
+        await ref.read(serverSettingsEntryProvider.notifier).changeValue(serverAddressController.text);
+      }
+      if (calendarNameController.text.isNotEmpty) {
+        await ref.read(calendarNameSettingsEntryProvider.notifier).changeValue(calendarNameController.text);
+      }
+      await ref.read(additionalParametersSettingsEntryProvider.notifier).changeValue(additionalParametersController.text);
+    }
 
     User user = User(username: usernameController.text.trim(), password: passwordController.text.trim());
     Calendar? calendar = await ref.read(userCalendarProvider(user).future);
     int result = (await calendar?.get()) ?? HttpStatus.networkConnectTimeoutError;
-    setState(() => loginHttpResponseCode = result);
 
-    if (result is RequestSuccess) {
+    if (result == HttpStatus.ok) {
       await ref.read(userProvider.notifier).updateUser(user);
       if (widget.synchronizeAfterLogin) {
         downloadLessons(ref);
       }
-      if (context.mounted) {
+      if (mounted) {
         Navigator.pop(context, true);
       }
+    } else {
+      setState(() {
+        loginHttpResponseCode = result;
+        waiting = false;
+      });
     }
   }
 }

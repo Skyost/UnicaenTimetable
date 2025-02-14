@@ -107,9 +107,10 @@ class _UnicaenTimetableApp extends ConsumerWidget {
       theme: ThemeData(
         colorScheme: light,
         appBarTheme: AppBarTheme(
+          foregroundColor: light.onPrimary,
           backgroundColor: light.primary,
           systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.dark,
+            statusBarIconBrightness: Brightness.light,
             systemNavigationBarColor: light.surface,
           ),
           shape: const RoundedRectangleBorder(),
@@ -124,7 +125,7 @@ class _UnicaenTimetableApp extends ConsumerWidget {
           ),
           shape: RoundedRectangleBorder(),
         ),
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
       ),
       themeMode: theme.valueOrNull,
       routes: {

@@ -416,6 +416,7 @@ class TranslationsSettingsApplicationEn {
 	String get openTodayAutomatically => 'Open today\'s page at launch';
 	String get enableAds => 'Enable ads';
 	late final TranslationsSettingsApplicationBrightnessEn brightness = TranslationsSettingsApplicationBrightnessEn.internal(_root);
+	String get syncWithDeviceCalendar => 'Synchronize with device calendar';
 }
 
 // Path: settings.account
@@ -436,7 +437,7 @@ class TranslationsSettingsCalendarEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String get title => 'Calendar';
+	String get title => 'Remote calendar';
 	String get server => 'Server address';
 	String get name => 'Name';
 	String get additionalParameters => 'Additional parameters';
@@ -608,9 +609,10 @@ extension on Translations {
 			case 'settings.application.brightness.values.light': return 'Bright';
 			case 'settings.application.brightness.values.dark': return 'Dark';
 			case 'settings.application.brightness.values.system': return 'Let the system choose';
+			case 'settings.application.syncWithDeviceCalendar': return 'Synchronize with device calendar';
 			case 'settings.account.title': return 'Account';
 			case 'settings.account.kSwitch': return 'Switch account';
-			case 'settings.calendar.title': return 'Calendar';
+			case 'settings.calendar.title': return 'Remote calendar';
 			case 'settings.calendar.server': return 'Server address';
 			case 'settings.calendar.name': return 'Name';
 			case 'settings.calendar.additionalParameters': return 'Additional parameters';

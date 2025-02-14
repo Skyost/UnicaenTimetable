@@ -10,6 +10,7 @@ import 'package:unicaen_timetable/pages/settings/entries/color_lessons_automatic
 import 'package:unicaen_timetable/pages/settings/entries/open_today_automatically.dart';
 import 'package:unicaen_timetable/pages/settings/entries/sidebar_days.dart';
 import 'package:unicaen_timetable/pages/settings/entries/switch_account.dart';
+import 'package:unicaen_timetable/pages/settings/entries/sync_with_device_calendar.dart';
 import 'package:unicaen_timetable/pages/settings/entries/theme.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 
@@ -64,6 +65,7 @@ class SettingsPageWidget extends ConsumerWidget {
               icon: Icons.phone_android,
               title: translations.settings.application.title,
             ),
+            SyncWithDeviceCalendarSettingsEntryWidget(),
             const ThemeSettingsEntryWidget(),
             const SidebarDaysEntryWidget(),
             ColorLessonsAutomaticallySettingsEntryWidget(),

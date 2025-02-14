@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
+import 'package:eventide/eventide.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/color_resolver.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
 import 'package:unicaen_timetable/model/lessons/storage.dart';
+import 'package:unicaen_timetable/model/settings/device_calendar.dart';
 import 'package:unicaen_timetable/model/user/calendar.dart';
 import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
@@ -51,9 +54,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         ),
       );
       state = AsyncData(now);
-      if (Platform.isAndroid) {
-        UnicaenTimetableRoot.channel.invokeMethod('sync.finished');
-      }
+      _refreshPlatform(lessons);
 
       return result;
     } catch (ex, stacktrace) {
@@ -63,6 +64,51 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       }
     }
     return const RequestError();
+  }
+
+  /// Refreshes the platform data.
+  Future<void> _refreshPlatform(List<Lesson> lessons) async {
+    if (Platform.isAndroid) {
+      UnicaenTimetableRoot.channel.invokeMethod('sync.finished');
+    }
+    bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
+    if (syncWithDevice) {
+      ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.future);
+      calendar ??= await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDevice();
+      Eventide eventide = Eventide();
+      for (Lesson lesson in lessons) {
+        await eventide.createEvent(
+          calendarId: calendar.id,
+          title: lesson.name,
+          startDate: lesson.dateTime.start,
+          endDate: lesson.dateTime.end,
+        );
+      }
+    }
+    await HomeWidget.saveWidgetData('lessons', _toMap(lessons));
+    await HomeWidget.updateWidget(
+      name: 'TodayWidget',
+      androidName: 'TodayWidget',
+      iOSName: 'TodayWidget',
+    );
+  }
+
+  /// Converts the [lessons] list to a map.
+  Map<DateTime, List<Lesson>> _toMap(List<Lesson> lessons) {
+    Map<DateTime, List<Lesson>> result = {};
+    for (Lesson lesson in lessons) {
+      DateTime start = lesson.dateTime.start.yearMonthDay;
+      while (start.isBefore(lesson.dateTime.end)) {
+        List<Lesson>? dayLessons = result[start];
+        if (dayLessons == null) {
+          result[start] = [lesson];
+        } else {
+          dayLessons.add(lesson);
+        }
+        start = start.add(const Duration(days: 1));
+      }
+    }
+    return result;
   }
 
   /// Returns the lessons color file.

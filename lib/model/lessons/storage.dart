@@ -30,7 +30,7 @@ class Lessons extends Table {
 final localStorageProvider = Provider.autoDispose<LocalStorage>((ref) {
   LocalStorage storage = LocalStorage(ref);
   ref.onDispose(storage.close);
-  ref.cacheFor(const Duration(seconds: 1));
+  ref.cacheFor(const Duration(seconds: 3));
   return storage;
 });
 

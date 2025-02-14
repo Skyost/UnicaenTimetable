@@ -415,6 +415,7 @@ class _TranslationsSettingsApplicationFr extends TranslationsSettingsApplication
 	@override String get openTodayAutomatically => 'Ouvrir automatiquement sur le jour d\'aujourd\'hui';
 	@override String get enableAds => 'Activer les publicités';
 	@override late final _TranslationsSettingsApplicationBrightnessFr brightness = _TranslationsSettingsApplicationBrightnessFr._(_root);
+	@override String get syncWithDeviceCalendar => 'Synchroniser le calendrier avec l\'appareil';
 }
 
 // Path: settings.account
@@ -435,7 +436,7 @@ class _TranslationsSettingsCalendarFr extends TranslationsSettingsCalendarEn {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Calendrier';
+	@override String get title => 'Calendrier distant';
 	@override String get server => 'Adresse du serveur';
 	@override String get name => 'Nom';
 	@override String get additionalParameters => 'Paramètres additionnels';
@@ -607,9 +608,10 @@ extension on TranslationsFr {
 			case 'settings.application.brightness.values.light': return 'Lumineux';
 			case 'settings.application.brightness.values.dark': return 'Sombre';
 			case 'settings.application.brightness.values.system': return 'Laisser le système choisir';
+			case 'settings.application.syncWithDeviceCalendar': return 'Synchroniser le calendrier avec l\'appareil';
 			case 'settings.account.title': return 'Compte';
 			case 'settings.account.kSwitch': return 'Changer de compte';
-			case 'settings.calendar.title': return 'Calendrier';
+			case 'settings.calendar.title': return 'Calendrier distant';
 			case 'settings.calendar.server': return 'Adresse du serveur';
 			case 'settings.calendar.name': return 'Nom';
 			case 'settings.calendar.additionalParameters': return 'Paramètres additionnels';

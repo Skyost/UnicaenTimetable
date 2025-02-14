@@ -35,8 +35,8 @@ class _EnsureLoggedInWidgetState extends ConsumerState<EnsureLoggedInWidget> {
         }
         return;
       }
-      RequestResult downloadResult = await calendar.downloadLessons();
-      if (downloadResult is RequestError && downloadResult.httpCode == HttpStatus.unauthorized && mounted) {
+      int response = await calendar.get();
+      if (response == HttpStatus.unauthorized && mounted) {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
