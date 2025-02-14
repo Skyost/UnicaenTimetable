@@ -19,7 +19,7 @@
     "title": "Prochain cours :",
     "nothing": "Aucun aujourd'hui."
   },
-  "current_theme": {
+  "theme": {
     "name": "Thème actuel",
     "title": "Thème actuel :",
     "light": "Mode jour",

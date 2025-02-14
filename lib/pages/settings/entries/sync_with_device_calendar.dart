@@ -1,5 +1,4 @@
 import 'package:unicaen_timetable/i18n/translations.g.dart';
-import 'package:unicaen_timetable/model/settings/color_lessons_automatically.dart';
 import 'package:unicaen_timetable/model/settings/device_calendar.dart';
 import 'package:unicaen_timetable/pages/settings/entries/widgets.dart';
 
@@ -9,7 +8,7 @@ class SyncWithDeviceCalendarSettingsEntryWidget extends BoolSettingsEntryWidget 
   SyncWithDeviceCalendarSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: colorLessonsAutomaticallyEntryProvider,
+          provider: syncWithDeviceCalendarSettingsEntryProvider,
           title: translations.settings.application.syncWithDeviceCalendar,
         );
 }

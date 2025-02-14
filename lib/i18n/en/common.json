@@ -2,6 +2,7 @@
   "app_name": "Unicaen Timetable",
   "other": {
     "field_empty": "This field cannot be empty.",
+    "empty": "Empty",
     "please_wait": "Please wait…"
   }
 }

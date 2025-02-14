@@ -7,6 +7,7 @@ import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
+import 'package:unicaen_timetable/widgets/list_page.dart';
 
 /// The about page list tile.
 class AboutPageListTile extends StatelessWidget {
@@ -17,10 +18,10 @@ class AboutPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-    page: AboutPage(),
-    title: translations.about.title,
-    icon: Icons.favorite,
-  );
+        page: AboutPage(),
+        title: translations.about.title,
+        icon: Icons.favorite,
+      );
 }
 
 /// The about page app bar.
@@ -32,8 +33,8 @@ class AboutPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-    title: Text(translations.about.title),
-  );
+        title: Text(translations.about.title),
+      );
 }
 
 /// The about page widget.
@@ -44,60 +45,16 @@ class AboutPageWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => ListView(
-        children: [
-          _ListHeader(),
-          _ListBody(),
-          _ListFooter(),
-        ],
-      );
-}
-
-/// The about page list header.
-class _ListHeader extends ConsumerStatefulWidget {
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ListHeaderState();
-}
-
-/// The list header state.
-class _ListHeaderState extends ConsumerState<_ListHeader> with BrightnessListener {
-  @override
-  Widget build(BuildContext context) => Container(
-        color: currentBrightness == Brightness.light ? const Color(0xFF7986CB) : const Color(0xFF202D3B),
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 100,
-              child: ScalableImageWidget.fromSISource(
-                si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(
-                translations.common.appName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ),
-          ],
+  Widget build(BuildContext context) => ListPageWidget(
+        header: ListPageHeader(
+          icon: ScalableImageWidget.fromSISource(
+            si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
+          ),
+          title: Text(
+            translations.common.appName,
+          ),
         ),
-      );
-}
-
-/// The about page list body.
-class _ListBody extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        body: ListPageBody(
           children: [
             Text(translations.about.paragraphs.first),
             Padding(
@@ -116,6 +73,7 @@ class _ListBody extends StatelessWidget {
             Text(translations.about.paragraphs.second),
           ],
         ),
+        footer: _ListFooter(),
       );
 }
 
@@ -134,7 +92,7 @@ class _ListFooter extends ConsumerWidget {
             IconButton(
               iconSize: 40,
               icon: _GithubLogo(),
-              onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
+              onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),
             IconButton(
               iconSize: 40,
@@ -142,7 +100,7 @@ class _ListFooter extends ConsumerWidget {
                 backgroundImage: AssetImage('assets/about/skyost.png'),
                 radius: 20,
               ),
-              onPressed: () => Utils.openUrl(Uri.parse('https://skyost.eu')),
+              onPressed: () => Utils.openUrl('https://skyost.eu'),
             ),
           ],
         ),
@@ -162,6 +120,7 @@ class _GithubLogoState extends ConsumerState<_GithubLogo> with BrightnessListene
         colorFilter: ColorFilter.mode(currentBrightness == Brightness.light ? Colors.black : Colors.white, BlendMode.srcIn),
         child: SizedBox(
           height: 40,
+          width: 40,
           child: ScalableImageWidget.fromSISource(
             si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
           ),

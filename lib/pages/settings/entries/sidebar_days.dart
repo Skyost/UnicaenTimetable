@@ -14,13 +14,19 @@ class SidebarDaysEntryWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<List<int>> theme = ref.watch(sidebarDaysEntryProvider);
+    AsyncValue<List<int>> sidebarDays = ref.watch(sidebarDaysEntryProvider);
+    DateFormat formatter = DateFormat.EEEE(TranslationProvider.of(context).locale.languageCode);
+    DateTime monday = DateTime.now().atMonday;
     return ListTile(
-      enabled: theme.hasValue,
+      enabled: sidebarDays.hasValue,
+      title: Text(translations.settings.application.sidebarDays),
+      subtitle: Text(
+        [for (int day in sidebarDays.valueOrNull ?? []) formatter.format(monday.add(Duration(days: day - 1)))].join(', '),
+      ),
       onTap: () async {
         List<int>? result = await showDialog<List<int>>(
           context: context,
-          builder: (context) => _SidebarDaysSettingsEntryDialogContent(sidebarDays: theme.value!),
+          builder: (context) => _SidebarDaysSettingsEntryDialogContent(sidebarDays: sidebarDays.value!),
         );
         if (result != null) {
           await ref.read(sidebarDaysEntryProvider.notifier).changeValue(result);
@@ -29,7 +35,6 @@ class SidebarDaysEntryWidget extends ConsumerWidget {
     );
   }
 }
-
 
 /// Allows to display all days and to toggle their showing in the sidebar.
 class _SidebarDaysSettingsEntryDialogContent extends StatefulWidget {
@@ -99,4 +104,3 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
     }
   }
 }
-

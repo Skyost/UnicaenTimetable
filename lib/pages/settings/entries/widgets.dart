@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/settings/entry.dart';
 import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
@@ -140,7 +141,9 @@ abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends 
   Future<U?> getValue(BuildContext context, U? value);
 
   /// Builds the subtitle widget.
-  Widget? buildSubtitle(BuildContext context, WidgetRef ref, U? value) => value == null ? null : Text(value.toString());
+  Widget? buildSubtitle(BuildContext context, WidgetRef ref, U? value) => Text(
+        value == null || value.toString().isEmpty ? translations.common.other.empty : value.toString(),
+      );
 
   /// Changes the value.
   Future<void> changeValue(WidgetRef ref, U newValue) => ref.read(provider.notifier).changeValue(newValue);
@@ -181,6 +184,12 @@ class IntegerSettingsEntryWidget<T extends SettingsEntry<int>> extends DialogSet
 
 /// Allows to configure text values.
 class StringSettingsEntryWidget<T extends SettingsEntry<String>> extends DialogSettingsEntryWidget<T, String> {
+  /// The validator.
+  final FormFieldValidator<String>? validator;
+
+  /// The field hint.
+  final String? hint;
+
   /// Creates a new text settings entry widget instance.
   const StringSettingsEntryWidget({
     super.key,
@@ -188,8 +197,15 @@ class StringSettingsEntryWidget<T extends SettingsEntry<String>> extends DialogS
     required super.title,
     super.icon,
     super.contentPadding,
+    this.validator,
+    this.hint,
   });
 
   @override
-  Future<String?> getValue(BuildContext context, String? value) => TextInputDialog.getValue(context, initialValue: value);
+  Future<String?> getValue(BuildContext context, String? value) => TextInputDialog.getValue(
+        context,
+        initialValue: value,
+        validator: validator,
+        hint: hint,
+      );
 }

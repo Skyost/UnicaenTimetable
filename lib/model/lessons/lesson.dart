@@ -98,7 +98,7 @@ class Lesson implements Comparable<Lesson> {
   @override
   int compareTo(Lesson other) => dateTime.start.compareTo(other.dateTime.start);
 
-  /// Converts this lesson to a json object.
+  /// Converts this lesson to a JSON object.
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,

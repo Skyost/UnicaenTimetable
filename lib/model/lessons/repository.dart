@@ -85,7 +85,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         );
       }
     }
-    await HomeWidget.saveWidgetData('lessons', _toMap(lessons));
+    await HomeWidget.saveWidgetData('lessons', jsonEncode(_toMap(lessons)));
     await HomeWidget.updateWidget(
       name: 'TodayWidget',
       androidName: 'TodayWidget',
@@ -94,16 +94,17 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   }
 
   /// Converts the [lessons] list to a map.
-  Map<DateTime, List<Lesson>> _toMap(List<Lesson> lessons) {
-    Map<DateTime, List<Lesson>> result = {};
+  Map<String, List<Map>> _toMap(List<Lesson> lessons) {
+    Map<String, List<Map>> result = {};
     for (Lesson lesson in lessons) {
       DateTime start = lesson.dateTime.start.yearMonthDay;
+      String key = '${start.year}-${start.month.withLeadingZero}-${start.day.withLeadingZero}';
       while (start.isBefore(lesson.dateTime.end)) {
-        List<Lesson>? dayLessons = result[start];
+        List<Map>? dayLessons = result[key];
         if (dayLessons == null) {
-          result[start] = [lesson];
+          result[key] = [lesson.toJson()];
         } else {
-          dayLessons.add(lesson);
+          dayLessons.add(lesson.toJson());
         }
         start = start.add(const Duration(days: 1));
       }

@@ -184,7 +184,7 @@ class _DayViewPageWidgetState extends FlutterWeekViewWidgetState<DayViewPageWidg
   @override
   AsyncValue<List<Lesson>> queryLessons() {
     DateTime monday = ref.watch(dateProvider);
-    DateTime day = monday.add(Duration(days: widget.day));
+    DateTime day = monday.add(Duration(days: widget.day - 1));
     return ref.watch(lessonsProvider(DateTimeRange.oneDay(day)));
   }
 }

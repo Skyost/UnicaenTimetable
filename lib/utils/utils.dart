@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /// Finds the enum value in this list with name.
 extension EnumByName<T extends Enum> on Iterable<T> {
@@ -96,9 +96,9 @@ class Utils {
   }
 
   /// Opens an url, if possible.
-  static Future<void> openUrl(Uri url) async {
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
+  static Future<void> openUrl(String url) async {
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     }
   }
 

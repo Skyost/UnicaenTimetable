@@ -1,6 +1,7 @@
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/settings/calendar.dart';
 import 'package:unicaen_timetable/pages/settings/entries/widgets.dart';
+import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
 /// Allows to configure [calendarSettingsEntryProvider].
 class CalendarNameSettingsEntryWidget extends StringSettingsEntryWidget<CalendarNameSettingsEntry> {
@@ -10,5 +11,7 @@ class CalendarNameSettingsEntryWidget extends StringSettingsEntryWidget<Calendar
   }) : super(
           provider: calendarNameSettingsEntryProvider,
           title: translations.settings.calendar.name,
+          validator: TextInputDialog.validateNotEmpty,
+          hint: kDefaultCalendarName,
         );
 }

@@ -1,7 +1,7 @@
 {
   "title": "Bugs / Improvements",
   "message": {
-    "github": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available <a href=\"https://github.com/Skyost/UnicaenTimetable/issues/\">here</a>.",
-    "website": "You can also send me an email via the form which is available <a href=\"https://skyost.eu/#contact\">here</a>."
+    "github(rich)": "You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available ${issueTracker(here)}.",
+    "website(rich)": "You can also send me an email via the form which is available ${contactForm(here)}."
   }
 }

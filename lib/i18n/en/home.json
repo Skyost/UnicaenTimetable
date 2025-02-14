@@ -19,7 +19,7 @@
     "title": "Next lesson :",
     "nothing": "Nothing today."
   },
-  "current_theme": {
+  "theme": {
     "name": "Current theme",
     "title": "Current theme :",
     "light": "Light mode",

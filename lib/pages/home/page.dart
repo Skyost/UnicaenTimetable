@@ -44,7 +44,7 @@ class HomePageAppBar extends ConsumerWidget {
               for (HomeCard card in HomeCard.values)
                 PopupMenuItem<HomeCard>(
                   value: card,
-                  child: Text(translations['home.${card.name}.title']),
+                  child: Text(translations['home.${card.name}.name']),
                 ),
             ],
             onSelected: (card) async {

@@ -20,9 +20,9 @@ class ThemeCard extends ConsumerStatefulWidget {
 class _ThemeCardState extends ConsumerState<ThemeCard> with BrightnessListener {
   @override
   Widget build(BuildContext context) {
-    String subtitle = currentBrightness == Brightness.dark ? translations.home.currentTheme.dark : translations.home.currentTheme.light;
+    String subtitle = currentBrightness == Brightness.dark ? translations.home.theme.dark : translations.home.theme.light;
     if (ref.watch(themeSettingsEntryProvider).valueOrNull == ThemeMode.system) {
-      subtitle += ' (${translations.home.currentTheme.auto})';
+      subtitle += ' (${translations.home.theme.auto})';
     }
     subtitle += '.';
     return MaterialCardContent(

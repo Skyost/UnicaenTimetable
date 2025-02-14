@@ -108,7 +108,7 @@ class _TranslationsHomeFr extends TranslationsHomeEn {
 	@override late final _TranslationsHomeSynchronizationStatusFr synchronizationStatus = _TranslationsHomeSynchronizationStatusFr._(_root);
 	@override late final _TranslationsHomeCurrentLessonFr currentLesson = _TranslationsHomeCurrentLessonFr._(_root);
 	@override late final _TranslationsHomeNextLessonFr nextLesson = _TranslationsHomeNextLessonFr._(_root);
-	@override late final _TranslationsHomeCurrentThemeFr currentTheme = _TranslationsHomeCurrentThemeFr._(_root);
+	@override late final _TranslationsHomeThemeFr theme = _TranslationsHomeThemeFr._(_root);
 	@override late final _TranslationsHomeInfoFr info = _TranslationsHomeInfoFr._(_root);
 }
 
@@ -178,8 +178,16 @@ class _TranslationsBugsImprovementsMessageFr extends TranslationsBugsImprovement
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get github => 'Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible <a href="https://github.com/Skyost/UnicaenTimetable/issues/">ici</a>.';
-	@override String get website => 'Vous pouvez également m\'envoyer un email via le formulaire disponible <a href="https://skyost.eu/#contact">ici</a>.';
+	@override TextSpan github({required InlineSpanBuilder issueTracker}) => TextSpan(children: [
+		const TextSpan(text: 'Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible '),
+		issueTracker('ici'),
+		const TextSpan(text: '.'),
+	]);
+	@override TextSpan website({required InlineSpanBuilder contactForm}) => TextSpan(children: [
+		const TextSpan(text: 'Vous pouvez également m\'envoyer un email via le formulaire disponible '),
+		contactForm('ici'),
+		const TextSpan(text: '.'),
+	]);
 }
 
 // Path: common.other
@@ -190,6 +198,7 @@ class _TranslationsCommonOtherFr extends TranslationsCommonOtherEn {
 
 	// Translations
 	@override String get fieldEmpty => 'Ce champ ne peut être vide.';
+	@override String get empty => 'Vide';
 	@override String get pleaseWait => 'Veuillez patienter…';
 }
 
@@ -303,9 +312,9 @@ class _TranslationsHomeNextLessonFr extends TranslationsHomeNextLessonEn {
 	@override String get nothing => 'Aucun aujourd\'hui.';
 }
 
-// Path: home.currentTheme
-class _TranslationsHomeCurrentThemeFr extends TranslationsHomeCurrentThemeEn {
-	_TranslationsHomeCurrentThemeFr._(TranslationsFr root) : this._root = root, super.internal(root);
+// Path: home.theme
+class _TranslationsHomeThemeFr extends TranslationsHomeThemeEn {
+	_TranslationsHomeThemeFr._(TranslationsFr root) : this._root = root, super.internal(root);
 
 	final TranslationsFr _root; // ignore: unused_field
 
@@ -525,10 +534,19 @@ extension on TranslationsFr {
 			case 'about.paragraphs.first': return 'Cette application a été créée par Skyost et est disponible sous licence GNU GPL v3. Elle utilise Flutter et a été écrite en Dart en utilisant certaines technologies. Vous pouvez consulter tout ça en cliquant sur les liens disponibles ci-dessous.';
 			case 'about.paragraphs.second': return 'Avertissement. Cette application n\'a en aucun cas été conçue par un employé de l\'Université. Par conséquent, il est inutile de s\'adresser à l\'Université en cas de problème avec l\'application. De plus, il faut préciser que cette application a besoin de votre numéro d\'étudiant ainsi que de votre mot de passe pour fonctionner. Ceux-ci ne seront envoyés à aucun tiers, excepté aux serveurs de l\'Université pour récupérer votre emploi du temps. Si vous n\'êtes pas convaincu du fonctionnement de l\'application, le code source est disponible via le lien "Github" ci-dessous.';
 			case 'bugsImprovements.title': return 'Bugs / Améliorations';
-			case 'bugsImprovements.message.github': return 'Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible <a href="https://github.com/Skyost/UnicaenTimetable/issues/">ici</a>.';
-			case 'bugsImprovements.message.website': return 'Vous pouvez également m\'envoyer un email via le formulaire disponible <a href="https://skyost.eu/#contact">ici</a>.';
+			case 'bugsImprovements.message.github': return ({required InlineSpanBuilder issueTracker}) => TextSpan(children: [
+				const TextSpan(text: 'Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible '),
+				issueTracker('ici'),
+				const TextSpan(text: '.'),
+			]);
+			case 'bugsImprovements.message.website': return ({required InlineSpanBuilder contactForm}) => TextSpan(children: [
+				const TextSpan(text: 'Vous pouvez également m\'envoyer un email via le formulaire disponible '),
+				contactForm('ici'),
+				const TextSpan(text: '.'),
+			]);
 			case 'common.appName': return 'Emploi du temps Unicaen';
 			case 'common.other.fieldEmpty': return 'Ce champ ne peut être vide.';
+			case 'common.other.empty': return 'Vide';
 			case 'common.other.pleaseWait': return 'Veuillez patienter…';
 			case 'dialogs.lessonInfo.resetColor': return 'Couleur par défaut';
 			case 'dialogs.lessonInfo.setAlarm': return 'Mettre une alarme';
@@ -567,11 +585,11 @@ extension on TranslationsFr {
 			case 'home.nextLesson.name': return 'Prochain cours';
 			case 'home.nextLesson.title': return 'Prochain cours :';
 			case 'home.nextLesson.nothing': return 'Aucun aujourd\'hui.';
-			case 'home.currentTheme.name': return 'Thème actuel';
-			case 'home.currentTheme.title': return 'Thème actuel :';
-			case 'home.currentTheme.light': return 'Mode jour';
-			case 'home.currentTheme.dark': return 'Mode nuit';
-			case 'home.currentTheme.auto': return 'choisi par le système';
+			case 'home.theme.name': return 'Thème actuel';
+			case 'home.theme.title': return 'Thème actuel :';
+			case 'home.theme.light': return 'Mode jour';
+			case 'home.theme.dark': return 'Mode nuit';
+			case 'home.theme.auto': return 'choisi par le système';
 			case 'home.info.name': return 'Informations sur l\'app';
 			case 'home.info.title': return 'Informations :';
 			case 'intro.buttons.next': return 'Suivant';

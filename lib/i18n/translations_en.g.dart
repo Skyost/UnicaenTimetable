@@ -109,7 +109,7 @@ class TranslationsHomeEn {
 	late final TranslationsHomeSynchronizationStatusEn synchronizationStatus = TranslationsHomeSynchronizationStatusEn.internal(_root);
 	late final TranslationsHomeCurrentLessonEn currentLesson = TranslationsHomeCurrentLessonEn.internal(_root);
 	late final TranslationsHomeNextLessonEn nextLesson = TranslationsHomeNextLessonEn.internal(_root);
-	late final TranslationsHomeCurrentThemeEn currentTheme = TranslationsHomeCurrentThemeEn.internal(_root);
+	late final TranslationsHomeThemeEn theme = TranslationsHomeThemeEn.internal(_root);
 	late final TranslationsHomeInfoEn info = TranslationsHomeInfoEn.internal(_root);
 }
 
@@ -179,8 +179,16 @@ class TranslationsBugsImprovementsMessageEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String get github => 'You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available <a href="https://github.com/Skyost/UnicaenTimetable/issues/">here</a>.';
-	String get website => 'You can also send me an email via the form which is available <a href="https://skyost.eu/#contact">here</a>.';
+	TextSpan github({required InlineSpanBuilder issueTracker}) => TextSpan(children: [
+		const TextSpan(text: 'You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available '),
+		issueTracker('here'),
+		const TextSpan(text: '.'),
+	]);
+	TextSpan website({required InlineSpanBuilder contactForm}) => TextSpan(children: [
+		const TextSpan(text: 'You can also send me an email via the form which is available '),
+		contactForm('here'),
+		const TextSpan(text: '.'),
+	]);
 }
 
 // Path: common.other
@@ -191,6 +199,7 @@ class TranslationsCommonOtherEn {
 
 	// Translations
 	String get fieldEmpty => 'This field cannot be empty.';
+	String get empty => 'Empty';
 	String get pleaseWait => 'Please wait…';
 }
 
@@ -304,9 +313,9 @@ class TranslationsHomeNextLessonEn {
 	String get nothing => 'Nothing today.';
 }
 
-// Path: home.currentTheme
-class TranslationsHomeCurrentThemeEn {
-	TranslationsHomeCurrentThemeEn.internal(this._root);
+// Path: home.theme
+class TranslationsHomeThemeEn {
+	TranslationsHomeThemeEn.internal(this._root);
 
 	final Translations _root; // ignore: unused_field
 
@@ -526,10 +535,19 @@ extension on Translations {
 			case 'about.paragraphs.first': return 'This app has been created by Skyost and is available under the therms of the GNU GPL v3 license. It\'s using Flutter and has been written in Dart by using some technologies. You can view all of this using the links below.';
 			case 'about.paragraphs.second': return 'Disclaimer. This application has not been developed by any official member of the University. Consequently, do not send any request to the University if you have a problem with this application. Furthermore, this application needs your student number with your password to work. Your credentials will not be send to any third party, except to the University server in order to download your timetable. If you do not trust this application, you can still check the source code with the "Github" link below.';
 			case 'bugsImprovements.title': return 'Bugs / Improvements';
-			case 'bugsImprovements.message.github': return 'You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available <a href="https://github.com/Skyost/UnicaenTimetable/issues/">here</a>.';
-			case 'bugsImprovements.message.website': return 'You can also send me an email via the form which is available <a href="https://skyost.eu/#contact">here</a>.';
+			case 'bugsImprovements.message.github': return ({required InlineSpanBuilder issueTracker}) => TextSpan(children: [
+				const TextSpan(text: 'You have some options to report me a bug or to suggest me an improvement. For example, you can use the Github issue tracker which is available '),
+				issueTracker('here'),
+				const TextSpan(text: '.'),
+			]);
+			case 'bugsImprovements.message.website': return ({required InlineSpanBuilder contactForm}) => TextSpan(children: [
+				const TextSpan(text: 'You can also send me an email via the form which is available '),
+				contactForm('here'),
+				const TextSpan(text: '.'),
+			]);
 			case 'common.appName': return 'Unicaen Timetable';
 			case 'common.other.fieldEmpty': return 'This field cannot be empty.';
+			case 'common.other.empty': return 'Empty';
 			case 'common.other.pleaseWait': return 'Please wait…';
 			case 'dialogs.lessonInfo.resetColor': return 'Default color';
 			case 'dialogs.lessonInfo.setAlarm': return 'Set alarm';
@@ -568,11 +586,11 @@ extension on Translations {
 			case 'home.nextLesson.name': return 'Next lesson';
 			case 'home.nextLesson.title': return 'Next lesson :';
 			case 'home.nextLesson.nothing': return 'Nothing today.';
-			case 'home.currentTheme.name': return 'Current theme';
-			case 'home.currentTheme.title': return 'Current theme :';
-			case 'home.currentTheme.light': return 'Light mode';
-			case 'home.currentTheme.dark': return 'Dark mode';
-			case 'home.currentTheme.auto': return 'picked by system';
+			case 'home.theme.name': return 'Current theme';
+			case 'home.theme.title': return 'Current theme :';
+			case 'home.theme.light': return 'Light mode';
+			case 'home.theme.dark': return 'Dark mode';
+			case 'home.theme.auto': return 'picked by system';
 			case 'home.info.name': return 'Device & app info';
 			case 'home.info.title': return 'Info :';
 			case 'intro.buttons.next': return 'Next';

@@ -109,12 +109,13 @@ class LocalStorage extends _$LocalStorage {
     Set<DateTime> result = {};
     List<Lesson> lessons = await selectAllLessons();
     for (Lesson lesson in lessons) {
-      DateTime monday = lesson.dateTime.start.atMonday;
+      DateTime monday = lesson.dateTime.start.atMonday.yearMonthDay;
       while (monday.isBefore(lesson.dateTime.end)) {
         result.add(monday);
         monday = monday.add(const Duration(days: 7));
       }
     }
+    print(result);
     return result.toList()..sort();
   }
 }

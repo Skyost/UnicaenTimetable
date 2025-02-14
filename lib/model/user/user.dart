@@ -56,6 +56,17 @@ sealed class User {
               password: password,
             );
 
+  @override
+  bool operator ==(Object other) {
+    if (other is! User) {
+      return super == other;
+    }
+    return username == other.username && other.password == password;
+  }
+
+  @override
+  int get hashCode => Object.hash(username, password);
+
   /// Converts this user to a map.
   Map<String, dynamic> _toMap() => {
         'username': username,

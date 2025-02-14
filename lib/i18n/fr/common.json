@@ -2,6 +2,7 @@
   "app_name": "Emploi du temps Unicaen",
   "other": {
     "field_empty": "Ce champ ne peut être vide.",
+    "empty": "Vide",
     "please_wait": "Veuillez patienter…"
   }
 }

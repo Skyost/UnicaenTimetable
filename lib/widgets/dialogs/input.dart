@@ -55,19 +55,27 @@ abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerS
       );
 
   /// Creates the "Ok" button.
-  Widget createOkButton(BuildContext context) => TextButton(
-        onPressed: () => Navigator.pop(context, value),
+  Widget createOkButton(BuildContext context, {bool? enabled}) => TextButton(
+        onPressed: enabled == true || enabled == null ? (() => Navigator.pop(context, value)) : null,
         child: Text(MaterialLocalizations.of(context).okButtonLabel),
       );
 }
 
 /// A text input dialog.
 class TextInputDialog extends _InputDialog<String> {
+  /// The validator.
+  final FormFieldValidator<String>? validator;
+
+  /// The field hint.
+  final String? hint;
+
   /// Creates a new text input dialog instance.
   const TextInputDialog({
     super.key,
     super.title,
     super.initialValue,
+    this.validator,
+    this.hint,
   });
 
   @override
@@ -78,34 +86,58 @@ class TextInputDialog extends _InputDialog<String> {
     BuildContext context, {
     String? title,
     String? initialValue,
+    FormFieldValidator<String>? validator,
+    String? hint,
   }) =>
       showDialog<String?>(
         context: context,
         builder: (_) => TextInputDialog(
           title: title,
           initialValue: initialValue,
+          validator: validator,
+          hint: hint,
         ),
       );
+
+  /// Validates [value] if non empty.
+  static String? validateNotEmpty(String? value) => value == null || value.trim().isEmpty ? translations.common.other.fieldEmpty : null;
 }
 
 /// The text input dialog state.
 class _TextInputDialogState extends _InputDialogState<String, TextInputDialog> {
   /// The current text editing controller.
-  late TextEditingController textEditingController;
+  late TextEditingController textEditingController = TextEditingController(text: widget.initialValue);
+
+  /// Whether the "OK" button is enabled.
+  late bool okEnabled = widget.validator?.call(widget.initialValue) == null;
 
   @override
-  void initState() {
-    super.initState();
-    textEditingController = TextEditingController(text: widget.initialValue);
-  }
-
-  @override
-  Widget buildForm(BuildContext context) => TextField(controller: textEditingController);
+  Widget buildForm(BuildContext context) => TextFormField(
+        controller: textEditingController,
+        validator: widget.validator,
+        decoration: widget.hint == null
+            ? null
+            : InputDecoration(
+                hintText: TextInputDialog.validateNotEmpty(widget.hint) == null ? widget.hint : translations.common.other.empty,
+              ),
+        autovalidateMode: widget.validator == null ? AutovalidateMode.disabled : AutovalidateMode.onUserInteraction,
+        onChanged: widget.validator == null
+            ? null
+            : ((value) {
+                setState(() => okEnabled = widget.validator!(value) == null);
+              }),
+      );
 
   @override
   void dispose() {
     textEditingController.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget createOkButton(BuildContext context, {bool? enabled}) {
+    enabled ??= okEnabled;
+    return super.createOkButton(context, enabled: enabled);
   }
 
   @override
@@ -291,7 +323,7 @@ class MultiChoicePickerDialog<T> extends _InputDialog<T> {
     T? initialValue,
     List<T>? values,
     required String emptyMessage,
-        String Function(T)? valueToString,
+    String Function(T)? valueToString,
   }) =>
       showDialog<T?>(
         context: context,
@@ -320,7 +352,6 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
     }
 
     return SizedBox(
-      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: ScrollablePositionedList.builder(
         itemBuilder: (_, position) {
@@ -337,6 +368,7 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
         },
         itemCount: widget.values.length,
         initialScrollIndex: math.max(0, currentValueIndex),
+        shrinkWrap: true,
       ),
     );
   }

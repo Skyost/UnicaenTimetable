@@ -1,7 +1,7 @@
 {
   "title": "Bugs / Améliorations",
   "message": {
-    "github": "Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible <a href=\"https://github.com/Skyost/UnicaenTimetable/issues/\">ici</a>.",
-    "website": "Vous pouvez également m'envoyer un email via le formulaire disponible <a href=\"https://skyost.eu/#contact\">ici</a>."
+    "github(rich)": "Il y a plusieurs manières pour vous de me suggérer des améliorations ou de me rapporter un bug. Vous pouvez par exemple utiliser le tracker de bugs Github disponible ${issueTracker(ici)}.",
+    "website(rich)": "Vous pouvez également m'envoyer un email via le formulaire disponible ${contactForm(ici)}."
   }
 }

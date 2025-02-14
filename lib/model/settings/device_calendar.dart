@@ -19,6 +19,16 @@ class SyncWithDeviceCalendarSettingsEntry extends SettingsEntry<bool> {
         );
 
   @override
+  FutureOr<bool> build() async {
+    bool result = await super.build();
+    if (result) {
+      Eventide eventide = Eventide();
+      return await eventide.requestCalendarPermission();
+    }
+    return result;
+  }
+
+  @override
   Future<void> changeValue(bool value) async {
     Eventide eventide = Eventide();
     if (value) {

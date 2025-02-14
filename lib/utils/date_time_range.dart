@@ -59,4 +59,15 @@ class DateTimeRange {
       end: end,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! DateTimeRange) {
+      return super == other;
+    }
+    return start == other.start && end == other.end;
+  }
+
+  @override
+  int get hashCode => Object.hash(start, end);
 }

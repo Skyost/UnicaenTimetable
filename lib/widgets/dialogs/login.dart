@@ -8,6 +8,7 @@ import 'package:unicaen_timetable/model/user/calendar.dart';
 import 'package:unicaen_timetable/model/user/user.dart';
 import 'package:unicaen_timetable/utils/lesson_download.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
+import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
 /// The user login dialog.
 class LoginDialog extends ConsumerStatefulWidget {
@@ -97,7 +98,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                       decoration: InputDecoration(hintText: translations.dialogs.login.usernameHint),
                       autocorrect: false,
                       onChanged: refreshLogin,
-                      validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
+                      validator: TextInputDialog.validateNotEmpty,
                       controller: usernameController,
                       textInputAction: TextInputAction.next,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -113,7 +114,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                       obscureText: true,
                       keyboardType: TextInputType.visiblePassword,
                       onChanged: refreshLogin,
-                      validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
+                      validator: TextInputDialog.validateNotEmpty,
                       controller: passwordController,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       textInputAction: moreSettings ? TextInputAction.next : TextInputAction.done,
@@ -141,7 +142,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                           autocorrect: false,
                           keyboardType: TextInputType.url,
                           onChanged: refreshLogin,
-                          validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
+                          validator: TextInputDialog.validateNotEmpty,
                           controller: serverAddressController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.next,
@@ -155,7 +156,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
                           autocorrect: false,
                           keyboardType: TextInputType.text,
                           onChanged: refreshLogin,
-                          validator: (value) => value == null || value.isEmpty ? translations.common.other.fieldEmpty : null,
+                          validator: TextInputDialog.validateNotEmpty,
                           controller: calendarNameController,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.next,

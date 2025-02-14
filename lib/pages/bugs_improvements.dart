@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Page;
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/pages/page.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
+import 'package:unicaen_timetable/widgets/list_page.dart';
 
 /// The bugs / improvements page list tile.
 class BugsImprovementsPageListTile extends StatelessWidget {
@@ -35,30 +37,71 @@ class BugsImprovementsPageAppBar extends StatelessWidget {
 }
 
 /// The bugs / improvements page widget.
-class BugsImprovementsPageWidget extends StatelessWidget {
+class BugsImprovementsPageWidget extends StatefulWidget {
   /// Creates a new bugs / improvements page instance.
   const BugsImprovementsPageWidget({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Icon(
-                  Icons.bug_report,
-                  size: math.min(100, MediaQuery.of(context).size.width),
-                  color: Colors.red[400],
-                ),
-              ),
-              HtmlWidget(translations.bugsImprovements.message.github),
-              HtmlWidget(translations.bugsImprovements.message.website),
-            ],
+  State<StatefulWidget> createState() => _BugsImprovementsPageWidgetState();
+}
+
+/// The bugs / improvements page widget state.
+class _BugsImprovementsPageWidgetState extends State<BugsImprovementsPageWidget> {
+  /// The issue tracker recognizer.
+  late final TapGestureRecognizer issueTrackerRecognizer = TapGestureRecognizer()..onTap = () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable/issues/');
+
+  /// The contact form recognizer.
+  late final TapGestureRecognizer contactFormRecognizer = TapGestureRecognizer()..onTap = () => Utils.openUrl('https://skyost.eu/#contact');
+
+  @override
+  Widget build(BuildContext context) => ListPageWidget(
+        header: ListPageHeader(
+          icon: Icon(
+            Icons.bug_report,
+            size: math.min(100, MediaQuery.of(context).size.width),
+            color: Colors.white,
+          ),
+          title: Text(
+            translations.bugsImprovements.title,
           ),
         ),
+        body: ListPageBody(
+          children: [
+            Text.rich(
+              TextSpan(
+                children: [
+                  translations.bugsImprovements.message.github(
+                    issueTracker: (text) => TextSpan(
+                      text: text,
+                      recognizer: issueTrackerRecognizer,
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.indigo,
+                      ),
+                    ),
+                  ),
+                  translations.bugsImprovements.message.website(
+                    contactForm: (text) => TextSpan(
+                      text: text,
+                      recognizer: contactFormRecognizer,
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.indigo,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       );
+
+  @override
+  void dispose() {
+    issueTrackerRecognizer.dispose();
+    super.dispose();
+  }
 }
