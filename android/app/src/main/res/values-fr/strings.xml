@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Emploi du temps Unicaen</string>
+
+    <string name="alarm_permission_granted">Permission accordée.</string>
+    <string name="alarm_permission_denied">Permission refusée.</string>
+
+    <string name="today_widget_title">Aujourd\'hui</string>
+    <string name="today_widget_nothing">Aucun cours pour cette journée.  Si vous pensiez avoir quelque chose, veuillez rafraîchir votre emploi du temps.</string>
+    <string name="today_widget_nothingremaining">Il ne reste plus aucun cours aujourd\'hui.</string>
+    <string name="today_widget_error">Impossible de charger votre emploi du temps.</string>
+    <string name="today_widget_refresh">Rafraîchir</string>
+    <string name="today_widget_back">Précédent</string>
+    <string name="today_widget_next">Suivant</string>
 </resources>

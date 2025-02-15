@@ -4,9 +4,7 @@ allprojects {
         mavenCentral()
         // `flutter clean` and comment the following lines to work on Android app.
         // [required] background_fetch
-        maven {
-            url = uri(project(":background_fetch").projectDir.resolve("libs"))
-        }
+        // maven(url = "${project(":background_fetch").projectDir}/libs")
     }
 }
 

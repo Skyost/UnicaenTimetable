@@ -55,10 +55,13 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
   /// The device calendar name.
   static const String calendarName = 'Unicaen';
 
+  /// The settings key.
+  static const String settingsKey = 'unicaenDeviceCalendar';
+
   @override
   FutureOr<ETCalendar?> build() async {
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
-    String? calendarId = preferences.getString('unicaenDeviceCalendar');
+    String? calendarId = preferences.getString(settingsKey);
     if (calendarId == null) {
       return null;
     }
@@ -80,7 +83,7 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
       color: calendarColor,
     );
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
-    await preferences.setString('unicaenDeviceCalendar', calendar.id);
+    await preferences.setString(settingsKey, calendar.id);
     state = AsyncData(calendar);
     return calendar;
   }
@@ -94,6 +97,6 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     Eventide eventide = Eventide();
     eventide.deleteCalendar(calendarId: calendar.id);
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
-    await preferences.remove('unicaenDeviceCalendar');
+    await preferences.remove(settingsKey);
   }
 }

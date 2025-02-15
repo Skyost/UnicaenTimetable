@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart' hide DrawerHeader, Page;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -48,6 +46,7 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
     });
     WidgetsBinding.instance.addObserver(this);
     goToDateIfNeeded();
+    syncIfNeeded();
   }
 
   @override
@@ -56,6 +55,7 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
 
     if (state == AppLifecycleState.resumed) {
       goToDateIfNeeded();
+      syncIfNeeded();
     }
   }
 
@@ -78,28 +78,21 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
 
   /// Goes to the date (if found in the app channel).
   void goToDateIfNeeded() {
-    if (!Platform.isAndroid) {
-      return;
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      String? rawDate = await UnicaenTimetableRoot.channel.invokeMethod<String>('activity.extract_date');
+      String? rawDate = await UnicaenTimetableRoot.channel.invokeMethod<String>('activity.getRequestedDateString');
       if (rawDate != null) {
         DateTime date = DateFormat('yyyy-MM-dd').parse(rawDate);
         ref.read(dateProvider.notifier).changeDate(date);
+        ref.read(pageProvider.notifier).changePage(DayViewPage(day: date.weekday));
       }
     });
   }
 
   /// Synchronize the app (if found in the app channel).
   void syncIfNeeded() {
-    if (!Platform.isAndroid) {
-      return;
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool? shouldSync = await UnicaenTimetableRoot.channel.invokeMethod<bool>('activity.extract_should_sync');
-      if (shouldSync != null && shouldSync && mounted) {
+      bool? shouldSync = await UnicaenTimetableRoot.channel.invokeMethod<bool>('activity.shouldRefreshTimeTable');
+      if (shouldSync == true && mounted) {
         await downloadLessons(ref);
       }
     });

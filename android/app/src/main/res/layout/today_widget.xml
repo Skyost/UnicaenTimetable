@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/today_widget_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/today_widget_layout_margin"
+    android:paddingTop="@dimen/today_widget_layout_padding_top_bottom"
+    android:paddingRight="@dimen/today_widget_layout_margin_right_left"
+    android:paddingBottom="@dimen/today_widget_layout_padding_top_bottom"
+    android:paddingLeft="@dimen/today_widget_layout_margin_right_left"
+    android:background="@drawable/today_widget_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/today_widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_today_widget_white"
+        android:textSize="@dimen/today_widget_title_size"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:layout_toStartOf="@+id/today_widget_back"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+
+    <ImageView
+        android:id="@+id/today_widget_back"
+        android:layout_width="@dimen/today_widget_images_size"
+        android:layout_height="@dimen/today_widget_images_size"
+        android:layout_above="@id/today_widget_horizontal_white_bar"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/today_widget_next"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/today_widget_back"/>
+
+    <ImageView
+        android:id="@+id/today_widget_next"
+        android:layout_width="@dimen/today_widget_images_size"
+        android:layout_height="@dimen/today_widget_images_size"
+        android:layout_above="@id/today_widget_horizontal_white_bar"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="@dimen/today_widget_right_margin_right"
+        android:layout_toStartOf="@+id/today_widget_refresh"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/today_widget_next"/>
+
+    <ImageView
+        android:id="@+id/today_widget_refresh"
+        android:layout_width="@dimen/today_widget_images_size"
+        android:layout_height="@dimen/today_widget_images_size"
+        android:layout_above="@id/today_widget_horizontal_white_bar"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/today_widget_refresh"/>
+
+    <LinearLayout
+        android:id="@+id/today_widget_horizontal_white_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/today_widget_bar_height"
+        android:layout_marginTop="@dimen/today_widget_rule_margin_top"
+        android:layout_below="@id/today_widget_title"
+        android:background="@color/color_today_widget_white"
+        android:orientation="horizontal"/>
+
+    <ListView
+        android:id="@+id/today_widget_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/today_widget_horizontal_white_bar"
+        android:paddingTop="@dimen/today_widget_content_padding_top_bottom"
+        android:paddingBottom="@dimen/today_widget_content_padding_top_bottom"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/today_widget_content_divider"/>
+
+</RelativeLayout>

@@ -71,7 +71,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
             if (Platform.isAndroid)
               TextButton(
                 onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
-                  'activity.set_alarm',
+                  'activity.setAlarm',
                   {
                     'title': lesson.name,
                     'hour': lesson.dateTime.start.hour,

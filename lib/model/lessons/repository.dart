@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/color_resolver.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
@@ -24,8 +23,8 @@ final lessonRepositoryProvider = AsyncNotifierProvider.autoDispose<LessonReposit
 class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   @override
   FutureOr<DateTime?> build() async {
-    File file = await _getFile(create: false);
-    return file.existsSync() ? file.lastModifiedSync() : null;
+    int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.get');
+    return lastUpdate == null ? null : DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000);
   }
 
   /// Synchronizes the app with Zimbra.
@@ -44,16 +43,11 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       List<Lesson> lessons = result.object;
       await ref.read(localStorageProvider).replaceLessons(lessons);
 
-      DateTime now = DateTime.now();
-      File file = await _getFile();
-      file.writeAsStringSync(
-        jsonEncode(
-          {
-            'lastModification': now.millisecondsSinceEpoch,
-          },
-        ),
-      );
-      state = AsyncData(now);
+      // TODO: Add the widget data.
+      int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.refresh');
+      if (lastUpdate != null) {
+        state = AsyncData(DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000));
+      }
       _refreshPlatform(lessons);
 
       return result;
@@ -68,9 +62,6 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
 
   /// Refreshes the platform data.
   Future<void> _refreshPlatform(List<Lesson> lessons) async {
-    if (Platform.isAndroid) {
-      UnicaenTimetableRoot.channel.invokeMethod('sync.finished');
-    }
     bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
     if (syncWithDevice) {
       ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.future);
@@ -110,16 +101,6 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       }
     }
     return result;
-  }
-
-  /// Returns the lessons color file.
-  Future<File> _getFile({bool create = true}) async {
-    Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    File file = File('${appDocumentsDir.path}/repository.json');
-    if (!file.existsSync()) {
-      file.createSync(recursive: true);
-    }
-    return file;
   }
 }
 

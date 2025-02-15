@@ -31,7 +31,6 @@ dependencies:
   slang: ^4.4.1
   slang_flutter: ^4.4.0
   firebase_core: ^3.11.0
-  home_widget: ^0.7.0+1
   eventide: ^0.1.0
 
 dev_dependencies:

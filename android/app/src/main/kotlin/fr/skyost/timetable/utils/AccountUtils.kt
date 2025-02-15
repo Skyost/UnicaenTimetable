@@ -8,12 +8,17 @@ import android.os.Build
 import fr.skyost.timetable.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 /**
  * Contains various useful methods to interact with the account on device.
  */
 class AccountUtils {
     companion object {
+        private val synchronizationFile: String = "synchronization"
+
         /**
          * Creates the account.
          *
@@ -90,6 +95,47 @@ class AccountUtils {
                 }
                 return@withContext false
             }
+        }
+
+        /**
+         * Resolves the last update date.
+         *
+         * @param context The context.
+         *
+         * @return The last update date (seconds since epoch).
+         */
+        fun resolveLastUpdate(context: Context): Long? {
+            val file = File(context.filesDir, synchronizationFile)
+            if (!file.exists()) {
+                return null
+            }
+            val content = file.readText()
+            return content.toLongOrNull()
+        }
+
+        /**
+         * Notifies an update.
+         *
+         * @param context The context.
+         *
+         * @return The last update date (seconds since epoch).
+         */
+        fun notifyUpdate(context: Context): Long? {
+            val manager: AccountManager = AccountManager.get(context)
+            val accounts: Array<Account> =
+                manager.getAccountsByType(context.getString(R.string.account_type_authority))
+            val account = accounts.firstOrNull() ?: return null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                manager.notifyAccountAuthenticated(account)
+            }
+            val file = File(context.filesDir, synchronizationFile)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            val date = LocalDateTime.now()
+            val secondsSinceEpoch = date.toEpochSecond(ZoneOffset.UTC)
+            file.writeText(secondsSinceEpoch.toString())
+            return secondsSinceEpoch
         }
     }
 }
