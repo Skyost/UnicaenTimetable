@@ -28,14 +28,32 @@ struct Provider: TimelineProvider {
             entry.lessons.append(defaultLesson)
         }
         else {
-            // TODO: Read lessons.json
-            let allLessons = data?.dictionary(forKey: widgetId)
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd-MM-yyyy"
-            let key = dateFormatter.string(from: Date())
-            let lessons: [String] = (allLessons?[key] as? [String]) ?? []
-            for lesson in lessons {
-                entry.lessons.append(Lesson(name: lesson))
+            do {
+                let lessonsFile = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("lessons.json")
+                let jsonData = try String(contentsOf: fileURL, encoding: .utf8)
+                let jsonLessons: [String: JsonLesson] = try! JSONDecoder().decode([String: JsonLesson].self, from: jsonData)
+                let allLessons: [Date: [JsonLesson]] = [:]
+                for jsonDate in jsonLessons.keys {
+                    let lessonsOfDate: [Lesson] = []
+                    for jsonLesson in jsonLessons[jsonDate] {
+                        lessonsOfDate.append(Lesson(
+                            name: jsonLesson.name,
+                            start: NSDate(timeIntervalSince1970: jsonLesson.start),
+                            end: NSDate(timeIntervalSince1970: jsonLesson.end),
+                            location: jsonLesson.location
+                        ))
+                    }
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateFormat = "yyyy'-'MM'-'dd'"
+                    allLessons[dateFormatter.dateFromString(jsonDate)] = lessonsOfDate
+                }
+                let lessons: [Lesson] = (lessons?[Date()] as? [Lesson]) ?? []
+                for lesson in lessons {
+                    entry.lessons.append(Lesson(name: lesson))
+                }
+            }
+            catch {
+                entry.error = "Failed to load your timetable."
             }
         }
         completion(entry)
@@ -49,11 +67,23 @@ struct Provider: TimelineProvider {
     }
 }
 
+struct JsonLesson: Decodable {
+    let name: String
+    let description: String
+    let start: Number
+    let end: Number
+    let location: String
+}
+
 struct LessonEntry: TimelineEntry {
     let date: Date = tomorrowMidnight()
+    var error: String?
     var lessons: [Lesson]
     
     func buildLessonsString() -> String {
+        if error {
+            return error
+        }
         var result = ""
         for lesson in lessons {
             result = result + lesson.buildLessonString() + "\n\n"
