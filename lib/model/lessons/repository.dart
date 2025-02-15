@@ -44,11 +44,11 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       await ref.read(localStorageProvider).replaceLessons(lessons);
 
       Directory directory = await getApplicationSupportDirectory();
-      File lessonsFile = File('${directory.path}/lessons.json');
+      File lessonsFile = File('${directory.path}/lesson.json');
       if (!lessonsFile.existsSync()) {
         lessonsFile.createSync(recursive: true);
       }
-      Map<DateTime, List<Lesson>> groupedLessons = groupLessonsByDay(lessons);
+      Map<DateTime, List<Lesson>> groupedLessons = _groupLessonsByDay(lessons, minimumDateTime: DateTime.now().yearMonthDay);
       lessonsFile.writeAsStringSync(
         jsonEncode({
           for (MapEntry<DateTime, List<Lesson>> entry in groupedLessons.entries)
@@ -97,7 +97,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   }
 
   /// Groups the given [lessons] by day.
-  Map<DateTime, List<Lesson>> groupLessonsByDay(List<Lesson> lessons) {
+  Map<DateTime, List<Lesson>> _groupLessonsByDay(List<Lesson> lessons, {DateTime? minimumDateTime}) {
     Map<DateTime, List<Lesson>> groupedLessons = {};
     for (Lesson lesson in lessons) {
       DateTime currentDay = lesson.dateTime.start.yearMonthDay;
@@ -106,14 +106,21 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       while (currentDay.isBefore(endDay) || currentDay.isAtSameMomentAs(endDay)) {
         DateTime lessonStart = currentDay.isAtSameMomentAs(lesson.dateTime.start.yearMonthDay) ? lesson.dateTime.start : DateTime(currentDay.year, currentDay.month, currentDay.day, 0, 0);
         DateTime lessonEnd = currentDay.isAtSameMomentAs(lesson.dateTime.end.yearMonthDay) ? lesson.dateTime.end : DateTime(currentDay.year, currentDay.month, currentDay.day, 23, 59, 59);
-        groupedLessons.putIfAbsent(currentDay, () => []).add(
-              lesson.copyWith(
-                dateTime: DateTimeRange(
-                  start: lessonStart,
-                  end: lessonEnd,
+        if (minimumDateTime == null || currentDay.isAtSameMomentAs(minimumDateTime) || currentDay.isAfter(minimumDateTime)) {
+          groupedLessons
+              .putIfAbsent(
+                currentDay,
+                () => [],
+              )
+              .add(
+                lesson.copyWith(
+                  dateTime: DateTimeRange(
+                    start: lessonStart,
+                    end: lessonEnd,
+                  ),
                 ),
-              ),
-            );
+              );
+        }
         currentDay = currentDay.add(const Duration(days: 1));
       }
     }
