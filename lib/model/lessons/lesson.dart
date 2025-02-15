@@ -95,6 +95,20 @@ class Lesson implements Comparable<Lesson> {
     return '$hour $name ($location)';
   }
 
+  /// Copies this instance with the given parameters.
+  Lesson copyWith({
+    String? name,
+    String? description,
+    String? location,
+    DateTimeRange? dateTime,
+  }) =>
+      Lesson(
+        name: name ?? this.name,
+        description: description ?? this.description,
+        location: location ?? this.location,
+        dateTime: dateTime ?? this.dateTime,
+      );
+
   @override
   int compareTo(Lesson other) => dateTime.start.compareTo(other.dateTime.start);
 
@@ -103,7 +117,7 @@ class Lesson implements Comparable<Lesson> {
         'name': name,
         'description': description,
         'location': location,
-        'start': dateTime.start.millisecondsSinceEpoch,
-        'end': dateTime.end.millisecondsSinceEpoch,
+        'start': dateTime.start.millisecondsSinceEpoch ~/ 1000,
+        'end': dateTime.end.millisecondsSinceEpoch  ~/ 1000,
       };
 }

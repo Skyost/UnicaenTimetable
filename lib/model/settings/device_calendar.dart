@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unicaen_timetable/model/settings/entry.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The sync with device calendar settings entry provider.
 final syncWithDeviceCalendarSettingsEntryProvider = AsyncNotifierProvider.autoDispose<SyncWithDeviceCalendarSettingsEntry, bool>(SyncWithDeviceCalendarSettingsEntry.new);
@@ -35,7 +36,7 @@ class SyncWithDeviceCalendarSettingsEntry extends SettingsEntry<bool> {
       bool result = await eventide.requestCalendarPermission();
       if (result) {
         await super.changeValue(value);
-        await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDevice();
+        await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
       }
     } else {
       await super.changeValue(value);
@@ -67,18 +68,17 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     }
     Eventide eventide = Eventide();
     List<ETCalendar> calendars = await eventide.retrieveCalendars();
-    for (ETCalendar calendar in calendars) {
-      if (calendar.id == calendarId) {
-        return calendar;
-      }
-    }
-    return null;
+    return calendars.firstWhereOrNull((calendar) => calendar.id == calendarId);
   }
 
   /// Creates and returns [ETCalendar].
-  Future<ETCalendar> createCalendarOnDevice() async {
+  Future<ETCalendar> createCalendarOnDeviceIfNotExist() async {
     Eventide eventide = Eventide();
-    ETCalendar calendar = await eventide.createCalendar(
+    ETCalendar? calendar = await future;
+    if (calendar != null) {
+      return calendar;
+    }
+    calendar = await eventide.createCalendar(
       title: calendarName,
       color: calendarColor,
     );

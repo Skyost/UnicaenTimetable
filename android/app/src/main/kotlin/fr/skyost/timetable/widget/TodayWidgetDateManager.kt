@@ -3,53 +3,52 @@ package fr.skyost.timetable.widget
 import java.time.LocalDate
 
 /**
- * The today's widget date manager.
+ * Statically holds a relative day per widget.
  */
-class TodayWidgetDateManager {
-    /**
-     * Relative day (from today).
-     */
-    var relativeDay = 0
-
-    /**
-     * The instance holder.
-     */
-    private object Holder {
-        /**
-         * The instance.
-         */
-        internal val INSTANCE = TodayWidgetDateManager()
-    }
-
-    /**
-     * Adds a day to the relative day count.
-     */
-    fun plusRelativeDay() {
-        relativeDay++
-    }
-
-    /**
-     * Subtracts a day to the relative day count.
-     */
-    fun minusRelativeDay() {
-        relativeDay--
-    }
-
-    /**
-     * Returns the current absolute day.
-     *
-     * @return The current absolute day.
-     */
-    val absoluteDay: LocalDate
-        get() = LocalDate.now().plusDays(relativeDay.toLong())
-
+class TodayWidgetDateManager private constructor() {
     companion object {
+        /**
+         * The holders map.
+         */
+        private val holders: MutableMap<Int, Int> = HashMap()
+
         /**
          * Returns the class instance.
          *
+         * @param widgetId The widget id.
+         *
          * @return The class instance.
          */
-        val instance: TodayWidgetDateManager
-            get() = Holder.INSTANCE
+        fun getRelativeDay(widgetId: Int): Int {
+            var relativeDay = holders[widgetId]
+            if (relativeDay == null) {
+                relativeDay = 0
+                changeRelativeDay(widgetId, relativeDay)
+            }
+            return relativeDay
+        }
+
+        /**
+         * Returns the current absolute day.
+         *
+         * @param widgetId The widget id.
+         *
+         * @return The current absolute day.
+         */
+        fun resolveAbsoluteDay(widgetId: Int): LocalDate {
+            return LocalDate.now().plusDays(getRelativeDay(widgetId).toLong())
+        }
+
+        /**
+         * Returns the class instance.
+         *
+         * @param widgetId The widget id.
+         * @param relativeDay The new relative day?
+         *
+         * @return The class instance.
+         */
+        fun changeRelativeDay(widgetId: Int, relativeDay: Int) {
+            holders[widgetId] = relativeDay
+        }
     }
 }

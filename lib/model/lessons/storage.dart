@@ -115,7 +115,6 @@ class LocalStorage extends _$LocalStorage {
         monday = monday.add(const Duration(days: 7));
       }
     }
-    print(result);
     return result.toList()..sort();
   }
 }

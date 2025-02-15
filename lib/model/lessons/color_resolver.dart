@@ -39,8 +39,8 @@ class LessonColorResolver extends AsyncNotifier<ColorResolver> {
 
   /// Returns the lessons color file.
   Future<File> _getFile({bool create = true}) async {
-    Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    File file = File('${appDocumentsDir.path}/colors.json');
+    Directory directory = await getApplicationSupportDirectory();
+    File file = File('${directory.path}/colors.json');
     if (create && !file.existsSync()) {
       file.createSync(recursive: true);
     }

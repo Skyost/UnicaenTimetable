@@ -15,7 +15,10 @@ import java.time.format.DateTimeFormatter
 /**
  * The today's widget RemoteViews factory.
  */
-class TodayWidgetViewsFactory internal constructor(private val context: Context) :
+class TodayWidgetViewsFactory internal constructor(
+    private val context: Context,
+    private val widgetId: Int
+) :
     RemoteViewsService.RemoteViewsFactory {
 
     companion object {
@@ -119,7 +122,7 @@ class TodayWidgetViewsFactory internal constructor(private val context: Context)
     override fun onDataSetChanged() {
         try {
             items?.clear()
-            val date: LocalDate = TodayWidgetDateManager.instance.absoluteDay
+            val date: LocalDate = TodayWidgetDateManager.resolveAbsoluteDay(widgetId)
             val lessons: List<Lesson> = Lesson.readList(context, date)
             items?.addAll(todayLessonListToHtml(context, lessons))
         } catch (ex: Exception) {

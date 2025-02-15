@@ -6,7 +6,7 @@ import 'package:eventide/eventide.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:home_widget/home_widget.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
 import 'package:unicaen_timetable/model/lessons/color_resolver.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
@@ -43,12 +43,27 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       List<Lesson> lessons = result.object;
       await ref.read(localStorageProvider).replaceLessons(lessons);
 
-      // TODO: Add the widget data.
+      Directory directory = await getApplicationSupportDirectory();
+      File lessonsFile = File('${directory.path}/lessons.json');
+      if (!lessonsFile.existsSync()) {
+        lessonsFile.createSync(recursive: true);
+      }
+      Map<DateTime, List<Lesson>> groupedLessons = groupLessonsByDay(lessons);
+      lessonsFile.writeAsStringSync(
+        jsonEncode({
+          for (MapEntry<DateTime, List<Lesson>> entry in groupedLessons.entries)
+            '${entry.key.year}-${entry.key.month.withLeadingZero}-${entry.key.day.withLeadingZero}': [
+              for (Lesson lesson in entry.value) lesson.toJson(),
+            ],
+        }),
+        flush: true,
+      );
+
       int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.refresh');
       if (lastUpdate != null) {
         state = AsyncData(DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000));
       }
-      _refreshPlatform(lessons);
+      _refreshPlatformCalendar(lessons);
 
       return result;
     } catch (ex, stacktrace) {
@@ -61,12 +76,15 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   }
 
   /// Refreshes the platform data.
-  Future<void> _refreshPlatform(List<Lesson> lessons) async {
+  Future<void> _refreshPlatformCalendar(List<Lesson> lessons) async {
     bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
     if (syncWithDevice) {
-      ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.future);
-      calendar ??= await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDevice();
+      ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
       Eventide eventide = Eventide();
+      List<ETEvent> events = await eventide.retrieveEvents(calendarId: calendar.id);
+      for (ETEvent event in events) {
+        await eventide.deleteEvent(eventId: event.id);
+      }
       for (Lesson lesson in lessons) {
         await eventide.createEvent(
           calendarId: calendar.id,
@@ -76,31 +94,31 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         );
       }
     }
-    await HomeWidget.saveWidgetData('lessons', jsonEncode(_toMap(lessons)));
-    await HomeWidget.updateWidget(
-      name: 'TodayWidget',
-      androidName: 'TodayWidget',
-      iOSName: 'TodayWidget',
-    );
   }
 
-  /// Converts the [lessons] list to a map.
-  Map<String, List<Map>> _toMap(List<Lesson> lessons) {
-    Map<String, List<Map>> result = {};
+  /// Groups the given [lessons] by day.
+  Map<DateTime, List<Lesson>> groupLessonsByDay(List<Lesson> lessons) {
+    Map<DateTime, List<Lesson>> groupedLessons = {};
     for (Lesson lesson in lessons) {
-      DateTime start = lesson.dateTime.start.yearMonthDay;
-      String key = '${start.year}-${start.month.withLeadingZero}-${start.day.withLeadingZero}';
-      while (start.isBefore(lesson.dateTime.end)) {
-        List<Map>? dayLessons = result[key];
-        if (dayLessons == null) {
-          result[key] = [lesson.toJson()];
-        } else {
-          dayLessons.add(lesson.toJson());
-        }
-        start = start.add(const Duration(days: 1));
+      DateTime currentDay = lesson.dateTime.start.yearMonthDay;
+      DateTime endDay = lesson.dateTime.end.yearMonthDay;
+
+      while (currentDay.isBefore(endDay) || currentDay.isAtSameMomentAs(endDay)) {
+        DateTime lessonStart = currentDay.isAtSameMomentAs(lesson.dateTime.start.yearMonthDay) ? lesson.dateTime.start : DateTime(currentDay.year, currentDay.month, currentDay.day, 0, 0);
+        DateTime lessonEnd = currentDay.isAtSameMomentAs(lesson.dateTime.end.yearMonthDay) ? lesson.dateTime.end : DateTime(currentDay.year, currentDay.month, currentDay.day, 23, 59, 59);
+        groupedLessons.putIfAbsent(currentDay, () => []).add(
+              lesson.copyWith(
+                dateTime: DateTimeRange(
+                  start: lessonStart,
+                  end: lessonEnd,
+                ),
+              ),
+            );
+        currentDay = currentDay.add(const Duration(days: 1));
       }
     }
-    return result;
+
+    return groupedLessons;
   }
 }
 

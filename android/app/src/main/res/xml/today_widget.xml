@@ -2,8 +2,7 @@
     android:initialLayout="@layout/today_widget"
     android:minWidth="110dp"
     android:minHeight="110dp"
+    android:previewImage="@drawable/today_widget_preview"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen"
     android:updatePeriodMillis="1800000"
-    android:previewImage="@drawable/today_widget_preview">
-</appwidget-provider>
+    android:widgetCategory="home_screen" />
