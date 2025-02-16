@@ -1,7 +1,7 @@
 {
   "lesson_info": {
     "reset_color": "Couleur par défaut",
-    "set_alarm": "Mettre une alarme"
+    "schedule_reminder": "Programmer un rappel"
   },
   "lesson_color": {
     "title": "Couleur du cours"

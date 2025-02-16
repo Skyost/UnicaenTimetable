@@ -68,18 +68,16 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
           content: Text(
               '${lesson.dateTime.start.hour.withLeadingZero}:${lesson.dateTime.start.minute.withLeadingZero} — ${lesson.dateTime.end.hour.withLeadingZero}:${lesson.dateTime.end.minute.withLeadingZero}\n\n${lesson.description ?? ''}'),
           actions: [
-            if (Platform.isAndroid)
-              TextButton(
-                onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
-                  'activity.setAlarm',
-                  {
-                    'title': lesson.name,
-                    'hour': lesson.dateTime.start.hour,
-                    'minute': lesson.dateTime.start.minute,
-                  },
-                ),
-                child: Text(translations.dialogs.lessonInfo.setAlarm),
+            TextButton(
+              onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
+                'activity.scheduleReminder',
+                {
+                  'title': lesson.name,
+                  'hour': lesson.dateTime.start.hour,
+                  'minute': lesson.dateTime.start.minute,
+                },
               ),
+              child: Text(translations.dialogs.lessonInfo.scheduleReminder),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),

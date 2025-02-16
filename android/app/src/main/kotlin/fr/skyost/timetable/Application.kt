@@ -54,7 +54,7 @@ class Application : android.app.Application() {
                     val lastModified = Lesson.resolveLessonsFile(context).lastModified()
                     result.success(lastModified.div(1000))
                 }
-                "activity.setAlarm" -> {
+                "activity.scheduleReminder" -> {
                     if (context !is Activity) {
                         result.error("no_activity", null, null)
                         return
