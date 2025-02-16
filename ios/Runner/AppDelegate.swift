@@ -61,6 +61,21 @@ import Foundation
             } else {
                 result(FlutterError(code: "generic_error", message: nil, details: nil))
             }
+        case "sync.get":
+            let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
+            result(lastModification.timeIntervalSince1970)
+        case "sync.refresh":
+            WidgetCenter.shared.reloadAllTimelines(ofKind: "TodayWidget")
+            let lessonsFile = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("lessons.json")
+            let attributes = try? FileManager.default.attributesOfItem(atPath: lessonsFile.path)
+            let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
+            result(lastModification.timeIntervalSince1970)
+        case "activity.setAlarm":
+            // TODO
+        case "activity.shouldRefreshTimetable":
+            result(false)
+        case "activity.getRequestedDateString":
+            result(nil)
         default:
             result(FlutterMethodNotImplemented)
         }
