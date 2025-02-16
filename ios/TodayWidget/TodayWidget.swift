@@ -30,26 +30,30 @@ struct Provider: TimelineProvider {
         else {
             do {
                 let lessonsFile = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("lessons.json")
-                let jsonData = try String(contentsOf: fileURL, encoding: .utf8)
-                let jsonLessons: [String: JsonLesson] = try! JSONDecoder().decode([String: JsonLesson].self, from: jsonData)
-                let allLessons: [Date: [JsonLesson]] = [:]
+                let jsonData = try String(contentsOf: lessonsFile, encoding: .utf8).data(using: .utf8)!
+                let jsonLessons: [String: [JsonLesson]] = try! JSONDecoder().decode([String: [JsonLesson]].self, from: jsonData)
+                var allLessons: [Date: [Lesson]] = [:]
                 for jsonDate in jsonLessons.keys {
-                    let lessonsOfDate: [Lesson] = []
-                    for jsonLesson in jsonLessons[jsonDate] {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy'-'MM'-'dd'"
+                    let key = dateFormatter.date(from: jsonDate)
+                    if key == nil {
+                        continue
+                    }
+                    var lessonsOfDate: [Lesson] = []
+                    for jsonLesson in jsonLessons[jsonDate]! {
                         lessonsOfDate.append(Lesson(
                             name: jsonLesson.name,
-                            start: NSDate(timeIntervalSince1970: jsonLesson.start),
-                            end: NSDate(timeIntervalSince1970: jsonLesson.end),
+                            start: NSDate(timeIntervalSince1970: TimeInterval(jsonLesson.start)) as Date,
+                            end: NSDate(timeIntervalSince1970: TimeInterval(jsonLesson.end)) as Date,
                             location: jsonLesson.location
                         ))
                     }
-                    let dateFormatter = NSDateFormatter()
-                    dateFormatter.dateFormat = "yyyy'-'MM'-'dd'"
-                    allLessons[dateFormatter.dateFromString(jsonDate)] = lessonsOfDate
+                    allLessons[key!] = lessonsOfDate
                 }
-                let lessons: [Lesson] = (lessons?[Date()] as? [Lesson]) ?? []
+                let lessons: [Lesson] = (allLessons[Date()]) ?? []
                 for lesson in lessons {
-                    entry.lessons.append(Lesson(name: lesson))
+                    entry.lessons.append(lesson)
                 }
             }
             catch {
@@ -70,8 +74,8 @@ struct Provider: TimelineProvider {
 struct JsonLesson: Decodable {
     let name: String
     let description: String
-    let start: Number
-    let end: Number
+    let start: Int
+    let end: Int
     let location: String
 }
 
@@ -81,8 +85,8 @@ struct LessonEntry: TimelineEntry {
     var lessons: [Lesson]
     
     func buildLessonsString() -> String {
-        if error {
-            return error
+        if error != nil {
+            return error!
         }
         var result = ""
         for lesson in lessons {
@@ -107,7 +111,7 @@ struct Lesson {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .none
         dateFormatter.timeStyle = .short
-        return "**\(name)**\n\n\(dateFormatter.string(start)) - \(dateFormatter.string(end))\n\n_\(location)_"
+        return "**\(name)**\n\n\(dateFormatter.string(from: start)) - \(dateFormatter.string(from: end))\n\n_\(location)_"
     }
 }
 
@@ -117,15 +121,10 @@ struct TodayWidgetEntryView : View {
     
     var entry: Provider.Entry
     let data = UserDefaults.init(suiteName: widgetGroupId)
-
-    let date = Date()
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "dd/MM/yyyy"
-    let formattedDate = dateFormatter.string(from: date)
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(date, style: .date)
+            Text(Date(), style: .date)
                 .font(.system(size: 16))
                 .foregroundColor(TodayWidgetEntryView.textColor)
                 .bold()
@@ -146,7 +145,7 @@ struct TodayWidgetEntryView : View {
             }
             Spacer()
         }
-        .widgetURL(URL(string: "todayWidget://lessons?date=\(formattedDate)&homeWidget"))
+        .widgetURL(URL(string: "todayWidget://lessons?date=\(getFormattedDate())"))
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,
@@ -154,6 +153,13 @@ struct TodayWidgetEntryView : View {
         )
         .padding(EdgeInsets.init(top: 10, leading: 15, bottom: 10, trailing: 15))
         .background(TodayWidgetEntryView.backgroundColor)
+    }
+    
+    func getFormattedDate() -> String {
+        let today = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd'/'MM'/'yyyy'"
+        return dateFormatter.string(from: today)
     }
 }
 
