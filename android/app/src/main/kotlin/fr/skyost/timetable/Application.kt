@@ -42,14 +42,17 @@ class Application : android.app.Application() {
                     }
                 }
                 "sync.get" -> {
-                    result.success(AccountUtils.resolveLastUpdate(context))
+                    val lastModified = Lesson.resolveLessonsFile(context).lastModified()
+                    result.success(lastModified.div(1000))
                 }
                 "sync.refresh" -> {
                     val updateIntent = Intent(context, TodayWidgetProvider::class.java)
                     updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     updateIntent.putExtra(TodayWidgetProvider.INTENT_REFRESH_WIDGETS, true)
                     context.sendBroadcast(updateIntent)
-                    result.success(AccountUtils.notifyUpdate(context))
+                    AccountUtils.notifyUpdate(context)
+                    val lastModified = Lesson.resolveLessonsFile(context).lastModified()
+                    result.success(lastModified.div(1000))
                 }
                 "activity.setAlarm" -> {
                     if (context !is Activity) {

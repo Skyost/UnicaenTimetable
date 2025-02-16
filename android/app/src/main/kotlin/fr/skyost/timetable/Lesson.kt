@@ -27,6 +27,17 @@ data class Lesson(
 ) {
     companion object {
         /**
+         * Returns the lesson list file.
+         *
+         * @param context The context.
+         *
+         * @return The lesson list file.
+         */
+        fun resolveLessonsFile(context: Context): File {
+            return File(PathUtils.getFilesDir(context), "lessons.json")
+        }
+
+        /**
          * Reads the lesson list stored on the device for a specific date.
          *
          * @param context The context.
@@ -35,7 +46,7 @@ data class Lesson(
          * @return The lesson list.
          */
         fun readList(context: Context, date: LocalDate): List<Lesson> {
-            val file = File(PathUtils.getFilesDir(context), "lessons.json")
+            val file = resolveLessonsFile(context)
             if (!file.exists()) {
                 return listOf()
             }
