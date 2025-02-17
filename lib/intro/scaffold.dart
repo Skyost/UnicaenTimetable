@@ -88,7 +88,7 @@ class _IntroScaffoldBody extends ConsumerWidget {
   Widget createFooter(BuildContext context, WidgetRef ref, Slide slide) => Container(
         color: const Color(0xFF1F2B38),
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 10),
+          padding: EdgeInsets.only(left: 20, right: 10, bottom: MediaQuery.of(context).padding.bottom),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

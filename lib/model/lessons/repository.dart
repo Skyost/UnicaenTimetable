@@ -44,7 +44,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
       await ref.read(localStorageProvider).replaceLessons(lessons);
 
       Directory directory = await getApplicationSupportDirectory();
-      File lessonsFile = File('${directory.path}/lesson.json');
+      File lessonsFile = File('${directory.path}/lessons.json');
       if (!lessonsFile.existsSync()) {
         lessonsFile.createSync(recursive: true);
       }
@@ -59,6 +59,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         flush: true,
       );
 
+      print(await UnicaenTimetableRoot.channel.invokeMethod('sync.refresh'));
       int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.refresh');
       if (lastUpdate != null) {
         state = AsyncData(DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000));

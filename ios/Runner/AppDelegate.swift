@@ -1,8 +1,10 @@
 import UIKit
 import Flutter
 import Foundation
+import WidgetKit
+import EventKit
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     static let channel: String = "fr.skyost.timetable"
     
@@ -62,16 +64,48 @@ import Foundation
                 result(FlutterError(code: "generic_error", message: nil, details: nil))
             }
         case "sync.get":
-            let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
-            result(lastModification.timeIntervalSince1970)
+            result(getLessonsFileLastModificationTime())
         case "sync.refresh":
-            WidgetCenter.shared.reloadAllTimelines(ofKind: "TodayWidget")
-            let lessonsFile = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("lessons.json")
-            let attributes = try? FileManager.default.attributesOfItem(atPath: lessonsFile.path)
-            let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
-            result(lastModification.timeIntervalSince1970)
-        case "activity.setAlarm":
-            // TODO
+            let lessonsFile = URL(string: NSSearchPathForDirectoriesInDomains(
+                FileManager.SearchPathDirectory.applicationSupportDirectory,
+                FileManager.SearchPathDomainMask.userDomainMask,
+                true
+            ).first!)!.appendingPathComponent("lessons.json")
+            let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.fr.skyost.timetable")!
+            let target = directory.appendingPathComponent("lessons.json")
+            do {
+                print(lessonsFile)
+                print(directory)
+                print(target)
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                if FileManager.default.fileExists(atPath: lessonsFile.path) {
+                    try FileManager.default.removeItem(at: lessonsFile)
+                }
+                try FileManager.default.moveItem(at: lessonsFile, to: target)
+                if #available(iOS 14.0, *) {
+                    WidgetCenter.shared.reloadTimelines(ofKind: "TodayWidget")
+                }
+                result(getLessonsFileLastModificationTime())
+            }
+            catch {
+                result(error)
+            }
+        case "activity.scheduleReminder":
+            let eventStore = EKEventStore()
+            eventStore.requestAccess(to: .reminder) { (granted, error) in
+                if granted, error == nil {
+                    let reminder = EKReminder(eventStore: eventStore)
+                    reminder.title = arguments["title"] as! String
+                    reminder.calendar = eventStore.defaultCalendarForNewEvents
+                    reminder.dueDateComponents = DateComponents(hour: arguments["hour"] as! Int, minute: arguments["minute"] as! Int)
+                    do {
+                        try eventStore.save(reminder, commit: true)
+                        result(true)
+                        return
+                    } catch {}
+                }
+                result(false)
+            }
         case "activity.shouldRefreshTimetable":
             result(false)
         case "activity.getRequestedDateString":
@@ -79,6 +113,16 @@ import Foundation
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+    
+    private func getLessonsFileLastModificationTime() -> Int {
+        let lessonsFile = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.fr.skyost.timetable")?.appendingPathComponent("lessons.json")
+        if lessonsFile == nil || !FileManager.default.fileExists(atPath: lessonsFile!.path) {
+            return 0
+        }
+        let attributes = try? FileManager.default.attributesOfItem(atPath: lessonsFile!.path)
+        let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
+        return Int(lastModification.timeIntervalSince1970)
     }
     
     private func createQuery() -> [String: Any] {
