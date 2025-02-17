@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
@@ -78,6 +76,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
                 },
               ),
               child: Text(translations.dialogs.lessonInfo.scheduleReminder),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),
