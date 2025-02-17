@@ -1,12 +1,14 @@
-import UIKit
+import EventKit
 import Flutter
 import Foundation
+import UIKit
 import WidgetKit
-import EventKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
     static let channel: String = "fr.skyost.timetable"
+    
+    var requestedDate: String? = nil
     
     override func application(
         _ application: UIApplication,
@@ -16,8 +18,20 @@ import EventKit
         let methodChannel = FlutterMethodChannel(name: AppDelegate.channel, binaryMessenger: controller.binaryMessenger)
         methodChannel.setMethodCallHandler(handleMethodCall)
         
+        if let launchUrl = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL {
+            updateRequestedDateIfNeeded(launchUrl)
+        }
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func updateRequestedDateIfNeeded(_ launchUrl: URL) -> String? {
+        if launchUrl.scheme == "todayWidget" && launchUrl.host == "timetable" {
+            let components = URLComponents(url: launchUrl, resolvingAgainstBaseURL: false)
+            requestedDate = components?.queryItems?.first(where: { $0.name == "date" })?.value
+        }
+        return nil
     }
     
     /// Allows to handle a method call.
@@ -66,33 +80,33 @@ import EventKit
         case "sync.get":
             result(getLessonsFileLastModificationTime())
         case "sync.refresh":
-            let lessonsFile = URL(string: NSSearchPathForDirectoriesInDomains(
+            let lessonsFile = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(
                 FileManager.SearchPathDirectory.applicationSupportDirectory,
                 FileManager.SearchPathDomainMask.userDomainMask,
                 true
-            ).first!)!.appendingPathComponent("lessons.json")
+            ).first!).appendingPathComponent("lessons.json")
+            if !FileManager.default.fileExists(atPath: lessonsFile.path) {
+                result(0)
+                break
+            }
             let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.fr.skyost.timetable")!
             let target = directory.appendingPathComponent("lessons.json")
             do {
-                print(lessonsFile)
-                print(directory)
-                print(target)
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-                if FileManager.default.fileExists(atPath: lessonsFile.path) {
-                    try FileManager.default.removeItem(at: lessonsFile)
+                if FileManager.default.fileExists(atPath: target.path) {
+                    try FileManager.default.removeItem(at: target)
                 }
                 try FileManager.default.moveItem(at: lessonsFile, to: target)
                 if #available(iOS 14.0, *) {
                     WidgetCenter.shared.reloadTimelines(ofKind: "TodayWidget")
                 }
                 result(getLessonsFileLastModificationTime())
-            }
-            catch {
+            } catch {
                 result(error)
             }
         case "activity.scheduleReminder":
             let eventStore = EKEventStore()
-            eventStore.requestAccess(to: .reminder) { (granted, error) in
+            eventStore.requestAccess(to: .reminder) { granted, error in
                 if granted, error == nil {
                     let reminder = EKReminder(eventStore: eventStore)
                     reminder.title = arguments["title"] as! String
@@ -109,7 +123,8 @@ import EventKit
         case "activity.shouldRefreshTimetable":
             result(false)
         case "activity.getRequestedDateString":
-            result(nil)
+            result(requestedDate)
+            requestedDate = nil
         default:
             result(FlutterMethodNotImplemented)
         }

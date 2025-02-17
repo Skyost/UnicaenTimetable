@@ -46,7 +46,7 @@ class HomePageAppBar extends ConsumerWidget {
 class _AddButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<List<HomeCard>> cards = ref.read(homeCardsProvider);
+    AsyncValue<List<HomeCard>> cards = ref.watch(homeCardsProvider);
     return cards.valueOrNull == null || cards.value!.length == HomeCard.values.length
         ? const SizedBox.shrink()
         : PopupMenuButton<HomeCard>(

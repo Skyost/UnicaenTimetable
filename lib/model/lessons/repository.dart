@@ -59,7 +59,6 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         flush: true,
       );
 
-      print(await UnicaenTimetableRoot.channel.invokeMethod('sync.refresh'));
       int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.refresh');
       if (lastUpdate != null) {
         state = AsyncData(DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000));
@@ -126,6 +125,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
                   ),
                 ),
               );
+          groupedLessons[currentDay] = List.of(groupedLessons[currentDay]!)..sort();
         }
         currentDay = currentDay.add(const Duration(days: 1));
       }
