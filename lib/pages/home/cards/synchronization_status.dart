@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
+import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/settings/calendar.dart';
 import 'package:unicaen_timetable/pages/home/cards/card_content.dart';
@@ -25,6 +26,7 @@ class SynchronizationStatusCard extends ConsumerWidget {
       title: translations.home.currentLesson.title,
       subtitle: '${lastModification == null ? translations.home.synchronizationStatus.never : DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification)}\n${isBad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
       onTap: () async => await downloadLessons(ref),
+      onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.synchronizationStatus),
     );
   }
 }

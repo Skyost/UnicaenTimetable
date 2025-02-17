@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
+import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/settings/theme.dart';
 import 'package:unicaen_timetable/pages/home/cards/card_content.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
@@ -31,6 +32,7 @@ class _ThemeCardState extends ConsumerState<ThemeCard> with BrightnessListener {
       title: translations.home.currentLesson.title,
       subtitle: subtitle,
       onTap: () async => await ref.read(themeSettingsEntryProvider.notifier).changeValue(currentBrightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark),
+      onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.theme),
     );
   }
 }

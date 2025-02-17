@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
+import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/pages/home/cards/card_content.dart';
@@ -36,6 +37,7 @@ class CurrentLessonCard extends ConsumerWidget {
 
         ref.read(pageProvider.notifier).changePage(DayViewPage(day: now.weekday));
       },
+      onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.currentLesson),
     );
   }
 }

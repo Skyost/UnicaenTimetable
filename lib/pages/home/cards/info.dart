@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
+import 'package:unicaen_timetable/model/home_cards.dart';
 import 'package:unicaen_timetable/pages/home/cards/card_content.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
@@ -25,6 +26,7 @@ class InfoCard extends ConsumerWidget {
           title: translations.home.currentLesson.title,
           subtitle: snapshot.data?.toString() ?? translations.common.other.pleaseWait,
           onTap: () => ref.read(pageProvider.notifier).changePage(AboutPage()),
+          onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.info),
         ),
       );
 }
