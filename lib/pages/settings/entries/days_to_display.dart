@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
-import 'package:unicaen_timetable/model/settings/sidebar_days.dart';
+import 'package:unicaen_timetable/model/settings/days_to_display.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
-/// Allows to configure [sidebarDaysEntryProvider].
-class SidebarDaysEntryWidget extends ConsumerWidget {
-  /// Creates a new sidebar days entry widget instance.
-  const SidebarDaysEntryWidget({
+/// Allows to configure [daysToDisplayEntryProvider].
+class DaysToDisplaySettingsEntryWidget extends ConsumerWidget {
+  /// Creates a new days to display settings entry widget instance.
+  const DaysToDisplaySettingsEntryWidget({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<List<int>> sidebarDays = ref.watch(sidebarDaysEntryProvider);
+    AsyncValue<List<int>> sidebarDays = ref.watch(daysToDisplayEntryProvider);
     DateFormat formatter = DateFormat.EEEE(TranslationProvider.of(context).locale.languageCode);
     DateTime monday = DateTime.now().atMonday;
     return ListTile(
       enabled: sidebarDays.hasValue,
-      title: Text(translations.settings.application.sidebarDays),
+      title: Text(translations.settings.application.daysToDisplay),
       subtitle: Text(
         [for (int day in sidebarDays.valueOrNull ?? []) formatter.format(monday.add(Duration(days: day - 1)))].join(', '),
       ),
@@ -29,7 +29,7 @@ class SidebarDaysEntryWidget extends ConsumerWidget {
           builder: (context) => _SidebarDaysSettingsEntryDialogContent(sidebarDays: sidebarDays.value!),
         );
         if (result != null) {
-          await ref.read(sidebarDaysEntryProvider.notifier).changeValue(result);
+          await ref.read(daysToDisplayEntryProvider.notifier).changeValue(result);
         }
       },
     );
@@ -65,7 +65,7 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
   Widget build(BuildContext context) {
     DateTime monday = DateTime.now().atMonday;
     return AlertDialog(
-      title: Text(translations.settings.application.sidebarDays),
+      title: Text(translations.settings.application.daysToDisplay),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: ListView.builder(

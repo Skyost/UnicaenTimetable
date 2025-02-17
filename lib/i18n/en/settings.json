@@ -2,7 +2,7 @@
   "title": "Settings",
   "application": {
     "title": "Application",
-    "sidebar_days": "Days to show in the sidebar",
+    "days_to_display": "Days to display",
     "color_lessons_automatically": "Automatically color lessons",
     "open_today_automatically": "Open today's page at launch",
     "enable_ads": "Enable ads",

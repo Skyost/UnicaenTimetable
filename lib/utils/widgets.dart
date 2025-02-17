@@ -24,7 +24,7 @@ class CenteredCircularProgressIndicator extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 14),
-                child: CircularProgressIndicator(backgroundColor: color ?? Theme.of(context).primaryColor),
+                child: CircularProgressIndicator(color: color ?? Theme.of(context).primaryColor),
               ),
               if (message != null) Text(message!),
             ],

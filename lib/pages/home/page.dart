@@ -22,7 +22,7 @@ class HomePageListTile extends StatelessWidget {
   Widget build(BuildContext context) => PageListTitle(
         page: HomePage(),
         title: translations.home.title,
-        icon: Icons.home,
+        icon: const Icon(Icons.home),
       );
 }
 

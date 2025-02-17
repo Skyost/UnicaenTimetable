@@ -26,8 +26,10 @@ Future<void> downloadLessons(WidgetRef ref) async {
 extension DisplayLessonDownloadResult on RequestResult {
   /// Handles the current result.
   Future<void> handle(BuildContext context) async {
-    showSnackBar(context);
-    await openDialogs(context);
+    await showSnackBar(context);
+    if (context.mounted) {
+      await openDialogs(context);
+    }
   }
 
   /// Displays a SnackBar for the current result.

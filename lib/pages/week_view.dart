@@ -4,6 +4,7 @@ import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
+import 'package:unicaen_timetable/model/settings/days_to_display.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
@@ -20,7 +21,7 @@ class WeekViewPageListTile extends StatelessWidget {
   Widget build(BuildContext context) => PageListTitle(
         page: WeekViewPage(),
         title: translations.weekView.title,
-        icon: Icons.view_array,
+        icon: const Icon(Icons.view_array),
       );
 }
 
@@ -56,8 +57,11 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
   @override
   Widget buildChild(List<FlutterWeekViewEvent> events) {
     DateTime monday = ref.watch(dateProvider);
+    List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? defaultDaysToDisplay;
     return WeekView(
-      dates: List.generate(7, (i) => monday.add(Duration(days: i))),
+      dates: [
+        for (int day in daysToDisplay) monday.add(Duration(days: day - 1)),
+      ],
       events: events,
       initialTime: const HourMinute(hour: 7).atDate(DateTime.now()),
       style: WeekViewStyle(dayViewWidth: calculateDayViewWidth(context)),

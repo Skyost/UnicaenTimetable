@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/main.dart';
-import 'package:unicaen_timetable/model/settings/sidebar_days.dart';
+import 'package:unicaen_timetable/model/settings/days_to_display.dart';
 import 'package:unicaen_timetable/pages/about.dart';
 import 'package:unicaen_timetable/pages/bugs_improvements.dart';
 import 'package:unicaen_timetable/pages/day_view.dart';
@@ -139,7 +139,7 @@ class _Page extends ConsumerWidget {
 class _Drawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<int> sidebarDays = ref.watch(sidebarDaysEntryProvider).valueOrNull ?? [];
+    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? [];
     return Drawer(
       child: ListView(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),

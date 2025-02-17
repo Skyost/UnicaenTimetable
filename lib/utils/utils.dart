@@ -112,39 +112,43 @@ class Utils {
   }
 
   /// Shows a snack bar with an icon, a text and a color.
-  static Future<SnackBarClosedReason> showSnackBar({
+  static Future<SnackBarClosedReason?> showSnackBar({
     required BuildContext context,
     IconData? icon,
     required String text,
     Color? color,
-  }) =>
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-            SnackBar(
-              duration: const Duration(seconds: 2),
-              content: Row(
-                children: [
-                  if (icon != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Icon(
-                        icon,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  Expanded(
-                    child: Text(
-                      text,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
+    bool waitBeforeReturning = false,
+  }) async {
+    ScaffoldFeatureController<SnackBar, SnackBarClosedReason> result = ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Row(
+          children: [
+            if (icon != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
-              backgroundColor: color,
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
-          )
-          .closed;
+          ],
+        ),
+        backgroundColor: color,
+      ),
+    );
+    if (waitBeforeReturning) {
+      return await result.closed;
+    }
+    return null;
+  }
 }
 
 /// Allows to cache a given provider for an amount of time.

@@ -20,7 +20,7 @@ class AboutPageListTile extends StatelessWidget {
   Widget build(BuildContext context) => PageListTitle(
         page: AboutPage(),
         title: translations.about.title,
-        icon: Icons.favorite,
+        icon: const Icon(Icons.favorite),
       );
 }
 
@@ -47,9 +47,7 @@ class AboutPageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListPageWidget(
         header: ListPageHeader(
-          icon: ScalableImageWidget.fromSISource(
-            si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
-          ),
+          icon: const Icon(Icons.favorite),
           title: Text(
             translations.common.appName,
           ),

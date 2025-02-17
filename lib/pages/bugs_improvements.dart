@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Page;
 import 'package:unicaen_timetable/i18n/translations.g.dart';
@@ -19,7 +17,7 @@ class BugsImprovementsPageListTile extends StatelessWidget {
   Widget build(BuildContext context) => PageListTitle(
         page: BugsImprovementsPage(),
         title: translations.bugsImprovements.title,
-        icon: Icons.bug_report,
+        icon: const Icon(Icons.bug_report),
       );
 }
 
@@ -58,11 +56,7 @@ class _BugsImprovementsPageWidgetState extends State<BugsImprovementsPageWidget>
   @override
   Widget build(BuildContext context) => ListPageWidget(
         header: ListPageHeader(
-          icon: Icon(
-            Icons.bug_report,
-            size: math.min(100, MediaQuery.of(context).size.width),
-            color: Colors.white,
-          ),
+          icon: const Icon(Icons.bug_report),
           title: Text(
             translations.bugsImprovements.title,
           ),
@@ -76,20 +70,15 @@ class _BugsImprovementsPageWidgetState extends State<BugsImprovementsPageWidget>
                     issueTracker: (text) => TextSpan(
                       text: text,
                       recognizer: issueTrackerRecognizer,
-                      style: const TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.indigo,
-                      ),
+                      style: linkTextStyle,
                     ),
                   ),
+                  const TextSpan(text: ' '),
                   translations.bugsImprovements.message.website(
                     contactForm: (text) => TextSpan(
                       text: text,
                       recognizer: contactFormRecognizer,
-                      style: const TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.indigo,
-                      ),
+                      style: linkTextStyle,
                     ),
                   ),
                 ],
@@ -97,6 +86,12 @@ class _BugsImprovementsPageWidgetState extends State<BugsImprovementsPageWidget>
             ),
           ],
         ),
+      );
+
+  /// Returns the link text style.
+  TextStyle get linkTextStyle => TextStyle(
+        decoration: TextDecoration.underline,
+        color: Theme.of(context).colorScheme.primary,
       );
 
   @override

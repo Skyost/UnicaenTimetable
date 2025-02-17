@@ -77,6 +77,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         setState(() {
           usernameController.text = user.username;
           passwordController.text = user.password;
+          canLogin = formKey.currentState?.validate() == true;
         });
       }
     });
@@ -238,7 +239,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     if (result == HttpStatus.ok) {
       await ref.read(userProvider.notifier).updateUser(user);
       if (widget.synchronizeAfterLogin) {
-        downloadLessons(ref);
+        await downloadLessons(ref);
       }
       if (mounted) {
         Navigator.pop(context, true);

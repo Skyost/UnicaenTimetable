@@ -8,7 +8,7 @@ class PageListTitle extends ConsumerWidget {
   final Page page;
 
   /// The icon.
-  final IconData? icon;
+  final Widget? icon;
 
   /// The title.
   final String title;
@@ -26,7 +26,7 @@ class PageListTitle extends ConsumerWidget {
     Page? currentPage = ref.watch(pageProvider).valueOrNull;
     return ListTile(
       selected: currentPage?.isSamePage(page) == true,
-      leading: Icon(icon),
+      leading: icon,
       title: Text(title),
       onTap: () {
         Navigator.pop(context);

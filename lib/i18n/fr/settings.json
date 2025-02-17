@@ -2,7 +2,7 @@
   "title": "Paramètres",
   "application": {
     "title": "Application",
-    "sidebar_days": "Jours à afficher dans la menu déroulant",
+    "days_to_display": "Jours à afficher",
     "color_lessons_automatically": "Colorer automatiquement les cours",
     "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
     "enable_ads": "Activer les publicités",

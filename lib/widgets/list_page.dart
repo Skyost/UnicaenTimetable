@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
@@ -54,32 +56,43 @@ class ListPageHeader extends ConsumerStatefulWidget {
 class _ListPageHeaderState extends ConsumerState<ListPageHeader> with BrightnessListener {
   @override
   Widget build(BuildContext context) => Container(
-        color: currentBrightness == Brightness.light ? const Color(0xFF7986CB) : const Color(0xFF202D3B),
+        color: Theme.of(context).appBarTheme.backgroundColor,
         padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.icon != null)
-              SizedBox(
-                height: 100,
-                child: widget.icon,
-              ),
-            if (widget.title != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: DefaultTextStyle(
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w300,
+        child: DefaultTextStyle(
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: defaultTextColor,
+            fontSize: 30,
+            fontWeight: FontWeight.w300,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.icon != null)
+                SizedBox(
+                  height: 100,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      iconTheme: Theme.of(context).iconTheme.copyWith(
+                            color: defaultTextColor,
+                            size: math.min(100, MediaQuery.of(context).size.width),
+                          ),
+                    ),
+                    child: widget.icon!,
                   ),
+                ),
+              if (widget.title != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
                   child: widget.title!,
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       );
+
+  /// The default text color.
+  Color get defaultTextColor => currentBrightness == Brightness.light ? Colors.white : Theme.of(context).colorScheme.primary;
 }
 
 /// The about page list body.

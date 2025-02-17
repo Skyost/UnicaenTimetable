@@ -7,8 +7,8 @@ import 'package:unicaen_timetable/pages/settings/entries/calendar_interval.dart'
 import 'package:unicaen_timetable/pages/settings/entries/calendar_name.dart';
 import 'package:unicaen_timetable/pages/settings/entries/calendar_server.dart';
 import 'package:unicaen_timetable/pages/settings/entries/color_lessons_automatically.dart';
+import 'package:unicaen_timetable/pages/settings/entries/days_to_display.dart';
 import 'package:unicaen_timetable/pages/settings/entries/open_today_automatically.dart';
-import 'package:unicaen_timetable/pages/settings/entries/sidebar_days.dart';
 import 'package:unicaen_timetable/pages/settings/entries/switch_account.dart';
 import 'package:unicaen_timetable/pages/settings/entries/sync_with_device_calendar.dart';
 import 'package:unicaen_timetable/pages/settings/entries/theme.dart';
@@ -23,10 +23,10 @@ class SettingsPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-    page: SettingsPage(),
-    title: translations.settings.title,
-    icon: Icons.settings,
-  );
+        page: SettingsPage(),
+        title: translations.settings.title,
+        icon: const Icon(Icons.settings),
+      );
 }
 
 /// The settings page app bar.
@@ -38,8 +38,8 @@ class SettingsPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-    title: Text(translations.settings.title),
-  );
+        title: Text(translations.settings.title),
+      );
 }
 
 /// The settings page.
@@ -67,7 +67,7 @@ class SettingsPageWidget extends ConsumerWidget {
             ),
             SyncWithDeviceCalendarSettingsEntryWidget(),
             const ThemeSettingsEntryWidget(),
-            const SidebarDaysEntryWidget(),
+            const DaysToDisplaySettingsEntryWidget(),
             ColorLessonsAutomaticallySettingsEntryWidget(),
             OpenTodayAutomaticallySettingsEntryWidget(),
             _SettingsPageSectionTitle(
@@ -103,11 +103,19 @@ class _SettingsPageSectionTitle extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => ListTile(
-        leading: icon == null ? null : Icon(icon),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary),
-        ),
-      );
+  Widget build(BuildContext context) {
+    Color? textColor = Theme.of(context).colorScheme.primary;
+    return ListTile(
+      leading: icon == null
+          ? null
+          : Icon(
+              icon,
+              color: textColor,
+            ),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: textColor),
+      ),
+    );
+  }
 }

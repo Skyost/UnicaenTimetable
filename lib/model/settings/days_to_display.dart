@@ -4,22 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unicaen_timetable/model/settings/entry.dart';
 
-/// The sidebar days settings entry provider.
-final sidebarDaysEntryProvider = AsyncNotifierProvider.autoDispose<SidebarDaysSettingsEntry, List<int>>(SidebarDaysSettingsEntry.new);
+/// The default days to display.
+const List<int> defaultDaysToDisplay = [
+  DateTime.monday,
+  DateTime.tuesday,
+  DateTime.wednesday,
+  DateTime.thursday,
+  DateTime.friday,
+];
 
-/// Allows to configure which days appear in the sidebar.
-class SidebarDaysSettingsEntry extends SettingsEntry<List<int>> {
+/// The days to display settings entry provider.
+final daysToDisplayEntryProvider = AsyncNotifierProvider.autoDispose<DaysToDisplaySettingsEntry, List<int>>(DaysToDisplaySettingsEntry.new);
+
+/// Allows to configure which days appear in the sidebar and in the week view.
+class DaysToDisplaySettingsEntry extends SettingsEntry<List<int>> {
   /// Creates a new sidebar days settings entry instance.
-  SidebarDaysSettingsEntry()
+  DaysToDisplaySettingsEntry()
       : super(
-          key: 'sidebarDays',
-          defaultValue: [
-            DateTime.monday,
-            DateTime.tuesday,
-            DateTime.wednesday,
-            DateTime.thursday,
-            DateTime.friday,
-          ],
+          key: 'daysToDisplay',
+          defaultValue: defaultDaysToDisplay,
         );
 
   @override
@@ -40,7 +43,7 @@ class SidebarDaysSettingsEntry extends SettingsEntry<List<int>> {
 }
 
 /// Allows to work with week days.
-extension WeekDays on List<int> {
+extension WeekDaysUtils on List<int> {
   /// Returns the previous available day of the sidebar.
   int previousDay(int currentDay) {
     int minDay = this.minDay;

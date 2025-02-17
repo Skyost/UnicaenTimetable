@@ -74,7 +74,7 @@ class Application : android.app.Application() {
                     context.startActivity(intent)
                     result.success(null)
                 }
-                "activity.shouldRefreshTimeTable" -> {
+                "activity.shouldRefreshTimetable" -> {
                     if (context !is MainActivity) {
                         result.error("no_activity", null, null)
                         return

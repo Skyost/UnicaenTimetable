@@ -8,7 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
-import 'package:unicaen_timetable/model/settings/sidebar_days.dart';
+import 'package:unicaen_timetable/model/settings/days_to_display.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
@@ -33,17 +33,40 @@ class DayViewPageListTile extends StatelessWidget {
     return PageListTitle(
       page: DayViewPage(day: day),
       title: DateFormat.EEEE(TranslationProvider.of(context).locale.languageCode).format(date).capitalize(),
-      icon: switch (day) {
-        DateTime.monday => Icons.looks_one,
-        DateTime.tuesday => Icons.looks_two,
-        DateTime.wednesday => Icons.looks_3,
-        DateTime.thursday => Icons.looks_4,
-        DateTime.friday => Icons.looks_5,
-        DateTime.saturday => Icons.looks_6,
-        _ => Icons.square_rounded,
-      },
+      icon: _DayViewPageListTileIcon(
+        day: day,
+      ),
     );
   }
+}
+
+/// A day view page list tile icon, with a number.
+class _DayViewPageListTileIcon extends StatelessWidget {
+  /// The week day.
+  final int day;
+
+  /// Creates a new day view page list tile icon.
+  const _DayViewPageListTileIcon({
+    required this.day,
+  });
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      const Icon(Icons.square_rounded),
+      Positioned.fill(
+        child: Center(
+          child: Text(
+            day.toString(),
+            style: TextStyle(
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 /// The about week view app bar.
@@ -62,7 +85,7 @@ class DayViewPageAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<int> sidebarDays = ref.watch(sidebarDaysEntryProvider).valueOrNull ?? [];
+    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? [];
     DateTime monday = DateTime.now().atMonday;
     DateTime date = monday.add(Duration(days: day - 1));
     return AppBar(
@@ -127,7 +150,7 @@ class DayViewPageWidget extends ConsumerStatefulWidget {
 
   /// Goes to the previous day.
   static Future<void> _previousDay(WidgetRef ref, int currentWeekDay) async {
-    List<int> sidebarDays = await ref.read(sidebarDaysEntryProvider.future);
+    List<int> sidebarDays = await ref.read(daysToDisplayEntryProvider.future);
     int previousDay = sidebarDays.previousDay(currentWeekDay);
     if (previousDay >= currentWeekDay) {
       DateTime monday = ref.read(dateProvider);
@@ -139,7 +162,7 @@ class DayViewPageWidget extends ConsumerStatefulWidget {
 
   /// Goes to the next day.
   static Future<void> _nextDay(WidgetRef ref, int currentWeekDay) async {
-    List<int> sidebarDays = await ref.read(sidebarDaysEntryProvider.future);
+    List<int> sidebarDays = await ref.read(daysToDisplayEntryProvider.future);
     int nextDay = sidebarDays.nextDay(currentWeekDay);
     if (nextDay <= currentWeekDay) {
       DateTime monday = ref.read(dateProvider);
