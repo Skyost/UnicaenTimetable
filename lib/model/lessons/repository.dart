@@ -94,6 +94,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
         await eventide.createEvent(
           calendarId: calendar.id,
           title: lesson.name,
+          description: lesson.description,
           startDate: lesson.dateTime.start,
           endDate: lesson.dateTime.end,
         );
