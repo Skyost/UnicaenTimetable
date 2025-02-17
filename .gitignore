@@ -15,6 +15,7 @@ ios/Runner/GoogleService-Info.plist
 screenshots/
 android/app/.cxx
 **.g.dart
+ios/build
 
 # IntelliJ related
 *.iml
