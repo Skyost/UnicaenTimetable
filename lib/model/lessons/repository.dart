@@ -80,9 +80,14 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   Future<void> _refreshPlatformCalendar(List<Lesson> lessons) async {
     bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
     if (syncWithDevice) {
+      DateTime today = DateTime.now().yearMonthDay;
       ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
       Eventide eventide = Eventide();
-      List<ETEvent> events = await eventide.retrieveEvents(calendarId: calendar.id);
+      List<ETEvent> events = await eventide.retrieveEvents(
+        calendarId: calendar.id,
+        startDate: today.subtract(const Duration(days: 365)),
+        endDate: today.add(const Duration(days: 365)),
+      );
       for (ETEvent event in events) {
         await eventide.deleteEvent(eventId: event.id);
       }
