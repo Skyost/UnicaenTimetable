@@ -24,6 +24,9 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   @override
   FutureOr<DateTime?> build() async {
     int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.get');
+    if (lastUpdate == 0) {
+      lastUpdate = null;
+    }
     return lastUpdate == null ? null : DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000);
   }
 
