@@ -91,7 +91,7 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
   /// Synchronize the app (if found in the app channel).
   void syncIfNeeded() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool? shouldSync = await UnicaenTimetableRoot.channel.invokeMethod<bool>('activity.shouldRefreshTimeTable');
+      bool? shouldSync = await UnicaenTimetableRoot.channel.invokeMethod<bool>('activity.shouldRefreshTimetable');
       if (shouldSync == true && mounted) {
         await downloadLessons(ref);
       }
