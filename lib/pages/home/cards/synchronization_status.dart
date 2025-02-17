@@ -24,8 +24,12 @@ class SynchronizationStatusCard extends ConsumerWidget {
       color: status.resolveColor(),
       icon: status.icon,
       title: translations.home.currentLesson.title,
-      subtitle:
-          '${lastModification == null ? translations.home.synchronizationStatus.never : DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification)}\n${isBad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
+      subtitle: switch (status) {
+        _Status.loading => translations.common.other.pleaseWait,
+        _Status.bad ||
+        _Status.good =>
+          '${lastModification == null ? translations.home.synchronizationStatus.never : DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification)}\n${status == _Status.bad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
+      },
       onTap: () async => await downloadLessons(ref),
       onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.synchronizationStatus),
     );
