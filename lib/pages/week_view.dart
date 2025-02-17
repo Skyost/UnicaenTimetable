@@ -2,11 +2,11 @@ import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
-import 'package:unicaen_timetable/model/lessons/lesson.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
 import 'package:unicaen_timetable/model/settings/days_to_display.dart';
 import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/utils/date_time_range.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 import 'package:unicaen_timetable/widgets/flutter_week_view.dart';
 
@@ -58,21 +58,24 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
   Widget buildChild(List<FlutterWeekViewEvent> events) {
     DateTime monday = ref.watch(dateProvider);
     List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? defaultDaysToDisplay;
+    List<DateTime> dates = [
+      for (int day in daysToDisplay) monday.add(Duration(days: day - 1)),
+    ];
+    DateTime today = DateTime.now().yearMonthDay;
+    DateTime initialTime = (dates.contains(today) ? today : monday).copyWith(hour: 7, minute: 0);
     return WeekView(
-      dates: [
-        for (int day in daysToDisplay) monday.add(Duration(days: day - 1)),
-      ],
+      dates: dates,
       events: events,
-      initialTime: const HourMinute(hour: 7).atDate(DateTime.now()),
+      initialTime: initialTime,
       style: WeekViewStyle(dayViewWidth: calculateDayViewWidth(context)),
       dayBarStyleBuilder: (date) => createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
-      hoursColumnStyle: createHoursColumnStyle(),
+      hourColumnStyle: createHoursColumnStyle(),
       dayViewStyleBuilder: createDayViewStyle,
     );
   }
 
   @override
-  AsyncValue<List<Lesson>> queryLessons() {
+  AsyncValue<List<LessonWithColor>> queryLessons() {
     DateTime monday = ref.watch(dateProvider);
     DateTime nextWeek = monday.add(const Duration(days: 7));
     return ref.watch(lessonsProvider(DateTimeRange(start: monday, end: nextWeek)));

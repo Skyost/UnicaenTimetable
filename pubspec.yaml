@@ -10,7 +10,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_week_view: ^1.3.0
+  flutter_week_view: ^1.4.0
   jovial_svg: ^1.1.25
   intl: any
   path_provider: ^2.1.5

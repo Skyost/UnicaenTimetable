@@ -196,16 +196,16 @@ class _DayViewPageWidgetState extends FlutterWeekViewWidgetState<DayViewPageWidg
       child: DayView(
         date: date,
         events: events,
-        initialTime: const HourMinute(hour: 7),
+        initialTime: const TimeOfDay(hour: 7, minute: 0),
         style: createDayViewStyle(date),
         dayBarStyle: createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
-        hoursColumnStyle: createHoursColumnStyle(),
+        hourColumnStyle: createHoursColumnStyle(),
       ),
     );
   }
 
   @override
-  AsyncValue<List<Lesson>> queryLessons() {
+  AsyncValue<List<LessonWithColor>> queryLessons() {
     DateTime monday = ref.watch(dateProvider);
     DateTime day = monday.add(Duration(days: widget.day - 1));
     return ref.watch(lessonsProvider(DateTimeRange.oneDay(day)));

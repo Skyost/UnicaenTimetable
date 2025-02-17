@@ -140,22 +140,22 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
 }
 
 /// The lesson repository provider.
-final lessonsProvider = AsyncNotifierProvider.autoDispose.family<LessonsNotifier, List<Lesson>, DateTimeRange?>(LessonsNotifier.new);
+final lessonsProvider = AsyncNotifierProvider.autoDispose.family<LessonsNotifier, List<LessonWithColor>, DateTimeRange?>(LessonsNotifier.new);
 
 /// The remaining lessons provider.
-final remainingLessonsProvider = FutureProvider<List<Lesson>>((ref) async {
+final remainingLessonsProvider = FutureProvider<List<LessonWithColor>>((ref) async {
   DateTime now = DateTime.now();
-  List<Lesson> lessons = await ref.watch(lessonsProvider(DateTimeRange.oneDay(DateTime.now().yearMonthDay)).future);
+  List<LessonWithColor> lessons = await ref.watch(lessonsProvider(DateTimeRange.oneDay(DateTime.now().yearMonthDay)).future);
   return [
-    for (Lesson lesson in lessons)
+    for (LessonWithColor lesson in lessons)
       if (!now.isAfter(lesson.dateTime.end)) lesson,
   ];
 });
 
 /// The lesson model.
-class LessonsNotifier extends AutoDisposeFamilyAsyncNotifier<List<Lesson>, DateTimeRange?> {
+class LessonsNotifier extends AutoDisposeFamilyAsyncNotifier<List<LessonWithColor>, DateTimeRange?> {
   @override
-  FutureOr<List<Lesson>> build(DateTimeRange? arg) async {
+  FutureOr<List<LessonWithColor>> build(DateTimeRange? arg) async {
     LocalStorage storage = ref.watch(localStorageProvider);
     ColorResolver colorResolver = await ref.watch(lessonColorResolverProvider.future);
     List<Lesson> lessons = arg == null ? (await storage.selectAllLessons()) : (await storage.selectLessons(arg));

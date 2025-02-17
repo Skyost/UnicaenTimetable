@@ -17,14 +17,14 @@ import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 /// A widget that shows a FlutterWeekView widget.
 abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> extends ConsumerState<T> with BrightnessListener {
   /// The default event color.
-  static const defaultColor = Color(0xCC2196F3);
+  static const Color defaultColor = Color(0xCC2196F3);
 
   @override
   Widget build(BuildContext context) {
-    AsyncValue<List<Lesson>> lessons = queryLessons();
+    AsyncValue<List<LessonWithColor>> lessons = queryLessons();
     return switch (lessons) {
-      AsyncData<List<Lesson>>(:final value) => buildChild(
-          value.map(createEvent).toList(),
+      AsyncData<List<LessonWithColor>>(:final value) => buildChild(
+          value.map(_FlutterWeekViewEventWithLesson.fromLesson).toList(),
         ),
       AsyncError(:final error) => Center(
           child: Text(
@@ -35,44 +35,40 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
     };
   }
 
-  /// Creates an event.
-  FlutterWeekViewEvent createEvent(Lesson lesson) {
+  Widget createEventWidget(FlutterWeekViewEvent event, double height, double width) {
+    LessonWithColor? lesson = event is _FlutterWeekViewEventWithLesson ? event.lesson : null;
     Color? backgroundColor = lesson is LessonWithColor ? lesson.color : null;
     backgroundColor ??= defaultColor.withAlpha(150);
     Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
-    return FlutterWeekViewEvent(
-      title: lesson.name,
-      description: lesson.description ?? '',
-      start: lesson.dateTime.start,
-      end: lesson.dateTime.end,
-      backgroundColor: backgroundColor,
-      onLongPress: () async {
-        Color? color = await ColorInputDialog.getValue(
-          context,
-          title: translations.dialogs.lessonColor.title,
-          initialValue: backgroundColor,
-          resetColor: defaultColor,
-        );
-        if (color == defaultColor) {
-          color = null;
-        }
-        await ref.read(lessonColorResolverProvider.notifier).setLessonColor(lesson, color);
-      },
+    return GestureDetector(
+      onLongPress: lesson == null
+          ? null
+          : (() async {
+              Color? color = await ColorInputDialog.getValue(
+                context,
+                title: translations.dialogs.lessonColor.title,
+                initialValue: backgroundColor,
+                resetColor: defaultColor,
+              );
+              if (color == defaultColor) {
+                color = null;
+              }
+              await ref.read(lessonColorResolverProvider.notifier).setLessonColor(lesson, color);
+            }),
       onTap: () => showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text(lesson.name),
+          title: Text(event.title),
           scrollable: true,
-          content: Text(
-              '${lesson.dateTime.start.hour.withLeadingZero}:${lesson.dateTime.start.minute.withLeadingZero} — ${lesson.dateTime.end.hour.withLeadingZero}:${lesson.dateTime.end.minute.withLeadingZero}\n\n${lesson.description ?? ''}'),
+          content: Text('${event.start.hour.withLeadingZero}:${event.start.minute.withLeadingZero} — ${event.end.hour.withLeadingZero}:${event.end.minute.withLeadingZero}\n\n${event.description}'),
           actions: [
             TextButton(
               onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
                 'activity.scheduleReminder',
                 {
-                  'title': lesson.name,
-                  'hour': lesson.dateTime.start.hour,
-                  'minute': lesson.dateTime.start.minute,
+                  'title': event.title,
+                  'hour': event.start.hour,
+                  'minute': event.start.minute,
                 },
               ),
               child: Text(translations.dialogs.lessonInfo.scheduleReminder),
@@ -84,7 +80,13 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
           ],
         ),
       ),
-      textStyle: TextStyle(color: textColor),
+      child: FlutterWeekViewEventWidget(
+        event: event,
+        height: height,
+        width: width,
+        textStyle: TextStyle(color: textColor),
+        backgroundColor: backgroundColor,
+      ),
     );
   }
 
@@ -103,7 +105,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
       );
 
   /// Creates the hours column style.
-  HoursColumnStyle createHoursColumnStyle() => HoursColumnStyle(
+  HourColumnStyle createHoursColumnStyle() => HourColumnStyle(
         color: currentBrightness == Brightness.light ? Colors.white : const Color(0xFF202D3B),
         textStyle: Theme.of(context).textTheme.bodySmall,
       );
@@ -118,7 +120,32 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
   Widget buildChild(List<FlutterWeekViewEvent> events);
 
   /// Returns the lessons.
-  AsyncValue<List<Lesson>> queryLessons();
+  AsyncValue<List<LessonWithColor>> queryLessons();
+}
+
+/// A [FlutterWeekViewEvent] that holds a [Lesson].
+class _FlutterWeekViewEventWithLesson extends FlutterWeekViewEvent {
+  /// The lesson.
+  final LessonWithColor lesson;
+
+  /// Creates a new flutter week view event instance.
+  _FlutterWeekViewEventWithLesson._({
+    required this.lesson,
+    required super.title,
+    required super.description,
+    required super.start,
+    required super.end,
+  });
+
+  /// Creates a new flutter week view event instance.
+  _FlutterWeekViewEventWithLesson.fromLesson(LessonWithColor lesson)
+      : this._(
+          lesson: lesson,
+          title: lesson.name,
+          description: lesson.description ?? '',
+          start: lesson.dateTime.start,
+          end: lesson.dateTime.end,
+        );
 }
 
 /// A button that allows to show the week picker.
