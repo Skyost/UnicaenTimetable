@@ -8,7 +8,6 @@ import 'package:unicaen_timetable/pages/home/cards/next_lesson.dart';
 import 'package:unicaen_timetable/pages/home/cards/synchronization_status.dart';
 import 'package:unicaen_timetable/pages/home/cards/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
-import 'package:unicaen_timetable/utils/utils.dart';
 import 'package:unicaen_timetable/utils/widgets.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 
@@ -38,32 +37,31 @@ class HomePageAppBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => AppBar(
         title: Text(translations.home.title),
         actions: [
-          PopupMenuButton<HomeCard>(
+          _AddButton(),
+        ],
+      );
+}
+
+/// The add button.
+class _AddButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<List<HomeCard>> cards = ref.read(homeCardsProvider);
+    return cards.valueOrNull == null || cards.value!.length == HomeCard.values.length
+        ? const SizedBox.shrink()
+        : PopupMenuButton<HomeCard>(
             icon: const Icon(Icons.add),
             itemBuilder: (context) => [
               for (HomeCard card in HomeCard.values)
-                PopupMenuItem<HomeCard>(
-                  value: card,
-                  child: Text(translations['home.${card.name}.name']),
-                ),
+                if (!cards.value!.contains(card))
+                  PopupMenuItem<HomeCard>(
+                    value: card,
+                    child: Text(translations['home.${card.name}.name']),
+                  ),
             ],
-            onSelected: (card) async {
-              List<HomeCard> cards = await ref.read(homeCardsProvider.future);
-              if (cards.contains(card) && context.mounted) {
-                Utils.showSnackBar(
-                  context: context,
-                  icon: Icons.close,
-                  text: translations.scaffold.snackBar.widgetAlreadyPresent,
-                  color: Colors.red.shade800,
-                );
-                return;
-              }
-
-              await ref.read(homeCardsProvider.notifier).addCard(card);
-            },
-          )
-        ],
-      );
+            onSelected: (card) async => await ref.read(homeCardsProvider.notifier).addCard(card),
+          );
+  }
 }
 
 /// The home page widget.

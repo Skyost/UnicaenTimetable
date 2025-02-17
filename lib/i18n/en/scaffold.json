@@ -20,7 +20,6 @@
     "synchronizing": "Synchronizing…",
     "success": "Success.",
     "unauthorized": "Wrong username / password.",
-    "generic_error": "Error. Please try again later.",
-    "widget_already_present": "The selected widget is already present on the application home screen."
+    "generic_error": "Error. Please try again later."
   }
 }
