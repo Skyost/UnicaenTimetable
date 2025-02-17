@@ -142,7 +142,7 @@ class _Drawer extends ConsumerWidget {
     List<int> sidebarDays = ref.watch(sidebarDaysEntryProvider).valueOrNull ?? [];
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         children: [
           const DrawerHeader(),
           DrawerSectionTitle(title: translations.scaffold.drawer.home),
