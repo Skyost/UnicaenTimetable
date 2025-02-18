@@ -49,7 +49,7 @@ class _MaterialCardContentState extends ConsumerState<MaterialCardContent> with 
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               gradient: LinearGradient(
-                stops: const [0.03, 0.03],
+                stops: MediaQuery.of(context).size.width < 800 ? const [0.03, 0.03] : const [0.01, 0.01],
                 colors: [widget.color, currentBrightness == Brightness.dark ? Theme.of(context).colorScheme.surfaceBright : widget.color.withAlpha(40)],
               ),
             ),
