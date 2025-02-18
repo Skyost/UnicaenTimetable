@@ -60,12 +60,16 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
         }
         await ref.read(lessonColorResolverProvider.notifier).setLessonColor(event.value, color);
       },
-      onTap: () => showDialog(
+      onTap: () async {
+        String? locale = TranslationProvider.of(context).flutterLocale.languageCode;
+        DateFormat formatter = DateFormat.Hm(locale);
+        String description = '${formatter.format(event.start)} — ${formatter.format(event.end)}\n\n${event.description}';
+        await showDialog(
         context: context,
         builder: (_) => AlertDialog(
           title: Text(event.title),
           scrollable: true,
-          content: Text('${event.start.hour.withLeadingZero}:${event.start.minute.withLeadingZero} — ${event.end.hour.withLeadingZero}:${event.end.minute.withLeadingZero}\n\n${event.description}'),
+          content: Text(description),
           actions: [
             if (Platform.isIOS)
               TextButton(
@@ -100,7 +104,8 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
             ),
           ],
         ),
-      ),
+        );
+      },
       child: FlutterWeekViewEventWidget<FlutterWeekViewEventWithLesson>(
         event: event,
         height: height,
