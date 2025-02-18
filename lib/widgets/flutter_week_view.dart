@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
@@ -42,13 +44,18 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
     Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
     return GestureDetector(
       onLongPress: () async {
+        ColorResolver colorResolver = await ref.read(lessonColorResolverProvider.future);
+        if (!mounted) {
+          return;
+        }
+        Color resetColor = colorResolver.automaticallyColorLessons ? colorResolver.calculateColor(event.value) : defaultColor;
         Color? color = await ColorInputDialog.getValue(
           context,
           title: translations.dialogs.lessonColor.title,
           initialValue: backgroundColor,
-          resetColor: defaultColor,
+          resetColor: resetColor,
         );
-        if (color == defaultColor) {
+        if (color == resetColor) {
           color = null;
         }
         await ref.read(lessonColorResolverProvider.notifier).setLessonColor(event.value, color);
@@ -60,17 +67,30 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
           scrollable: true,
           content: Text('${event.start.hour.withLeadingZero}:${event.start.minute.withLeadingZero} — ${event.end.hour.withLeadingZero}:${event.end.minute.withLeadingZero}\n\n${event.description}'),
           actions: [
-            TextButton(
-              onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
-                'activity.scheduleReminder',
-                {
-                  'title': event.title,
-                  'hour': event.start.hour,
-                  'minute': event.start.minute,
-                },
+            if (Platform.isIOS)
+              TextButton(
+                onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
+                  'ios.addReminder',
+                  {
+                    'title': event.title,
+                    'hour': event.start.hour,
+                    'minute': event.start.minute,
+                  },
+                ),
+                child: Text(translations.dialogs.lessonInfo.addReminder),
               ),
-              child: Text(translations.dialogs.lessonInfo.scheduleReminder),
-            ),
+            if (Platform.isAndroid)
+              TextButton(
+                onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
+                  'android.addAlarm',
+                  {
+                    'title': event.title,
+                    'hour': event.start.hour,
+                    'minute': event.start.minute,
+                  },
+                ),
+                child: Text(translations.dialogs.lessonInfo.addAlarm),
+              ),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(MaterialLocalizations.of(context).closeButtonLabel),

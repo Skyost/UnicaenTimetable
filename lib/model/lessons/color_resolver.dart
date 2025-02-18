@@ -83,18 +83,26 @@ class LessonColorResolver extends AsyncNotifier<ColorResolver> {
 /// Allows to color lessons.
 class ColorResolver {
   /// Whether to automatically color lessons.
-  final bool _automaticallyColorLessons;
+  final bool automaticallyColorLessons;
 
   /// The color map.
   final Map<String, Color> _colors;
 
   /// Creates a new color resolver instance.
   const ColorResolver._({
-    bool automaticallyColorLessons = false,
+    this.automaticallyColorLessons = false,
     Map<String, Color> colors = const {},
-  })  : _automaticallyColorLessons = automaticallyColorLessons,
-        _colors = colors;
+  }) : _colors = colors;
+
+  /// Calculates the color of the given [lesson].
+  Color calculateColor(Lesson lesson) => Utils.randomColor(150, lesson.name.splitEqually(3));
 
   /// Returns the [lesson] color.
-  Color? resolveColor(Lesson lesson) => _automaticallyColorLessons ? Utils.randomColor(150, lesson.name.splitEqually(3)) : _colors[lesson.name];
+  Color? resolveColor(Lesson lesson) {
+    if (automaticallyColorLessons) {
+      Color? color = _colors[lesson.name];
+      return color ?? calculateColor(lesson);
+    }
+    return null;
+  }
 }

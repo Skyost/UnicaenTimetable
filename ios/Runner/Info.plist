@@ -57,10 +57,14 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCalendarsUsageDescription</key>
-    <string>We need access to your calendar to sync your Unicaen calendar.</string>
-    <key>NSCalendarsFullAccessUsageDescription</key>
-    <string>We need access to your calendar to sync your Unicaen calendar.</string>
-    <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-    <string>We need access to your calendar to sync your Unicaen calendar.</string>
+	<string>We need access to your calendar to sync your Unicaen calendar.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>We need access to your calendar to sync your Unicaen calendar.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>We need access to your calendar to sync your Unicaen calendar.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>We need access to your reminders to schedule a reminder for a lesson.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>We need access to your reminders to schedule a reminder for a lesson.</string>
 </dict>
 </plist>

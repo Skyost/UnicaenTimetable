@@ -1,7 +1,8 @@
 {
   "lesson_info": {
     "reset_color": "Default color",
-    "schedule_reminder": "Schedule reminder"
+    "add_alarm": "Add an alarm",
+    "add_reminder": "Add a reminder"
   },
   "lesson_color": {
     "title": "Lesson color"

@@ -266,12 +266,14 @@ class _ColorInputDialogState extends _InputDialogState<Color, ColorInputDialog> 
   }
 
   @override
-  Widget buildForm(BuildContext context) => ColorPicker(
-        pickerColor: currentColor,
-        onColorChanged: (color) {
-          setState(() => currentColor = color);
-        },
-        labelTypes: const [],
+  Widget buildForm(BuildContext context) => SingleChildScrollView(
+        child: ColorPicker(
+          pickerColor: currentColor,
+          onColorChanged: (color) {
+            setState(() => currentColor = color);
+          },
+          labelTypes: const [],
+        ),
       );
 
   @override

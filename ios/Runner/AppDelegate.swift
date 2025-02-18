@@ -106,7 +106,7 @@ import WidgetKit
             }
         case "activity.scheduleReminder":
             let eventStore = EKEventStore()
-            func addEventToStore() {
+            func addEventToStore() -> Bool {
                 let reminder = EKReminder(eventStore: eventStore)
                 reminder.title = arguments["title"] as! String
                 reminder.calendar = eventStore.defaultCalendarForNewEvents
