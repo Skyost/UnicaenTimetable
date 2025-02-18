@@ -26,12 +26,11 @@ import WidgetKit
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    private func updateRequestedDateIfNeeded(_ launchUrl: URL) -> String? {
+    private func updateRequestedDateIfNeeded(_ launchUrl: URL) {
         if launchUrl.scheme == "todayWidget" && launchUrl.host == "timetable" {
             let components = URLComponents(url: launchUrl, resolvingAgainstBaseURL: false)
             requestedDate = components?.queryItems?.first(where: { $0.name == "date" })?.value
         }
-        return nil
     }
     
     /// Allows to handle a method call.
@@ -104,43 +103,55 @@ import WidgetKit
             } catch {
                 result(error)
             }
-        case "activity.scheduleReminder":
+        case "ios.addReminder":
             let eventStore = EKEventStore()
             func addEventToStore() -> Bool {
-                let reminder = EKReminder(eventStore: eventStore)
-                reminder.title = arguments["title"] as! String
-                reminder.calendar = eventStore.defaultCalendarForNewEvents
-                reminder.dueDateComponents = DateComponents(hour: arguments["hour"] as! Int, minute: arguments["minute"] as! Int)
                 do {
+                    let dateComponents = DateComponents(
+                        year: arguments["year"] as? Int,
+                        month: arguments["month"] as? Int,
+                        day: arguments["day"] as? Int,
+                        hour: arguments["hour"] as? Int,
+                        minute: arguments["minute"] as? Int
+                    )
+                    let alarm = EKAlarm(absoluteDate: Calendar.current.date(from: dateComponents)!)
+                    let reminder = EKReminder(eventStore: eventStore)
+                    reminder.title = arguments["title"] as? String
+                    reminder.calendar = eventStore.defaultCalendarForNewReminders()
+                    reminder.dueDateComponents = dateComponents
+                    reminder.addAlarm(alarm)
                     try eventStore.save(reminder, commit: true)
+                    if let url = URL(string: "x-apple-reminderkit://"), UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
                     return true
                 } catch {}
                 return false
             }
             let status = EKEventStore.authorizationStatus(for: .reminder)
             switch status {
-                case .notDetermined:
-                    if #available(iOS 17.0, *) {
-                        eventStore.requestFullAccessToReminders { success, error in
-                            if success {
-                                result(addEventToStore())
-                            } else {
-                                result(false)
-                            }
-                        }
-                    } else {
-                        eventStore.requestAccess(to: .reminder) { success, error in
-                            if success {
-                                result(addEventToStore())
-                            } else {
-                                result(false)
-                            }
+            case .notDetermined:
+                if #available(iOS 17.0, *) {
+                    eventStore.requestFullAccessToReminders { success, _ in
+                        if success {
+                            result(addEventToStore())
+                        } else {
+                            result(false)
                         }
                     }
-                case .fullAccess, .authorized:
-                    result(addEventToStore())
-                default:
-                    result(false)
+                } else {
+                    eventStore.requestAccess(to: .reminder) { success, _ in
+                        if success {
+                            result(addEventToStore())
+                        } else {
+                            result(false)
+                        }
+                    }
+                }
+            case .fullAccess, .authorized:
+                result(addEventToStore())
+            default:
+                result(false)
             }
         case "activity.shouldRefreshTimetable":
             result(false)

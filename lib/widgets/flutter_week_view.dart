@@ -73,6 +73,9 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
                   'ios.addReminder',
                   {
                     'title': event.title,
+                    'year': event.start.year,
+                    'month': event.start.month,
+                    'day': event.start.day,
                     'hour': event.start.hour,
                     'minute': event.start.minute,
                   },
