@@ -18,36 +18,31 @@ class SlideWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 36),
-    child: ListView(
-      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
-      shrinkWrap: true,
-      children: createChildren(context),
-    ),
-  );
-
-  /// Creates the list view children.
-  List<Widget> createChildren(BuildContext context) => [
-    Text(
-      translations['intro.slides.${slide.slideId}.title'],
-      style: Theme.of(context).textTheme.headlineMedium,
-      textAlign: TextAlign.center,
-    ),
-    Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40),
-      child: SizedBox(
-        height: 350,
-        width: math.min(350, MediaQuery.of(context).size.width - 160),
-        child: ScalableImageWidget.fromSISource(
-          si: ScalableImageSource.fromSI(rootBundle, slide.asset),
+  Widget build(BuildContext context) => Center(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
+          shrinkWrap: true,
+          children: [
+            Text(
+              translations['intro.slides.${slide.slideId}.title'],
+              style: Theme.of(context).textTheme.displaySmall,
+              textAlign: TextAlign.center,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: SizedBox(
+                height: 220,
+                width: math.min(220, MediaQuery.of(context).size.width - 20),
+                child: ScalableImageWidget.fromSISource(
+                  si: ScalableImageSource.fromSI(rootBundle, slide.asset),
+                ),
+              ),
+            ),
+            Text(
+              translations['intro.slides.${slide.slideId}.message'],
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      ),
-    ),
-    Text(
-      translations['intro.slides.${slide.slideId}.message'],
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.bodyMedium,
-    ),
-  ];
+      );
 }

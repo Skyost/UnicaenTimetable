@@ -23,7 +23,7 @@ class SynchronizationStatusCard extends ConsumerWidget {
     return MaterialCardContent(
       color: status.resolveColor(),
       icon: status.icon,
-      title: translations.home.currentLesson.title,
+      title: translations.home.synchronizationStatus.title,
       subtitle: switch (status) {
         _Status.loading => translations.common.other.pleaseWait,
         _Status.bad ||

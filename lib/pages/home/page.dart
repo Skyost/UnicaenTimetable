@@ -8,7 +8,7 @@ import 'package:unicaen_timetable/pages/home/cards/next_lesson.dart';
 import 'package:unicaen_timetable/pages/home/cards/synchronization_status.dart';
 import 'package:unicaen_timetable/pages/home/cards/theme.dart';
 import 'package:unicaen_timetable/pages/page.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
+import 'package:unicaen_timetable/widgets/centered_circular_progress_indicator.dart';
 import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 
 /// The home page list tile.

@@ -25,6 +25,7 @@ Future<void> main() async {
       return true;
     };
   }
+  await LocaleSettings.useDeviceLocale();
   runApp(
     ProviderScope(
       child: TranslationProvider(
@@ -119,11 +120,12 @@ class _UnicaenTimetableApp extends ConsumerWidget {
       ),
       darkTheme: ThemeData(
         colorScheme: dark,
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(
             statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: dark.surface,
           ),
-          shape: RoundedRectangleBorder(),
+          shape: const RoundedRectangleBorder(),
         ),
         brightness: Brightness.dark,
       ),

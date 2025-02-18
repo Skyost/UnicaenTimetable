@@ -17,18 +17,18 @@ class CenteredCircularProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: CircularProgressIndicator(color: color ?? Theme.of(context).primaryColor),
-              ),
-              if (message != null) Text(message!),
-            ],
+    padding: const EdgeInsets.all(20),
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: CircularProgressIndicator(color: color ?? Theme.of(context).colorScheme.primary),
           ),
-        ),
-      );
+          if (message != null) Text(message!),
+        ],
+      ),
+    ),
+  );
 }

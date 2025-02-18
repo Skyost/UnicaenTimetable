@@ -13,7 +13,7 @@ import 'package:unicaen_timetable/pages/page.dart';
 import 'package:unicaen_timetable/pages/settings/page.dart';
 import 'package:unicaen_timetable/pages/week_view.dart';
 import 'package:unicaen_timetable/utils/lesson_download.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
+import 'package:unicaen_timetable/widgets/centered_circular_progress_indicator.dart';
 import 'package:unicaen_timetable/widgets/drawer/header.dart';
 import 'package:unicaen_timetable/widgets/drawer/section_title.dart';
 

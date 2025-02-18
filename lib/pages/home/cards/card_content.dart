@@ -50,7 +50,7 @@ class _MaterialCardContentState extends ConsumerState<MaterialCardContent> with 
               borderRadius: BorderRadius.circular(15),
               gradient: LinearGradient(
                 stops: const [0.03, 0.03],
-                colors: [widget.color, currentBrightness == Brightness.dark ? const Color(0xFF192734) : widget.color.withAlpha(40)],
+                colors: [widget.color, currentBrightness == Brightness.dark ? Theme.of(context).colorScheme.surfaceBright : widget.color.withAlpha(40)],
               ),
             ),
             child: ListTile(

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/user/calendar.dart';
 import 'package:unicaen_timetable/model/user/user.dart';
-import 'package:unicaen_timetable/utils/widgets.dart';
+import 'package:unicaen_timetable/widgets/centered_circular_progress_indicator.dart';
 import 'package:unicaen_timetable/widgets/dialogs/login.dart';
 
 /// Allows to ensure that the user is logged in.
@@ -83,7 +83,6 @@ class _WaitScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: CenteredCircularProgressIndicator(
-          color: Colors.white,
           message: message ?? translations.common.other.pleaseWait,
         ),
       );
