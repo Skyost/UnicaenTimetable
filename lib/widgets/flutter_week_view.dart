@@ -24,7 +24,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
     AsyncValue<List<LessonWithColor>> lessons = queryLessons();
     return switch (lessons) {
       AsyncData<List<LessonWithColor>>(:final value) => buildChild(
-          value.map(_FlutterWeekViewEventWithLesson.fromLesson).toList(),
+          value.map(FlutterWeekViewEventWithLesson.fromLesson).toList(),
         ),
       AsyncError(:final error) => Center(
           child: Text(
@@ -35,26 +35,24 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
     };
   }
 
-  Widget createEventWidget(FlutterWeekViewEvent event, double height, double width) {
-    LessonWithColor? lesson = event is _FlutterWeekViewEventWithLesson ? event.lesson : null;
-    Color? backgroundColor = lesson is LessonWithColor ? lesson.color : null;
+  /// Creates an event widget.
+  Widget createEventWidget(FlutterWeekViewEventWithLesson event, double height, double width) {
+    Color? backgroundColor = event.value.color;
     backgroundColor ??= defaultColor.withAlpha(150);
     Color textColor = backgroundColor.isDark ? Colors.white : Colors.black;
     return GestureDetector(
-      onLongPress: lesson == null
-          ? null
-          : (() async {
-              Color? color = await ColorInputDialog.getValue(
-                context,
-                title: translations.dialogs.lessonColor.title,
-                initialValue: backgroundColor,
-                resetColor: defaultColor,
-              );
-              if (color == defaultColor) {
-                color = null;
-              }
-              await ref.read(lessonColorResolverProvider.notifier).setLessonColor(lesson, color);
-            }),
+      onLongPress: () async {
+        Color? color = await ColorInputDialog.getValue(
+          context,
+          title: translations.dialogs.lessonColor.title,
+          initialValue: backgroundColor,
+          resetColor: defaultColor,
+        );
+        if (color == defaultColor) {
+          color = null;
+        }
+        await ref.read(lessonColorResolverProvider.notifier).setLessonColor(event.value, color);
+      },
       onTap: () => showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -80,7 +78,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
           ],
         ),
       ),
-      child: FlutterWeekViewEventWidget(
+      child: FlutterWeekViewEventWidget<FlutterWeekViewEventWithLesson>(
         event: event,
         height: height,
         width: width,
@@ -117,20 +115,17 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
   }
 
   /// Builds the widget child.
-  Widget buildChild(List<FlutterWeekViewEvent> events);
+  Widget buildChild(List<FlutterWeekViewEventWithLesson> events);
 
   /// Returns the lessons.
   AsyncValue<List<LessonWithColor>> queryLessons();
 }
 
 /// A [FlutterWeekViewEvent] that holds a [Lesson].
-class _FlutterWeekViewEventWithLesson extends FlutterWeekViewEvent {
-  /// The lesson.
-  final LessonWithColor lesson;
-
+class FlutterWeekViewEventWithLesson extends FlutterWeekViewEventWithValue<LessonWithColor> {
   /// Creates a new flutter week view event instance.
-  _FlutterWeekViewEventWithLesson._({
-    required this.lesson,
+  FlutterWeekViewEventWithLesson._({
+    required super.value,
     required super.title,
     required super.description,
     required super.start,
@@ -138,14 +133,30 @@ class _FlutterWeekViewEventWithLesson extends FlutterWeekViewEvent {
   });
 
   /// Creates a new flutter week view event instance.
-  _FlutterWeekViewEventWithLesson.fromLesson(LessonWithColor lesson)
+  FlutterWeekViewEventWithLesson.fromLesson(LessonWithColor lesson)
       : this._(
-          lesson: lesson,
+          value: lesson,
           title: lesson.name,
           description: lesson.description ?? '',
           start: lesson.dateTime.start,
           end: lesson.dateTime.end,
         );
+
+  @override
+  FlutterWeekViewEventWithLesson copyWith({
+    String? title,
+    String? description,
+    DateTime? start,
+    DateTime? end,
+    LessonWithColor? value,
+  }) =>
+      FlutterWeekViewEventWithLesson._(
+        title: title ?? this.title,
+        description: description ?? this.description,
+        start: start ?? this.start,
+        end: end ?? this.end,
+        value: value ?? this.value,
+      );
 }
 
 /// A button that allows to show the week picker.

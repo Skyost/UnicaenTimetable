@@ -52,21 +52,21 @@ class _DayViewPageListTileIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Stack(
-    children: [
-      const Icon(Icons.square_rounded),
-      Positioned.fill(
-        child: Center(
-          child: Text(
-            day.toString(),
-            style: TextStyle(
-              color: Theme.of(context).scaffoldBackgroundColor,
+        children: [
+          const Icon(Icons.square_rounded),
+          Positioned.fill(
+            child: Center(
+              child: Text(
+                day.toString(),
+                style: TextStyle(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
           ),
-        ),
-      ),
-    ],
-  );
+        ],
+      );
 }
 
 /// The about week view app bar.
@@ -176,7 +176,7 @@ class DayViewPageWidget extends ConsumerStatefulWidget {
 /// The day view page widget state.
 class _DayViewPageWidgetState extends FlutterWeekViewWidgetState<DayViewPageWidget> {
   @override
-  Widget buildChild(List<FlutterWeekViewEvent> events) {
+  Widget buildChild(List<FlutterWeekViewEventWithLesson> events) {
     DateTime monday = ref.watch(dateProvider);
     DateTime date = monday.add(Duration(days: widget.day - 1));
     return GestureDetector(
@@ -193,7 +193,7 @@ class _DayViewPageWidgetState extends FlutterWeekViewWidgetState<DayViewPageWidg
           DayViewPageWidget._nextDay(ref, widget.day);
         }
       },
-      child: DayView(
+      child: DayView<FlutterWeekViewEventWithLesson>(
         date: date,
         events: events,
         initialTime: const TimeOfDay(hour: 7, minute: 0),

@@ -55,7 +55,7 @@ class WeekViewPageWidget extends ConsumerStatefulWidget {
 /// The week view page widget state.
 class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
   @override
-  Widget buildChild(List<FlutterWeekViewEvent> events) {
+  Widget buildChild(List<FlutterWeekViewEventWithLesson> events) {
     DateTime monday = ref.watch(dateProvider);
     List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? defaultDaysToDisplay;
     List<DateTime> dates = [
@@ -63,7 +63,7 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
     ];
     DateTime today = DateTime.now().yearMonthDay;
     DateTime initialTime = (dates.contains(today) ? today : monday).copyWith(hour: 7, minute: 0);
-    return WeekView(
+    return WeekView<FlutterWeekViewEventWithLesson>(
       dates: dates,
       events: events,
       initialTime: initialTime,
