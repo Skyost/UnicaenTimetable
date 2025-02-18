@@ -106,19 +106,41 @@ import WidgetKit
             }
         case "activity.scheduleReminder":
             let eventStore = EKEventStore()
-            eventStore.requestAccess(to: .reminder) { granted, error in
-                if granted, error == nil {
-                    let reminder = EKReminder(eventStore: eventStore)
-                    reminder.title = arguments["title"] as! String
-                    reminder.calendar = eventStore.defaultCalendarForNewEvents
-                    reminder.dueDateComponents = DateComponents(hour: arguments["hour"] as! Int, minute: arguments["minute"] as! Int)
-                    do {
-                        try eventStore.save(reminder, commit: true)
-                        result(true)
-                        return
-                    } catch {}
-                }
-                result(false)
+            func addEventToStore() {
+                let reminder = EKReminder(eventStore: eventStore)
+                reminder.title = arguments["title"] as! String
+                reminder.calendar = eventStore.defaultCalendarForNewEvents
+                reminder.dueDateComponents = DateComponents(hour: arguments["hour"] as! Int, minute: arguments["minute"] as! Int)
+                do {
+                    try eventStore.save(reminder, commit: true)
+                    return true
+                } catch {}
+                return false
+            }
+            let status = EKEventStore.authorizationStatus(for: .reminder)
+            switch status {
+                case .notDetermined:
+                    if #available(iOS 17.0, *) {
+                        eventStore.requestFullAccessToReminders { success, error in
+                            if success {
+                                result(addEventToStore())
+                            } else {
+                                result(false)
+                            }
+                        }
+                    } else {
+                        eventStore.requestAccess(to: .reminder) { success, error in
+                            if success {
+                                result(addEventToStore())
+                            } else {
+                                result(false)
+                            }
+                        }
+                    }
+                case .fullAccess, .authorized:
+                    result(addEventToStore())
+                default:
+                    result(false)
             }
         case "activity.shouldRefreshTimetable":
             result(false)

@@ -401,10 +401,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_week_view
-      sha256: "0928f4fd87d36c8bc5175d59dfbcabaf93249e7ca15bc7ad5cd82738f68cf7b2"
+      sha256: "748e182a9bfea66c9a5f5d8e369e87b605f94b9621f412c6cd7c9defa5ba62e7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.2"
+    version: "1.4.3"
   frontend_server_client:
     dependency: transitive
     description:

@@ -71,6 +71,7 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
       dayBarStyleBuilder: (date) => createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
       hourColumnStyle: createHoursColumnStyle(),
       dayViewStyleBuilder: createDayViewStyle,
+      eventWidgetBuilder: createEventWidget,
     );
   }
 

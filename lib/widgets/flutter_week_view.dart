@@ -90,7 +90,7 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
 
   /// Creates the Flutter Week View day view style.
   DayViewStyle createDayViewStyle(DateTime date) => DayViewStyle(
-        backgroundColor: Utils.isToday(date) ? (currentBrightness == Brightness.light ? const Color(0xFFE3F5FF) : const Color(0xFF253341)) : Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Utils.isToday(date) ? (currentBrightness == Brightness.light ? const Color(0xFFE3F5FF) : Theme.of(context).colorScheme.surfaceBright) : Theme.of(context).colorScheme.surface,
         backgroundRulesColor: Colors.black12,
       );
 
@@ -98,13 +98,13 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
   DayBarStyle createDayBarStyle(DateTime date, DateFormatter dateFormatter) => DayBarStyle.fromDate(
         date: date,
         textStyle: TextStyle(color: Utils.isToday(date) ? (currentBrightness == Brightness.light ? Colors.indigo : Colors.white) : null),
-        color: currentBrightness == Brightness.light ? null : const Color(0xFF202D3B),
+        color: currentBrightness == Brightness.light ? null : Theme.of(context).colorScheme.surface,
         dateFormatter: dateFormatter,
       );
 
   /// Creates the hours column style.
   HourColumnStyle createHoursColumnStyle() => HourColumnStyle(
-        color: currentBrightness == Brightness.light ? Colors.white : const Color(0xFF202D3B),
+        color: currentBrightness == Brightness.light ? Colors.white : Theme.of(context).colorScheme.surface,
         textStyle: Theme.of(context).textTheme.bodySmall,
       );
 

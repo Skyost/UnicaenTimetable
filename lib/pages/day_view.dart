@@ -200,6 +200,7 @@ class _DayViewPageWidgetState extends FlutterWeekViewWidgetState<DayViewPageWidg
         style: createDayViewStyle(date),
         dayBarStyle: createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
         hourColumnStyle: createHoursColumnStyle(),
+        eventWidgetBuilder: createEventWidget,
       ),
     );
   }
