@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/model/settings/username.dart';
@@ -38,6 +39,9 @@ class DrawerHeader extends ConsumerWidget {
         child: ScalableImageWidget.fromSISource(
           si: ScalableImageSource.fromSvgHttpUrl(
             Uri.parse('https://api.dicebear.com/9.x/thumbs/svg?seed=${username.displayedUsername}&radius=50'),
+          ),
+          onError: (context) => ScalableImageWidget.fromSISource(
+            si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
           ),
         ),
       ),
