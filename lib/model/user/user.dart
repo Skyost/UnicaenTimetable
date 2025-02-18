@@ -49,7 +49,7 @@ sealed class User {
     required String username,
     required String password,
   }) =>
-      username == TestUser._kUsername && password == TestUser._kPassword
+      username == TestUser.kUsername && password == TestUser.kPassword
           ? TestUser._()
           : CredentialsUser._(
               username: username,
@@ -102,16 +102,16 @@ class CredentialsUser extends User {
 /// The test user (for Apple Store review).
 class TestUser extends User {
   /// The username to use during tests.
-  static const String _kUsername = 'test';
+  static const String kUsername = 'test';
 
   /// The password to use during tests.
-  static const String _kPassword = 'test';
+  static const String kPassword = 'test';
 
   @override
-  String get username => _kUsername;
+  String get username => kUsername;
 
   @override
-  String get password => _kPassword;
+  String get password => kPassword;
 
   /// Creates a new test user instance.
   TestUser._() : super._();

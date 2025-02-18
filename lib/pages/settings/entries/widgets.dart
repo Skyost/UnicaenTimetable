@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/settings/entry.dart';
+import 'package:unicaen_timetable/utils/lesson_download.dart';
 import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
 /// Allows to configure boolean values.
@@ -103,6 +104,9 @@ abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends 
   /// The tile padding.
   final EdgeInsets? contentPadding;
 
+  /// Whether to trigger a sync after the change.
+  final bool syncAfterChange;
+
   /// Creates a new text settings entry widget instance.
   const DialogSettingsEntryWidget({
     super.key,
@@ -110,6 +114,7 @@ abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends 
     required this.title,
     this.icon,
     this.contentPadding,
+    this.syncAfterChange = true,
   });
 
   @override
@@ -146,7 +151,12 @@ abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends 
       );
 
   /// Changes the value.
-  Future<void> changeValue(WidgetRef ref, U newValue) => ref.read(provider.notifier).changeValue(newValue);
+  Future<void> changeValue(WidgetRef ref, U newValue) async {
+    await ref.read(provider.notifier).changeValue(newValue);
+    if (syncAfterChange) {
+      downloadLessons(ref);
+    }
+  }
 }
 
 /// Allows to configure integer values.
@@ -167,6 +177,7 @@ class IntegerSettingsEntryWidget<T extends SettingsEntry<int>> extends DialogSet
     required super.title,
     super.icon,
     super.contentPadding,
+    super.syncAfterChange,
     required this.min,
     required this.max,
     required this.divisions,
@@ -197,6 +208,7 @@ class StringSettingsEntryWidget<T extends SettingsEntry<String>> extends DialogS
     required super.title,
     super.icon,
     super.contentPadding,
+    super.syncAfterChange,
     this.validator,
     this.hint,
   });

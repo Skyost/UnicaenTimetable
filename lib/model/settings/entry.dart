@@ -47,7 +47,7 @@ class SettingsEntry<T> extends AutoDisposeAsyncNotifier<T> {
   }
 
   /// Loads the value from preferences.
-  Future<T> loadFromPreferences(SharedPreferencesWithCache preferences) async {
+  T loadFromPreferences(SharedPreferencesWithCache preferences) {
     assert(T == String || T == bool || T == int || T == double || T == List<String>);
     return preferences.get(key) as T;
   }
@@ -78,7 +78,7 @@ abstract class EnumSettingsEntry<T extends Enum> extends SettingsEntry<T> {
   });
 
   @override
-  Future<T> loadFromPreferences(SharedPreferencesWithCache preferences) async {
+  T loadFromPreferences(SharedPreferencesWithCache preferences) {
     String? value = preferences.getString(key);
     return values.firstWhereOrNull((theme) => theme.name == value) ?? defaultValue;
   }

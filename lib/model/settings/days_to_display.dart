@@ -26,7 +26,7 @@ class DaysToDisplaySettingsEntry extends SettingsEntry<List<int>> {
         );
 
   @override
-  Future<List<int>> loadFromPreferences(SharedPreferencesWithCache preferences) async {
+  List<int> loadFromPreferences(SharedPreferencesWithCache preferences) {
     List<String> value = preferences.getStringList(key)!;
     return [
       for (String string in value) int.parse(string),

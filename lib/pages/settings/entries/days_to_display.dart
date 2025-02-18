@@ -58,7 +58,7 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
   @override
   void initState() {
     super.initState();
-    sidebarDays = widget.sidebarDays;
+    sidebarDays = List.of(widget.sidebarDays);
   }
 
   @override
@@ -73,7 +73,7 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
           itemBuilder: (context, position) => ListTile(
             title: Text(DateFormat.EEEE(TranslationProvider.of(context).locale.languageCode).format(monday.add(Duration(days: position))).capitalize()),
             onTap: () => onTap(position + 1),
-            trailing: Switch(
+            trailing: Checkbox(
               value: sidebarDays.contains(position + 1),
               onChanged: (selected) => onTap(position + 1, selected: selected),
             ),

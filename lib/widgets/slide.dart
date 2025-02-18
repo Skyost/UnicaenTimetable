@@ -7,6 +7,7 @@ import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
+import 'package:unicaen_timetable/widgets/animated.dart';
 
 /// Allows to render a slide.
 class SlideWidget extends StatelessWidget {
@@ -30,10 +31,9 @@ class SlideWidget extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
-              child: SizedBox(
-                height: 220,
-                width: math.min(220, MediaQuery.of(context).size.width - 20),
-                child: ScalableImageWidget.fromSISource(
+              child: _ImageWidget(
+                key: ValueKey('image-${slide.slideId}'),
+                image: ScalableImageWidget.fromSISource(
                   si: ScalableImageSource.fromSI(rootBundle, slide.asset),
                 ),
               ),
@@ -76,4 +76,45 @@ class _TitleWidgetState extends ConsumerState<_TitleWidget> with BrightnessListe
       textAlign: TextAlign.center,
     );
   }
+}
+
+/// An intro image.
+class _ImageWidget extends ConsumerStatefulWidget {
+  /// The size.
+  final double size;
+
+  /// The image.
+  final Widget image;
+
+  /// Creates a new image widget instance.
+  const _ImageWidget({
+    super.key,
+    this.size = 220,
+    required this.image,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ImageWidgetState();
+}
+
+/// The title widget state.
+class _ImageWidgetState extends ConsumerState<_ImageWidget> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => FadeInWidget(
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentBrightness == Brightness.light ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surfaceBright,
+          ),
+          height: math.min(widget.size, MediaQuery.of(context).size.width - 20),
+          width: math.min(widget.size, MediaQuery.of(context).size.width - 20),
+          padding: const EdgeInsets.all(50),
+          child: FadeInWidget(
+            delay: const Duration(milliseconds: 700),
+            child: RepeatingScaleAnimation(
+              child: widget.image,
+            ),
+          ),
+        ),
+      );
 }
