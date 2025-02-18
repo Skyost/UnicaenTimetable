@@ -4,60 +4,82 @@ import android.content.Context
 import com.grack.nanojson.JsonArray
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
+import io.flutter.util.PathUtils
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
-class LessonRepository {
-    private val lessons : HashMap<Long, ArrayList<Lesson>> = HashMap()
-
-    fun load(context: Context) {
-        val filesDir = File(context.filesDir.parentFile, "app_flutter")
-        if(!filesDir.exists()) {
-            return
+/**
+ * Represents a lesson.
+ *
+ * @param name The lesson name.
+ * @param start The lesson start.
+ * @param end The lesson end.
+ * @param location The lesson location.
+ */
+data class Lesson(
+    val name: String,
+    val start: LocalDateTime,
+    val end: LocalDateTime,
+    val location: String?
+) {
+    companion object {
+        /**
+         * Returns the lesson list file.
+         *
+         * @param context The context.
+         *
+         * @return The lesson list file.
+         */
+        fun resolveLessonsFile(context: Context): File {
+            return File(PathUtils.getFilesDir(context), "lessons.json")
         }
 
-        val file = File(filesDir, "lessons.json")
-        if(!file.exists()) {
-            return
-        }
-
-        val json : JsonObject = JsonParser.`object`().from(file.readText())
-        for(key: String in json.keys) {
-            val lessons: ArrayList<Lesson> = ArrayList()
-            val jsonLessons : JsonArray = json.getArray(key)
-
-            for(i in 0 until jsonLessons.size) {
-                val jsonLesson: JsonObject = jsonLessons.getObject(i)
-                lessons.add(Lesson(jsonLesson.getString("name"), DateTime(jsonLesson.getLong("start")), DateTime(jsonLesson.getLong("end")), jsonLesson.getString("location")))
+        /**
+         * Reads the lesson list stored on the device for a specific date.
+         *
+         * @param context The context.
+         * @param date The date.
+         *
+         * @return The lesson list.
+         */
+        fun readList(context: Context, date: LocalDate): List<Lesson> {
+            val file = resolveLessonsFile(context)
+            if (!file.exists()) {
+                return listOf()
             }
-
-            this.lessons[key.toLong()] = lessons
-        }
-    }
-
-    fun getLessonsForDate(date: LocalDate) : ArrayList<Lesson> {
-        return lessons[date.toDateTimeAtStartOfDay().millis] ?: ArrayList()
-    }
-
-    /**
-     * Returns the remaining lessons of the day.
-     *
-     * @return The remaining lessons of the day.
-     */
-    fun getRemainingLessons(): List<Lesson> {
-        // We get the today's lessons.
-        val now: DateTime = DateTime.now()
-        val result: MutableList<Lesson> = getLessonsForDate(LocalDate.now())
-        for (lesson in ArrayList(result)) {
-            // If we are past the lesson, we remove it from the list.
-            if (!now.isAfter(lesson.end)) {
-                continue
+            val targetKey = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val json: JsonObject = JsonParser.`object`().from(file.readText())
+            for (key: String in json.keys) {
+                if (key != targetKey) {
+                    continue
+                }
+                val lessons: ArrayList<Lesson> = ArrayList()
+                val jsonLessons: JsonArray = json.getArray(key)
+                for (i in 0 until jsonLessons.size) {
+                    val jsonLesson: JsonObject = jsonLessons.getObject(i)
+                    lessons.add(
+                        Lesson(
+                            jsonLesson.getString("name"),
+                            LocalDateTime.ofEpochSecond(
+                                jsonLesson.getLong("start"),
+                                0,
+                                ZoneOffset.UTC
+                            ),
+                            LocalDateTime.ofEpochSecond(
+                                jsonLesson.getLong("end"),
+                                0,
+                                ZoneOffset.UTC
+                            ),
+                            jsonLesson.getString("location")
+                        )
+                    )
+                }
+                return lessons
             }
-            result.remove(lesson)
+            return listOf()
         }
-        return result
     }
 }
-
-data class Lesson(val name: String, val start: DateTime, val end: DateTime, val location: String?)

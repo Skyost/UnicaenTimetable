@@ -1,76 +1,60 @@
-import 'package:ez_localization/ez_localization.dart';
-import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jovial_svg/jovial_svg.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/pages/page.dart';
+import 'package:unicaen_timetable/utils/brightness_listener.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
+import 'package:unicaen_timetable/widgets/list_page.dart';
 
-/// The about page that shows info about the app.
-class AboutPage extends Page {
-  /// The page identifier.
-  static const String id = 'about';
-
-  /// Creates a new about page instance.
-  const AboutPage({
+/// The about page list tile.
+class AboutPageListTile extends StatelessWidget {
+  /// Creates a new about page list tile.
+  const AboutPageListTile({
     super.key,
-  }) : super(
-          pageId: id,
-          icon: Icons.insert_emoticon,
-        );
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ListView(
-        children: [
-          _ListHeader(),
-          _ListBody(),
-          _ListFooter(),
-        ],
+  Widget build(BuildContext context) => PageListTitle(
+        page: AboutPage(),
+        title: translations.about.title,
+        icon: const Icon(Icons.favorite),
       );
 }
 
-/// The about page list header.
-class _ListHeader extends ConsumerWidget {
+/// The about page app bar.
+class AboutPageAppBar extends StatelessWidget {
+  /// Creates a new about page app bar.
+  const AboutPageAppBar({
+    super.key,
+  });
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Container(
-        color: ref.watch(settingsModelProvider).resolveTheme(context).aboutHeaderBackgroundColor,
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 100,
-              child: ScalableImageWidget.fromSISource(
-                si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(
-                context.getString('app_name'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ),
-          ],
+  Widget build(BuildContext context) => AppBar(
+        title: Text(translations.about.title),
+      );
+}
+
+/// The about page widget.
+class AboutPageWidget extends StatelessWidget {
+  /// Creates a new about page instance.
+  const AboutPageWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => ListPageWidget(
+        header: ListPageHeader(
+          icon: const Icon(Icons.favorite),
+          title: Text(
+            translations.common.appName,
+          ),
         ),
-      );
-}
-
-/// The about page list body.
-class _ListBody extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        body: ListPageBody(
           children: [
-            Text(context.getString('about.paragraphs.first')),
+            Text(translations.about.paragraphs.first),
             Padding(
               padding: const EdgeInsets.all(6),
               child: SizedBox(
@@ -78,15 +62,16 @@ class _ListBody extends ConsumerWidget {
                 width: 50,
                 child: CustomPaint(
                   painter: _SymbolPainter(
-                    color: ref.watch(settingsModelProvider).resolveTheme(context).textColor,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                   willChange: false,
                 ),
               ),
             ),
-            Text(context.getString('about.paragraphs.second')),
+            Text(translations.about.paragraphs.second),
           ],
         ),
+        footer: _ListFooter(),
       );
 }
 
@@ -104,16 +89,8 @@ class _ListFooter extends ConsumerWidget {
           children: [
             IconButton(
               iconSize: 40,
-              icon: ColorFiltered(
-                colorFilter: ColorFilter.mode(ref.watch(settingsModelProvider).resolveTheme(context).textColor.withAlpha(255), BlendMode.srcIn),
-                child: SizedBox(
-                  height: 40,
-                  child: ScalableImageWidget.fromSISource(
-                    si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
-                  ),
-                ),
-              ),
-              onPressed: () => Utils.openUrl(Uri.parse('https://github.com/Skyost/UnicaenTimetable')),
+              icon: _GithubLogo(),
+              onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
             ),
             IconButton(
               iconSize: 40,
@@ -121,9 +98,30 @@ class _ListFooter extends ConsumerWidget {
                 backgroundImage: AssetImage('assets/about/skyost.png'),
                 radius: 20,
               ),
-              onPressed: () => Utils.openUrl(Uri.parse('https://skyost.eu')),
+              onPressed: () => Utils.openUrl('https://skyost.eu'),
             ),
           ],
+        ),
+      );
+}
+
+/// A Github logo.
+class _GithubLogo extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _GithubLogoState();
+}
+
+/// The Github logo state.
+class _GithubLogoState extends ConsumerState<_GithubLogo> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => ColorFiltered(
+        colorFilter: ColorFilter.mode(currentBrightness == Brightness.light ? Colors.black : Colors.white, BlendMode.srcIn),
+        child: SizedBox(
+          height: 40,
+          width: 40,
+          child: ScalableImageWidget.fromSISource(
+            si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
+          ),
         ),
       );
 }
@@ -131,18 +129,18 @@ class _ListFooter extends ConsumerWidget {
 /// Paints a little but cool symbol between the two paragraphs.
 class _SymbolPainter extends CustomPainter {
   /// The symbol color.
-  final Color color;
+  final Color? color;
 
   /// Creates a new symbol painter instance.
   const _SymbolPainter({
-    required this.color,
+    this.color,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     paint.strokeWidth = 2;
-    paint.color = color;
+    paint.color = color ?? Colors.black;
     paint.style = PaintingStyle.stroke;
     paint.strokeCap = StrokeCap.butt;
     paint.isAntiAlias = true;

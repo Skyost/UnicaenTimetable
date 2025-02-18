@@ -1,0 +1,25 @@
+{
+  "settings_reset": {
+    "message": "Les paramètres de l'application ont dû être réinitialisés suite à une mise à jour. Nous nous excusons pour la gêne encourue.",
+    "ios": "Si vous êtes sur iOS, vous devrez peut-être également vous reconnecter.",
+    "end": "Merci pour votre fidélité dans l'utilisation de cette application \uD83D\uDC98"
+  },
+  "floating_button_tooltip": "Synchroniser",
+  "wait": {
+    "settings_repository": "Initialisation des paramètres…",
+    "lesson_repository": "Initialisation du dépôt de cours…",
+    "user_repository": "Initialisation du dépôt utilisateur…",
+    "has_user": "En attente de l'utilisateur…"
+  },
+  "drawer": {
+    "home": "Accueil",
+    "timetable": "Emploi du temps",
+    "others": "Autres"
+  },
+  "snack_bar": {
+    "synchronizing": "Synchronisation…",
+    "success": "Succès.",
+    "unauthorized": "Mauvais nom d'utilisateur / mot de passe.",
+    "generic_error": "Erreur. Veuillez réessayer plus tard."
+  }
+}

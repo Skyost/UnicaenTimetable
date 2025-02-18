@@ -1,0 +1,30 @@
+{
+  "title": "Paramètres",
+  "application": {
+    "title": "Application",
+    "days_to_display": "Jours à afficher",
+    "color_lessons_automatically": "Colorer automatiquement les cours",
+    "open_today_automatically": "Ouvrir automatiquement sur le jour d'aujourd'hui",
+    "enable_ads": "Activer les publicités",
+    "brightness": {
+      "title": "Thème",
+      "values(map)": {
+        "light": "Lumineux",
+        "dark": "Sombre",
+        "system": "Laisser le système choisir"
+      }
+    },
+    "sync_with_device_calendar": "Synchroniser le calendrier avec l'appareil"
+  },
+  "account": {
+    "title": "Compte",
+    "switch": "Changer de compte"
+  },
+  "calendar": {
+    "title": "Calendrier distant",
+    "server": "Adresse du serveur",
+    "name": "Nom",
+    "additional_parameters": "Paramètres additionnels",
+    "interval": "Nombre de semaines à télécharger"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "buttons": {
+    "next": "Next",
+    "finish": "Finish"
+  },
+  "slides": {
+    "main": {
+      "title": "Your timetable on your smartphone !",
+      "message": "This app allows the students of the University of Caen Normandy to have their timetable directly on their smartphone."
+    },
+    "login": {
+      "title": "We need an access to your Unicaen account…",
+      "message": "Don't worry ! These credentials will only be used to download your timetable on the Unicaen servers, nothing else."
+    },
+    "finished": {
+      "title": "Everything is set !",
+      "message": "You're ready. Please tap on the button below to start."
+    }
+  }
+}

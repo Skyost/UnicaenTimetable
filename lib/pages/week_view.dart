@@ -1,62 +1,85 @@
-import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/pages/page_container.dart';
-import 'package:unicaen_timetable/theme.dart';
+import 'package:unicaen_timetable/model/settings/days_to_display.dart';
+import 'package:unicaen_timetable/pages/page.dart';
+import 'package:unicaen_timetable/utils/date_time_range.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
+import 'package:unicaen_timetable/widgets/drawer/list_title.dart';
 import 'package:unicaen_timetable/widgets/flutter_week_view.dart';
 
-/// A widget that allows to show a week's lessons.
-class WeekViewPage extends FlutterWeekViewWidget {
-  /// The page identifier.
-  static const String id = 'week_view';
-
-  /// Creates a new week view page instance.
-  const WeekViewPage({
+/// The week view page list tile.
+class WeekViewPageListTile extends StatelessWidget {
+  /// Creates a new week view page list tile.
+  const WeekViewPageListTile({
     super.key,
-  }) : super(
-          pageId: id,
-          icon: Icons.view_array,
-        );
+  });
 
   @override
-  List<Widget> buildActions(BuildContext context, WidgetRef ref) => [const WeekPickerButton()];
+  Widget build(BuildContext context) => PageListTitle(
+        page: WeekViewPage(),
+        title: translations.weekView.title,
+        icon: const Icon(Icons.view_array),
+      );
+}
+
+/// The about week view app bar.
+class WeekViewPageAppBar extends StatelessWidget {
+  /// Creates a new week view page app bar.
+  const WeekViewPageAppBar({
+    super.key,
+  });
 
   @override
-  Widget buildChild(BuildContext context, WidgetRef ref, List<FlutterWeekViewEvent> events) {
-    UnicaenTimetableTheme theme = ref.watch(settingsModelProvider).resolveTheme(context);
-    return WeekView(
-      dates: resolveDates(ref),
+  Widget build(BuildContext context) => AppBar(
+        title: Text(translations.weekView.title),
+        actions: [
+          const WeekPickerButton(),
+        ],
+      );
+}
+
+/// The week view page widget.
+class WeekViewPageWidget extends ConsumerStatefulWidget {
+  /// Creates a new week view page instance.
+  const WeekViewPageWidget({
+    super.key,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _WeekViewPageWidgetState();
+}
+
+/// The week view page widget state.
+class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
+  @override
+  Widget buildChild(List<FlutterWeekViewEventWithLesson> events) {
+    DateTime monday = ref.watch(dateProvider);
+    List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? defaultDaysToDisplay;
+    List<DateTime> dates = [
+      for (int day in daysToDisplay) monday.add(Duration(days: day - 1)),
+    ];
+    DateTime today = DateTime.now().yearMonthDay;
+    DateTime initialTime = (dates.contains(today) ? today : monday).copyWith(hour: 7, minute: 0);
+    return WeekView<FlutterWeekViewEventWithLesson>(
+      dates: dates,
       events: events,
-      initialTime: const HourMinute(hour: 7).atDate(DateTime.now()),
+      initialTime: initialTime,
       style: WeekViewStyle(dayViewWidth: calculateDayViewWidth(context)),
-      dayBarStyleBuilder: (date) => theme.createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
-      hoursColumnStyle: theme.createHoursColumnStyle(),
-      dayViewStyleBuilder: theme.createDayViewStyle,
+      dayBarStyleBuilder: (date) => createDayBarStyle(date, (year, month, day) => formatDate(context, year, month, day)),
+      hourColumnStyle: createHoursColumnStyle(),
+      dayViewStyleBuilder: createDayViewStyle,
+      eventWidgetBuilder: createEventWidget,
     );
   }
 
-  /// Resolves the page dates from a given context.
-  List<DateTime> resolveDates(WidgetRef ref) {
-    DateTime monday = ref.watch(currentDateProvider).value;
-    return [
-      monday,
-      monday.add(const Duration(days: 1)),
-      monday.add(const Duration(days: 2)),
-      monday.add(const Duration(days: 3)),
-      monday.add(const Duration(days: 4)),
-      monday.add(const Duration(days: 5)),
-      monday.add(const Duration(days: 6)),
-    ];
-  }
-
   @override
-  Future<List<FlutterWeekViewEvent>> createEvents(BuildContext context, WidgetRef ref) async {
-    SettingsModel settingsModel = ref.watch(settingsModelProvider);
-    LessonRepository lessonRepository = ref.watch(lessonRepositoryProvider);
-    List<DateTime> dates = resolveDates(ref);
-    return (await lessonRepository.selectLessons(dates.first, dates.last..add(const Duration(days: 1)))).map((lesson) => createEvent(context, lesson, lessonRepository, settingsModel)).toList();
+  AsyncValue<List<LessonWithColor>> queryLessons() {
+    DateTime monday = ref.watch(dateProvider);
+    DateTime nextWeek = monday.add(const Duration(days: 7));
+    return ref.watch(lessonsProvider(DateTimeRange(start: monday, end: nextWeek)));
   }
 
   /// Calculates a day view width.

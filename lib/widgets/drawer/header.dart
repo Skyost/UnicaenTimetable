@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart' hide Page;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jovial_svg/jovial_svg.dart';
-import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/user.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/theme.dart';
+import 'package:unicaen_timetable/model/settings/username.dart';
+import 'package:unicaen_timetable/widgets/dialogs/input.dart';
 
 /// The drawer header.
 class DrawerHeader extends ConsumerWidget {
@@ -16,20 +14,38 @@ class DrawerHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    UserRepository userRepository = ref.watch(userRepositoryProvider);
-    User? user = userRepository.user;
-    if (user == null) {
+    DisplayedUsername? username = ref.watch(displayedUsernameSettingsEntryProvider).valueOrNull;
+    if (username == null) {
       return const SizedBox.shrink();
     }
 
-    UnicaenTimetableTheme theme = ref.watch(settingsModelProvider).resolveTheme(context);
     return UserAccountsDrawerHeader(
-      accountName: Text(user.usernameWithoutAt),
-      accountEmail: Text(user.username.contains('@') ? user.username : ('${user.username}@etu.unicaen.fr')),
-      currentAccountPicture: ScalableImageWidget.fromSISource(
-        si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
+      accountName: GestureDetector(
+        onTap: () async {
+          String? newUsername = await TextInputDialog.getValue(
+            context,
+            initialValue: username.displayedUsername,
+            hint: username.autoUsername,
+            validator: TextInputDialog.validateNotEmpty,
+          );
+          if (newUsername != null) {
+            ref.read(displayedUsernameSettingsEntryProvider.notifier).manuallyChangeUsername(newUsername);
+          }
+        },
+        child: Text(username.displayedUsername),
       ),
-      decoration: BoxDecoration(color: theme.actionBarColor),
+      accountEmail: Text(username.displayedEmail),
+      currentAccountPicture: CircleAvatar(
+        child: ScalableImageWidget.fromSISource(
+          si: ScalableImageSource.fromSvgHttpUrl(
+            Uri.parse('https://api.dicebear.com/9.x/thumbs/svg?seed=${username.displayedUsername}&radius=50'),
+          ),
+          onError: (context) => ScalableImageWidget.fromSISource(
+            si: ScalableImageSource.fromSI(rootBundle, 'assets/icon.si'),
+          ),
+        ),
+      ),
+      decoration: BoxDecoration(color: Theme.of(context).appBarTheme.backgroundColor),
     );
   }
 }

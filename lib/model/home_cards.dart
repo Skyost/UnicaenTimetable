@@ -1,101 +1,83 @@
-import 'dart:convert';
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/widgets/cards/synchronization_status.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unicaen_timetable/model/settings/entry.dart';
+import 'package:unicaen_timetable/utils/utils.dart';
 
-final homeCardsModelProvider = ChangeNotifierProvider((ref) {
-  HomeCardsModel model = HomeCardsModel();
-  model.initialize();
-  return model;
-});
+/// The home cards provider.
+final homeCardsProvider = AsyncNotifierProvider<HomeCardsNotifier, List<HomeCard>>(HomeCardsNotifier.new);
 
 /// The home cards model.
-class HomeCardsModel extends UnicaenTimetableModel {
-  /// The file name.
-  static const String _homeCardsFilename = 'home_cards.json';
-
-  /// The home cards list.
-  List<String>? _homeCardsList;
+class HomeCardsNotifier extends AsyncNotifier<List<HomeCard>> {
+  /// The home cards key.
+  static const String _homeCardsKey = 'homeCards';
 
   @override
-  Future<void> initialize() async {
-    if (isInitialized) {
-      return;
-    }
-
-    bool fileExists = await UnicaenTimetableModel.storage.fileExists(_homeCardsFilename);
-    if (fileExists) {
-      _homeCardsList = [];
-      List<dynamic> jsonList = jsonDecode(await UnicaenTimetableModel.storage.readFile(_homeCardsFilename));
-      for (dynamic jsonObject in jsonList) {
-        _homeCardsList!.add(jsonObject);
-      }
-    } else {
-      _homeCardsList = [];
-      _addInitialData();
-    }
-    markInitialized();
-  }
-
-  /// Adds initial data to the model.
-  void _addInitialData() {
-    if (!Platform.isIOS) {
-      return;
-    }
-
-    addCard(SynchronizationStatusCard.id);
-    _save();
+  FutureOr<List<HomeCard>> build() async {
+    SharedPreferencesWithCache sharedPreferences = await ref.watch(sharedPreferencesProvider.future);
+    List<String> cards = sharedPreferences.getStringList(_homeCardsKey) ?? [HomeCard.synchronizationStatus.name];
+    return [
+      for (String card in cards) HomeCard.values.byNameOrNull(card) ?? HomeCard.info,
+    ];
   }
 
   /// Adds a card to this model.
-  Future<void> addCard(String id) async {
-    if (isInitialized) {
-      _homeCardsList!.add(id);
-      notifyListeners();
-      _save();
-    }
+  Future<void> addCard(HomeCard homeCard) async {
+    List<HomeCard> cards = await future;
+    _saveAndUse([...cards, homeCard]);
   }
 
   /// Removes a card from this model.
-  Future<void> removeCard(String id) async {
-    if (isInitialized) {
-      _homeCardsList!.remove(id);
-      notifyListeners();
-      _save();
-    }
+  Future<void> removeCard(HomeCard homeCard) async {
+    List<HomeCard> cards = await future;
+    _saveAndUse([
+      for (HomeCard card in cards)
+        if (card != homeCard) card,
+    ]);
   }
 
   /// Returns whether this model has the specified card.
-  bool hasCard(String id) => isInitialized ? _homeCardsList!.contains(id) : false;
+  Future<bool> hasCard(HomeCard homeCard) async => (await future).contains(homeCard);
 
   /// Reorders the cards.
   Future<void> reorder(int oldIndex, int newIndex) async {
-    if (isInitialized) {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
-      String card = _homeCardsList!.removeAt(oldIndex);
-      _homeCardsList!.insert(newIndex, card);
-      notifyListeners();
-      _save();
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
     }
+    List<HomeCard> cards = List.of(await future);
+    HomeCard card = cards.removeAt(oldIndex);
+    cards.insert(newIndex, card);
+    _saveAndUse(cards);
   }
 
-  /// Returns all added cards, in order.
-  Iterable<String> get cards {
-    if (!isInitialized) {
-      return [];
-    }
-
-    return _homeCardsList!;
+  /// Saves the [cards] and use it as [state].
+  Future<void> _saveAndUse(List<HomeCard> cards) async {
+    state = AsyncData(cards);
+    SharedPreferencesWithCache sharedPreferences = await ref.read(sharedPreferencesProvider.future);
+    await sharedPreferences.setStringList(
+      _homeCardsKey,
+      [
+        for (HomeCard card in cards) card.name,
+      ],
+    );
   }
+}
 
-  Future<void> _save() async {
-    if (!isInitialized) {
-      return;
-    }
-    await UnicaenTimetableModel.storage.saveFile(_homeCardsFilename, jsonEncode(_homeCardsList));
-  }
+/// Represents a home card.
+enum HomeCard {
+  /// Displays the synchronization status.
+  synchronizationStatus,
+
+  /// Displays the current lesson.
+  currentLesson,
+
+  /// Displays the next lesson.
+  nextLesson,
+
+  /// Displays the theme.
+  theme,
+
+  /// Displays various info.
+  info;
 }

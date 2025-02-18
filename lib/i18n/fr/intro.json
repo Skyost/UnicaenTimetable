@@ -1,0 +1,20 @@
+{
+  "buttons": {
+    "next": "Suivant",
+    "finish": "Terminer"
+  },
+  "slides": {
+    "main": {
+      "title": "Votre emploi du temps sur votre smartphone !",
+      "message": "Cette application permet aux étudiants de l'Université de Caen Normandie d'avoir leur emploi du temps directement sur leur smartphone."
+    },
+    "login": {
+      "title": "Nous devons maintenant accéder à votre compte Unicaen…",
+      "message": "Pas d'inquiétude ! Ces identifiants ne seront communiqués à aucun tiers et ne seront utilisés que pour récupérer votre emploi du temps sur les serveurs Unicaen."
+    },
+    "finished": {
+      "title": "Tout est prêt !",
+      "message": "Vous êtes fin prêt. Appuyez sur le bouton ci-dessous pour commencer."
+    }
+  }
+}

@@ -1,10 +1,14 @@
-import UIKit
+import EventKit
 import Flutter
 import Foundation
+import UIKit
+import WidgetKit
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     static let channel: String = "fr.skyost.timetable"
+    
+    var requestedDate: String? = nil
     
     override func application(
         _ application: UIApplication,
@@ -14,8 +18,19 @@ import Foundation
         let methodChannel = FlutterMethodChannel(name: AppDelegate.channel, binaryMessenger: controller.binaryMessenger)
         methodChannel.setMethodCallHandler(handleMethodCall)
         
+        if let launchUrl = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL {
+            updateRequestedDateIfNeeded(launchUrl)
+        }
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func updateRequestedDateIfNeeded(_ launchUrl: URL) {
+        if launchUrl.scheme == "todayWidget" && launchUrl.host == "timetable" {
+            let components = URLComponents(url: launchUrl, resolvingAgainstBaseURL: false)
+            requestedDate = components?.queryItems?.first(where: { $0.name == "date" })?.value
+        }
     }
     
     /// Allows to handle a method call.
@@ -61,9 +76,101 @@ import Foundation
             } else {
                 result(FlutterError(code: "generic_error", message: nil, details: nil))
             }
+        case "sync.get":
+            result(getLessonsFileLastModificationTime())
+        case "sync.refresh":
+            let lessonsFile = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(
+                FileManager.SearchPathDirectory.applicationSupportDirectory,
+                FileManager.SearchPathDomainMask.userDomainMask,
+                true
+            ).first!).appendingPathComponent("lessons.json")
+            if !FileManager.default.fileExists(atPath: lessonsFile.path) {
+                result(0)
+                break
+            }
+            let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.fr.skyost.timetable")!
+            let target = directory.appendingPathComponent("lessons.json")
+            do {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                if FileManager.default.fileExists(atPath: target.path) {
+                    try FileManager.default.removeItem(at: target)
+                }
+                try FileManager.default.moveItem(at: lessonsFile, to: target)
+                if #available(iOS 14.0, *) {
+                    WidgetCenter.shared.reloadTimelines(ofKind: "TodayWidget")
+                }
+                result(getLessonsFileLastModificationTime())
+            } catch {
+                result(error)
+            }
+        case "ios.addReminder":
+            let eventStore = EKEventStore()
+            func addEventToStore() -> Bool {
+                do {
+                    let dateComponents = DateComponents(
+                        year: arguments["year"] as? Int,
+                        month: arguments["month"] as? Int,
+                        day: arguments["day"] as? Int,
+                        hour: arguments["hour"] as? Int,
+                        minute: arguments["minute"] as? Int
+                    )
+                    let alarm = EKAlarm(absoluteDate: Calendar.current.date(from: dateComponents)!)
+                    let reminder = EKReminder(eventStore: eventStore)
+                    reminder.title = arguments["title"] as? String
+                    reminder.calendar = eventStore.defaultCalendarForNewReminders()
+                    reminder.dueDateComponents = dateComponents
+                    reminder.addAlarm(alarm)
+                    try eventStore.save(reminder, commit: true)
+                    if let url = URL(string: "x-apple-reminderkit://"), UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                    return true
+                } catch {}
+                return false
+            }
+            let status = EKEventStore.authorizationStatus(for: .reminder)
+            switch status {
+            case .notDetermined:
+                if #available(iOS 17.0, *) {
+                    eventStore.requestFullAccessToReminders { success, _ in
+                        if success {
+                            result(addEventToStore())
+                        } else {
+                            result(false)
+                        }
+                    }
+                } else {
+                    eventStore.requestAccess(to: .reminder) { success, _ in
+                        if success {
+                            result(addEventToStore())
+                        } else {
+                            result(false)
+                        }
+                    }
+                }
+            case .fullAccess, .authorized:
+                result(addEventToStore())
+            default:
+                result(false)
+            }
+        case "activity.shouldRefreshTimetable":
+            result(false)
+        case "activity.getRequestedDateString":
+            result(requestedDate)
+            requestedDate = nil
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+    
+    private func getLessonsFileLastModificationTime() -> Int {
+        let lessonsFile = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.fr.skyost.timetable")?.appendingPathComponent("lessons.json")
+        if lessonsFile == nil || !FileManager.default.fileExists(atPath: lessonsFile!.path) {
+            return 0
+        }
+        let attributes = try? FileManager.default.attributesOfItem(atPath: lessonsFile!.path)
+        let lastModification = attributes?[.modificationDate] as? Date ?? Date(timeIntervalSince1970: 0)
+        return Int(lastModification.timeIntervalSince1970)
     }
     
     private func createQuery() -> [String: Any] {

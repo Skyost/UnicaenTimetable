@@ -6,9 +6,9 @@ class ThirdSlide extends Slide {
   /// Creates a new third intro slide instance.
   const ThirdSlide()
       : super(
-    slideId: 'finished',
-    slideIndex: 2,
-  );
+          slideId: 'finished',
+          slideIndex: 2,
+        );
 
   @override
   Slide? createPreviousSlide() => const SecondSlide();

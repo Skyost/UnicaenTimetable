@@ -1,294 +1,197 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:ez_localization/ez_localization.dart';
+import 'package:eventide/eventide.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:unicaen_timetable/main.dart';
-import 'package:unicaen_timetable/model/lessons/authentication/result.dart';
-import 'package:unicaen_timetable/model/lessons/authentication/state.dart';
+import 'package:unicaen_timetable/model/lessons/color_resolver.dart';
 import 'package:unicaen_timetable/model/lessons/lesson.dart';
-import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/user.dart';
-import 'package:unicaen_timetable/model/model.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/utils/calendar_url.dart';
+import 'package:unicaen_timetable/model/lessons/storage.dart';
+import 'package:unicaen_timetable/model/settings/device_calendar.dart';
+import 'package:unicaen_timetable/model/user/calendar.dart';
+import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
-import 'package:unicaen_timetable/widgets/dialogs/login.dart';
 
-final lessonRepositoryProvider = ChangeNotifierProvider((ref) {
-  LessonRepository repository = LessonRepository();
-  repository.initialize();
-  return repository;
-});
+/// The lesson repository provider.
+final lessonRepositoryProvider = AsyncNotifierProvider.autoDispose<LessonRepository, DateTime?>(LessonRepository.new);
 
 /// The lesson model.
-class LessonRepository extends UnicaenTimetableModel {
-  /// The lessons file name.
-  static const String _lessonsFilename = 'lessons.json';
-
-  /// The lessons colors file name.
-  static const String _lessonsColorsFilename = 'lessons_colors.json';
-
-  /// The lessons.
-  Map<String, List<Lesson>>? _lessons;
-
-  /// The lessons colors.
-  Map<String, int>? _lessonsColors;
-
-  /// The lessons file last modification date.
-  DateTime? _lastModificationDate;
-
+class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
   @override
-  Future<void> initialize() async {
-    if (isInitialized) {
-      return;
+  FutureOr<DateTime?> build() async {
+    int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.get');
+    if (lastUpdate == 0) {
+      lastUpdate = null;
     }
-
-    _lessons = {};
-    if (await UnicaenTimetableModel.storage.fileExists(_lessonsFilename)) {
-      Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsFilename));
-      for (MapEntry<String, dynamic> jsonEntry in json.entries) {
-        if (jsonEntry.value is List) {
-          List<Lesson> lessonsAtDate = [];
-          for (dynamic jsonLesson in jsonEntry.value) {
-            lessonsAtDate.add(Lesson.fromJson(jsonLesson));
-          }
-          _lessons![jsonEntry.key] = lessonsAtDate;
-        }
-      }
-    } else {
-      await UnicaenTimetableModel.storage.saveFile(_lessonsFilename, jsonEncode(_lessons));
-    }
-    _lastModificationDate = await UnicaenTimetableModel.storage.getLastModificationTime(_lessonsFilename);
-
-    _lessonsColors = {};
-    if (await UnicaenTimetableModel.storage.fileExists(_lessonsColorsFilename)) {
-      Map<String, dynamic> json = jsonDecode(await UnicaenTimetableModel.storage.readFile(_lessonsColorsFilename));
-      for (MapEntry<String, dynamic> jsonEntry in json.entries) {
-        if (jsonEntry.value is int) {
-          _lessonsColors![jsonEntry.key] = jsonEntry.value;
-        }
-      }
-    } else {
-      await UnicaenTimetableModel.storage.saveFile(_lessonsColorsFilename, jsonEncode(_lessonsColors));
-    }
-
-    markInitialized();
-  }
-
-  /// Returns the lessons of a date.
-  Future<List<Lesson>> getLessonsForDate(DateTime date) async {
-    if (!isInitialized) {
-      return [];
-    }
-
-    List result = _lessons![date.millisecondsSinceEpoch.toString()] ?? [];
-    return List<Lesson>.from(result);
-  }
-
-  /// Selects the lessons available between two dates.
-  Future<List<Lesson>> selectLessons(DateTime min, DateTime max) async {
-    List<Lesson> result = [];
-    DateTime date = min;
-    while (date.isBefore(max)) {
-      result.addAll(await getLessonsForDate(date));
-      date = date.add(const Duration(days: 1));
-    }
-    return result;
-  }
-
-  /// Returns the remaining today's lessons.
-  Future<List<Lesson>> get remainingLessons async {
-    DateTime now = DateTime.now();
-    List<Lesson> result = await getLessonsForDate(now);
-    for (Lesson lesson in List<Lesson>.of(result, growable: false)) {
-      if (now.isAfter(lesson.end)) {
-        result.remove(lesson);
-      }
-    }
-
-    return result..sort();
-  }
-
-  /// Clears all lessons.
-  Future<void> clearLessons() async {
-    if (!isInitialized) {
-      return;
-    }
-
-    _lessons!.clear();
-    notifyListeners();
-    await _saveLessons();
-  }
-
-  /// Returns all weeks handled.
-  Future<List<DateTime>> get availableWeeks async {
-    if (!isInitialized) {
-      return [];
-    }
-
-    Set<DateTime> result = HashSet();
-    for (String timestamp in _lessons!.keys) {
-      DateTime monday = DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp)).atMonday;
-      if (!result.contains(monday)) {
-        result.add(monday);
-      }
-    }
-    return result.toList()..sort();
-  }
-
-  /// Downloads lessons from a widget.
-  Future<void> downloadLessonsFromWidget(BuildContext context, WidgetRef ref) async {
-    Utils.showSnackBar(
-      context: context,
-      icon: Icons.sync,
-      textKey: 'synchronizing',
-      color: Theme.of(context).primaryColor,
-    );
-
-    RequestResultState state = await downloadLessons(calendarUrl: ref.read(settingsModelProvider).calendarUrl, user: ref.read(userRepositoryProvider).user);
-    if (context.mounted) {
-      switch (state) {
-        case RequestResultState.success:
-          Utils.showSnackBar(
-            context: context,
-            icon: Icons.check,
-            textKey: state.id,
-            color: Colors.green[700]!,
-          );
-          break;
-        case RequestResultState.notFound:
-          await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(context.getString('calendar_not_found.title')),
-              content: SingleChildScrollView(
-                child: Text(context.getString('calendar_not_found.message')),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-                )
-              ],
-            ),
-          );
-          break;
-        case RequestResultState.unauthorized:
-          Utils.showSnackBar(
-            context: context,
-            icon: Icons.error_outline,
-            textKey: state.id,
-            color: Colors.amber[800]!,
-            onVisible: () => LoginDialog.show(context),
-          );
-          break;
-        default:
-          Utils.showSnackBar(
-            context: context,
-            icon: Icons.error_outline,
-            textKey: state.id,
-            color: Colors.red[800]!,
-          );
-          break;
-      }
-    }
+    return lastUpdate == null ? null : DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000);
   }
 
   /// Synchronizes the app with Zimbra.
-  Future<RequestResultState> downloadLessons({
-    required CalendarUrl calendarUrl,
-    required User? user,
-  }) async {
+  Future<RequestResult> refreshLessons() async {
     try {
-      if (!isInitialized) {
-        return RequestResultState.genericError;
+      Calendar? calendar = await ref.read(calendarProvider.future);
+      if (calendar == null) {
+        return const RequestError(httpCode: HttpStatus.unauthorized);
       }
 
-      if (user == null) {
-        return RequestResultState.unauthorized;
+      RequestResult result = await calendar.downloadLessons();
+      if (result is! RequestSuccess) {
+        return result;
       }
 
-      RequestResult<Map<DateTime, List<Lesson>>> result = await user.downloadLessons(calendarUrl);
-      if (result.state != RequestResultState.success) {
-        return result.state;
-      }
+      List<Lesson> lessons = result.object;
+      await ref.read(localStorageProvider).replaceLessons(lessons);
 
-      Map<DateTime, List<Lesson>> lessons = result.object;
-      _lessons!.clear();
-      for (MapEntry<DateTime, List<Lesson>> entry in lessons.entries) {
-        _lessons![entry.key.millisecondsSinceEpoch.toString()] = entry.value;
+      Directory directory = await getApplicationSupportDirectory();
+      File lessonsFile = File('${directory.path}/lessons.json');
+      if (!lessonsFile.existsSync()) {
+        lessonsFile.createSync(recursive: true);
       }
-      if (Platform.isAndroid) {
-        UnicaenTimetableRoot.channel.invokeMethod('sync.finished');
-      }
+      Map<DateTime, List<Lesson>> groupedLessons = _groupLessonsByDay(lessons, minimumDateTime: DateTime.now().yearMonthDay);
+      lessonsFile.writeAsStringSync(
+        jsonEncode({
+          for (MapEntry<DateTime, List<Lesson>> entry in groupedLessons.entries)
+            '${entry.key.year}-${entry.key.month.withLeadingZero}-${entry.key.day.withLeadingZero}': [
+              for (Lesson lesson in entry.value) lesson.toJson(),
+            ],
+        }),
+        flush: true,
+      );
 
-      notifyListeners();
-      await _saveLessons();
-      return RequestResultState.success;
+      int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.refresh');
+      if (lastUpdate != null) {
+        state = AsyncData(DateTime.fromMillisecondsSinceEpoch(lastUpdate * 1000));
+      }
+      _refreshPlatformCalendar(lessons);
+
+      return result;
     } catch (ex, stacktrace) {
       if (kDebugMode) {
         print(ex);
         print(stacktrace);
       }
     }
-    return RequestResultState.genericError;
+    return const RequestError();
   }
 
-  /// Returns the last modification date.
-  DateTime? get lastModificationDate => _lastModificationDate;
-
-  /// Updates the last modification time.
-  Future<void> updateLastModificationDate() async {
-    DateTime? newDate = isInitialized ? await UnicaenTimetableModel.storage.getLastModificationTime(_lessonsFilename) : null;
-    if (_lastModificationDate != newDate) {
-      _lastModificationDate = newDate;
-      notifyListeners();
+  /// Refreshes the platform data.
+  Future<void> _refreshPlatformCalendar(List<Lesson> lessons) async {
+    bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
+    if (syncWithDevice) {
+      DateTime today = DateTime.now().yearMonthDay;
+      ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
+      Eventide eventide = Eventide();
+      List<ETEvent> events = await eventide.retrieveEvents(
+        calendarId: calendar.id,
+        startDate: today.subtract(const Duration(days: 365)),
+        endDate: today.add(const Duration(days: 365)),
+      );
+      for (ETEvent event in events) {
+        await eventide.deleteEvent(eventId: event.id);
+      }
+      for (Lesson lesson in lessons) {
+        await eventide.createEvent(
+          calendarId: calendar.id,
+          title: lesson.name,
+          description: lesson.description,
+          startDate: lesson.dateTime.start,
+          endDate: lesson.dateTime.end,
+        );
+      }
     }
   }
 
-  /// Returns the color of a lesson (depends on the name).
-  Color? getLessonColor(Lesson lesson) {
-    int? value = _lessonsColors![lesson.name];
-    return value == null ? null : Color(value);
-  }
+  /// Groups the given [lessons] by day.
+  Map<DateTime, List<Lesson>> _groupLessonsByDay(List<Lesson> lessons, {DateTime? minimumDateTime}) {
+    Map<DateTime, List<Lesson>> groupedLessons = {};
+    for (Lesson lesson in lessons) {
+      DateTime currentDay = lesson.dateTime.start.yearMonthDay;
+      DateTime endDay = lesson.dateTime.end.yearMonthDay;
 
-  /// Sets the lesson color according to its name.
-  Future<void> setLessonColor(Lesson lesson, Color color) async {
-    if (isInitialized) {
-      _lessonsColors![lesson.name] = color.value;
-      notifyListeners();
-      await _saveLessonsColors();
+      while (currentDay.isBefore(endDay) || currentDay.isAtSameMomentAs(endDay)) {
+        DateTime lessonStart = currentDay.isAtSameMomentAs(lesson.dateTime.start.yearMonthDay) ? lesson.dateTime.start : DateTime(currentDay.year, currentDay.month, currentDay.day, 0, 0);
+        DateTime lessonEnd = currentDay.isAtSameMomentAs(lesson.dateTime.end.yearMonthDay) ? lesson.dateTime.end : DateTime(currentDay.year, currentDay.month, currentDay.day, 23, 59, 59);
+        if (minimumDateTime == null || currentDay.isAtSameMomentAs(minimumDateTime) || currentDay.isAfter(minimumDateTime)) {
+          groupedLessons
+              .putIfAbsent(
+                currentDay,
+                () => [],
+              )
+              .add(
+                lesson.copyWith(
+                  dateTime: DateTimeRange(
+                    start: lessonStart,
+                    end: lessonEnd,
+                  ),
+                ),
+              );
+          groupedLessons[currentDay] = List.of(groupedLessons[currentDay]!)..sort();
+        }
+        currentDay = currentDay.add(const Duration(days: 1));
+      }
     }
-  }
 
-  /// Resets the lesson color according to its name.
-  Future<void> resetLessonColor(Lesson lesson) async {
-    if (isInitialized) {
-      _lessonsColors!.remove(lesson.name);
-      notifyListeners();
-      await _saveLessonsColors();
-    }
+    return groupedLessons;
   }
+}
 
-  /// Saves the lessons.
-  Future<void> _saveLessons() async {
-    if (!isInitialized) {
-      return;
-    }
-    await UnicaenTimetableModel.storage.saveFile(_lessonsFilename, jsonEncode(_lessons));
-    await updateLastModificationDate();
-  }
+/// The lesson repository provider.
+final lessonsProvider = AsyncNotifierProvider.autoDispose.family<LessonsNotifier, List<LessonWithColor>, DateTimeRange?>(LessonsNotifier.new);
 
-  /// Saves the lessons colors.
-  Future<void> _saveLessonsColors() async {
-    if (!isInitialized) {
-      return;
-    }
-    await UnicaenTimetableModel.storage.saveFile(_lessonsColorsFilename, jsonEncode(_lessonsColors));
+/// The remaining lessons provider.
+final remainingLessonsProvider = FutureProvider<List<LessonWithColor>>((ref) async {
+  DateTime now = DateTime.now();
+  List<LessonWithColor> lessons = await ref.watch(lessonsProvider(DateTimeRange.oneDay(DateTime.now().yearMonthDay)).future);
+  return [
+    for (LessonWithColor lesson in lessons)
+      if (!now.isAfter(lesson.dateTime.end)) lesson,
+  ];
+});
+
+/// The lesson model.
+class LessonsNotifier extends AutoDisposeFamilyAsyncNotifier<List<LessonWithColor>, DateTimeRange?> {
+  @override
+  FutureOr<List<LessonWithColor>> build(DateTimeRange? arg) async {
+    LocalStorage storage = ref.watch(localStorageProvider);
+    ColorResolver colorResolver = await ref.watch(lessonColorResolverProvider.future);
+    List<Lesson> lessons = arg == null ? (await storage.selectAllLessons()) : (await storage.selectLessons(arg));
+    return [
+      for (Lesson lesson in lessons)
+        LessonWithColor.fromLesson(
+          lesson: lesson,
+          color: colorResolver.resolveColor(lesson),
+        ),
+    ];
   }
+}
+
+/// A lesson that holds a color.
+class LessonWithColor extends Lesson {
+  /// The color.
+  final Color? color;
+
+  /// Creates a new lesson with color.
+  const LessonWithColor({
+    required super.name,
+    super.description,
+    required super.location,
+    required super.dateTime,
+    this.color,
+  });
+
+  /// Creates a new lesson with color.
+  LessonWithColor.fromLesson({
+    required Lesson lesson,
+    Color? color,
+  }) : this(
+          name: lesson.name,
+          description: lesson.description,
+          location: lesson.location,
+          dateTime: lesson.dateTime,
+          color: color,
+        );
 }

@@ -1,0 +1,30 @@
+{
+  "title": "Settings",
+  "application": {
+    "title": "Application",
+    "days_to_display": "Days to display",
+    "color_lessons_automatically": "Automatically color lessons",
+    "open_today_automatically": "Open today's page at launch",
+    "enable_ads": "Enable ads",
+    "brightness": {
+      "title": "Theme",
+      "values(map)": {
+        "light": "Bright",
+        "dark": "Dark",
+        "system": "Let the system choose"
+      }
+    },
+    "sync_with_device_calendar": "Synchronize with device calendar"
+  },
+  "account": {
+    "title": "Account",
+    "switch": "Switch account"
+  },
+  "calendar": {
+    "title": "Remote calendar",
+    "server": "Server address",
+    "name": "Name",
+    "additional_parameters": "Additional parameters",
+    "interval": "Number of weeks to download"
+  }
+}

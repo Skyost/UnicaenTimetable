@@ -1,0 +1,10 @@
+"title" = "Emploi du temps";
+"description" = "Affiche l'emploi du temps du jour.";
+"error %@" = "Impossible de charger votre emploi du temps : %@.";
+"nothing" = "Aucun cours pour cette journée. Si vous pensiez avoir quelque chose, veuillez rafraîchir votre emploi du temps.";
+"noMoreLesson" = "Il ne reste plus aucun cours aujourd'hui.";
+"andMore %lld" = "... et %lld de plus";
+"previousDayTitle" = "Jour précédent";
+"previousDayDescription" = "Affiche l'emploi du temps du jour précédent.";
+"nextDayTitle" = "Jour suivant";
+"nextDayDescription" = "Affiche l'emploi du temps du jour suivant.";

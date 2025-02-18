@@ -1,53 +1,49 @@
 import 'package:background_fetch/background_fetch.dart';
-import 'package:ez_localization/ez_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart' show MobileAds;
-import 'package:rate_my_app/rate_my_app.dart';
 import 'package:unicaen_timetable/firebase_options.dart';
+import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/scaffold.dart';
 import 'package:unicaen_timetable/model/lessons/repository.dart';
-import 'package:unicaen_timetable/model/lessons/user/repository.dart';
-import 'package:unicaen_timetable/model/settings/settings.dart';
-import 'package:unicaen_timetable/pages/page_container.dart';
-import 'package:unicaen_timetable/theme.dart';
+import 'package:unicaen_timetable/model/settings/theme.dart';
+import 'package:unicaen_timetable/pages/scaffold.dart';
 import 'package:unicaen_timetable/widgets/ensure_logged_in.dart';
 
 /// Hello world !
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-  runApp(const ProviderScope(child: UnicaenTimetableRoot()));
+  if (!kDebugMode) {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
+  await LocaleSettings.useDeviceLocale();
+  runApp(
+    ProviderScope(
+      child: TranslationProvider(
+        child: const UnicaenTimetableRoot(),
+      ),
+    ),
+  );
   BackgroundFetch.registerHeadlessTask(headlessSyncTask);
 }
 
 /// The headless synchronization task.
-void headlessSyncTask(String taskId) async {
-  UserRepository userRepository = UserRepository();
-  await userRepository.initialize();
-
-  if (userRepository.user != null) {
-    LessonRepository lessonRepository = LessonRepository();
-    SettingsModel settingsModel = SettingsModel();
-
-    await settingsModel.initialize();
-    await lessonRepository.initialize();
-    await lessonRepository.downloadLessons(
-      calendarUrl: settingsModel.calendarUrl,
-      user: userRepository.user!,
-    );
-  }
-
+@pragma('vm:entry-point')
+Future<void> headlessSyncTask(String taskId) async {
+  print('yo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  ProviderContainer providerContainer = ProviderContainer();
+  await providerContainer.read(lessonRepositoryProvider.notifier).refreshLessons();
+  providerContainer.dispose();
+  print('yo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   BackgroundFetch.finish(taskId);
 }
 
@@ -74,10 +70,7 @@ class _UnicaenTimetableRootState extends ConsumerState<UnicaenTimetableRoot> {
   }
 
   @override
-  Widget build(BuildContext context) => EzLocalizationBuilder(
-        delegate: const EzLocalizationDelegate(supportedLocales: [Locale('en'), Locale('fr')]),
-        builder: (context, ezLocalization) => _UnicaenTimetableApp(ezLocalization: ezLocalization),
-      );
+  Widget build(BuildContext context) => const _UnicaenTimetableApp();
 
   /// Initializes the background tasks.
   Future<void> initializeBackgroundTasks() async {
@@ -90,16 +83,7 @@ class _UnicaenTimetableRootState extends ConsumerState<UnicaenTimetableRoot> {
         requiredNetworkType: NetworkType.ANY,
       ),
       (String taskId) async {
-        LessonRepository lessonRepository = ref.read(lessonRepositoryProvider);
-        await lessonRepository.initialize();
-
-        UserRepository userRepository = ref.read(userRepositoryProvider);
-        await userRepository.initialize();
-
-        SettingsModel settingsModel = ref.read(settingsModelProvider);
-        await settingsModel.initialize();
-
-        await lessonRepository.downloadLessons(calendarUrl: settingsModel.calendarUrl, user: userRepository.user);
+        await ref.read(lessonRepositoryProvider.notifier).refreshLessons();
         BackgroundFetch.finish(taskId);
       },
     );
@@ -108,50 +92,60 @@ class _UnicaenTimetableRootState extends ConsumerState<UnicaenTimetableRoot> {
 
 /// The app material widget.
 class _UnicaenTimetableApp extends ConsumerWidget {
-  /// The EzLocalization instance.
-  final EzLocalizationDelegate ezLocalization;
-
   /// Creates a new Unicaen timetable app.
-  const _UnicaenTimetableApp({
-    required this.ezLocalization,
-  });
+  const _UnicaenTimetableApp();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    SettingsModel settingsModel = ref.watch(settingsModelProvider);
+    AsyncValue<ThemeMode> theme = ref.watch(themeSettingsEntryProvider);
+    ColorScheme light = ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+    );
+    ColorScheme dark = ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+      brightness: Brightness.dark,
+    );
     return MaterialApp(
-      onGenerateTitle: (context) => EzLocalization.of(context)?.get('app_name') ?? 'Unicaen Timetable',
-      theme: UnicaenTimetableTheme.light.themeData,
-      darkTheme: UnicaenTimetableTheme.dark.themeData,
-      themeMode: settingsModel.isInitialized ? settingsModel.themeEntry.value : ThemeMode.light,
+      onGenerateTitle: (context) => translations.common.appName,
+      theme: ThemeData(
+        colorScheme: light,
+        appBarTheme: AppBarTheme(
+          foregroundColor: light.onPrimary,
+          backgroundColor: light.primary,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: light.surface,
+          ),
+          shape: const RoundedRectangleBorder(),
+        ),
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: dark,
+        appBarTheme: AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: dark.surface,
+          ),
+          shape: const RoundedRectangleBorder(),
+        ),
+        brightness: Brightness.dark,
+      ),
+      themeMode: theme.valueOrNull,
       routes: {
-        '/': (_) => EnsureLoggedInWidget(
-              child: RateMyAppBuilder(
-                onInitialized: (context, rateMyApp) {
-                  if (rateMyApp.shouldOpenDialog) {
-                    rateMyApp.showRateDialog(
-                      context,
-                      title: context.getString('dialogs.rate.title'),
-                      message: context.getString('dialogs.rate.message'),
-                      rateButton: context.getString('dialogs.rate.button_rate').toUpperCase(),
-                      laterButton: context.getString('dialogs.rate.button_later').toUpperCase(),
-                      noButton: context.getString('dialogs.rate.button_no').toUpperCase(),
-                      ignoreNativeDialog: false,
-                    );
-                  }
-                },
-                builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-                  value: SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: ref.watch(settingsModelProvider).resolveTheme(context).actionBarColor),
-                  child: const PageContainer(),
-                ),
-              ),
+        '/': (_) => const EnsureLoggedInWidget(
+              child: AppScaffold(),
             ),
         '/intro': (_) => const IntroScaffold(),
       },
       initialRoute: '/',
-      localizationsDelegates: ezLocalization.localizationDelegates,
-      supportedLocales: ezLocalization.supportedLocales,
-      localeResolutionCallback: ezLocalization.localeResolutionCallback,
+      locale: TranslationProvider.of(context).flutterLocale,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocaleUtils.supportedLocales,
     );
   }
 }

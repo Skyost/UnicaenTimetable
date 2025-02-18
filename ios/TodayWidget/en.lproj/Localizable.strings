@@ -1,0 +1,10 @@
+"title" = "Timetable";
+"description" = "Display today's timetable.";
+"error %@" = "Failed to load your timetable : %@.";
+"nothing" = "Nothing for this day. If you think there should be something, please refresh your timetable.";
+"noMoreLesson" = "There is nothing remaining today.";
+"andMore %lld" = "... and %lld more";
+"previousDayTitle" = "Previous day";
+"previousDayDescription" = "Display the previous day's timetable.";
+"nextDayTitle" = "Next day";
+"nextDayDescription" = "Display the next day's timetable.";
