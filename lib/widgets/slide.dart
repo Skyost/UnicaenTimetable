@@ -2,9 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jovial_svg/jovial_svg.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
+import 'package:unicaen_timetable/utils/brightness_listener.dart';
 
 /// Allows to render a slide.
 class SlideWidget extends StatelessWidget {
@@ -23,10 +25,8 @@ class SlideWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 40),
           shrinkWrap: true,
           children: [
-            Text(
-              translations['intro.slides.${slide.slideId}.title'],
-              style: Theme.of(context).textTheme.displaySmall,
-              textAlign: TextAlign.center,
+            _TitleWidget(
+              text: translations['intro.slides.${slide.slideId}.title'],
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
@@ -45,4 +45,35 @@ class SlideWidget extends StatelessWidget {
           ],
         ),
       );
+}
+
+/// An intro slide title.
+class _TitleWidget extends ConsumerStatefulWidget {
+  /// The text.
+  final String text;
+
+  /// Creates a new title widget instance.
+  const _TitleWidget({
+    required this.text,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TitleWidgetState();
+}
+
+/// The title widget state.
+class _TitleWidgetState extends ConsumerState<_TitleWidget> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    TextStyle? style = theme.textTheme.displaySmall;
+    if (currentBrightness == Brightness.light) {
+      style = style?.copyWith(color: theme.colorScheme.primary);
+    }
+    return Text(
+      widget.text,
+      style: style,
+      textAlign: TextAlign.center,
+    );
+  }
 }

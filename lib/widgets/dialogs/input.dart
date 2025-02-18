@@ -376,6 +376,9 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
   }
 
   @override
+  Widget createCancelButton(BuildContext context) => widget.values.isEmpty ? const SizedBox.shrink() : super.createCancelButton(context);
+
+  @override
   T? get value => (currentValueIndex == -1 || widget.values.isEmpty) || currentValueIndex < 0 || currentValueIndex >= widget.values.length ? null : widget.values[currentValueIndex];
 
   /// Handles on tap event.

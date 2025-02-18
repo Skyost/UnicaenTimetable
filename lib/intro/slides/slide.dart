@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// An intro slide widget.
 abstract class Slide {
   /// The slide count.
-  static const slideCount = 3;
+  static const int slideCount = 3;
 
   /// The slide id.
   final String slideId;

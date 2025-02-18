@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
 import 'package:unicaen_timetable/intro/slides/first.dart';
 import 'package:unicaen_timetable/intro/slides/slide.dart';
+import 'package:unicaen_timetable/utils/brightness_listener.dart';
 import 'package:unicaen_timetable/widgets/slide.dart';
 
 final currentSlideProvider = ChangeNotifierProvider((ref) => ValueNotifier<Slide>(const FirstSlide()));
@@ -62,25 +63,65 @@ class _IntroScaffoldBody extends ConsumerWidget {
   Widget createFooter(BuildContext context, WidgetRef ref, Slide slide) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '${slide.slideIndex + 1}/${Slide.slideCount}',
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '${slide.slideIndex + 1}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(
+                  text: '/',
+                ),
+                const TextSpan(
+                  text: '${Slide.slideCount}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
-          TextButton.icon(
-            onPressed: () async {
-              if (slide.isLastSlide) {
-                await Navigator.pushReplacementNamed(context, '/');
-                // ignore: use_build_context_synchronously
-              } else if (await slide.onGoToNextSlide(context)) {
-                ref.read(currentSlideProvider).value = slide.createNextSlide()!;
-              }
-            },
-            icon: Icon(
-              slide.isLastSlide ? Icons.check : Icons.chevron_right,
-            ),
-            label: Text(
-              (slide.isLastSlide ? translations.intro.buttons.finish : translations.intro.buttons.next).toUpperCase(),
-            ),
+          _NextButton(
+            slide: slide,
           ),
         ],
+      );
+}
+
+/// The next button.
+class _NextButton extends ConsumerStatefulWidget {
+  /// The slide instance.
+  final Slide slide;
+
+  /// Creates a new next button instance.
+  const _NextButton({
+    required this.slide,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _NextButtonState();
+}
+
+/// The next button state.
+class _NextButtonState extends ConsumerState<_NextButton> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => (currentBrightness == Brightness.light ? FilledButton.tonalIcon : TextButton.icon)(
+        onPressed: () async {
+          if (widget.slide.isLastSlide) {
+            await Navigator.pushReplacementNamed(context, '/');
+            // ignore: use_build_context_synchronously
+          } else if (await widget.slide.onGoToNextSlide(context)) {
+            ref.read(currentSlideProvider).value = widget.slide.createNextSlide()!;
+          }
+        },
+        icon: Icon(
+          widget.slide.isLastSlide ? Icons.check : Icons.chevron_right,
+        ),
+        label: Text(
+          (widget.slide.isLastSlide ? translations.intro.buttons.finish : translations.intro.buttons.next).toUpperCase(),
+        ),
       );
 }
