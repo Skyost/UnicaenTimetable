@@ -112,7 +112,6 @@ class _NextButtonState extends ConsumerState<_NextButton> with BrightnessListene
         onPressed: () async {
           if (widget.slide.isLastSlide) {
             await Navigator.pushReplacementNamed(context, '/');
-            // ignore: use_build_context_synchronously
           } else if (await widget.slide.onGoToNextSlide(context)) {
             ref.read(currentSlideProvider).value = widget.slide.createNextSlide()!;
           }
