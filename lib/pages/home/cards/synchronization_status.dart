@@ -17,7 +17,7 @@ class SynchronizationStatusCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    DateTime? lastModification = ref.watch(lessonRepositoryProvider).valueOrNull;
+    AsyncValue<DateTime?> lastModification = ref.watch(lessonRepositoryProvider);
     int interval = ref.watch(intervalSettingsEntryProvider).valueOrNull ?? 0;
     _Status status = _Status.resolve(lastModification, interval);
     return MaterialCardContent(
@@ -25,10 +25,11 @@ class SynchronizationStatusCard extends ConsumerWidget {
       icon: status.icon,
       title: translations.home.synchronizationStatus.title,
       subtitle: switch (status) {
+        _Status.never => translations.home.synchronizationStatus.never,
         _Status.loading => translations.common.other.pleaseWait,
         _Status.bad ||
         _Status.good =>
-          '${lastModification == null ? translations.home.synchronizationStatus.never : DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification)}\n${status == _Status.bad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
+          '${DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification.value!)}\n${status == _Status.bad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
       },
       onTap: () async => await downloadLessons(ref),
       onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.synchronizationStatus),
@@ -38,6 +39,12 @@ class SynchronizationStatusCard extends ConsumerWidget {
 
 /// The synchronization status.
 enum _Status {
+  /// When the lesson repository has never been synchronized.
+  never(
+    resolveColor: _greyColorResolver,
+    icon: Icons.sync_problem,
+  ),
+
   /// When the lesson repository is loading.
   loading(
     resolveColor: _greyColorResolver,
@@ -78,10 +85,14 @@ enum _Status {
   static Color _tealColorResolver() => Colors.teal.shade700;
 
   /// Resolves the status from the given [lastModification] and [interval].
-  static _Status resolve(DateTime? lastModification, int interval) {
-    if (lastModification == null) {
+  static _Status resolve(AsyncValue<DateTime?> lastModification, int interval) {
+    if (lastModification is AsyncLoading<DateTime?> || lastModification is AsyncError<DateTime?>) {
       return loading;
     }
-    return DateTime.now().difference(lastModification).compareTo(Duration(days: interval) * 7) > 0 ? bad : good;
+    DateTime? date = lastModification.value;
+    if (date == null) {
+      return never;
+    }
+    return DateTime.now().difference(date).compareTo(Duration(days: interval) * 7) > 0 ? bad : good;
   }
 }

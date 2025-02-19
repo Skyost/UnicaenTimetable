@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:unicaen_timetable/i18n/translations.g.dart';
-import 'package:unicaen_timetable/intro/slides/first.dart';
-import 'package:unicaen_timetable/intro/slides/slide.dart';
+import 'package:unicaen_timetable/intro/slide.dart';
 import 'package:unicaen_timetable/utils/brightness_listener.dart';
-import 'package:unicaen_timetable/widgets/slide.dart';
-
-final currentSlideProvider = ChangeNotifierProvider((ref) => ValueNotifier<Slide>(const FirstSlide()));
 
 /// The intro scaffold.
 class IntroScaffold extends StatelessWidget {
@@ -17,10 +13,8 @@ class IntroScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: _IntroScaffoldBody(),
-        ),
+        body: _IntroScaffoldBody(),
+        bottomNavigationBar: _IntroScaffoldFooter(),
       );
 }
 
@@ -28,66 +22,83 @@ class IntroScaffold extends StatelessWidget {
 class _IntroScaffoldBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Slide slide = ref.watch(currentSlideProvider.select((provider) => provider.value));
+    Slide slide = ref.watch(currentSlideProvider);
     return PopScope(
       canPop: slide.isFirstSlide,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!slide.isFirstSlide) {
-          ref.read(currentSlideProvider).value = slide.createPreviousSlide()!;
-        }
-      },
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 50),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: SlideWidget(
-                slide: slide,
-              ),
-            ),
-            Positioned(
-              right: 10,
-              bottom: 0,
-              left: 18,
-              child: createFooter(context, ref, slide),
-            ),
-          ],
+      onPopInvokedWithResult: (didPop, result) => ref.read(currentSlideProvider.notifier).goToPreviousSlide(context),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: SlideWidget(
+          key: ValueKey('slide.${slide.name}'),
+          slide: slide,
         ),
       ),
     );
   }
+}
 
-  /// Creates the footer widget.
-  Widget createFooter(BuildContext context, WidgetRef ref, Slide slide) => Row(
+/// The intro scaffold footer.
+class _IntroScaffoldFooter extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    Slide slide = ref.watch(currentSlideProvider);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '${slide.slideIndex + 1}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const TextSpan(
-                  text: '/',
-                ),
-                const TextSpan(
-                  text: '${Slide.slideCount}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+          _CurrentProgressIndicator(
+            slide: slide,
           ),
           _NextButton(
             slide: slide,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The current progress indicator.
+class _CurrentProgressIndicator extends ConsumerStatefulWidget {
+  /// The slide instance.
+  final Slide slide;
+
+  /// Creates a new current progress indicator.
+  const _CurrentProgressIndicator({
+    required this.slide,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _CurrentProgressIndicatorState();
+}
+
+/// The current progress indicator state.
+class _CurrentProgressIndicatorState extends ConsumerState<_CurrentProgressIndicator> with BrightnessListener {
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(left: currentBrightness == Brightness.dark ? 8 : 0),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: '${widget.slide.index + 1}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const TextSpan(
+                text: '/',
+              ),
+              TextSpan(
+                text: '${Slide.values.length}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 }
 
@@ -109,13 +120,7 @@ class _NextButton extends ConsumerStatefulWidget {
 class _NextButtonState extends ConsumerState<_NextButton> with BrightnessListener {
   @override
   Widget build(BuildContext context) => (currentBrightness == Brightness.light ? FilledButton.tonalIcon : TextButton.icon)(
-        onPressed: () async {
-          if (widget.slide.isLastSlide) {
-            await Navigator.pushReplacementNamed(context, '/');
-          } else if (await widget.slide.onGoToNextSlide(context)) {
-            ref.read(currentSlideProvider).value = widget.slide.createNextSlide()!;
-          }
-        },
+        onPressed: () => ref.read(currentSlideProvider.notifier).goToNextSlide(context),
         icon: Icon(
           widget.slide.isLastSlide ? Icons.check : Icons.chevron_right,
         ),
