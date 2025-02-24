@@ -56,7 +56,7 @@ import WidgetKit
             } else if status == errSecItemNotFound || status == errSecNoSuchAttr {
                 result(nil)
             } else {
-                result(FlutterError(code: "generic_error", message: nil, details: nil))
+                result(FlutterError(code: "generic_error", message: "Wrong status : \(status).", details: nil))
             }
         case "account.create":
             var query: [String: Any] = createQuery()
@@ -66,7 +66,7 @@ import WidgetKit
             if status == errSecSuccess {
                 result(nil)
             } else {
-                result(FlutterError(code: "generic_error", message: nil, details: nil))
+                result(FlutterError(code: "generic_error", message: "Wrong status : \(status).", details: nil))
             }
         case "account.remove":
             let query: [String: Any] = createQuery()
@@ -74,7 +74,7 @@ import WidgetKit
             if status == errSecSuccess || status == errSecItemNotFound || status == errSecNoSuchAttr {
                 result(nil)
             } else {
-                result(FlutterError(code: "generic_error", message: nil, details: nil))
+                result(FlutterError(code: "generic_error", message: "Wrong status : \(status).", details: nil))
             }
         case "sync.get":
             result(getLessonsFileLastModificationTime())
@@ -101,7 +101,7 @@ import WidgetKit
                 }
                 result(getLessonsFileLastModificationTime())
             } catch {
-                result(error)
+                result(FlutterError(code: "generic_error", message: "Error : \(error).", details: error))
             }
         case "ios.addReminder":
             let eventStore = EKEventStore()

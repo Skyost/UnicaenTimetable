@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:eventide/eventide.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,12 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
   /// The settings key.
   static const String settingsKey = 'unicaenDeviceCalendar';
 
+  /// The Eventide account.
+  static final ETAccount _account = ETAccount(
+    name: 'Unicaen',
+    type: Platform.isAndroid ? 'LOCAL' : 'local',
+  );
+
   @override
   FutureOr<ETCalendar?> build() async {
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
@@ -81,6 +88,7 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     calendar = await eventide.createCalendar(
       title: calendarName,
       color: calendarColor,
+      account: _account,
     );
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
     await preferences.setString(settingsKey, calendar.id);
@@ -98,5 +106,22 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     eventide.deleteCalendar(calendarId: calendar.id);
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
     await preferences.remove(settingsKey);
+  }
+}
+
+/// Contains various useful methods for working with Eventide.
+extension Events on ETCalendar? {
+  /// Retrieves events from the calendar.
+  Future<List<ETEvent>> retrieveEvents() async {
+    if (this?.id == null) {
+      return [];
+    }
+    DateTime today = DateTime.now().yearMonthDay;
+    Eventide eventide = Eventide();
+    return await eventide.retrieveEvents(
+      calendarId: this!.id,
+      startDate: today.subtract(const Duration(days: 365)),
+      endDate: today.add(const Duration(days: 365)),
+    );
   }
 }

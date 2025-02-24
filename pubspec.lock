@@ -268,10 +268,11 @@ packages:
   eventide:
     dependency: "direct main"
     description:
-      name: eventide
-      sha256: e0ef33c36ea2bdddc16899c2f693b56f38390ce0571835e9817fb791b2972050
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: account
+      resolved-ref: "0488e82c77ea2f2ba0830ecd82a2fac3a8ac8a92"
+      url: "https://github.com/sncf-connect-tech/eventide"
+    source: git
     version: "0.1.0"
   fake_async:
     dependency: transitive
@@ -1094,10 +1095,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: daf97c9d80197ed7b619040e86c8ab9a9dad285e7671ee7390f9180cc828a51e
+      sha256: b89e6e24d1454e149ab20fbb225af58660f0c0bf4475544650700d8e2da54aef
       url: "https://pub.dev"
     source: hosted
-    version: "5.10.1"
+    version: "5.11.0"
   win32_registry:
     dependency: transitive
     description:
