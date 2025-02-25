@@ -341,8 +341,12 @@ class MultiChoicePickerDialog<T> extends _InputDialog<T> {
 
 /// The available week input dialog state.
 class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoicePickerDialog<T>> {
-  /// The currently selected week index.
+  /// The current value index.
   late int currentValueIndex = widget.initialValue == null ? -1 : widget.values.indexOf(widget.initialValue!);
+
+  /// The item scroll controller.
+  late ItemScrollController itemScrollController = ItemScrollController()
+    ..jumpTo(index: math.max(0, currentValueIndex));
 
   @override
   Widget buildForm(BuildContext context) {
@@ -356,6 +360,7 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: ScrollablePositionedList.builder(
+        itemScrollController: itemScrollController,
         itemBuilder: (_, position) {
           T value = widget.values[position];
           return ListTile(
@@ -369,7 +374,6 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
           );
         },
         itemCount: widget.values.length,
-        initialScrollIndex: math.max(0, currentValueIndex),
       ),
     );
   }
