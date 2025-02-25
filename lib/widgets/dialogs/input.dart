@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -345,8 +343,17 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
   late int currentValueIndex = widget.initialValue == null ? -1 : widget.values.indexOf(widget.initialValue!);
 
   /// The item scroll controller.
-  late ItemScrollController itemScrollController = ItemScrollController()
-    ..jumpTo(index: math.max(0, currentValueIndex));
+  late ItemScrollController itemScrollController = ItemScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && currentValueIndex >= 0) {
+        itemScrollController.jumpTo(index: currentValueIndex);
+      }
+    });
+  }
 
   @override
   Widget buildForm(BuildContext context) {
