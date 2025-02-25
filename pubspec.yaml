@@ -21,7 +21,7 @@ dependencies:
   share_plus: ^10.1.4
   rate_my_app: ^2.3.1
   url_launcher: ^6.3.1
-  package_info_plus: ^8.2.1
+  package_info_plus: ^8.3.0
   device_info_plus: ^11.3.0
   scrollable_positioned_list: ^0.3.8
   flutter_riverpod: ^2.6.1
@@ -32,10 +32,7 @@ dependencies:
   drift_flutter: ^0.2.4
   slang: ^4.4.1
   slang_flutter: ^4.4.0
-  eventide:
-    git:
-      url: https://github.com/sncf-connect-tech/eventide
-      ref: account
+  eventide: ^0.2.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
