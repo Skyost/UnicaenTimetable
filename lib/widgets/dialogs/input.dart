@@ -370,7 +370,6 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
         },
         itemCount: widget.values.length,
         initialScrollIndex: math.max(0, currentValueIndex),
-        shrinkWrap: true,
       ),
     );
   }

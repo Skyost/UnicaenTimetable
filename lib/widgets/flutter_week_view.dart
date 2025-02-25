@@ -211,7 +211,7 @@ class WeekPickerButton extends ConsumerWidget {
                   emptyMessage: translations.dialogs.weekPicker.empty,
                   values: snapshot.requireData,
                   initialValue: monday,
-                  valueToString: (date) => '${formatter.format(monday)} — ${formatter.format(monday.atSunday)}',
+                  valueToString: (date) => '${formatter.format(date.atMonday)} — ${formatter.format(date.atSunday)}',
                 );
                 if (selectedDate != null) {
                   ref.read(dateProvider.notifier).changeDate(selectedDate);
