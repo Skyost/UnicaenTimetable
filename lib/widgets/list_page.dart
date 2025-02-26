@@ -75,7 +75,7 @@ class _ListPageHeaderState extends ConsumerState<ListPageHeader> with Brightness
                     data: Theme.of(context).copyWith(
                       iconTheme: Theme.of(context).iconTheme.copyWith(
                             color: defaultTextColor,
-                            size: math.min(100, MediaQuery.of(context).size.width),
+                            size: math.min(100, MediaQuery.sizeOf(context).width),
                           ),
                     ),
                     child: widget.icon!,

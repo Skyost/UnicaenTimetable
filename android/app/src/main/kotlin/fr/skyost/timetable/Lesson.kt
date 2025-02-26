@@ -8,7 +8,7 @@ import io.flutter.util.PathUtils
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -50,6 +50,7 @@ data class Lesson(
             if (!file.exists()) {
                 return listOf()
             }
+            val offset = ZonedDateTime.now().offset
             val targetKey = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
             val json: JsonObject = JsonParser.`object`().from(file.readText())
             for (key: String in json.keys) {
@@ -66,12 +67,12 @@ data class Lesson(
                             LocalDateTime.ofEpochSecond(
                                 jsonLesson.getLong("start"),
                                 0,
-                                ZoneOffset.UTC
+                                offset
                             ),
                             LocalDateTime.ofEpochSecond(
                                 jsonLesson.getLong("end"),
                                 0,
-                                ZoneOffset.UTC
+                                offset
                             ),
                             jsonLesson.getString("location")
                         )

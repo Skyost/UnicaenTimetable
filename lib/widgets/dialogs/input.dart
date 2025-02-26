@@ -365,7 +365,7 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
     }
 
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.sizeOf(context).width,
       child: ScrollablePositionedList.builder(
         itemScrollController: itemScrollController,
         itemBuilder: (_, position) {

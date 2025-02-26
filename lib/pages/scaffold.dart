@@ -38,10 +38,7 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
       RateMyApp rateMyApp = RateMyApp();
       await rateMyApp.init();
       if (rateMyApp.shouldOpenDialog && mounted) {
-        rateMyApp.showRateDialog(
-          context,
-          ignoreNativeDialog: false,
-        );
+        rateMyApp.showRateDialog(context);
       }
     });
     WidgetsBinding.instance.addObserver(this);
@@ -142,7 +139,7 @@ class _Drawer extends ConsumerWidget {
     List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? [];
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
         children: [
           const DrawerHeader(),
           DrawerSectionTitle(title: translations.scaffold.drawer.home),

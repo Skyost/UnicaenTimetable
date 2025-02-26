@@ -84,7 +84,7 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
 
   /// Calculates a day view width.
   double calculateDayViewWidth(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.sizeOf(context).width;
 
     if (width > 450) {
       return width / 3;

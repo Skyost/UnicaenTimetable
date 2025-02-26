@@ -63,7 +63,10 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
       onTap: () async {
         String? locale = TranslationProvider.of(context).flutterLocale.languageCode;
         DateFormat formatter = DateFormat.Hm(locale);
-        String description = '${formatter.format(event.start)} — ${formatter.format(event.end)}\n\n${event.description}';
+        String description = '${formatter.format(event.start)} — ${formatter.format(event.end)}';
+        if (event.description.trim().isNotEmpty) {
+          description += '\n\n${event.description}';
+        }
         await showDialog(
         context: context,
         builder: (_) => AlertDialog(

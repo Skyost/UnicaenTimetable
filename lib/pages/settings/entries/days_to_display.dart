@@ -67,7 +67,7 @@ class _SidebarDaysSettingsEntryDialogContentState extends State<_SidebarDaysSett
     return AlertDialog(
       title: Text(translations.settings.application.daysToDisplay),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.sizeOf(context).width,
         child: ListView.builder(
           itemCount: DateTime.daysPerWeek,
           itemBuilder: (context, position) => ListTile(

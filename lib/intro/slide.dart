@@ -177,8 +177,8 @@ class _ImageWidgetState extends ConsumerState<_ImageWidget> with BrightnessListe
         shape: BoxShape.circle,
         color: currentBrightness == Brightness.light ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surfaceBright,
       ),
-      height: math.min(widget.size, MediaQuery.of(context).size.width - 20),
-      width: math.min(widget.size, MediaQuery.of(context).size.width - 20),
+      height: math.min(widget.size, MediaQuery.sizeOf(context).width - 20),
+      width: math.min(widget.size, MediaQuery.sizeOf(context).width - 20),
       padding: const EdgeInsets.all(50),
       child: FadeInWidget(
         delay: const Duration(milliseconds: 900),

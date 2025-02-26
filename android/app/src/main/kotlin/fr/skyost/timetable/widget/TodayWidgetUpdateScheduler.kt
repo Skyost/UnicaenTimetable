@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import fr.skyost.timetable.Lesson
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
 
@@ -63,12 +63,13 @@ class TodayWidgetUpdateScheduler {
 
         private fun scheduleAt(context: Context, widgetId: Int, date: LocalDateTime) {
             // With the alarm manager, we schedule our update.
+            val offset = ZonedDateTime.now().offset
             val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, TodayWidgetProvider::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             intent.putExtra(TodayWidgetProvider.INTENT_REFRESH_WIDGETS, true)
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-            manager[AlarmManager.RTC_WAKEUP, date.toEpochSecond(ZoneOffset.UTC) * 1000] =
+            manager[AlarmManager.RTC_WAKEUP, date.toEpochSecond(offset) * 1000] =
                 PendingIntent.getBroadcast(
                     context,
                     TodayWidgetProvider.REFRESH_REQUEST,
