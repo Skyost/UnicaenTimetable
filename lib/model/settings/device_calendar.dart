@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:eventide/eventide.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +56,11 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
   /// The device calendar name.
   static const String calendarName = 'Unicaen';
 
+  /// The Eventide account.
+  static final String accountName = 'Unicaen';
+
   /// The settings key.
   static const String settingsKey = 'unicaenDeviceCalendar';
-
-  /// The Eventide account.
-  static final ETAccount _account = ETAccount(
-    name: 'Unicaen',
-    type: Platform.isAndroid ? 'LOCAL' : 'local',
-  );
 
   @override
   FutureOr<ETCalendar?> build() async {
@@ -74,7 +70,7 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
       return null;
     }
     Eventide eventide = Eventide();
-    List<ETCalendar> calendars = await eventide.retrieveCalendars();
+    List<ETCalendar> calendars = await eventide.retrieveCalendars(fromLocalAccountName: accountName);
     return calendars.firstWhereOrNull((calendar) => calendar.id == calendarId);
   }
 
@@ -88,7 +84,7 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     calendar = await eventide.createCalendar(
       title: calendarName,
       color: calendarColor,
-      account: _account,
+      localAccountName: accountName,
     );
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
     await preferences.setString(settingsKey, calendar.id);

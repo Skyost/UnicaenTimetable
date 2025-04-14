@@ -39,11 +39,9 @@ Future<void> main() async {
 /// The headless synchronization task.
 @pragma('vm:entry-point')
 Future<void> headlessSyncTask(String taskId) async {
-  print('yo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   ProviderContainer providerContainer = ProviderContainer();
   await providerContainer.read(lessonRepositoryProvider.notifier).refreshLessons();
   providerContainer.dispose();
-  print('yo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   BackgroundFetch.finish(taskId);
 }
 

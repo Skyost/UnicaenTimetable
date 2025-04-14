@@ -62,6 +62,7 @@ import WidgetKit
             var query: [String: Any] = createQuery()
             query[kSecAttrAccount as String] = arguments["username"] as! String
             query[kSecValueData as String] = (arguments["password"] as! String).data(using: .utf8)!
+            query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
             let status = SecItemAdd(query as CFDictionary, nil)
             if status == errSecSuccess {
                 result(nil)

@@ -32,7 +32,7 @@ class SettingsEntry<T> extends AutoDisposeAsyncNotifier<T> {
   FutureOr<T> build() async {
     SharedPreferencesWithCache preferences = await ref.watch(sharedPreferencesProvider.future);
     if (preferences.containsKey(key)) {
-      return await loadFromPreferences(preferences);
+      return loadFromPreferences(preferences);
     }
     return defaultValue;
   }
