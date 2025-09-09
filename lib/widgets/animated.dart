@@ -45,11 +45,11 @@ class _FadeInWidgetState extends State<FadeInWidget> {
 
   @override
   Widget build(BuildContext context) => AnimatedOpacity(
-        opacity: opacity,
-        duration: widget.duration,
-        curve: widget.curve,
-        child: widget.child,
-      );
+    opacity: opacity,
+    duration: widget.duration,
+    curve: widget.curve,
+    child: widget.child,
+  );
 }
 
 /// A small scale animation.
@@ -130,15 +130,15 @@ class _RepeatingScaleAnimationState extends State<RepeatingScaleAnimation> with 
 
   /// Creates the grow animation sequence.
   Animatable<double> createGrowSequence() => TweenSequence(
-        [
-          TweenSequenceItem(
-            tween: Tween<double>(begin: 0.9, end: 1),
-            weight: 1,
-          ),
-          TweenSequenceItem(
-            tween: Tween<double>(begin: 1, end: 0.9),
-            weight: 1,
-          ),
-        ],
-      );
+    [
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.9, end: 1),
+        weight: 1,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1, end: 0.9),
+        weight: 1,
+      ),
+    ],
+  );
 }

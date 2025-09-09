@@ -9,9 +9,9 @@ class CalendarServerSettingsEntryWidget extends StringSettingsEntryWidget<Server
   CalendarServerSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: serverSettingsEntryProvider,
-          title: translations.settings.calendar.server,
-          validator: TextInputDialog.validateNotEmpty,
-          hint: kDefaultServer,
-        );
+         provider: serverSettingsEntryProvider,
+         title: translations.settings.calendar.server,
+         validator: TextInputDialog.validateNotEmpty,
+         hint: kDefaultServer,
+       );
 }

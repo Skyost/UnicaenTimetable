@@ -20,10 +20,10 @@ class HomePageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-        page: HomePage(),
-        title: translations.home.title,
-        icon: const Icon(Icons.home),
-      );
+    page: HomePage(),
+    title: translations.home.title,
+    icon: const Icon(Icons.home),
+  );
 }
 
 /// The home page app bar.
@@ -35,11 +35,11 @@ class HomePageAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => AppBar(
-        title: Text(translations.home.title),
-        actions: [
-          _AddButton(),
-        ],
-      );
+    title: Text(translations.home.title),
+    actions: [
+      _AddButton(),
+    ],
+  );
 }
 
 /// The add button.
@@ -99,20 +99,20 @@ class HomePageWidget extends ConsumerWidget {
             itemCount: cards.length,
             itemBuilder: (context, index) => switch (cards[index]) {
               HomeCard.synchronizationStatus => SynchronizationStatusCard(
-                  key: ValueKey(cards[index]),
-                ),
+                key: ValueKey(cards[index]),
+              ),
               HomeCard.currentLesson => CurrentLessonCard(
-                  key: ValueKey(cards[index]),
-                ),
+                key: ValueKey(cards[index]),
+              ),
               HomeCard.nextLesson => NextLessonCard(
-                  key: ValueKey(cards[index]),
-                ),
+                key: ValueKey(cards[index]),
+              ),
               HomeCard.theme => ThemeCard(
-                  key: ValueKey(cards[index]),
-                ),
+                key: ValueKey(cards[index]),
+              ),
               HomeCard.info => InfoCard(
-                  key: ValueKey(cards[index]),
-                ),
+                key: ValueKey(cards[index]),
+              ),
             },
             proxyDecorator: (widget, index, animation) => widget,
           );

@@ -62,23 +62,23 @@ abstract class CheckboxSettingsEntryWidget<T extends SettingsEntry<U>, U> extend
 
   /// Creates the list tile widget.
   Widget createListTile(BuildContext context, WidgetRef ref, {U? value, bool enabled = true}) => ListTile(
-        leading: icon == null ? null : Icon(icon),
-        title: Text(title),
-        subtitle: buildSubtitle(context, ref, value),
-        enabled: enabled,
-        contentPadding: contentPadding,
-        onTap: () => changeValue(context, ref, !isEnabled(value)),
-        trailing: Checkbox(
-          value: isEnabled(value),
-          onChanged: enabled
-              ? (value) {
-                  if (value != null) {
-                    changeValue(context, ref, value);
-                  }
-                }
-              : null,
-        ),
-      );
+    leading: icon == null ? null : Icon(icon),
+    title: Text(title),
+    subtitle: buildSubtitle(context, ref, value),
+    enabled: enabled,
+    contentPadding: contentPadding,
+    onTap: () => changeValue(context, ref, !isEnabled(value)),
+    trailing: Checkbox(
+      value: isEnabled(value),
+      onChanged: enabled
+          ? (value) {
+              if (value != null) {
+                changeValue(context, ref, value);
+              }
+            }
+          : null,
+    ),
+  );
 
   /// Whether the checkbox is enabled.
   bool isEnabled(U? value);
@@ -129,26 +129,26 @@ abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends 
 
   /// Creates the list tile widget.
   Widget createListTile(BuildContext context, WidgetRef ref, {U? value, bool enabled = true}) => ListTile(
-        leading: icon == null ? null : Icon(icon),
-        title: Text(title),
-        subtitle: buildSubtitle(context, ref, value),
-        enabled: enabled,
-        contentPadding: contentPadding,
-        onTap: () async {
-          U? newValue = await getValue(context, value);
-          if (newValue != null) {
-            await changeValue(ref, newValue);
-          }
-        },
-      );
+    leading: icon == null ? null : Icon(icon),
+    title: Text(title),
+    subtitle: buildSubtitle(context, ref, value),
+    enabled: enabled,
+    contentPadding: contentPadding,
+    onTap: () async {
+      U? newValue = await getValue(context, value);
+      if (newValue != null) {
+        await changeValue(ref, newValue);
+      }
+    },
+  );
 
   /// Prompts the user for a new value.
   Future<U?> getValue(BuildContext context, U? value);
 
   /// Builds the subtitle widget.
   Widget? buildSubtitle(BuildContext context, WidgetRef ref, U? value) => Text(
-        value == null || value.toString().isEmpty ? translations.common.other.empty : value.toString(),
-      );
+    value == null || value.toString().isEmpty ? translations.common.other.empty : value.toString(),
+  );
 
   /// Changes the value.
   Future<void> changeValue(WidgetRef ref, U newValue) async {
@@ -185,12 +185,12 @@ class IntegerSettingsEntryWidget<T extends SettingsEntry<int>> extends DialogSet
 
   @override
   Future<int?> getValue(BuildContext context, int? value) => IntInputDialog.getValue(
-        context,
-        min: min,
-        max: max,
-        divisions: divisions,
-        initialValue: value,
-      );
+    context,
+    min: min,
+    max: max,
+    divisions: divisions,
+    initialValue: value,
+  );
 }
 
 /// Allows to configure text values.
@@ -215,9 +215,9 @@ class StringSettingsEntryWidget<T extends SettingsEntry<String>> extends DialogS
 
   @override
   Future<String?> getValue(BuildContext context, String? value) => TextInputDialog.getValue(
-        context,
-        initialValue: value,
-        validator: validator,
-        hint: hint,
-      );
+    context,
+    initialValue: value,
+    validator: validator,
+    hint: hint,
+  );
 }

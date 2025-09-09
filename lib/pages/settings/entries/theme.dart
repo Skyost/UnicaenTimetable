@@ -15,11 +15,11 @@ class ThemeSettingsEntryWidget extends ConsumerWidget {
     AsyncValue<ThemeMode> theme = ref.watch(themeSettingsEntryProvider);
     return ListTile(
       enabled: theme.hasValue,
-      title: DropdownButtonFormField<ThemeMode>(
+      title: Text(translations.settings.application.brightness.title),
+      subtitle: DropdownButton<ThemeMode>(
         value: theme.valueOrNull,
-        decoration: InputDecoration(
-          labelText: translations.settings.application.brightness.title,
-        ),
+        isExpanded: true,
+        padding: const EdgeInsets.only(right: 12),
         items: [
           for (ThemeMode theme in ThemeMode.values)
             if (translations.settings.application.brightness.values.containsKey(theme.name))

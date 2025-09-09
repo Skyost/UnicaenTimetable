@@ -82,8 +82,8 @@ class _WaitScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: CenteredCircularProgressIndicator(
-          message: message ?? translations.common.other.pleaseWait,
-        ),
-      );
+    body: CenteredCircularProgressIndicator(
+      message: message ?? translations.common.other.pleaseWait,
+    ),
+  );
 }

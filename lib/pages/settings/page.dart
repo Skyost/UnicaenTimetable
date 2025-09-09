@@ -23,10 +23,10 @@ class SettingsPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-        page: SettingsPage(),
-        title: translations.settings.title,
-        icon: const Icon(Icons.settings),
-      );
+    page: SettingsPage(),
+    title: translations.settings.title,
+    icon: const Icon(Icons.settings),
+  );
 }
 
 /// The settings page app bar.
@@ -38,8 +38,8 @@ class SettingsPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-        title: Text(translations.settings.title),
-      );
+    title: Text(translations.settings.title),
+  );
 }
 
 /// The settings page.
@@ -54,38 +54,38 @@ class SettingsPageWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Theme(
-        data: Theme.of(context).copyWith(
-          buttonTheme: const ButtonThemeData(
-            alignedDropdown: false,
-          ),
+    data: Theme.of(context).copyWith(
+      buttonTheme: const ButtonThemeData(
+        alignedDropdown: false,
+      ),
+    ),
+    child: ListView(
+      children: [
+        _SettingsPageSectionTitle(
+          icon: Icons.phone_android,
+          title: translations.settings.application.title,
         ),
-        child: ListView(
-          children: [
-            _SettingsPageSectionTitle(
-              icon: Icons.phone_android,
-              title: translations.settings.application.title,
-            ),
-            SyncWithDeviceCalendarSettingsEntryWidget(),
-            const ThemeSettingsEntryWidget(),
-            const DaysToDisplaySettingsEntryWidget(),
-            ColorLessonsAutomaticallySettingsEntryWidget(),
-            OpenTodayAutomaticallySettingsEntryWidget(),
-            _SettingsPageSectionTitle(
-              icon: Icons.person,
-              title: translations.settings.account.title,
-            ),
-            const SwitchAccountSettingsEntryWidget(),
-            _SettingsPageSectionTitle(
-              icon: Icons.wifi,
-              title: translations.settings.calendar.title,
-            ),
-            CalendarIntervalSettingsEntryWidget(),
-            CalendarServerSettingsEntryWidget(),
-            CalendarNameSettingsEntryWidget(),
-            CalendarAdditionalParametersSettingsEntryWidget(),
-          ],
+        SyncWithDeviceCalendarSettingsEntryWidget(),
+        const ThemeSettingsEntryWidget(),
+        const DaysToDisplaySettingsEntryWidget(),
+        ColorLessonsAutomaticallySettingsEntryWidget(),
+        OpenTodayAutomaticallySettingsEntryWidget(),
+        _SettingsPageSectionTitle(
+          icon: Icons.person,
+          title: translations.settings.account.title,
         ),
-      );
+        const SwitchAccountSettingsEntryWidget(),
+        _SettingsPageSectionTitle(
+          icon: Icons.wifi,
+          title: translations.settings.calendar.title,
+        ),
+        CalendarIntervalSettingsEntryWidget(),
+        CalendarServerSettingsEntryWidget(),
+        CalendarNameSettingsEntryWidget(),
+        CalendarAdditionalParametersSettingsEntryWidget(),
+      ],
+    ),
+  );
 }
 
 /// A settings section title.

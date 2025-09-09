@@ -26,13 +26,13 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
     AsyncValue<List<LessonWithColor>> lessons = queryLessons();
     return switch (lessons) {
       AsyncData<List<LessonWithColor>>(:final value) => buildChild(
-          value.map(FlutterWeekViewEventWithLesson.fromLesson).toList(),
-        ),
+        value.map(FlutterWeekViewEventWithLesson.fromLesson).toList(),
+      ),
       AsyncError(:final error) => Center(
-          child: Text(
-            error.toString(),
-          ),
+        child: Text(
+          error.toString(),
         ),
+      ),
       _ => const CenteredCircularProgressIndicator(),
     };
   }
@@ -68,45 +68,45 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
           description += '\n\n${event.description}';
         }
         await showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text(event.title),
-          scrollable: true,
-          content: Text(description),
-          actions: [
-            if (Platform.isIOS)
-              TextButton(
-                onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
-                  'ios.addReminder',
-                  {
-                    'title': event.title,
-                    'year': event.start.year,
-                    'month': event.start.month,
-                    'day': event.start.day,
-                    'hour': event.start.hour,
-                    'minute': event.start.minute,
-                  },
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(event.title),
+            scrollable: true,
+            content: Text(description),
+            actions: [
+              if (Platform.isIOS)
+                TextButton(
+                  onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
+                    'ios.addReminder',
+                    {
+                      'title': event.title,
+                      'year': event.start.year,
+                      'month': event.start.month,
+                      'day': event.start.day,
+                      'hour': event.start.hour,
+                      'minute': event.start.minute,
+                    },
+                  ),
+                  child: Text(translations.dialogs.lessonInfo.addReminder),
                 ),
-                child: Text(translations.dialogs.lessonInfo.addReminder),
-              ),
-            if (Platform.isAndroid)
-              TextButton(
-                onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
-                  'android.addAlarm',
-                  {
-                    'title': event.title,
-                    'hour': event.start.hour,
-                    'minute': event.start.minute,
-                  },
+              if (Platform.isAndroid)
+                TextButton(
+                  onPressed: () => UnicaenTimetableRoot.channel.invokeMethod(
+                    'android.addAlarm',
+                    {
+                      'title': event.title,
+                      'hour': event.start.hour,
+                      'minute': event.start.minute,
+                    },
+                  ),
+                  child: Text(translations.dialogs.lessonInfo.addAlarm),
                 ),
-                child: Text(translations.dialogs.lessonInfo.addAlarm),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(MaterialLocalizations.of(context).closeButtonLabel),
               ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-            ),
-          ],
-        ),
+            ],
+          ),
         );
       },
       child: FlutterWeekViewEventWidget<FlutterWeekViewEventWithLesson>(
@@ -121,23 +121,23 @@ abstract class FlutterWeekViewWidgetState<T extends ConsumerStatefulWidget> exte
 
   /// Creates the Flutter Week View day view style.
   DayViewStyle createDayViewStyle(DateTime date) => DayViewStyle(
-        backgroundColor: Utils.isToday(date) ? (currentBrightness == Brightness.light ? const Color(0xFFE3F5FF) : Theme.of(context).colorScheme.surfaceBright) : Theme.of(context).colorScheme.surface,
-        backgroundRulesColor: Colors.black12,
-      );
+    backgroundColor: Utils.isToday(date) ? (currentBrightness == Brightness.light ? const Color(0xFFE3F5FF) : Theme.of(context).colorScheme.surfaceBright) : Theme.of(context).colorScheme.surface,
+    backgroundRulesColor: Colors.black12,
+  );
 
   /// Creates the day bar style.
   DayBarStyle createDayBarStyle(DateTime date, DateFormatter dateFormatter) => DayBarStyle.fromDate(
-        date: date,
-        textStyle: TextStyle(color: Utils.isToday(date) ? (currentBrightness == Brightness.light ? Colors.indigo : Colors.white) : null),
-        color: currentBrightness == Brightness.light ? null : Theme.of(context).colorScheme.surface,
-        dateFormatter: dateFormatter,
-      );
+    date: date,
+    textStyle: TextStyle(color: Utils.isToday(date) ? (currentBrightness == Brightness.light ? Colors.indigo : Colors.white) : null),
+    color: currentBrightness == Brightness.light ? null : Theme.of(context).colorScheme.surface,
+    dateFormatter: dateFormatter,
+  );
 
   /// Creates the hours column style.
   HourColumnStyle createHoursColumnStyle() => HourColumnStyle(
-        color: currentBrightness == Brightness.light ? Colors.white : Theme.of(context).colorScheme.surface,
-        textStyle: Theme.of(context).textTheme.bodySmall,
-      );
+    color: currentBrightness == Brightness.light ? Colors.white : Theme.of(context).colorScheme.surface,
+    textStyle: Theme.of(context).textTheme.bodySmall,
+  );
 
   /// Formats a date.
   String formatDate(BuildContext context, int year, int month, int day) {
@@ -165,13 +165,13 @@ class FlutterWeekViewEventWithLesson extends FlutterWeekViewEventWithValue<Lesso
 
   /// Creates a new flutter week view event instance.
   FlutterWeekViewEventWithLesson.fromLesson(LessonWithColor lesson)
-      : this._(
-          value: lesson,
-          title: lesson.name,
-          description: lesson.description ?? '',
-          start: lesson.dateTime.start,
-          end: lesson.dateTime.end,
-        );
+    : this._(
+        value: lesson,
+        title: lesson.name,
+        description: lesson.description ?? '',
+        start: lesson.dateTime.start,
+        end: lesson.dateTime.end,
+      );
 
   @override
   FlutterWeekViewEventWithLesson copyWith({
@@ -180,14 +180,13 @@ class FlutterWeekViewEventWithLesson extends FlutterWeekViewEventWithValue<Lesso
     DateTime? start,
     DateTime? end,
     LessonWithColor? value,
-  }) =>
-      FlutterWeekViewEventWithLesson._(
-        title: title ?? this.title,
-        description: description ?? this.description,
-        start: start ?? this.start,
-        end: end ?? this.end,
-        value: value ?? this.value,
-      );
+  }) => FlutterWeekViewEventWithLesson._(
+    title: title ?? this.title,
+    description: description ?? this.description,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    value: value ?? this.value,
+  );
 }
 
 /// A button that allows to show the week picker.

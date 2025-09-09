@@ -58,14 +58,14 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _AppBar(),
-        ),
-        body: _Page(),
-        drawer: _Drawer(),
-        floatingActionButton: _FloatingButton(),
-      );
+    appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: _AppBar(),
+    ),
+    body: _Page(),
+    drawer: _Drawer(),
+    floatingActionButton: _FloatingButton(),
+  );
 
   @override
   void dispose() {
@@ -109,8 +109,8 @@ class _AppBar extends ConsumerWidget {
       BugsImprovementsPage() => const BugsImprovementsPageAppBar(),
       AboutPage() => const AboutPageAppBar(),
       _ => AppBar(
-          title: Text(translations.common.appName),
-        ),
+        title: Text(translations.common.appName),
+      ),
     };
   }
 }
@@ -162,9 +162,9 @@ class _Drawer extends ConsumerWidget {
 class _FloatingButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => FloatingActionButton(
-        onPressed: () async => await downloadLessons(ref),
-        tooltip: translations.scaffold.floatingButtonTooltip,
-        elevation: 1,
-        child: const Icon(Icons.sync),
-      );
+    onPressed: () async => await downloadLessons(ref),
+    tooltip: translations.scaffold.floatingButtonTooltip,
+    elevation: 1,
+    child: const Icon(Icons.sync),
+  );
 }

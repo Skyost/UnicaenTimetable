@@ -27,8 +27,7 @@ class SynchronizationStatusCard extends ConsumerWidget {
       subtitle: switch (status) {
         _Status.never => translations.home.synchronizationStatus.never,
         _Status.loading => translations.common.other.pleaseWait,
-        _Status.bad ||
-        _Status.good =>
+        _Status.bad || _Status.good =>
           '${DateFormat.yMd(TranslationProvider.of(context).locale.languageCode).add_Hms().format(lastModification.value!)}\n${status == _Status.bad ? translations.home.synchronizationStatus.bad : translations.home.synchronizationStatus.good}',
       },
       onTap: () async => await downloadLessons(ref),

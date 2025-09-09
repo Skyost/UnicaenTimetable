@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:eventide/eventide.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,29 +15,23 @@ final syncWithDeviceCalendarSettingsEntryProvider = AsyncNotifierProvider.autoDi
 class SyncWithDeviceCalendarSettingsEntry extends SettingsEntry<bool> {
   /// Creates a new device calendar settings entry instance.
   SyncWithDeviceCalendarSettingsEntry()
-      : super(
-          key: 'syncWithDeviceCalendar',
-          defaultValue: false,
-        );
-
-  @override
-  FutureOr<bool> build() async {
-    bool result = await super.build();
-    if (result) {
-      Eventide eventide = Eventide();
-      return await eventide.requestCalendarPermission();
-    }
-    return result;
-  }
+    : super(
+        key: 'syncWithDeviceCalendar',
+        defaultValue: false,
+      );
 
   @override
   Future<void> changeValue(bool value) async {
-    Eventide eventide = Eventide();
     if (value) {
-      bool result = await eventide.requestCalendarPermission();
-      if (result) {
-        await super.changeValue(value);
+      try {
         await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
+        await super.changeValue(value);
+      } catch (ex, stacktrace) {
+        if (kDebugMode) {
+          print(ex);
+          print(stacktrace);
+        }
+        if (ex is ETPermissionException) {}
       }
     } else {
       await super.changeValue(value);

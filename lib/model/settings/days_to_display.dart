@@ -20,10 +20,10 @@ final daysToDisplayEntryProvider = AsyncNotifierProvider.autoDispose<DaysToDispl
 class DaysToDisplaySettingsEntry extends SettingsEntry<List<int>> {
   /// Creates a new sidebar days settings entry instance.
   DaysToDisplaySettingsEntry()
-      : super(
-          key: 'daysToDisplay',
-          defaultValue: defaultDaysToDisplay,
-        );
+    : super(
+        key: 'daysToDisplay',
+        defaultValue: defaultDaysToDisplay,
+      );
 
   @override
   List<int> loadFromPreferences(SharedPreferencesWithCache preferences) {
@@ -35,11 +35,11 @@ class DaysToDisplaySettingsEntry extends SettingsEntry<List<int>> {
 
   @override
   Future<void> saveToPreferences(SharedPreferencesWithCache preferences, List<int> value) async => await preferences.setStringList(
-        key,
-        [
-          for (int i in value) i.toString(),
-        ],
-      );
+    key,
+    [
+      for (int i in value) i.toString(),
+    ],
+  );
 }
 
 /// Allows to work with week days.

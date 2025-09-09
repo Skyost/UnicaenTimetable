@@ -28,11 +28,11 @@ abstract class _InputDialog<T> extends ConsumerStatefulWidget {
 abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerState<T> {
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: widget.title == null ? null : Text(widget.title!),
-        contentPadding: widget.contentPadding,
-        content: buildForm(context),
-        actions: createActions(context),
-      );
+    title: widget.title == null ? null : Text(widget.title!),
+    contentPadding: widget.contentPadding,
+    content: buildForm(context),
+    actions: createActions(context),
+  );
 
   /// Builds the dialog form.
   Widget buildForm(BuildContext context);
@@ -42,21 +42,21 @@ abstract class _InputDialogState<V, T extends _InputDialog<V>> extends ConsumerS
 
   /// Creates the actions.
   List<Widget> createActions(BuildContext context) => [
-        createCancelButton(context),
-        createOkButton(context),
-      ];
+    createCancelButton(context),
+    createOkButton(context),
+  ];
 
   /// Creates the "Cancel" button.
   Widget createCancelButton(BuildContext context) => TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-      );
+    onPressed: () => Navigator.pop(context),
+    child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+  );
 
   /// Creates the "Ok" button.
   Widget createOkButton(BuildContext context, {bool? enabled}) => TextButton(
-        onPressed: enabled == true || enabled == null ? (() => Navigator.pop(context, value)) : null,
-        child: Text(MaterialLocalizations.of(context).okButtonLabel),
-      );
+    onPressed: enabled == true || enabled == null ? (() => Navigator.pop(context, value)) : null,
+    child: Text(MaterialLocalizations.of(context).okButtonLabel),
+  );
 }
 
 /// A text input dialog.
@@ -86,16 +86,15 @@ class TextInputDialog extends _InputDialog<String> {
     String? initialValue,
     FormFieldValidator<String>? validator,
     String? hint,
-  }) =>
-      showDialog<String?>(
-        context: context,
-        builder: (_) => TextInputDialog(
-          title: title,
-          initialValue: initialValue,
-          validator: validator,
-          hint: hint,
-        ),
-      );
+  }) => showDialog<String?>(
+    context: context,
+    builder: (_) => TextInputDialog(
+      title: title,
+      initialValue: initialValue,
+      validator: validator,
+      hint: hint,
+    ),
+  );
 
   /// Validates [value] if non empty.
   static String? validateNotEmpty(String? value) => value == null || value.trim().isEmpty ? translations.common.other.fieldEmpty : null;
@@ -111,20 +110,20 @@ class _TextInputDialogState extends _InputDialogState<String, TextInputDialog> {
 
   @override
   Widget buildForm(BuildContext context) => TextFormField(
-        controller: textEditingController,
-        validator: widget.validator,
-        decoration: widget.hint == null
-            ? null
-            : InputDecoration(
-                hintText: TextInputDialog.validateNotEmpty(widget.hint) == null ? widget.hint : translations.common.other.empty,
-              ),
-        autovalidateMode: widget.validator == null ? AutovalidateMode.disabled : AutovalidateMode.onUserInteraction,
-        onChanged: widget.validator == null
-            ? null
-            : ((value) {
-                setState(() => okEnabled = widget.validator!(value) == null);
-              }),
-      );
+    controller: textEditingController,
+    validator: widget.validator,
+    decoration: widget.hint == null
+        ? null
+        : InputDecoration(
+            hintText: TextInputDialog.validateNotEmpty(widget.hint) == null ? widget.hint : translations.common.other.empty,
+          ),
+    autovalidateMode: widget.validator == null ? AutovalidateMode.disabled : AutovalidateMode.onUserInteraction,
+    onChanged: widget.validator == null
+        ? null
+        : ((value) {
+            setState(() => okEnabled = widget.validator!(value) == null);
+          }),
+  );
 
   @override
   void dispose() {
@@ -174,17 +173,16 @@ class IntInputDialog extends _InputDialog<int> {
     required int min,
     required int max,
     required int divisions,
-  }) =>
-      showDialog<int?>(
-        context: context,
-        builder: (_) => IntInputDialog(
-          title: title,
-          initialValue: initialValue,
-          min: min,
-          max: max,
-          divisions: divisions,
-        ),
-      );
+  }) => showDialog<int?>(
+    context: context,
+    builder: (_) => IntInputDialog(
+      title: title,
+      initialValue: initialValue,
+      min: min,
+      max: max,
+      divisions: divisions,
+    ),
+  );
 }
 
 /// The integer input dialog state.
@@ -200,20 +198,20 @@ class _IntInputDialogState extends _InputDialogState<int, IntInputDialog> {
 
   @override
   Widget buildForm(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Slider(
-            min: widget.min.toDouble(),
-            max: widget.max.toDouble(),
-            divisions: widget.divisions,
-            value: currentValue.toDouble(),
-            onChanged: (value) {
-              setState(() => currentValue = value.toInt());
-            },
-          ),
-          Text(currentValue.toString())
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Slider(
+        min: widget.min.toDouble(),
+        max: widget.max.toDouble(),
+        divisions: widget.divisions,
+        value: currentValue.toDouble(),
+        onChanged: (value) {
+          setState(() => currentValue = value.toInt());
+        },
+      ),
+      Text(currentValue.toString()),
+    ],
+  );
 
   @override
   int get value => currentValue;
@@ -241,15 +239,14 @@ class ColorInputDialog extends _InputDialog<Color> {
     Color? resetColor,
     String? title,
     Color? initialValue,
-  }) =>
-      showDialog<Color?>(
-        context: context,
-        builder: (_) => ColorInputDialog(
-          resetColor: resetColor,
-          title: title,
-          initialValue: initialValue,
-        ),
-      );
+  }) => showDialog<Color?>(
+    context: context,
+    builder: (_) => ColorInputDialog(
+      resetColor: resetColor,
+      title: title,
+      initialValue: initialValue,
+    ),
+  );
 }
 
 /// The color input dialog state.
@@ -265,29 +262,29 @@ class _ColorInputDialogState extends _InputDialogState<Color, ColorInputDialog> 
 
   @override
   Widget buildForm(BuildContext context) => SingleChildScrollView(
-        child: ColorPicker(
-          pickerColor: currentColor,
-          onColorChanged: (color) {
-            setState(() => currentColor = color);
-          },
-          labelTypes: const [],
-        ),
-      );
+    child: ColorPicker(
+      pickerColor: currentColor,
+      onColorChanged: (color) {
+        setState(() => currentColor = color);
+      },
+      labelTypes: const [],
+    ),
+  );
 
   @override
   Color get value => currentColor;
 
   @override
   List<Widget> createActions(BuildContext context) => [
-        if (widget.resetColor != null)
-          TextButton(
-            onPressed: () {
-              setState(() => currentColor = widget.resetColor!);
-            },
-            child: Text(translations.dialogs.lessonInfo.resetColor),
-          ),
-        ...super.createActions(context),
-      ];
+    if (widget.resetColor != null)
+      TextButton(
+        onPressed: () {
+          setState(() => currentColor = widget.resetColor!);
+        },
+        child: Text(translations.dialogs.lessonInfo.resetColor),
+      ),
+    ...super.createActions(context),
+  ];
 }
 
 /// An available week input dialog.
@@ -310,8 +307,8 @@ class MultiChoicePickerDialog<T> extends _InputDialog<T> {
     required this.emptyMessage,
     this.valueToString,
   }) : super(
-          contentPadding: const EdgeInsets.symmetric(vertical: 24),
-        );
+         contentPadding: const EdgeInsets.symmetric(vertical: 24),
+       );
 
   @override
   ConsumerState createState() => _AvailableWeekInputDialogState<T>();
@@ -324,17 +321,16 @@ class MultiChoicePickerDialog<T> extends _InputDialog<T> {
     List<T>? values,
     required String emptyMessage,
     String Function(T)? valueToString,
-  }) =>
-      showDialog<T?>(
-        context: context,
-        builder: (_) => MultiChoicePickerDialog<T>(
-          title: title,
-          initialValue: initialValue,
-          values: values ?? [],
-          emptyMessage: emptyMessage,
-          valueToString: valueToString,
-        ),
-      );
+  }) => showDialog<T?>(
+    context: context,
+    builder: (_) => MultiChoicePickerDialog<T>(
+      title: title,
+      initialValue: initialValue,
+      values: values ?? [],
+      emptyMessage: emptyMessage,
+      valueToString: valueToString,
+    ),
+  );
 }
 
 /// The available week input dialog state.
@@ -366,21 +362,25 @@ class _AvailableWeekInputDialogState<T> extends _InputDialogState<T, MultiChoice
 
     return SizedBox(
       width: MediaQuery.sizeOf(context).width,
-      child: ScrollablePositionedList.builder(
-        itemScrollController: itemScrollController,
-        itemBuilder: (_, position) {
-          T value = widget.values[position];
-          return ListTile(
-            title: Text(widget.valueToString?.call(value) ?? value.toString()),
-            trailing: Radio<int>(
-              value: position,
-              groupValue: currentValueIndex,
-              onChanged: (_) => onTap(position),
-            ),
-            onTap: () => onTap(position),
-          );
+      child: RadioGroup<int>(
+        groupValue: currentValueIndex,
+        onChanged: (position) {
+          if (position != null) {
+            onTap(position);
+          }
         },
-        itemCount: widget.values.length,
+        child: ScrollablePositionedList.builder(
+          itemScrollController: itemScrollController,
+          itemBuilder: (_, position) {
+            T value = widget.values[position];
+            return ListTile(
+              title: Text(widget.valueToString?.call(value) ?? value.toString()),
+              trailing: Radio<int>(value: position),
+              onTap: () => onTap(position),
+            );
+          },
+          itemCount: widget.values.length,
+        ),
       ),
     );
   }

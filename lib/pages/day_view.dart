@@ -52,21 +52,21 @@ class _DayViewPageListTileIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Stack(
-        children: [
-          const Icon(Icons.square_rounded),
-          Positioned.fill(
-            child: Center(
-              child: Text(
-                day.toString(),
-                style: TextStyle(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
+    children: [
+      const Icon(Icons.square_rounded),
+      Positioned.fill(
+        child: Center(
+          child: Text(
+            day.toString(),
+            style: TextStyle(
+              color: Theme.of(context).scaffoldBackgroundColor,
             ),
+            textAlign: TextAlign.center,
           ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 }
 
 /// The about week view app bar.
@@ -123,9 +123,11 @@ class DayViewPageAppBar extends ConsumerWidget {
               builder.write('$lesson\n');
             }
             String content = builder.toString();
-            await Share.share(
-              content.substring(0, content.lastIndexOf('\n')),
-              sharePositionOrigin: position == null ? null : Rect.fromLTWH(position.dx, position.dy, 24, 40),
+            await SharePlus.instance.share(
+              ShareParams(
+                text: content.substring(0, content.lastIndexOf('\n')),
+                sharePositionOrigin: position == null ? null : Rect.fromLTWH(position.dx, position.dy, 24, 40),
+              ),
             );
           },
         ),

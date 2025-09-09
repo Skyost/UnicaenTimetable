@@ -8,8 +8,8 @@ class CalendarAdditionalParametersSettingsEntryWidget extends StringSettingsEntr
   CalendarAdditionalParametersSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: additionalParametersSettingsEntryProvider,
-          title: translations.settings.calendar.additionalParameters,
-          hint: kDefaultAdditionalParameters,
-        );
+         provider: additionalParametersSettingsEntryProvider,
+         title: translations.settings.calendar.additionalParameters,
+         hint: kDefaultAdditionalParameters,
+       );
 }

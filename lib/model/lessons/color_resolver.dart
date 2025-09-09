@@ -67,7 +67,7 @@ class LessonColorResolver extends AsyncNotifier<ColorResolver> {
     file.writeAsStringSync(
       jsonEncode(
         {
-          for (MapEntry<String, Color> entry in colors.entries) entry.key: entry.value.value,
+          for (MapEntry<String, Color> entry in colors.entries) entry.key: entry.value.toARGB32(),
         },
       ),
     );

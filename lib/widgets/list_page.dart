@@ -25,12 +25,12 @@ class ListPageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView(
-        children: [
-          if (header != null) header!,
-          if (body != null) body!,
-          if (footer != null) footer!,
-        ],
-      );
+    children: [
+      if (header != null) header!,
+      if (body != null) body!,
+      if (footer != null) footer!,
+    ],
+  );
 }
 
 /// The about page list header.
@@ -56,40 +56,40 @@ class ListPageHeader extends ConsumerStatefulWidget {
 class _ListPageHeaderState extends ConsumerState<ListPageHeader> with BrightnessListener {
   @override
   Widget build(BuildContext context) => Container(
-        color: Theme.of(context).appBarTheme.backgroundColor,
-        padding: const EdgeInsets.all(30),
-        child: DefaultTextStyle(
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: defaultTextColor,
-            fontSize: 30,
-            fontWeight: FontWeight.w300,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.icon != null)
-                SizedBox(
-                  height: 100,
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      iconTheme: Theme.of(context).iconTheme.copyWith(
-                            color: defaultTextColor,
-                            size: math.min(100, MediaQuery.sizeOf(context).width),
-                          ),
-                    ),
-                    child: widget.icon!,
+    color: Theme.of(context).appBarTheme.backgroundColor,
+    padding: const EdgeInsets.all(30),
+    child: DefaultTextStyle(
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: defaultTextColor,
+        fontSize: 30,
+        fontWeight: FontWeight.w300,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.icon != null)
+            SizedBox(
+              height: 100,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  iconTheme: Theme.of(context).iconTheme.copyWith(
+                    color: defaultTextColor,
+                    size: math.min(100, MediaQuery.sizeOf(context).width),
                   ),
                 ),
-              if (widget.title != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: widget.title!,
-                ),
-            ],
-          ),
-        ),
-      );
+                child: widget.icon!,
+              ),
+            ),
+          if (widget.title != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: widget.title!,
+            ),
+        ],
+      ),
+    ),
+  );
 
   /// The default text color.
   Color get defaultTextColor => currentBrightness == Brightness.light ? Colors.white : Theme.of(context).colorScheme.primary;
@@ -108,10 +108,10 @@ class ListPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: children,
-        ),
-      );
+    padding: const EdgeInsets.all(40),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: children,
+    ),
+  );
 }

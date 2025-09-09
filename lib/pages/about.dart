@@ -18,10 +18,10 @@ class AboutPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-        page: AboutPage(),
-        title: translations.about.title,
-        icon: const Icon(Icons.favorite),
-      );
+    page: AboutPage(),
+    title: translations.about.title,
+    icon: const Icon(Icons.favorite),
+  );
 }
 
 /// The about page app bar.
@@ -33,8 +33,8 @@ class AboutPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-        title: Text(translations.about.title),
-      );
+    title: Text(translations.about.title),
+  );
 }
 
 /// The about page widget.
@@ -46,63 +46,63 @@ class AboutPageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListPageWidget(
-        header: ListPageHeader(
-          icon: const Icon(Icons.favorite),
-          title: Text(
-            translations.common.appName,
+    header: ListPageHeader(
+      icon: const Icon(Icons.favorite),
+      title: Text(
+        translations.common.appName,
+      ),
+    ),
+    body: ListPageBody(
+      children: [
+        Text(translations.about.paragraphs.first),
+        Padding(
+          padding: const EdgeInsets.all(6),
+          child: SizedBox(
+            height: 50,
+            width: 50,
+            child: CustomPaint(
+              painter: _SymbolPainter(
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
+              willChange: false,
+            ),
           ),
         ),
-        body: ListPageBody(
-          children: [
-            Text(translations.about.paragraphs.first),
-            Padding(
-              padding: const EdgeInsets.all(6),
-              child: SizedBox(
-                height: 50,
-                width: 50,
-                child: CustomPaint(
-                  painter: _SymbolPainter(
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                  ),
-                  willChange: false,
-                ),
-              ),
-            ),
-            Text(translations.about.paragraphs.second),
-          ],
-        ),
-        footer: _ListFooter(),
-      );
+        Text(translations.about.paragraphs.second),
+      ],
+    ),
+    footer: _ListFooter(),
+  );
 }
 
 /// The about page list footer.
 class _ListFooter extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => Padding(
-        padding: const EdgeInsets.only(
-          left: 40,
-          right: 40,
-          bottom: 20,
+    padding: const EdgeInsets.only(
+      left: 40,
+      right: 40,
+      bottom: 20,
+    ),
+    child: Wrap(
+      alignment: WrapAlignment.center,
+      children: [
+        IconButton(
+          iconSize: 40,
+          icon: _GithubLogo(),
+          onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
         ),
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          children: [
-            IconButton(
-              iconSize: 40,
-              icon: _GithubLogo(),
-              onPressed: () => Utils.openUrl('https://github.com/Skyost/UnicaenTimetable'),
-            ),
-            IconButton(
-              iconSize: 40,
-              icon: const CircleAvatar(
-                backgroundImage: AssetImage('assets/about/skyost.png'),
-                radius: 20,
-              ),
-              onPressed: () => Utils.openUrl('https://skyost.eu'),
-            ),
-          ],
+        IconButton(
+          iconSize: 40,
+          icon: const CircleAvatar(
+            backgroundImage: AssetImage('assets/about/skyost.png'),
+            radius: 20,
+          ),
+          onPressed: () => Utils.openUrl('https://skyost.eu'),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 /// A Github logo.
@@ -115,15 +115,15 @@ class _GithubLogo extends ConsumerStatefulWidget {
 class _GithubLogoState extends ConsumerState<_GithubLogo> with BrightnessListener {
   @override
   Widget build(BuildContext context) => ColorFiltered(
-        colorFilter: ColorFilter.mode(currentBrightness == Brightness.light ? Colors.black : Colors.white, BlendMode.srcIn),
-        child: SizedBox(
-          height: 40,
-          width: 40,
-          child: ScalableImageWidget.fromSISource(
-            si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
-          ),
-        ),
-      );
+    colorFilter: ColorFilter.mode(currentBrightness == Brightness.light ? Colors.black : Colors.white, BlendMode.srcIn),
+    child: SizedBox(
+      height: 40,
+      width: 40,
+      child: ScalableImageWidget.fromSISource(
+        si: ScalableImageSource.fromSI(rootBundle, 'assets/about/github.si'),
+      ),
+    ),
+  );
 }
 
 /// Paints a little but cool symbol between the two paragraphs.

@@ -19,10 +19,10 @@ class WeekViewPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-        page: WeekViewPage(),
-        title: translations.weekView.title,
-        icon: const Icon(Icons.view_array),
-      );
+    page: WeekViewPage(),
+    title: translations.weekView.title,
+    icon: const Icon(Icons.view_array),
+  );
 }
 
 /// The about week view app bar.
@@ -34,11 +34,11 @@ class WeekViewPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-        title: Text(translations.weekView.title),
-        actions: [
-          const WeekPickerButton(),
-        ],
-      );
+    title: Text(translations.weekView.title),
+    actions: [
+      const WeekPickerButton(),
+    ],
+  );
 }
 
 /// The week view page widget.

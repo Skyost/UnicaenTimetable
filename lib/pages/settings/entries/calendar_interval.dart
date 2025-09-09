@@ -8,10 +8,10 @@ class CalendarIntervalSettingsEntryWidget extends IntegerSettingsEntryWidget<Int
   CalendarIntervalSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: intervalSettingsEntryProvider,
-          title: translations.settings.calendar.interval,
-          min: 1,
-          max: 52,
-          divisions: 52,
-        );
+         provider: intervalSettingsEntryProvider,
+         title: translations.settings.calendar.interval,
+         min: 1,
+         max: 52,
+         divisions: 52,
+       );
 }

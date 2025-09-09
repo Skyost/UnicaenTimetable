@@ -13,9 +13,9 @@ class IntroScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: _IntroScaffoldBody(),
-        bottomNavigationBar: _IntroScaffoldFooter(),
-      );
+    body: _IntroScaffoldBody(),
+    bottomNavigationBar: _IntroScaffoldFooter(),
+  );
 }
 
 /// The intro scaffold body.
@@ -77,29 +77,29 @@ class _CurrentProgressIndicator extends ConsumerStatefulWidget {
 class _CurrentProgressIndicatorState extends ConsumerState<_CurrentProgressIndicator> with BrightnessListener {
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(left: currentBrightness == Brightness.dark ? 8 : 0),
-        child: Text.rich(
+    padding: EdgeInsets.only(left: currentBrightness == Brightness.dark ? 8 : 0),
+    child: Text.rich(
+      TextSpan(
+        children: [
           TextSpan(
-            children: [
-              TextSpan(
-                text: '${widget.slide.index + 1}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const TextSpan(
-                text: '/',
-              ),
-              TextSpan(
-                text: '${Slide.values.length}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+            text: '${widget.slide.index + 1}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      );
+          const TextSpan(
+            text: '/',
+          ),
+          TextSpan(
+            text: '${Slide.values.length}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 /// The next button.
@@ -120,12 +120,12 @@ class _NextButton extends ConsumerStatefulWidget {
 class _NextButtonState extends ConsumerState<_NextButton> with BrightnessListener {
   @override
   Widget build(BuildContext context) => (currentBrightness == Brightness.light ? FilledButton.tonalIcon : TextButton.icon)(
-        onPressed: () => ref.read(currentSlideProvider.notifier).goToNextSlide(context),
-        icon: Icon(
-          widget.slide.isLastSlide ? Icons.check : Icons.chevron_right,
-        ),
-        label: Text(
-          (widget.slide.isLastSlide ? translations.intro.buttons.finish : translations.intro.buttons.next).toUpperCase(),
-        ),
-      );
+    onPressed: () => ref.read(currentSlideProvider.notifier).goToNextSlide(context),
+    icon: Icon(
+      widget.slide.isLastSlide ? Icons.check : Icons.chevron_right,
+    ),
+    label: Text(
+      (widget.slide.isLastSlide ? translations.intro.buttons.finish : translations.intro.buttons.next).toUpperCase(),
+    ),
+  );
 }

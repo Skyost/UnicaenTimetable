@@ -8,8 +8,8 @@ final openTodayAutomaticallyEntryProvider = AsyncNotifierProvider.autoDispose<Op
 class OpenTodayAutomaticallySettingsEntry extends SettingsEntry<bool> {
   /// Creates a new server interval settings entry instance.
   OpenTodayAutomaticallySettingsEntry()
-      : super(
-          key: 'openTodayAutomatically',
-          defaultValue: false,
-        );
+    : super(
+        key: 'openTodayAutomatically',
+        defaultValue: false,
+      );
 }

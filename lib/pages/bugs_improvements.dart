@@ -15,10 +15,10 @@ class BugsImprovementsPageListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageListTitle(
-        page: BugsImprovementsPage(),
-        title: translations.bugsImprovements.title,
-        icon: const Icon(Icons.bug_report),
-      );
+    page: BugsImprovementsPage(),
+    title: translations.bugsImprovements.title,
+    icon: const Icon(Icons.bug_report),
+  );
 }
 
 /// The bugs / improvements page app bar.
@@ -30,8 +30,8 @@ class BugsImprovementsPageAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-        title: Text(translations.about.title),
-      );
+    title: Text(translations.about.title),
+  );
 }
 
 /// The bugs / improvements page widget.
@@ -55,44 +55,44 @@ class _BugsImprovementsPageWidgetState extends State<BugsImprovementsPageWidget>
 
   @override
   Widget build(BuildContext context) => ListPageWidget(
-        header: ListPageHeader(
-          icon: const Icon(Icons.bug_report),
-          title: Text(
-            translations.bugsImprovements.title,
+    header: ListPageHeader(
+      icon: const Icon(Icons.bug_report),
+      title: Text(
+        translations.bugsImprovements.title,
+      ),
+    ),
+    body: ListPageBody(
+      children: [
+        Text.rich(
+          TextSpan(
+            children: [
+              translations.bugsImprovements.message.github(
+                issueTracker: (text) => TextSpan(
+                  text: text,
+                  recognizer: issueTrackerRecognizer,
+                  style: linkTextStyle,
+                ),
+              ),
+              const TextSpan(text: ' '),
+              translations.bugsImprovements.message.website(
+                contactForm: (text) => TextSpan(
+                  text: text,
+                  recognizer: contactFormRecognizer,
+                  style: linkTextStyle,
+                ),
+              ),
+            ],
           ),
         ),
-        body: ListPageBody(
-          children: [
-            Text.rich(
-              TextSpan(
-                children: [
-                  translations.bugsImprovements.message.github(
-                    issueTracker: (text) => TextSpan(
-                      text: text,
-                      recognizer: issueTrackerRecognizer,
-                      style: linkTextStyle,
-                    ),
-                  ),
-                  const TextSpan(text: ' '),
-                  translations.bugsImprovements.message.website(
-                    contactForm: (text) => TextSpan(
-                      text: text,
-                      recognizer: contactFormRecognizer,
-                      style: linkTextStyle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 
   /// Returns the link text style.
   TextStyle get linkTextStyle => TextStyle(
-        decoration: TextDecoration.underline,
-        color: Theme.of(context).colorScheme.primary,
-      );
+    decoration: TextDecoration.underline,
+    color: Theme.of(context).colorScheme.primary,
+  );
 
   @override
   void dispose() {

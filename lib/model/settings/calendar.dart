@@ -17,10 +17,10 @@ final intervalSettingsEntryProvider = AsyncNotifierProvider.autoDispose<Interval
 class IntervalSettingsEntry extends SettingsEntry<int> {
   /// Creates a new server settings entry instance.
   IntervalSettingsEntry()
-      : super(
-          key: 'calendarInterval',
-          defaultValue: 2,
-        );
+    : super(
+        key: 'calendarInterval',
+        defaultValue: 2,
+      );
 }
 
 /// The server settings entry provider.
@@ -30,10 +30,10 @@ final serverSettingsEntryProvider = AsyncNotifierProvider.autoDispose<ServerSett
 class ServerSettingsEntry extends SettingsEntry<String> {
   /// Creates a new server settings entry instance.
   ServerSettingsEntry()
-      : super(
-          key: 'calendarServer',
-          defaultValue: kDefaultServer,
-        );
+    : super(
+        key: 'calendarServer',
+        defaultValue: kDefaultServer,
+      );
 }
 
 /// The calendar name settings entry provider.
@@ -43,10 +43,10 @@ final calendarNameSettingsEntryProvider = AsyncNotifierProvider.autoDispose<Cale
 class CalendarNameSettingsEntry extends SettingsEntry<String> {
   /// Creates a new calendar settings entry instance.
   CalendarNameSettingsEntry()
-      : super(
-          key: 'calendarName',
-          defaultValue: kDefaultCalendarName,
-        );
+    : super(
+        key: 'calendarName',
+        defaultValue: kDefaultCalendarName,
+      );
 }
 
 /// The additional parameters entry provider.
@@ -56,8 +56,8 @@ final additionalParametersSettingsEntryProvider = AsyncNotifierProvider.autoDisp
 class AdditionalParametersSettingsEntry extends SettingsEntry<String> {
   /// Creates a new additional parameters settings entry instance.
   AdditionalParametersSettingsEntry()
-      : super(
-          key: 'calendarAdditionalParameters',
-          defaultValue: kDefaultAdditionalParameters,
-        );
+    : super(
+        key: 'calendarAdditionalParameters',
+        defaultValue: kDefaultAdditionalParameters,
+      );
 }

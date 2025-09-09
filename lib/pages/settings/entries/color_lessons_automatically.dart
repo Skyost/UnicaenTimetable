@@ -8,7 +8,7 @@ class ColorLessonsAutomaticallySettingsEntryWidget extends BoolSettingsEntryWidg
   ColorLessonsAutomaticallySettingsEntryWidget({
     super.key,
   }) : super(
-          provider: colorLessonsAutomaticallyEntryProvider,
-          title: translations.settings.application.colorLessonsAutomatically,
-        );
+         provider: colorLessonsAutomaticallyEntryProvider,
+         title: translations.settings.application.colorLessonsAutomatically,
+       );
 }

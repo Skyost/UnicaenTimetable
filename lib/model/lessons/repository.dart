@@ -183,10 +183,10 @@ class LessonWithColor extends Lesson {
     required Lesson lesson,
     Color? color,
   }) : this(
-          name: lesson.name,
-          description: lesson.description,
-          location: lesson.location,
-          dateTime: lesson.dateTime,
-          color: color,
-        );
+         name: lesson.name,
+         description: lesson.description,
+         location: lesson.location,
+         dateTime: lesson.dateTime,
+         color: color,
+       );
 }

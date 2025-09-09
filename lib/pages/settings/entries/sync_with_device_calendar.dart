@@ -8,7 +8,7 @@ class SyncWithDeviceCalendarSettingsEntryWidget extends BoolSettingsEntryWidget 
   SyncWithDeviceCalendarSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: syncWithDeviceCalendarSettingsEntryProvider,
-          title: translations.settings.application.syncWithDeviceCalendar,
-        );
+         provider: syncWithDeviceCalendarSettingsEntryProvider,
+         title: translations.settings.application.syncWithDeviceCalendar,
+       );
 }

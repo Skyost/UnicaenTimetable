@@ -28,13 +28,13 @@ class Lesson implements Comparable<Lesson> {
 
   /// Creates a new [Lesson] from a JSON map.
   Lesson.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
-        description = json['description'],
-        location = json['location'],
-        dateTime = DateTimeRange(
-          start: DateTime.fromMillisecondsSinceEpoch(json['start']),
-          end: DateTime.fromMillisecondsSinceEpoch(json['end']),
-        );
+    : name = json['name'],
+      description = json['description'],
+      location = json['location'],
+      dateTime = DateTimeRange(
+        start: DateTime.fromMillisecondsSinceEpoch(json['start']),
+        end: DateTime.fromMillisecondsSinceEpoch(json['end']),
+      );
 
   /// Creates a new lesson instance from a Zimbra JSON map.
   factory Lesson.fromZimbra(Map<String, dynamic> inv) {
@@ -101,23 +101,22 @@ class Lesson implements Comparable<Lesson> {
     String? description,
     String? location,
     DateTimeRange? dateTime,
-  }) =>
-      Lesson(
-        name: name ?? this.name,
-        description: description ?? this.description,
-        location: location ?? this.location,
-        dateTime: dateTime ?? this.dateTime,
-      );
+  }) => Lesson(
+    name: name ?? this.name,
+    description: description ?? this.description,
+    location: location ?? this.location,
+    dateTime: dateTime ?? this.dateTime,
+  );
 
   @override
   int compareTo(Lesson other) => dateTime.start.compareTo(other.dateTime.start);
 
   /// Converts this lesson to a JSON object.
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'description': description,
-        'location': location,
-        'start': dateTime.start.millisecondsSinceEpoch ~/ 1000,
-        'end': dateTime.end.millisecondsSinceEpoch  ~/ 1000,
-      };
+    'name': name,
+    'description': description,
+    'location': location,
+    'start': dateTime.start.millisecondsSinceEpoch ~/ 1000,
+    'end': dateTime.end.millisecondsSinceEpoch ~/ 1000,
+  };
 }

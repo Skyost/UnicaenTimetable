@@ -8,8 +8,8 @@ final colorLessonsAutomaticallyEntryProvider = AsyncNotifierProvider.autoDispose
 class ColorLessonsAutomaticallySettingsEntry extends SettingsEntry<bool> {
   /// Creates a new server interval settings entry instance.
   ColorLessonsAutomaticallySettingsEntry()
-      : super(
-          key: 'colorLessonsAutomatically',
-          defaultValue: false,
-        );
+    : super(
+        key: 'colorLessonsAutomatically',
+        defaultValue: false,
+      );
 }

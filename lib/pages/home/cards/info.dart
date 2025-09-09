@@ -19,16 +19,16 @@ class InfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => FutureBuilder(
-        future: _InfoCardData.load(),
-        builder: (context, snapshot) => MaterialCardContent(
-          color: Colors.blue.shade700,
-          icon: Icons.info_outline,
-          title: translations.home.currentLesson.title,
-          subtitle: snapshot.data?.toString() ?? translations.common.other.pleaseWait,
-          onTap: () => ref.read(pageProvider.notifier).changePage(AboutPage()),
-          onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.info),
-        ),
-      );
+    future: _InfoCardData.load(),
+    builder: (context, snapshot) => MaterialCardContent(
+      color: Colors.blue.shade700,
+      icon: Icons.info_outline,
+      title: translations.home.currentLesson.title,
+      subtitle: snapshot.data?.toString() ?? translations.common.other.pleaseWait,
+      onTap: () => ref.read(pageProvider.notifier).changePage(AboutPage()),
+      onRemove: () => ref.read(homeCardsProvider.notifier).removeCard(HomeCard.info),
+    ),
+  );
 }
 
 /// Contains some info about the app.

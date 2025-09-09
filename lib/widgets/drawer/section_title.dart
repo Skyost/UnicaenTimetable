@@ -14,9 +14,9 @@ class DrawerSectionTitle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => ListTile(
-        title: Text(
-          title,
-        ),
-        enabled: false,
-      );
+    title: Text(
+      title,
+    ),
+    enabled: false,
+  );
 }

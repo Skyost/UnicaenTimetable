@@ -14,10 +14,10 @@ class DateTimeRange {
 
   /// Constructor to initialize a date range with one day separating the [start] from the [end].
   DateTimeRange.oneDay(DateTime start)
-      : this(
-          start: start,
-          end: start.add(const Duration(days: 1)),
-        );
+    : this(
+        start: start,
+        end: start.add(const Duration(days: 1)),
+      );
 
   /// Function to calculate the intersection of two date ranges.
   /// Returns a new DateRange if they overlap, otherwise returns null.

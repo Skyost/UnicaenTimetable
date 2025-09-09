@@ -81,7 +81,7 @@ extension DisplayLessonDownloadResult on RequestResult {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-                )
+                ),
               ],
             ),
           );

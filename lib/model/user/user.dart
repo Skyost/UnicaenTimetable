@@ -48,13 +48,12 @@ sealed class User {
   factory User({
     required String username,
     required String password,
-  }) =>
-      username == TestUser.kUsername && password == TestUser.kPassword
-          ? TestUser._()
-          : CredentialsUser._(
-              username: username,
-              password: password,
-            );
+  }) => username == TestUser.kUsername && password == TestUser.kPassword
+      ? TestUser._()
+      : CredentialsUser._(
+          username: username,
+          password: password,
+        );
 
   @override
   bool operator ==(Object other) {
@@ -69,9 +68,9 @@ sealed class User {
 
   /// Converts this user to a map.
   Map<String, dynamic> _toMap() => {
-        'username': username,
-        'password': password,
-      };
+    'username': username,
+    'password': password,
+  };
 }
 
 /// Represents an user with an username and a password.
@@ -92,11 +91,10 @@ class CredentialsUser extends User {
   User copyWith({
     String? username,
     String? password,
-  }) =>
-      User(
-        username: username ?? this.username,
-        password: password ?? this.password,
-      );
+  }) => User(
+    username: username ?? this.username,
+    password: password ?? this.password,
+  );
 }
 
 /// The test user (for Apple Store review).

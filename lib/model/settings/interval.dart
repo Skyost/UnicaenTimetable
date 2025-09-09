@@ -8,8 +8,8 @@ final invervalSettingsEntryProvider = AsyncNotifierProvider.autoDispose<Interval
 class IntervalSettingsEntry extends SettingsEntry<int> {
   /// Creates a new server interval settings entry instance.
   IntervalSettingsEntry()
-      : super(
-          key: 'interval',
-          defaultValue: 2,
-        );
+    : super(
+        key: 'interval',
+        defaultValue: 2,
+      );
 }

@@ -47,23 +47,23 @@ class LocalStorage extends _$LocalStorage {
   LocalStorage(
     this.ref,
   ) : super(
-          SqliteUtils.openConnection(_kDbFileName),
-        );
+        SqliteUtils.openConnection(_kDbFileName),
+      );
 
   @override
   int get schemaVersion => 1;
 
   /// Selects all lessons.
   Future<List<Lesson>> selectAllLessons() async {
-    List<_DriftLesson> list = await (select(lessons)
-          ..orderBy(
-            [
-              (table) => OrderingTerm(
-                    expression: table.start,
-                  )
-            ],
-          ))
-        .get();
+    List<_DriftLesson> list =
+        await (select(lessons)..orderBy(
+              [
+                (table) => OrderingTerm(
+                  expression: table.start,
+                ),
+              ],
+            ))
+            .get();
     return [
       for (_DriftLesson driftLesson in list) driftLesson.asLesson,
     ];
@@ -75,16 +75,17 @@ class LocalStorage extends _$LocalStorage {
   /// Selects the lessons available between two dates.
   /// This function tolerates overlaps.
   Future<List<Lesson>> selectLessons(DateTimeRange range) async {
-    List<_DriftLesson> list = await (select(lessons)
-          ..where((lesson) => (lesson.end.isSmallerThanValue(range.start) | lesson.start.isBiggerThanValue(range.end)).not())
-          ..orderBy(
-            [
-              (table) => OrderingTerm(
+    List<_DriftLesson> list =
+        await (select(lessons)
+              ..where((lesson) => (lesson.end.isSmallerThanValue(range.start) | lesson.start.isBiggerThanValue(range.end)).not())
+              ..orderBy(
+                [
+                  (table) => OrderingTerm(
                     expression: table.start,
-                  )
-            ],
-          ))
-        .get();
+                  ),
+                ],
+              ))
+            .get();
     List<Lesson> result = [];
     for (_DriftLesson driftLesson in list) {
       Lesson lesson = driftLesson.asLesson;
@@ -123,24 +124,24 @@ class LocalStorage extends _$LocalStorage {
 extension _UnicaenTimetable on _DriftLesson {
   /// Converts this instance to a [Totp].
   Lesson get asLesson => Lesson(
-        name: name,
-        description: description,
-        location: location,
-        dateTime: DateTimeRange(
-          start: start,
-          end: end,
-        ),
-      );
+    name: name,
+    description: description,
+    location: location,
+    dateTime: DateTimeRange(
+      start: start,
+      end: end,
+    ),
+  );
 }
 
 /// Contains some useful methods to use [Totp] with Drift.
 extension _Drift on Lesson {
   /// Converts this instance to a Drift generated [_DriftLesson].
   _DriftLesson get asDriftLesson => _DriftLesson(
-        name: name,
-        description: description,
-        location: location,
-        start: dateTime.start,
-        end: dateTime.end,
-      );
+    name: name,
+    description: description,
+    location: location,
+    start: dateTime.start,
+    end: dateTime.end,
+  );
 }

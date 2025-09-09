@@ -41,53 +41,53 @@ class MaterialCardContent extends ConsumerStatefulWidget {
 class _MaterialCardContentState extends ConsumerState<MaterialCardContent> with BrightnessListener {
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Material(
-          elevation: 1,
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Material(
+      elevation: 1,
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              gradient: LinearGradient(
-                stops: MediaQuery.sizeOf(context).width < 800 ? const [0.03, 0.03] : const [0.01, 0.01],
-                colors: [widget.color, currentBrightness == Brightness.dark ? Theme.of(context).colorScheme.surfaceBright : widget.color.withAlpha(40)],
-              ),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.only(top: 20, right: 20, bottom: 20),
-              leading: LayoutBuilder(
-                builder: (_, constraints) => Padding(
-                  padding: EdgeInsets.only(left: 0.03 * constraints.maxWidth + 20),
-                  child: Icon(
-                    widget.icon,
-                    color: titleColor,
-                    size: constraints.maxHeight,
-                  ),
-                ),
-              ),
-              title: Text(
-                widget.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: titleColor,
-                ),
-              ),
-              subtitle: Text(
-                widget.subtitle,
-                style: TextStyle(color: subtitleColor),
-              ),
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: titleColor,
-                ),
-                onPressed: widget.onRemove,
-              ),
-              onTap: widget.onTap,
-            ),
+          gradient: LinearGradient(
+            stops: MediaQuery.sizeOf(context).width < 800 ? const [0.03, 0.03] : const [0.01, 0.01],
+            colors: [widget.color, currentBrightness == Brightness.dark ? Theme.of(context).colorScheme.surfaceBright : widget.color.withAlpha(40)],
           ),
         ),
-      );
+        child: ListTile(
+          contentPadding: const EdgeInsets.only(top: 20, right: 20, bottom: 20),
+          leading: LayoutBuilder(
+            builder: (_, constraints) => Padding(
+              padding: EdgeInsets.only(left: 0.03 * constraints.maxWidth + 20),
+              child: Icon(
+                widget.icon,
+                color: titleColor,
+                size: constraints.maxHeight,
+              ),
+            ),
+          ),
+          title: Text(
+            widget.title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: titleColor,
+            ),
+          ),
+          subtitle: Text(
+            widget.subtitle,
+            style: TextStyle(color: subtitleColor),
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: titleColor,
+            ),
+            onPressed: widget.onRemove,
+          ),
+          onTap: widget.onTap,
+        ),
+      ),
+    ),
+  );
 
   /// Returns the text color.
   Color get subtitleColor => currentBrightness == Brightness.dark ? Colors.white.withValues(alpha: 0.75) : widget.color;

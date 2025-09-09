@@ -9,9 +9,9 @@ class CalendarNameSettingsEntryWidget extends StringSettingsEntryWidget<Calendar
   CalendarNameSettingsEntryWidget({
     super.key,
   }) : super(
-          provider: calendarNameSettingsEntryProvider,
-          title: translations.settings.calendar.name,
-          validator: TextInputDialog.validateNotEmpty,
-          hint: kDefaultCalendarName,
-        );
+         provider: calendarNameSettingsEntryProvider,
+         title: translations.settings.calendar.name,
+         validator: TextInputDialog.validateNotEmpty,
+         hint: kDefaultCalendarName,
+       );
 }

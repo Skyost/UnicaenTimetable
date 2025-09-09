@@ -8,7 +8,7 @@ class OpenTodayAutomaticallySettingsEntryWidget extends BoolSettingsEntryWidget 
   OpenTodayAutomaticallySettingsEntryWidget({
     super.key,
   }) : super(
-          provider: openTodayAutomaticallyEntryProvider,
-          title: translations.settings.application.openTodayAutomatically,
-        );
+         provider: openTodayAutomaticallyEntryProvider,
+         title: translations.settings.application.openTodayAutomatically,
+       );
 }

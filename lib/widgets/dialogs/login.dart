@@ -85,121 +85,120 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: Text(translations.dialogs.login.title),
-        content: waiting
-            ? const CenteredCircularProgressIndicator()
-            : Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(translations.dialogs.login.username),
-                    TextFormField(
-                      decoration: InputDecoration(hintText: translations.dialogs.login.usernameHint),
-                      autocorrect: false,
-                      onChanged: refreshLogin,
-                      validator: TextInputDialog.validateNotEmpty,
-                      controller: usernameController,
-                      textInputAction: TextInputAction.next,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      autofocus: true,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Text(translations.dialogs.login.password),
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(hintText: translations.dialogs.login.passwordHint),
-                      autocorrect: false,
-                      obscureText: true,
-                      keyboardType: TextInputType.visiblePassword,
-                      onChanged: refreshLogin,
-                      validator: TextInputDialog.validateNotEmpty,
-                      controller: passwordController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      textInputAction: moreSettings ? TextInputAction.next : TextInputAction.done,
-                    ),
-                    if (loginHttpResponseCode != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Text(
-                          switch (loginHttpResponseCode) {
-                            HttpStatus.notFound => translations.dialogs.login.errors.notFound,
-                            HttpStatus.unauthorized => translations.dialogs.login.errors.unauthorized,
-                            _ => translations.dialogs.login.errors.genericError,
-                          },
-                          style: TextStyle(color: Colors.red.shade700),
-                        ),
-                      ),
-                    if (moreSettings)
-                      ...[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Text(translations.dialogs.login.moreSettings.server),
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(hintText: kDefaultServer),
-                          autocorrect: false,
-                          keyboardType: TextInputType.url,
-                          onChanged: refreshLogin,
-                          validator: TextInputDialog.validateNotEmpty,
-                          controller: serverAddressController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Text(translations.dialogs.login.moreSettings.calendarName),
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(hintText: kDefaultCalendarName),
-                          autocorrect: false,
-                          keyboardType: TextInputType.text,
-                          onChanged: refreshLogin,
-                          validator: TextInputDialog.validateNotEmpty,
-                          controller: calendarNameController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Text(translations.dialogs.login.moreSettings.additionalParameters),
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(hintText: kDefaultAdditionalParameters),
-                          autocorrect: false,
-                          onChanged: refreshLogin,
-                          keyboardType: TextInputType.url,
-                          controller: additionalParametersController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textInputAction: TextInputAction.done,
-                        ),
-                      ],
-                  ],
+    title: Text(translations.dialogs.login.title),
+    content: waiting
+        ? const CenteredCircularProgressIndicator()
+        : Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(translations.dialogs.login.username),
+                TextFormField(
+                  decoration: InputDecoration(hintText: translations.dialogs.login.usernameHint),
+                  autocorrect: false,
+                  onChanged: refreshLogin,
+                  validator: TextInputDialog.validateNotEmpty,
+                  controller: usernameController,
+                  textInputAction: TextInputAction.next,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autofocus: true,
                 ),
-              ),
-        scrollable: true,
-        actions: waiting
-            ? []
-            : [
-                if (loginHttpResponseCode != null && !moreSettings)
-                  TextButton(
-                    onPressed: () {
-                      setState(() => moreSettings = true);
-                    },
-                    child: Text(translations.dialogs.login.moreSettings.button),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(translations.dialogs.login.password),
+                ),
+                TextFormField(
+                  decoration: InputDecoration(hintText: translations.dialogs.login.passwordHint),
+                  autocorrect: false,
+                  obscureText: true,
+                  keyboardType: TextInputType.visiblePassword,
+                  onChanged: refreshLogin,
+                  validator: TextInputDialog.validateNotEmpty,
+                  controller: passwordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  textInputAction: moreSettings ? TextInputAction.next : TextInputAction.done,
+                ),
+                if (loginHttpResponseCode != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      switch (loginHttpResponseCode) {
+                        HttpStatus.notFound => translations.dialogs.login.errors.notFound,
+                        HttpStatus.unauthorized => translations.dialogs.login.errors.unauthorized,
+                        _ => translations.dialogs.login.errors.genericError,
+                      },
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
                   ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                ),
-                TextButton(
-                  onPressed: canLogin ? (onLoginButtonPressed) : null,
-                  child: Text(translations.dialogs.login.login),
-                ),
+                if (moreSettings) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(translations.dialogs.login.moreSettings.server),
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(hintText: kDefaultServer),
+                    autocorrect: false,
+                    keyboardType: TextInputType.url,
+                    onChanged: refreshLogin,
+                    validator: TextInputDialog.validateNotEmpty,
+                    controller: serverAddressController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(translations.dialogs.login.moreSettings.calendarName),
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(hintText: kDefaultCalendarName),
+                    autocorrect: false,
+                    keyboardType: TextInputType.text,
+                    onChanged: refreshLogin,
+                    validator: TextInputDialog.validateNotEmpty,
+                    controller: calendarNameController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(translations.dialogs.login.moreSettings.additionalParameters),
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(hintText: kDefaultAdditionalParameters),
+                    autocorrect: false,
+                    onChanged: refreshLogin,
+                    keyboardType: TextInputType.url,
+                    controller: additionalParametersController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    textInputAction: TextInputAction.done,
+                  ),
+                ],
               ],
-      );
+            ),
+          ),
+    scrollable: true,
+    actions: waiting
+        ? []
+        : [
+            if (loginHttpResponseCode != null && !moreSettings)
+              TextButton(
+                onPressed: () {
+                  setState(() => moreSettings = true);
+                },
+                child: Text(translations.dialogs.login.moreSettings.button),
+              ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: canLogin ? (onLoginButtonPressed) : null,
+              child: Text(translations.dialogs.login.login),
+            ),
+          ],
+  );
 
   /// Refreshes whether the login button is enabled.
   void refreshLogin(String? _) => setState(() => canLogin = formKey.currentState?.validate() == true);

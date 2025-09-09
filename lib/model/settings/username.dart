@@ -13,10 +13,10 @@ final displayedUsernameSettingsEntryProvider = AsyncNotifierProvider.autoDispose
 class DisplayedUsernameSettingsEntry extends SettingsEntry<DisplayedUsername?> {
   /// Creates a new server settings entry instance.
   DisplayedUsernameSettingsEntry()
-      : super(
-          key: 'displayedUsername',
-          defaultValue: null,
-        );
+    : super(
+        key: 'displayedUsername',
+        defaultValue: null,
+      );
 
   @override
   FutureOr<DisplayedUsername?> build() async {
@@ -84,16 +84,16 @@ class DisplayedUsername {
 
   /// Creates a new username instance from a JSON map.
   DisplayedUsername._fromJson(Map<String, dynamic> json)
-      : this._(
-          autoUsername: json['autoUsername'],
-          manualUsername: json['manualUsername'],
-        );
+    : this._(
+        autoUsername: json['autoUsername'],
+        manualUsername: json['manualUsername'],
+      );
 
   /// Converts this instance to a JSON map.
   Map<String, dynamic> toJson() => {
-        'autoUsername': autoUsername,
-        'manualUsername': manualUsername,
-      };
+    'autoUsername': autoUsername,
+    'manualUsername': manualUsername,
+  };
 
   /// Deduces username from [user].
   static String deduceFromUser(User user) {
@@ -114,11 +114,10 @@ class DisplayedUsername {
   DisplayedUsername copyWith({
     String? autoUsername,
     String? manualUsername,
-  }) =>
-      DisplayedUsername._(
-        autoUsername: autoUsername ?? this.autoUsername,
-        manualUsername: manualUsername ?? this.manualUsername,
-      );
+  }) => DisplayedUsername._(
+    autoUsername: autoUsername ?? this.autoUsername,
+    manualUsername: manualUsername ?? this.manualUsername,
+  );
 
   @override
   bool operator ==(Object other) {

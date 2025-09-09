@@ -79,5 +79,5 @@ enum HomeCard {
   theme,
 
   /// Displays various info.
-  info;
+  info,
 }

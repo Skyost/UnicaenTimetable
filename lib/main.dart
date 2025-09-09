@@ -132,8 +132,8 @@ class _UnicaenTimetableApp extends ConsumerWidget {
       themeMode: theme.valueOrNull,
       routes: {
         '/': (_) => const EnsureLoggedInWidget(
-              child: AppScaffold(),
-            ),
+          child: AppScaffold(),
+        ),
         '/intro': (_) => const IntroScaffold(),
       },
       initialRoute: '/',
