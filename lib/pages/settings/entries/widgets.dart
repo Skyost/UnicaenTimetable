@@ -26,7 +26,7 @@ class BoolSettingsEntryWidget<T extends SettingsEntry<bool>> extends CheckboxSet
 /// A settings entry that can be configured using a checkbox.
 abstract class CheckboxSettingsEntryWidget<T extends SettingsEntry<U>, U> extends ConsumerWidget {
   /// The boolean provider.
-  final AutoDisposeAsyncNotifierProvider<T, U> provider;
+  final AsyncNotifierProvider<T, U> provider;
 
   /// The entry widget title.
   final String title;
@@ -93,7 +93,7 @@ abstract class CheckboxSettingsEntryWidget<T extends SettingsEntry<U>, U> extend
 /// Allows to configure values with a dialog.
 abstract class DialogSettingsEntryWidget<T extends SettingsEntry<U>, U> extends ConsumerWidget {
   /// The boolean provider.
-  final AutoDisposeAsyncNotifierProvider<T, U> provider;
+  final AsyncNotifierProvider<T, U> provider;
 
   /// The entry widget title.
   final String title;

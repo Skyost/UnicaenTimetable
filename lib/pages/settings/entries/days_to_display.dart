@@ -21,7 +21,7 @@ class DaysToDisplaySettingsEntryWidget extends ConsumerWidget {
       enabled: sidebarDays.hasValue,
       title: Text(translations.settings.application.daysToDisplay),
       subtitle: Text(
-        [for (int day in sidebarDays.valueOrNull ?? []) formatter.format(monday.add(Duration(days: day - 1)))].join(', '),
+        [for (int day in sidebarDays.value ?? []) formatter.format(monday.add(Duration(days: day - 1)))].join(', '),
       ),
       onTap: () async {
         List<int>? result = await showDialog<List<int>>(

@@ -100,7 +100,7 @@ class _PageContainerState extends ConsumerState<AppScaffold> with WidgetsBinding
 class _AppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Page? page = ref.watch(pageProvider).valueOrNull;
+    Page? page = ref.watch(pageProvider).value;
     return switch (page) {
       HomePage() => const HomePageAppBar(),
       DayViewPage(:final day) => DayViewPageAppBar(day: day),
@@ -119,7 +119,7 @@ class _AppBar extends ConsumerWidget {
 class _Page extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Page? page = ref.watch(pageProvider).valueOrNull;
+    Page? page = ref.watch(pageProvider).value;
     return switch (page) {
       HomePage() => const HomePageWidget(),
       DayViewPage(:final day) => DayViewPageWidget(day: day),
@@ -136,7 +136,7 @@ class _Page extends ConsumerWidget {
 class _Drawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? [];
+    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).value ?? [];
     return Drawer(
       child: ListView(
         padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),

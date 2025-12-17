@@ -13,7 +13,7 @@ import 'package:unicaen_timetable/widgets/dialogs/login.dart';
 final currentSlideProvider = NotifierProvider.autoDispose<SlideNotifier, Slide>(SlideNotifier.new);
 
 /// The slide notifier.
-class SlideNotifier extends AutoDisposeNotifier<Slide> {
+class SlideNotifier extends Notifier<Slide> {
   @override
   Slide build() => Slide.main;
 

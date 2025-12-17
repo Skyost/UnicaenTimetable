@@ -57,7 +57,7 @@ class _WeekViewPageWidgetState extends FlutterWeekViewWidgetState {
   @override
   Widget buildChild(List<FlutterWeekViewEventWithLesson> events) {
     DateTime monday = ref.watch(dateProvider);
-    List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? defaultDaysToDisplay;
+    List<int> daysToDisplay = ref.watch(daysToDisplayEntryProvider).value ?? defaultDaysToDisplay;
     List<DateTime> dates = [
       for (int day in daysToDisplay) monday.add(Duration(days: day - 1)),
     ];

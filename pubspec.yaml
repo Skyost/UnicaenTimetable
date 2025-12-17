@@ -11,33 +11,35 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_week_view: ^1.4.4
-  jovial_svg: ^1.1.27
+  flutter_week_view: ^1.4.5
+  jovial_svg: ^1.1.28
   intl: any
   path_provider: ^2.1.5
-  http: ^1.5.0
-  background_fetch: ^1.4.0
+  http: ^1.6.0
+  background_fetch: ^1.5.0
   flutter_colorpicker: ^1.1.0
-  share_plus: ^11.1.0
+  share_plus: ^12.0.1
   rate_my_app: ^2.3.2
   url_launcher: ^6.3.2
-  package_info_plus: ^8.3.1
-  device_info_plus: ^11.5.0
+  package_info_plus: ^9.0.0
+  device_info_plus: ^12.3.0
   scrollable_positioned_list: ^0.3.8
-  flutter_riverpod: ^2.6.1
-  shared_preferences: ^2.5.3
-  firebase_core: ^4.1.0
-  firebase_crashlytics: ^5.0.1
-  drift: ^2.28.1
-  drift_flutter: ^0.2.6
-  slang: ^4.8.1
-  slang_flutter: ^4.8.0
-  eventide: ^0.10.2
+  flutter_riverpod: ^3.0.3
+  shared_preferences: ^2.5.4
+  firebase_core: ^4.3.0
+  firebase_crashlytics: ^5.0.6
+  drift: ^2.30.0
+  drift_flutter: ^0.2.8
+  slang: ^4.11.1
+  slang_flutter: ^4.11.0
+  eventide: ^2.0.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
-  drift_dev: ^2.28.2
-  build_runner: ^2.7.2
+  drift_dev: ^2.30.0
+  build_runner: ^2.10.4
+  custom_lint: ^0.8.1
+  riverpod_lint: ^3.0.3
 
 flutter:
   uses-material-design: true

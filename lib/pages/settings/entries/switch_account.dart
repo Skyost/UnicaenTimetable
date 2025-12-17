@@ -17,7 +17,7 @@ class SwitchAccountSettingsEntryWidget extends ConsumerWidget {
     return ListTile(
       enabled: user.hasValue,
       title: Text(translations.settings.account.kSwitch),
-      subtitle: user.valueOrNull == null ? null : Text(user.value!.username),
+      subtitle: user.value == null ? null : Text(user.value!.username),
       onTap: () async => await LoginDialog.show(context, synchronizeAfterLogin: true),
     );
   }

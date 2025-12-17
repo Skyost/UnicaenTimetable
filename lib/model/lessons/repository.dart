@@ -17,10 +17,10 @@ import 'package:unicaen_timetable/utils/date_time_range.dart';
 import 'package:unicaen_timetable/utils/utils.dart';
 
 /// The lesson repository provider.
-final lessonRepositoryProvider = AsyncNotifierProvider.autoDispose<LessonRepository, DateTime?>(LessonRepository.new);
+final lessonRepositoryProvider = AsyncNotifierProvider<LessonRepository, DateTime?>(LessonRepository.new);
 
 /// The lesson model.
-class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
+class LessonRepository extends AsyncNotifier<DateTime?> {
   @override
   FutureOr<DateTime?> build() async {
     int? lastUpdate = await UnicaenTimetableRoot.channel.invokeMethod<int>('sync.get');
@@ -83,7 +83,7 @@ class LessonRepository extends AutoDisposeAsyncNotifier<DateTime?> {
     bool syncWithDevice = await ref.read(syncWithDeviceCalendarSettingsEntryProvider.future);
     if (syncWithDevice) {
       ETCalendar? calendar = await ref.read(unicaenDeviceCalendarProvider.notifier).createCalendarOnDeviceIfNotExist();
-      List<ETEvent> events = await calendar.retrieveEvents();
+      Iterable<ETEvent> events = await calendar.retrieveEvents();
       Eventide eventide = Eventide();
       for (ETEvent event in events) {
         await eventide.deleteEvent(eventId: event.id);
@@ -148,12 +148,18 @@ final remainingLessonsProvider = FutureProvider<List<LessonWithColor>>((ref) asy
 });
 
 /// The lesson model.
-class LessonsNotifier extends AutoDisposeFamilyAsyncNotifier<List<LessonWithColor>, DateTimeRange?> {
+class LessonsNotifier extends AsyncNotifier<List<LessonWithColor>> {
+  /// The date time range.
+  final DateTimeRange? arg;
+
+  /// Creates a new lessons notifier.
+  LessonsNotifier(this.arg);
+
   @override
-  FutureOr<List<LessonWithColor>> build(DateTimeRange? arg) async {
+  FutureOr<List<LessonWithColor>> build() async {
     LocalStorage storage = ref.watch(localStorageProvider);
     ColorResolver colorResolver = await ref.watch(lessonColorResolverProvider.future);
-    List<Lesson> lessons = arg == null ? (await storage.selectAllLessons()) : (await storage.selectLessons(arg));
+    List<Lesson> lessons = arg == null ? (await storage.selectAllLessons()) : (await storage.selectLessons(arg!));
     return [
       for (Lesson lesson in lessons)
         LessonWithColor.fromLesson(

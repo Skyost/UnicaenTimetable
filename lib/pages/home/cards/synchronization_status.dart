@@ -18,7 +18,7 @@ class SynchronizationStatusCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     AsyncValue<DateTime?> lastModification = ref.watch(lessonRepositoryProvider);
-    int interval = ref.watch(intervalSettingsEntryProvider).valueOrNull ?? 0;
+    int interval = ref.watch(intervalSettingsEntryProvider).value ?? 0;
     _Status status = _Status.resolve(lastModification, interval);
     return MaterialCardContent(
       color: status.resolveColor(),

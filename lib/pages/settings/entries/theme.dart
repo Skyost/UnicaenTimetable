@@ -17,7 +17,7 @@ class ThemeSettingsEntryWidget extends ConsumerWidget {
       enabled: theme.hasValue,
       title: Text(translations.settings.application.brightness.title),
       subtitle: DropdownButton<ThemeMode>(
-        value: theme.valueOrNull,
+        value: theme.value,
         isExpanded: true,
         padding: const EdgeInsets.only(right: 12),
         items: [

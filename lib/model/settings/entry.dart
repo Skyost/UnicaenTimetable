@@ -13,7 +13,7 @@ final sharedPreferencesProvider = FutureProvider.autoDispose<SharedPreferencesWi
 );
 
 /// Represents a settings entry, which can be user configured (directly or not).
-class SettingsEntry<T> extends AutoDisposeAsyncNotifier<T> {
+class SettingsEntry<T> extends AsyncNotifier<T> {
   /// The preferences key.
   @protected
   final String key;
@@ -39,7 +39,7 @@ class SettingsEntry<T> extends AutoDisposeAsyncNotifier<T> {
 
   /// Changes the entry value.
   Future<void> changeValue(T value) async {
-    if (value != state.valueOrNull) {
+    if (value != state.value) {
       state = AsyncData(value);
       SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
       await saveToPreferences(preferences, value);

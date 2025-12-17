@@ -54,7 +54,7 @@ class DisplayedUsernameSettingsEntry extends SettingsEntry<DisplayedUsername?> {
   /// Triggered when the user has changed.
   Future<void> _onUserChange(AsyncValue<User?>? oldUser, AsyncValue<User?> newUser) async {
     DisplayedUsername? username = await future;
-    User? user = newUser.valueOrNull;
+    User? user = newUser.value;
     if (user != null) {
       String autoUsername = DisplayedUsername.deduceFromUser(user);
       if (username?.autoUsername != autoUsername) {

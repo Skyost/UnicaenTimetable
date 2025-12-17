@@ -47,7 +47,7 @@ class _AddButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     AsyncValue<List<HomeCard>> cards = ref.watch(homeCardsProvider);
-    return cards.valueOrNull == null || cards.value!.length == HomeCard.values.length
+    return cards.value == null || cards.value!.length == HomeCard.values.length
         ? const SizedBox.shrink()
         : PopupMenuButton<HomeCard>(
             icon: const Icon(Icons.add),
@@ -78,7 +78,7 @@ class HomePageWidget extends ConsumerWidget {
       return const CenteredCircularProgressIndicator();
     }
 
-    List<HomeCard> cards = homeCards.valueOrNull ?? [];
+    List<HomeCard> cards = homeCards.value ?? [];
     return cards.isEmpty
         ? Padding(
             padding: const EdgeInsets.all(20),

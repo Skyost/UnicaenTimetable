@@ -41,18 +41,15 @@ class SyncWithDeviceCalendarSettingsEntry extends SettingsEntry<bool> {
 }
 
 /// The Unicaen device calendar settings entry provider.
-final unicaenDeviceCalendarProvider = AsyncNotifierProvider.autoDispose<UnicaenDeviceCalendar, ETCalendar?>(UnicaenDeviceCalendar.new);
+final unicaenDeviceCalendarProvider = AsyncNotifierProvider<UnicaenDeviceCalendar, ETCalendar?>(UnicaenDeviceCalendar.new);
 
 /// The Unicaen device calendar.
-class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
+class UnicaenDeviceCalendar extends AsyncNotifier<ETCalendar?> {
   /// The device calendar color.
   static const Color calendarColor = Colors.indigo;
 
   /// The device calendar name.
   static const String calendarName = 'Unicaen';
-
-  /// The Eventide account.
-  static final String accountName = 'Unicaen';
 
   /// The settings key.
   static const String settingsKey = 'unicaenDeviceCalendar';
@@ -65,7 +62,7 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
       return null;
     }
     Eventide eventide = Eventide();
-    List<ETCalendar> calendars = await eventide.retrieveCalendars(fromLocalAccountName: accountName);
+    Iterable<ETCalendar> calendars = await eventide.retrieveCalendars();
     return calendars.firstWhereOrNull((calendar) => calendar.id == calendarId);
   }
 
@@ -79,7 +76,6 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     calendar = await eventide.createCalendar(
       title: calendarName,
       color: calendarColor,
-      localAccountName: accountName,
     );
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
     await preferences.setString(settingsKey, calendar.id);
@@ -97,13 +93,14 @@ class UnicaenDeviceCalendar extends AutoDisposeAsyncNotifier<ETCalendar?> {
     eventide.deleteCalendar(calendarId: calendar.id);
     SharedPreferencesWithCache preferences = await ref.read(sharedPreferencesProvider.future);
     await preferences.remove(settingsKey);
+    state = const AsyncData(null);
   }
 }
 
 /// Contains various useful methods for working with Eventide.
 extension Events on ETCalendar? {
   /// Retrieves events from the calendar.
-  Future<List<ETEvent>> retrieveEvents() async {
+  Future<Iterable<ETEvent>> retrieveEvents() async {
     if (this?.id == null) {
       return [];
     }

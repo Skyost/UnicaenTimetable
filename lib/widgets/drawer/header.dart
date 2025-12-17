@@ -14,7 +14,7 @@ class DrawerHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    DisplayedUsername? username = ref.watch(displayedUsernameSettingsEntryProvider).valueOrNull;
+    DisplayedUsername? username = ref.watch(displayedUsernameSettingsEntryProvider).value;
     if (username == null) {
       return const SizedBox.shrink();
     }

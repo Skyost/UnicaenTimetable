@@ -23,7 +23,7 @@ class PageListTitle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Page? currentPage = ref.watch(pageProvider).valueOrNull;
+    Page? currentPage = ref.watch(pageProvider).value;
     return ListTile(
       selected: currentPage?.isSamePage(page) == true,
       leading: icon,

@@ -42,7 +42,7 @@ mixin BrightnessListener<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Triggered when [themeSettingsEntryProvider] has changed.
   @protected
   void onThemeSettingsEntryChange(AsyncValue<ThemeMode>? previous, AsyncValue<ThemeMode> next) {
-    ThemeMode themeMode = next.valueOrNull ?? ThemeMode.system;
+    ThemeMode themeMode = next.value ?? ThemeMode.system;
     void changeThemeMode() => _currentThemeMode = themeMode;
     if (mounted) {
       setState(changeThemeMode);

@@ -85,7 +85,7 @@ class DayViewPageAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).valueOrNull ?? [];
+    List<int> sidebarDays = ref.watch(daysToDisplayEntryProvider).value ?? [];
     DateTime monday = DateTime.now().atMonday;
     DateTime date = monday.add(Duration(days: day - 1));
     return AppBar(

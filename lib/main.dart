@@ -129,7 +129,7 @@ class _UnicaenTimetableApp extends ConsumerWidget {
         ),
         brightness: Brightness.dark,
       ),
-      themeMode: theme.valueOrNull,
+      themeMode: theme.value,
       routes: {
         '/': (_) => const EnsureLoggedInWidget(
           child: AppScaffold(),
